@@ -22,10 +22,14 @@ export interface Booking {
   serviceId: string;
   userId: string;
   timeSlotId: string;
+  stylist_id?: string;
   status: 'pending' | 'confirmed' | 'cancelled';
   createdAt: string;
-  services?: { name: string };
+  services?: { name: string; price: number; duration: number };
   time_slots?: { start_time: string; end_time: string };
+  stylists?: { name: string };
+  service_id?: string;
+  time_slot_id?: string;
 }
 
 export interface Stylist {

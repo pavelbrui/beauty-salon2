@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format, addMinutes, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { TimeSlot } from '../../types';
 import { LoadingSpinner } from '../LoadingSpinner';
@@ -25,7 +25,7 @@ interface TimeGridProps {
   timeSlots: TimeSlot[];
   selectedSlot: TimeSlot | null;
   onSlotSelect: (slot: TimeSlot) => void;
-  serviceDuration: number;
+  serviceDuration?: number;
   isLoading?: boolean;
 }
 
@@ -33,7 +33,6 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   timeSlots,
   selectedSlot,
   onSlotSelect,
-  serviceDuration,
   isLoading = false
 }) => {
   const { language } = useLanguage();
@@ -59,28 +58,14 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
 
   const isSlotAvailable = (slot: TimeSlot) => {
     if (!slot || !slot.isAvailable) return false;
-    
+
     const now = new Date();
     const slotStart = parseISO(slot.startTime);
-    
+
     // Don't show past slots
     if (slotStart < now) return false;
 
-    try {
-      const startTime = parseISO(slot.startTime);
-      const endTime = addMinutes(startTime, serviceDuration + 10); // Add 10 min buffer
-    
-      // Check for overlapping slots
-      return timeSlots.every(otherSlot => {
-        if (otherSlot.id === slot.id) return true;
-        const otherStart = parseISO(otherSlot.startTime);
-        const otherEnd = parseISO(otherSlot.endTime);
-        return endTime <= otherStart || startTime >= otherEnd;
-      });
-    } catch (error) {
-      console.error('Error checking slot availability:', error);
-      return false;
-    }
+    return true;
   };
 
   if (isLoading) {

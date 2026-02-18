@@ -88,6 +88,30 @@ export const translations = {
       signUpDescription: 'Utwórz konto aby zarezerwować wizytę',
       noAccount: 'Nie masz konta? Zarejestruj się',
       hasAccount: 'Masz już konto? Zaloguj się'
+    },
+    footer: {
+      rights: 'Wszelkie prawa zastrzeżone.'
+    },
+    notFound: {
+      title: 'Strona nie znaleziona',
+      description: 'Przepraszamy, nie mogliśmy znaleźć tej strony.',
+      backHome: 'Wróć na stronę główną'
+    },
+    errorLoading: 'Błąd ładowania danych',
+    retry: 'Spróbuj ponownie',
+    noResults: 'Brak wyników',
+    profile: 'Profil',
+    profile_page: {
+      title: 'Moje Rezerwacje',
+      seoDescription: 'Zarządzaj swoimi rezerwacjami w salonie Katarzyna Brui.',
+      noBookings: 'Nie masz jeszcze żadnych rezerwacji',
+      statusPending: 'Oczekuje',
+      statusConfirmed: 'Potwierdzona',
+      statusCancelled: 'Anulowana',
+      noDateInfo: 'Brak informacji o terminie',
+      reschedule: 'Zmień termin',
+      cancel: 'Anuluj',
+      rescheduleTitle: 'Zmień termin rezerwacji'
     }
   },
   en: {
@@ -179,6 +203,30 @@ export const translations = {
       signUpDescription: 'Create an account to book an appointment',
       noAccount: "Don't have an account? Sign up",
       hasAccount: 'Already have an account? Sign in'
+    },
+    footer: {
+      rights: 'All rights reserved.'
+    },
+    notFound: {
+      title: 'Page not found',
+      description: 'Sorry, we could not find the page you are looking for.',
+      backHome: 'Back to home'
+    },
+    errorLoading: 'Error loading data',
+    retry: 'Try again',
+    noResults: 'No results',
+    profile: 'Profile',
+    profile_page: {
+      title: 'My Bookings',
+      seoDescription: 'Manage your bookings at Katarzyna Brui salon.',
+      noBookings: 'You have no bookings yet',
+      statusPending: 'Pending',
+      statusConfirmed: 'Confirmed',
+      statusCancelled: 'Cancelled',
+      noDateInfo: 'No date information',
+      reschedule: 'Reschedule',
+      cancel: 'Cancel',
+      rescheduleTitle: 'Reschedule booking'
     }
   },
   ru: {
@@ -270,6 +318,30 @@ export const translations = {
       signUpDescription: 'Создайте аккаунт, чтобы записаться на прием',
       noAccount: 'Нет аккаунта? Зарегистрируйтесь',
       hasAccount: 'Уже есть аккаунт? Войдите'
+    },
+    footer: {
+      rights: 'Все права защищены.'
+    },
+    notFound: {
+      title: 'Страница не найдена',
+      description: 'Извините, мы не смогли найти эту страницу.',
+      backHome: 'Вернуться на главную'
+    },
+    errorLoading: 'Ошибка загрузки данных',
+    retry: 'Попробовать снова',
+    noResults: 'Нет результатов',
+    profile: 'Профиль',
+    profile_page: {
+      title: 'Мои записи',
+      seoDescription: 'Управляйте своими записями в салоне Катажина Бруй.',
+      noBookings: 'У вас пока нет записей',
+      statusPending: 'Ожидает',
+      statusConfirmed: 'Подтверждена',
+      statusCancelled: 'Отменена',
+      noDateInfo: 'Нет информации о дате',
+      reschedule: 'Изменить дату',
+      cancel: 'Отменить',
+      rescheduleTitle: 'Изменить дату записи'
     }
   }
 };

@@ -14,7 +14,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const t = translations[language];
 
   const formatPrice = (price: number) => {
-    return `${(price / 100).toFixed(2)} zł`;
+    return `${(price / 100).toFixed(0)} PLN`;
   };
 
   const formatDuration = (minutes: number) => {
@@ -29,9 +29,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
     <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
       {service.imageUrl && (
         <div className="relative h-48 overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-cover bg-center transform hover:scale-110 transition-transform duration-700"
-            style={{ backgroundImage: `url(${service.imageUrl})` }}
+          <img
+            src={service.imageUrl}
+            alt={service.name}
+            className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>

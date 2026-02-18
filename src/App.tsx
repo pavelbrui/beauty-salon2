@@ -8,7 +8,9 @@ import { ProfilePage } from './pages/ProfilePage';
 import { AppointmentsPage } from './pages/AppointmentsPage';
 import { StylistsPage } from './pages/StylistsPage';
 import { GalleryPage } from './pages/GalleryPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 function App() {
@@ -38,7 +40,9 @@ const AppContent: React.FC = () => {
         <Route path="/stylists" element={<StylistsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {!isAdminRoute && <Footer />}
     </>
   );
 };

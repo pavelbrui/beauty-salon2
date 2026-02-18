@@ -88,10 +88,10 @@ export const Home: React.FC = () => {
         }}
       >
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
-          <h1 className="text-5xl font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
             {t.welcomeTitle}
           </h1>
-          <p className="mt-6 text-2xl text-white/90 max-w-xl text-center">
+          <p className="mt-6 text-lg sm:text-xl md:text-2xl text-white/90 max-w-xl text-center">
             {t.welcomeSubtitle}
           </p>
           <div className="mt-12 flex items-center space-x-4 justify-center">
@@ -210,12 +210,6 @@ export const Home: React.FC = () => {
           <MapLocation />
         </div>
       </main>}
-
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2024 Salon Kosmetyczny Katarzyna Brui. Wszelkie prawa zastrzeżone.</p>
-        </div>
-      </footer>
     </div>
   );
 };
