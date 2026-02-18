@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(npx playwright test --reporter=line)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)",
+      "Bash(del \"c:\\\\Users\\\\Katarzyna\\\\New Work\\\\beauty-salon2\\\\src\\\\main.ts\")"
     ]
   }
 }
