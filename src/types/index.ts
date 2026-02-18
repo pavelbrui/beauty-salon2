@@ -30,6 +30,8 @@ export interface Booking {
   stylists?: { name: string };
   service_id?: string;
   time_slot_id?: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 export interface Stylist {

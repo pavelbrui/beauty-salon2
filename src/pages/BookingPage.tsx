@@ -120,7 +120,9 @@ export const BookingPage: React.FC = () => {
         contact_name: contactData.name,
         contact_phone: contactData.phone,
         contact_email: contactData.email,
-        notes: contactData.notes || ''
+        notes: contactData.notes || '',
+        start_time: selectedSlot.startTime,
+        end_time: selectedSlot.endTime
       };
 
       if (timeSlotId) {

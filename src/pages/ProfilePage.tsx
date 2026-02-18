@@ -55,6 +55,10 @@ export const ProfilePage: React.FC = () => {
   };
 
   const cancelBooking = async (bookingId: string) => {
+    // Find the booking to get its time_slot_id
+    const booking = bookings.find(b => b.id === bookingId);
+    const slotId = booking?.time_slot_id || booking?.timeSlotId;
+
     const { error } = await supabase
       .from('bookings')
       .update({ status: 'cancelled' })
@@ -63,6 +67,14 @@ export const ProfilePage: React.FC = () => {
     if (error) {
       console.error('Error cancelling booking:', error);
       return;
+    }
+
+    // Free the associated time slot so it becomes available again
+    if (slotId) {
+      await supabase
+        .from('time_slots')
+        .update({ is_available: true })
+        .eq('id', slotId);
     }
 
     loadBookings();
@@ -117,12 +129,14 @@ export const ProfilePage: React.FC = () => {
           .eq('id', oldSlotId);
       }
 
-      // Update booking with new slot and stylist
+      // Update booking with new slot, stylist, and direct time fields
       const { error: updateError } = await supabase
         .from('bookings')
         .update({
           time_slot_id: newSlot.id,
           stylist_id: slot.stylistId,
+          start_time: slot.startTime,
+          end_time: slot.endTime,
           status: 'pending'
         })
         .eq('id', rescheduleBooking.id);
@@ -196,8 +210,10 @@ export const ProfilePage: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {bookings.map((booking) => {
-              const dateInfo = formatDateTime(booking.time_slots?.start_time);
-              const endInfo = formatDateTime(booking.time_slots?.end_time);
+              const startTime = booking.time_slots?.start_time || booking.start_time;
+              const endTime = booking.time_slots?.end_time || booking.end_time;
+              const dateInfo = formatDateTime(startTime);
+              const endInfo = formatDateTime(endTime);
               const statusConfig = getStatusConfig(booking.status);
               const price = booking.services?.price;
               const duration = booking.services?.duration;
