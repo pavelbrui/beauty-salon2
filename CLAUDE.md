@@ -1,0 +1,78 @@
+# CLAUDE.md - Beauty Salon Booking System
+
+## Quick Start Commands
+```bash
+npm run dev          # Dev server → http://localhost:3000
+npm run build        # TypeScript check + production build
+npm run lint         # ESLint (ts, tsx)
+npx tsc --noEmit     # Type check only (fast, no output)
+```
+
+## Stack
+React 18 + TypeScript + Vite + Tailwind CSS + Supabase (PostgreSQL) + Zustand + React Router v6
+
+## Project Structure
+```
+src/
+├── pages/           # Route-level components (Home, BookingPage, Admin, ServicesPage, etc.)
+├── components/      # Reusable UI (Navbar, ServiceCard, AuthModal, BookingForm, etc.)
+│   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments)
+│   └── Calendar/    # Booking calendar (AdvancedBookingCalendar, MonthCalendar, TimeGrid)
+├── lib/             # Supabase client (supabase.ts), auth (auth.ts), email (email.ts)
+├── hooks/           # useLanguage.ts (Zustand store, persisted)
+├── i18n/            # translations.ts (pl/en/ru)
+├── types/           # index.ts (TypeScript interfaces)
+├── utils/           # timeSlots.ts, dateUtils.ts
+└── assets/          # images.ts (URLs)
+supabase/migrations/ # 13 SQL migration files
+```
+
+## Key Architectural Rules
+- **No REST API** - All DB queries go directly from components to Supabase via `src/lib/supabase.ts`
+- **Auth**: Supabase Auth (email/password). Session via `supabase.auth.getSession()`. RLS enforces access.
+- **State**: Only language in Zustand. Everything else is local `useState` + `useEffect` fetching.
+- **i18n**: Always add translations for all 3 languages (pl, en, ru) in `src/i18n/translations.ts`
+- **Styling**: Tailwind only. Accent color: `amber-500`/`amber-600`. No custom CSS files.
+- **Prices**: Stored in cents in DB. Display: `(price / 100).toFixed(0) + ' PLN'`
+
+## Database Tables
+`services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `email_templates` | `notifications`
+
+## Routes
+`/` Home | `/services` `/services/:category` | `/booking/:serviceId` | `/profile` | `/appointments` | `/stylists` | `/gallery` | `/admin` (tabs: services, bookings, stylists, timeslots, gallery, assignments)
+
+## Supabase Query Pattern (ALWAYS follow)
+```typescript
+const { data, error } = await supabase.from('table').select('*').eq('field', value);
+if (error) { console.error('Error:', error); return; }
+if (data) setItems(data);
+```
+
+## Common Searches for Subagents
+When exploring this codebase, use these patterns:
+- Find all DB queries: `Grep: supabase.from`
+- Find all routes: `Read: src/App.tsx`
+- Find component: `Glob: src/components/**/<Name>.tsx`
+- Find admin feature: `Glob: src/components/admin/*.tsx`
+- Find translations: `Grep: translations\[language\]` or `Read: src/i18n/translations.ts`
+- Find types: `Read: src/types/index.ts`
+- Find styling patterns: `Grep: amber-500`
+- Find auth usage: `Grep: getSession\|signIn\|signOut`
+- Find state management: `Grep: useState\|useEffect\|useLanguage`
+- Find time slot logic: `Read: src/utils/timeSlots.ts`
+- Find migrations: `Glob: supabase/migrations/*.sql`
+
+## Adding New Features Checklist
+1. Types → `src/types/index.ts`
+2. Component → `src/components/` (or `admin/` subfolder)
+3. Page + route → `src/pages/` + `src/App.tsx`
+4. Translations → `src/i18n/translations.ts` (all 3 langs!)
+5. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
+6. DB table → new file in `supabase/migrations/`
+
+## Environment
+- Supabase URL: `VITE_SUPABASE_URL` in `.env`
+- Supabase Key: `VITE_SUPABASE_ANON_KEY` in `.env`
+- Access in code: `import.meta.env.VITE_SUPABASE_URL`
+- No testing framework configured
+- No CI/CD pipelines
