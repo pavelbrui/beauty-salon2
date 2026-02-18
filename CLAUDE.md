@@ -6,6 +6,9 @@ npm run dev          # Dev server → http://localhost:3000
 npm run build        # TypeScript check + production build
 npm run lint         # ESLint (ts, tsx)
 npx tsc --noEmit     # Type check only (fast, no output)
+npm test             # Run all Playwright E2E tests (headless)
+npm run test:headed  # Run tests with visible browser
+npm run test:ui      # Playwright UI mode (interactive debugging)
 ```
 
 ## Stack
@@ -74,5 +77,27 @@ When exploring this codebase, use these patterns:
 - Supabase URL: `VITE_SUPABASE_URL` in `.env`
 - Supabase Key: `VITE_SUPABASE_ANON_KEY` in `.env`
 - Access in code: `import.meta.env.VITE_SUPABASE_URL`
-- No testing framework configured
+- **E2E Tests**: Playwright (Chromium) — test files in `e2e/` directory
 - No CI/CD pipelines
+
+## E2E Tests (Playwright)
+```
+e2e/
+├── home.spec.ts        # Hero, about, services carousel, reviews, contact, footer
+├── navigation.spec.ts  # Navbar links, logo, language switcher (PL/EN/RU)
+├── services.spec.ts    # Service catalog, category filters, service cards
+├── booking.spec.ts     # Booking flow, appointments page
+├── stylists.spec.ts    # Stylist cards, specialties, book button
+├── gallery.spec.ts     # Gallery grid, category filter, image hover
+└── admin.spec.ts       # Admin panel, tab switching, content visibility
+```
+
+### Running Tests
+```bash
+npm test                           # All tests headless
+npm run test:headed                # Watch tests in browser
+npm run test:ui                    # Interactive Playwright UI
+npx playwright test e2e/home.spec.ts  # Run single test file
+npx playwright test --grep "hero"     # Run tests matching pattern
+npx playwright show-report           # Open last HTML report
+```

@@ -58,7 +58,7 @@ export const AdminServices = () => {
   };
 
   const handleSave = async (service: Service) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('services')
       .upsert({
         id: service.id,
@@ -75,25 +75,32 @@ export const AdminServices = () => {
     }
 
     // Handle stylist assignments
-    if (data) {
-      const serviceId = service.id;
-      
-      // Delete existing assignments
-      await supabase
+    const serviceId = service.id;
+
+    // Delete existing assignments
+    const { error: deleteError } = await supabase
+      .from('stylist_service_assignments')
+      .delete()
+      .eq('service_id', serviceId);
+
+    if (deleteError) {
+      console.error('Error deleting assignments:', deleteError);
+      return;
+    }
+
+    // Create new assignments
+    if (selectedStylists.length > 0) {
+      const assignments = selectedStylists.map(stylistId => ({
+        service_id: serviceId,
+        stylist_id: stylistId
+      }));
+
+      const { error: insertError } = await supabase
         .from('stylist_service_assignments')
-        .delete()
-        .eq('service_id', serviceId);
+        .insert(assignments);
 
-      // Create new assignments
-      if (selectedStylists.length > 0) {
-        const assignments = selectedStylists.map(stylistId => ({
-          service_id: serviceId,
-          stylist_id: stylistId
-        }));
-
-        await supabase
-          .from('stylist_service_assignments')
-          .insert(assignments);
+      if (insertError) {
+        console.error('Error inserting assignments:', insertError);
       }
     }
 
@@ -131,6 +138,7 @@ export const AdminServices = () => {
         <button
           onClick={() => {
             setEditingService(null);
+            setSelectedStylists([]);
             setIsModalOpen(true);
           }}
           className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"

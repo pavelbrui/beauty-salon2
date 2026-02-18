@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx playwright test --reporter=line)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}
