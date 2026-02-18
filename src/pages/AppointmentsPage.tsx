@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { ServiceList } from '../components/ServiceList';
-import { BookingCalendar } from '../components/BookingCalendar';
-import { Service, TimeSlot } from '../types';
+import { Service } from '../types';
 import { supabase } from '../lib/supabase';
-import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 
 export const AppointmentsPage: React.FC = () => {
@@ -14,86 +12,48 @@ export const AppointmentsPage: React.FC = () => {
   const t = translations[language];
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [selectedStylist, setSelectedStylist] = React.useState<string | null>(null);
-  const [selectedService, setSelectedService] = React.useState<Service | null>(null);
+  const [selectedCategory, setSelectedCategory] = React.useState<string>('');
   const [services, setServices] = React.useState<Service[]>([]);
-  const [, setLoading] = React.useState(true);
-  const [stylists, setStylists] = React.useState<Array<{ id: string; name: string }>>([]);
-  const [, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
+  // If navigated with ?service=, redirect directly to booking page
   useEffect(() => {
     const serviceId = searchParams.get('service');
-    const stylistId = searchParams.get('stylist');
-    
     if (serviceId) {
-      loadServiceById(serviceId);
+      navigate(`/booking/${serviceId}`, { replace: true });
     }
-    if (stylistId) {
-      setSelectedStylist(stylistId);
-    }
-    loadStylists();
-  }, [searchParams]);
+  }, [searchParams, navigate]);
 
-  const loadStylists = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('stylists')
-        .select('id, name')
-        .order('name');
-      
-      if (error) throw error;
-      if (data) {
-        setStylists(data);
-      }
-    } catch (err) {
-      console.error('Error loading stylists:', err);
-    }
-  };
-  const loadServiceById = async (serviceId: string) => {
-    setLoading(true);
-    const { data } = await supabase
-      .from('services')
-      .select('*')
-      .eq('id', serviceId)
-      .single();
-    
-    if (data) {
-      setSelectedService(data);
-      setLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     loadServices();
   }, []);
 
   const loadServices = async () => {
     setLoading(true);
-    setError(null);
     try {
-    const { data, error } = await supabase
-      .from('services')
-      .select('*')
-      .order('category');
-    
-    if (error) throw error;
-    
-    if (!error && data) {
-      setServices(data);
-    }
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .order('category');
+
+      if (error) throw error;
+      if (data) setServices(data);
     } catch (err) {
-      setError('Error loading services. Please try again.');
       console.error('Error loading services:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSlotSelect = (slot: TimeSlot) => {
-    if (selectedService) {
-      navigate(`/booking/${selectedService.id}?slot=${slot.id}`);
-    }
+  const handleServiceSelect = (service: Service) => {
+    navigate(`/booking/${service.id}`);
   };
+
+  const filteredServices = selectedCategory
+    ? services.filter(s => s.category === selectedCategory)
+    : services;
+
+  const categories = [...new Set(services.map(s => s.category))];
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
@@ -104,69 +64,46 @@ export const AppointmentsPage: React.FC = () => {
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {selectedService ? selectedService.name : t.appointments}
+          {t.appointments}
         </h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
-            {selectedService ? (
-              <BookingCalendar
-                service={selectedService}
-                stylistId={selectedStylist}
-                onSlotSelect={handleSlotSelect}
-              />
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+              </div>
             ) : (
-              <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
-                {t.pleaseSelectService}
+              <div className="bg-white rounded-lg shadow p-6">
+                <p className="text-gray-600 mb-6">{t.pleaseSelectService}</p>
+                <ServiceList
+                  services={filteredServices}
+                  onServiceSelect={handleServiceSelect}
+                  selectedService={null}
+                />
               </div>
             )}
           </div>
-          
-          <div className="lg:col-span-1 space-y-6">
+
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow p-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Filtry</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kategoria
-                  </label>
-                  <select
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                    onChange={() => {
-                      setSelectedService(null);
-                    }}
-                  >
-                    <option value="">Wszystkie</option>
-                    {Array.from(new Set(services.map(s => s.category))).map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Stylistka
-                  </label>
-                  <select
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                    value={selectedStylist || ''}
-                    onChange={(e) => setSelectedStylist(e.target.value || null)}
-                  >
-                    <option value="">Dowolna</option>
-                    {stylists.map(stylist => (
-                      <option key={stylist.id} value={stylist.id}>{stylist.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Kategoria
+                </label>
+                <select
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="">Wszystkie</option>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
               </div>
             </div>
-            
-            <ServiceList
-              services={services}
-              onServiceSelect={setSelectedService}
-              selectedService={selectedService}
-            />
           </div>
         </div>
       </div>

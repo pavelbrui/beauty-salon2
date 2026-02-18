@@ -50,7 +50,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           <p className="mt-4 text-gray-600">{service.description}</p>
         )}
         <button
-          onClick={() => navigate(`/appointments?service=${service.id}`)}
+          onClick={() => navigate(`/booking/${service.id}`)}
           className="mt-6 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
         >
           {t.bookNow}

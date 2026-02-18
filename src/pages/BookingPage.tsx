@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
 import { ServiceCard } from '../components/ServiceCard';
 import { AuthModal } from '../components/AuthModal';
@@ -11,10 +11,8 @@ import { SEO } from '../components/SEO';
 
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [service, setService] = useState<Service | null>(null);
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -26,16 +24,6 @@ export const BookingPage: React.FC = () => {
       loadService();
     }
   }, [serviceId]);
-
-  useEffect(() => {
-    const slotId = searchParams.get('slot');
-    if (slotId && timeSlots.length > 0) {
-      const slot = timeSlots.find((s) => s.id === slotId);
-      if (slot) {
-        handleSlotSelect(slot);
-      }
-    }
-  }, [searchParams, timeSlots]);
 
   const loadService = async () => {
     setError(null);
@@ -50,35 +38,14 @@ export const BookingPage: React.FC = () => {
       if (!data) throw new Error('Service not found');
 
       setService(data);
-      await loadTimeSlots();
     } catch (error) {
       console.error('Error loading service:', error);
       setError('Could not load service details. Please try again.');
     }
   };
 
-  const loadTimeSlots = async () => {
-    setError(null);
-    try {
-      const { data, error } = await supabase
-        .from('time_slots')
-        .select('*')
-        .eq('service_id', serviceId)
-        .eq('is_available', true)
-        .gte('start_time', new Date().toISOString());
-
-      if (error) throw error;
-
-      setTimeSlots(data);
-    } catch (error) {
-      console.error('Error loading time slots:', error);
-      setError('Could not load available time slots. Please try again.');
-    }
-  };
-
   const handleSlotSelect = (slot: TimeSlot) => {
     setError(null);
-    // Check authentication first
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSelectedSlot(slot);
       if (!session) {
@@ -87,6 +54,40 @@ export const BookingPage: React.FC = () => {
         setShowBookingForm(true);
       }
     });
+  };
+
+  const createTimeSlotRecord = async (slot: TimeSlot, serviceId: string): Promise<string | null> => {
+    // Try with new schema first (post-migration 0014: has stylist_id)
+    const { data, error } = await supabase
+      .from('time_slots')
+      .insert({
+        stylist_id: slot.stylistId,
+        start_time: slot.startTime,
+        end_time: slot.endTime,
+        is_available: false
+      })
+      .select('id')
+      .single();
+
+    if (!error && data) return data.id;
+
+    // Fallback: old schema (service_id instead of stylist_id)
+    const { data: data2, error: error2 } = await supabase
+      .from('time_slots')
+      .insert({
+        service_id: serviceId,
+        start_time: slot.startTime,
+        end_time: slot.endTime,
+        is_available: false
+      })
+      .select('id')
+      .single();
+
+    if (!error2 && data2) return data2.id;
+
+    // RLS or schema prevents insert — booking will work without time_slot
+    console.warn('Could not create time_slot record (apply migration 0014):', error2?.message);
+    return null;
   };
 
   const handleBookingSubmit = async (contactData: {
@@ -99,18 +100,6 @@ export const BookingPage: React.FC = () => {
     try {
       if (!selectedSlot || !service) return;
 
-      // Start a transaction
-      const { data: timeSlot, error: timeSlotError } = await supabase
-        .from('time_slots')
-        .select('*')
-        .eq('id', selectedSlot.id)
-        .eq('is_available', true)
-        .single();
-
-      if (timeSlotError || !timeSlot) {
-        throw new Error('Ten termin nie jest już dostępny');
-      }
-
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         setError('Session expired. Please login again.');
@@ -118,35 +107,40 @@ export const BookingPage: React.FC = () => {
         return;
       }
 
-      // Create booking
+      // 1. Try to create time_slot record (may fail if migration 0014 not applied)
+      const timeSlotId = await createTimeSlotRecord(selectedSlot, service.id);
+
+      // 2. Create booking (core fields that exist in all schema versions)
+      const bookingData: Record<string, unknown> = {
+        service_id: service.id,
+        user_id: session.user.id,
+        stylist_id: selectedSlot.stylistId,
+        status: 'pending',
+        contact_name: contactData.name,
+        contact_phone: contactData.phone,
+        contact_email: contactData.email,
+        notes: contactData.notes || ''
+      };
+
+      if (timeSlotId) {
+        bookingData.time_slot_id = timeSlotId;
+      }
+
       const { data, error } = await supabase
         .from('bookings')
-        .insert({
-          service_id: service.id,
-          user_id: session.user.id,
-          stylist_id: selectedSlot.stylistId,
-          status: 'pending',
-          contact_name: contactData.name,
-          contact_phone: contactData.phone,
-          contact_email: contactData.email,
-          notes: contactData.notes || '',
-          time_slot_id: selectedSlot.id
-        })
+        .insert(bookingData)
         .select();
 
       if (error) throw error;
       if (!data) throw new Error('Failed to create booking');
-      
-      // Update time slot availability
-      const { error: updateError } = await supabase
-        .from('time_slots')
-        .update({ 
-          is_available: false,
-          booking_id: data[0].id
-        })
-        .eq('id', selectedSlot.id);
 
-      if (updateError) throw updateError;
+      // 3. Link time_slot back to booking (best-effort, for profile/admin display)
+      if (timeSlotId && data[0]?.id) {
+        await supabase
+          .from('time_slots')
+          .update({ booking_id: data[0].id })
+          .eq('id', timeSlotId);
+      }
 
       setShowBookingForm(false);
       setShowSuccessPopup(true);

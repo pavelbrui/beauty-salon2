@@ -43,8 +43,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
           <AdvancedBookingCalendar
             service={service}
-            onSlotSelect={(slot) => {
-              navigate(`/booking/${service.id}?slot=${slot.id}`);
+            onSlotSelect={() => {
+              navigate(`/booking/${service.id}`);
               onClose();
             }}
           />
