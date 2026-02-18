@@ -6,13 +6,12 @@ import { ServiceCard } from './ServiceCard';
 interface ServiceSectionProps {
   category: string;
   services: Service[];
-  onBookService: (service: Service) => void;
+  onBookService?: (service: Service) => void;
 }
 
 export const ServiceSection: React.FC<ServiceSectionProps> = ({
   category,
   services,
-  onBookService
 }) => {
   return (
     <motion.section
@@ -35,7 +34,6 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
             >
               <ServiceCard
                 service={service}
-                onBook={() => onBookService(service)}
               />
             </motion.div>
           ))}

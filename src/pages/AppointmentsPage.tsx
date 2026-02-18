@@ -7,6 +7,7 @@ import { BookingCalendar } from '../components/BookingCalendar';
 import { Service, TimeSlot } from '../types';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 
 export const AppointmentsPage: React.FC = () => {
   const { language } = useLanguage();
@@ -16,9 +17,9 @@ export const AppointmentsPage: React.FC = () => {
   const [selectedStylist, setSelectedStylist] = React.useState<string | null>(null);
   const [selectedService, setSelectedService] = React.useState<Service | null>(null);
   const [services, setServices] = React.useState<Service[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [, setLoading] = React.useState(true);
   const [stylists, setStylists] = React.useState<Array<{ id: string; name: string }>>([]);
-  const [error, setError] = React.useState<string | null>(null);
+  const [, setError] = React.useState<string | null>(null);
 
   useEffect(() => {
     const serviceId = searchParams.get('service');
@@ -96,6 +97,11 @@ export const AppointmentsPage: React.FC = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
+      <SEO
+        title="Rezerwacja Wizyty"
+        description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz usługę, termin i umów się bez dzwonienia!"
+        canonical="/appointments"
+      />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           {selectedService ? selectedService.name : t.appointments}
@@ -127,10 +133,8 @@ export const AppointmentsPage: React.FC = () => {
                   </label>
                   <select
                     className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                    onChange={(e) => {
-                      const category = e.target.value;
+                    onChange={() => {
                       setSelectedService(null);
-                      // Filter services by category
                     }}
                   >
                     <option value="">Wszystkie</option>

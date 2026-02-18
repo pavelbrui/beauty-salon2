@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { format, addDays, addMonths, startOfMonth, endOfMonth, addMinutes, isValid, parseISO } from 'date-fns';
+import { format, addDays, addMonths, startOfMonth, endOfMonth, isValid } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { MonthCalendar } from './MonthCalendar';
 import { TimeGrid } from './TimeGrid';
 import { TimeSlot, Service } from '../../types';
 import { supabase } from '../../lib/supabase';
+import { generateAvailableTimeSlots } from '../../utils/timeSlots';
 
 interface AdvancedBookingCalendarProps {
   service: Service;
@@ -21,7 +22,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date>(() => {
     const now = new Date();
     return startOfMonth(now);
@@ -133,7 +134,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
       <MonthCalendar
         currentMonth={currentMonth}
         onMonthChange={handleMonthChange}
-        selectedDate={selectedDate}
+        selectedDate={selectedDate || new Date()}
         onDateSelect={setSelectedDate}
         highlightedDates={availableDates}
         minDate={new Date()}

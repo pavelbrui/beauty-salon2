@@ -7,6 +7,7 @@ import { BookingForm } from '../components/BookingForm';
 import { SuccessPopup } from '../components/SuccessPopup';
 import { supabase } from '../lib/supabase';
 import { Service, TimeSlot } from '../types';
+import { SEO } from '../components/SEO';
 
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
@@ -183,9 +184,15 @@ export const BookingPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-8">
+      <SEO
+        title={service ? `Rezerwacja - ${service.name}` : 'Rezerwacja'}
+        description={service ? `Zarezerwuj wizytę: ${service.name} w salonie Katarzyna Brui, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w salonie kosmetycznym Katarzyna Brui w Białymstoku.'}
+        canonical={`/booking/${serviceId}`}
+        noindex
+      />
+      {service && <div className="mb-8">
         <ServiceCard service={service} />
-      </div>
+      </div>}
 
       {service && (
         <AdvancedBookingCalendar

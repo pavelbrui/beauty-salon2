@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
@@ -11,7 +10,6 @@ export const ServicesPage: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     loadServices();
@@ -68,7 +66,6 @@ export const ServicesPage: React.FC = () => {
                   <ServiceCard
                     key={service.id}
                     service={service}
-                    onBook={() => navigate(`/booking/${service.id}`)}
                   />
                 ))}
             </div>

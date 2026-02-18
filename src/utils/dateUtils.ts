@@ -1,4 +1,4 @@
-import { addDays, isBefore, startOfDay, endOfDay, isValid } from 'date-fns';
+import { addDays, isBefore, startOfDay, endOfDay } from 'date-fns';
 
 export const generateRecurringDates = (startDate: Date, endDate: Date, dayOfWeek?: number): Date[] => {
   const dates: Date[] = [];

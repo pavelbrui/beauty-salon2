@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Booking } from '../types';
+import { SEO } from '../components/SEO';
 
 export const ProfilePage: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -48,6 +49,12 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <SEO
+        title="Moje Rezerwacje"
+        description="Zarządzaj swoimi rezerwacjami w salonie Katarzyna Brui."
+        canonical="/profile"
+        noindex
+      />
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Moje Rezerwacje</h1>
 
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -60,7 +67,7 @@ export const ProfilePage: React.FC = () => {
                     {booking.services?.name}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {new Date(booking.time_slots?.start_time).toLocaleString()}
+                    {booking.time_slots?.start_time ? new Date(booking.time_slots!.start_time).toLocaleString() : '—'}
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">

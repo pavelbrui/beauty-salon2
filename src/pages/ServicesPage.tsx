@@ -7,12 +7,13 @@ import { Service } from '../types';
 import { ServiceSection } from '../components/ServiceSection';
 import { BookingModal } from '../components/BookingModal';
 import { serviceImages } from '../assets/images';
+import { SEO } from '../components/SEO';
 
 export const ServicesPage: React.FC = () => {
   const { category } = useParams();
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const { language } = useLanguage();
@@ -70,10 +71,6 @@ export const ServicesPage: React.FC = () => {
     navigate(`/services/${encodeURIComponent(cat)}`);
   };
 
-  const filteredServices = category 
-    ? services.filter(s => s.category === decodeURIComponent(category))
-    : services;
-
   const handleBookService = (service: Service) => {
     setSelectedService(service);
     setShowBookingModal(true);
@@ -81,6 +78,11 @@ export const ServicesPage: React.FC = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50">
+      <SEO
+        title="Usługi"
+        description="Cennik usług salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, laserowe usuwanie tatuażu. Białystok."
+        canonical="/services"
+      />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">{t.services}</h1>
         

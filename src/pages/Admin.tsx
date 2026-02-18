@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Service, Booking } from '../types';
+import { Booking } from '../types';
+
 import { supabase } from '../lib/supabase';
 import { AdminServices } from '../components/admin/AdminServices';
 import { AdminStylists } from '../components/admin/AdminStylists';
@@ -120,7 +121,7 @@ export const Admin: React.FC = () => {
                       {booking.services?.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {new Date(booking.time_slots?.start_time).toLocaleString()}
+                      {booking.time_slots?.start_time ? new Date(booking.time_slots!.start_time).toLocaleString() : '—'}
                     </p>
                   </div>
                   <div>

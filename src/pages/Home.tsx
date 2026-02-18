@@ -1,6 +1,5 @@
 import React from 'react';
 import { ServiceCard } from '../components/ServiceCard';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
@@ -10,6 +9,7 @@ import { Reviews } from '../components/Reviews';
 import { MapLocation } from '../components/MapLocation';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 
 export const Home: React.FC = () => {
@@ -18,7 +18,6 @@ export const Home: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     loadServices();
@@ -77,7 +76,12 @@ export const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <header 
+      <SEO
+        title="Strona Główna"
+        description="Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, pielęgnacja brwi, peeling węglowy. Umów wizytę online! Tel: 880 435 102."
+        canonical="/"
+      />
+      <header
         className="relative h-screen bg-cover bg-center"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url(${heroImage})`
@@ -99,7 +103,7 @@ export const Home: React.FC = () => {
               <span className="text-gray-800 ml-2">/ 5.0</span>
               <div className="text-sm text-gray-600">
                 <span>254 </span>
-                <span>{typeof t.reviews === 'string' ? t.reviews : 'reviews'}</span>
+                <span>{t.reviewsLabel}</span>
               </div>
             </button>
             <button 
@@ -141,7 +145,6 @@ export const Home: React.FC = () => {
               <div key={service.id} className="snap-center shrink-0" style={{ width: '300px' }}>
                 <ServiceCard
                   service={service}
-                  onBook={() => navigate(`/booking/${service.id}`)}
                 />
               </div>
             ))}

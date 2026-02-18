@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format, addMonths, parseISO, isValid } from 'date-fns';
+import { format, addMonths, isValid } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { supabase } from '../../lib/supabase';
 import { generateRecurringDates } from '../../utils/dateUtils';
@@ -10,12 +10,6 @@ interface TimeRange {
   end: string;
 }
 
-interface RecurringSchedule {
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-  until: Date;
-}
 interface StylistCalendarProps {
   stylistId: string;
   onSave: () => void;
@@ -25,7 +19,7 @@ export const StylistCalendar: React.FC<StylistCalendarProps> = ({ stylistId, onS
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [workingHours, setWorkingHours] = useState<TimeRange[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringUntil, setRecurringUntil] = useState<Date>(() => {
     const date = addMonths(new Date(), 3);

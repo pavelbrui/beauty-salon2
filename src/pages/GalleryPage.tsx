@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
+import { SEO } from '../components/SEO';
 
 interface GalleryImage {
   id: string;
@@ -39,6 +40,11 @@ export const GalleryPage: React.FC = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50">
+      <SEO
+        title="Galeria"
+        description="Galeria realizacji salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi. Zobacz efekty naszej pracy!"
+        canonical="/gallery"
+      />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>
 

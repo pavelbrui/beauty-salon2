@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format, addMinutes, parseISO, isBefore, isAfter } from 'date-fns';
+import { format, addMinutes, parseISO } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { TimeSlot } from '../../types';
 import { LoadingSpinner } from '../LoadingSpinner';

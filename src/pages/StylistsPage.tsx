@@ -3,6 +3,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { SEO } from '../components/SEO';
 
 interface Stylist {
   id: string;
@@ -50,6 +51,11 @@ export const StylistsPage: React.FC = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50">
+      <SEO
+        title="Nasz Zespół"
+        description="Poznaj zespół specjalistek salonu Katarzyna Brui w Białymstoku. Doświadczone kosmetyczki i stylistki brwi, rzęs i makijażu permanentnego."
+        canonical="/stylists"
+      />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.stylists}</h1>
 

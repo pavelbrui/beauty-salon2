@@ -10,7 +10,8 @@ export interface Service {
 
 export interface TimeSlot {
   id: string;
-  serviceId: string;
+  serviceId?: string;
+  stylistId?: string;
   startTime: string;
   endTime: string;
   isAvailable: boolean;
@@ -23,6 +24,16 @@ export interface Booking {
   timeSlotId: string;
   status: 'pending' | 'confirmed' | 'cancelled';
   createdAt: string;
+  services?: { name: string };
+  time_slots?: { start_time: string; end_time: string };
+}
+
+export interface Stylist {
+  id: string;
+  name: string;
+  role?: string;
+  specialties?: string[];
+  image_url?: string;
 }
 
 export interface User {

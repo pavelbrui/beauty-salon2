@@ -25,9 +25,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
       : `${mins}min`;
   };
 
-  // Translate category and service name based on language
-  const translatedCategory = t.categories[service.category as keyof typeof t.categories] || service.category;
-
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
       {service.imageUrl && (
