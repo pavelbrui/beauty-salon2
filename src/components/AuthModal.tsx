@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { signIn, signUp } from '../lib/auth';
+import { saveUserData } from '../utils/cookies';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -8,9 +9,9 @@ interface AuthModalProps {
   onSuccess?: () => void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ 
-  isOpen, 
-  onClose, 
+export const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
   mode: initialMode,
   onSuccess
 }) => {
@@ -36,6 +37,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setError(authError.message);
       }
     } else {
+      // Save email to cookies
+      saveUserData({ email });
+
       if (onSuccess) {
         onSuccess();
       }
@@ -51,12 +55,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <h2 className="text-2xl font-bold mb-4">
           {mode === 'signin' ? 'Zaloguj się' : 'Zarejestruj się'}
           <p className="text-sm text-gray-600 mt-1">
-            {mode === 'signin' 
+            {mode === 'signin'
               ? 'Zaloguj się aby zarezerwować wizytę'
               : 'Utwórz konto aby zarezerwować wizytę'}
           </p>
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -70,7 +74,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Hasło
@@ -94,7 +98,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           >
             {mode === 'signin' ? 'Zaloguj' : 'Zarejestruj'}
           </button>
-          
+
           <div className="mt-4 text-center">
             <button
               type="button"

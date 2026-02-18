@@ -2,6 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { getUserData } from '../utils/cookies';
+
+import { supabase } from '../lib/supabase';
 
 interface BookingFormProps {
   onSubmit: (data: {
@@ -16,16 +19,31 @@ interface BookingFormProps {
 export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const userData = getUserData();
+
+  const [formData, setFormData] = React.useState({
+    name: userData.name || '',
+    phone: userData.phone || '',
+    email: userData.email || '',
+    notes: ''
+  });
+
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.email && !formData.email) {
+        setFormData(prev => ({ ...prev, email: session.user.email || '' }));
+      }
+    });
+  }, [formData.email]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onSubmit({
-      name: formData.get('name') as string,
-      phone: formData.get('phone') as string,
-      email: formData.get('email') as string,
-      notes: formData.get('notes') as string,
-    });
+    onSubmit(formData);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -55,10 +73,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             type="text"
             name="name"
             required
+            value={formData.name}
+            onChange={handleChange}
             className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             {t.booking.phone} *
@@ -67,6 +87,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             type="tel"
             name="phone"
             required
+            value={formData.phone}
+            onChange={handleChange}
             className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
           />
         </div>
@@ -79,6 +101,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             type="email"
             name="email"
             required
+            value={formData.email}
+            onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
           />
         </div>
@@ -90,6 +114,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
           <textarea
             name="notes"
             rows={3}
+            value={formData.notes}
+            onChange={handleChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
           />
         </div>

@@ -8,6 +8,7 @@ import { SuccessPopup } from '../components/SuccessPopup';
 import { supabase } from '../lib/supabase';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
+import { saveUserData } from '../utils/cookies';
 
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
@@ -141,6 +142,13 @@ export const BookingPage: React.FC = () => {
           .update({ booking_id: data[0].id })
           .eq('id', timeSlotId);
       }
+
+      // Save contact data to cookies for future use
+      saveUserData({
+        name: contactData.name,
+        phone: contactData.phone,
+        email: contactData.email
+      });
 
       setShowBookingForm(false);
       setShowSuccessPopup(true);
