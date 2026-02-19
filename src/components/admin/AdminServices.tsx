@@ -1,35 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Service } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { ImageUpload } from '../ImageUpload';
+import { translateFromPolish } from '../../utils/translateService';
+import { StylistFilter } from '../StylistFilter';
 
 
 interface Stylist {
   id: string;
   name: string;
+  image_url?: string;
+  role?: string;
+}
+
+interface StylistAssignment {
+  service_id: string;
+  stylist_id: string;
 }
 
 export const AdminServices = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [stylists, setStylists] = useState<Stylist[]>([]);
+  const [assignments, setAssignments] = useState<StylistAssignment[]>([]);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStylists, setSelectedStylists] = useState<string[]>([]);
   const [deletingService, setDeletingService] = useState<Service | null>(null);
+  const [nameEn, setNameEn] = useState('');
+  const [nameRu, setNameRu] = useState('');
+  const [descEn, setDescEn] = useState('');
+  const [descRu, setDescRu] = useState('');
+  const [translating, setTranslating] = useState(false);
+
+  // Filters
+  const [filterStylist, setFilterStylist] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
 
   useEffect(() => {
     loadServices();
     loadStylists();
+    loadAssignments();
   }, []);
 
   const loadStylists = async () => {
     const { data } = await supabase
       .from('stylists')
-      .select('id, name')
+      .select('id, name, image_url, role')
       .order('name');
-    
+
     if (data) {
       setStylists(data);
+    }
+  };
+
+  const loadAssignments = async () => {
+    const { data } = await supabase
+      .from('stylist_service_assignments')
+      .select('service_id, stylist_id');
+
+    if (data) {
+      setAssignments(data);
     }
   };
 
@@ -57,16 +87,46 @@ export const AdminServices = () => {
     setServices(data);
   };
 
+  const handleAutoTranslateName = async (polishName: string) => {
+    if (!polishName.trim()) return;
+    if (nameEn && nameRu) return;
+    setTranslating(true);
+    try {
+      const { en, ru } = await translateFromPolish(polishName);
+      setNameEn(prev => prev || en);
+      setNameRu(prev => prev || ru);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleAutoTranslateDesc = async (polishDesc: string) => {
+    if (!polishDesc.trim()) return;
+    if (descEn && descRu) return;
+    setTranslating(true);
+    try {
+      const { en, ru } = await translateFromPolish(polishDesc);
+      setDescEn(prev => prev || en);
+      setDescRu(prev => prev || ru);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   const handleSave = async (service: Service) => {
     const { error } = await supabase
       .from('services')
       .upsert({
         id: service.id,
         name: service.name,
+        name_en: nameEn || null,
+        name_ru: nameRu || null,
         category: service.category,
         price: service.price,
         duration: service.duration,
-        description: service.description
+        description: service.description,
+        description_en: descEn || null,
+        description_ru: descRu || null,
       });
 
     if (error) {
@@ -105,13 +165,20 @@ export const AdminServices = () => {
     }
 
     loadServices();
+    loadAssignments();
     setIsModalOpen(false);
     setEditingService(null);
     setSelectedStylists([]);
+    setNameEn(''); setNameRu('');
+    setDescEn(''); setDescRu('');
   };
 
   const handleEdit = (service: Service) => {
     setEditingService(service);
+    setNameEn(service.name_en || '');
+    setNameRu(service.name_ru || '');
+    setDescEn(service.description_en || '');
+    setDescRu(service.description_ru || '');
     loadSelectedStylists(service.id);
     setIsModalOpen(true);
   };
@@ -131,6 +198,24 @@ export const AdminServices = () => {
     setDeletingService(null);
   };
 
+  const categories = useMemo(() => [...new Set(services.map(s => s.category))], [services]);
+
+  const filteredServices = useMemo(() => {
+    let result = services;
+    if (filterCategory !== 'all') {
+      result = result.filter(s => s.category === filterCategory);
+    }
+    if (filterStylist !== 'all') {
+      const stylistServiceIds = assignments
+        .filter(a => a.stylist_id === filterStylist)
+        .map(a => a.service_id);
+      result = result.filter(s => stylistServiceIds.includes(s.id));
+    }
+    return result;
+  }, [services, filterCategory, filterStylist, assignments]);
+
+  const hasActiveFilters = filterStylist !== 'all' || filterCategory !== 'all';
+
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -139,6 +224,8 @@ export const AdminServices = () => {
           onClick={() => {
             setEditingService(null);
             setSelectedStylists([]);
+            setNameEn(''); setNameRu('');
+            setDescEn(''); setDescRu('');
             setIsModalOpen(true);
           }}
           className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"
@@ -147,8 +234,52 @@ export const AdminServices = () => {
         </button>
       </div>
 
+      {/* Filters */}
+      <div className="px-4 pb-4 sm:px-6 space-y-4 border-b border-gray-200">
+        {/* Stylist filter with photos */}
+        <div>
+          <span className="text-sm font-medium text-gray-600 mb-2 block">Stylistka</span>
+          <StylistFilter
+            stylists={stylists}
+            selectedId={filterStylist === 'all' ? '' : filterStylist}
+            onSelect={(id) => setFilterStylist(id || 'all')}
+            allLabel="Wszystkie"
+          />
+        </div>
+
+        {/* Category filter + clear */}
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+          >
+            <option value="all">Wszystkie kategorie</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+
+          <span className="text-sm text-gray-500">
+            ({filteredServices.length}{services.length !== filteredServices.length ? ` / ${services.length}` : ''})
+          </span>
+
+          {hasActiveFilters && (
+            <button
+              onClick={() => { setFilterStylist('all'); setFilterCategory('all'); }}
+              className="text-sm text-amber-600 hover:text-amber-700 flex items-center gap-1"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Wyczyść filtry
+            </button>
+          )}
+        </div>
+      </div>
+
       <ul className="divide-y divide-gray-200">
-        {services.map((service) => (
+        {filteredServices.map((service) => (
           <li key={service.id} className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -193,7 +324,7 @@ export const AdminServices = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">
               {editingService ? 'Edytuj usługę' : 'Dodaj usługę'}
             </h2>
@@ -243,14 +374,41 @@ export const AdminServices = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Nazwa
+                  Nazwa (polski)
                 </label>
                 <input
                   type="text"
                   name="name"
                   defaultValue={editingService?.name}
+                  onBlur={(e) => handleAutoTranslateName(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Nazwa (angielski)
+                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <input
+                  type="text"
+                  value={nameEn}
+                  onChange={(e) => setNameEn(e.target.value)}
+                  placeholder="English name (auto-translated)"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Nazwa (rosyjski)
+                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <input
+                  type="text"
+                  value={nameRu}
+                  onChange={(e) => setNameRu(e.target.value)}
+                  placeholder="Русское название (авто-перевод)"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                 />
               </div>
               <div>
@@ -291,13 +449,40 @@ export const AdminServices = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Opis
+                  Opis (polski)
                 </label>
                 <textarea
                   name="description"
                   defaultValue={editingService?.description}
+                  onBlur={(e) => handleAutoTranslateDesc(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Opis (angielski)
+                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <textarea
+                  value={descEn}
+                  onChange={(e) => setDescEn(e.target.value)}
+                  placeholder="English description (auto-translated)"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Opis (rosyjski)
+                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <textarea
+                  value={descRu}
+                  onChange={(e) => setDescRu(e.target.value)}
+                  placeholder="Описание на русском (авто-перевод)"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  rows={2}
                 />
               </div>
               <div className="flex justify-end space-x-3">

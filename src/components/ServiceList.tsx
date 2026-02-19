@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Service } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { getServiceName, getServiceDescription, getCategoryName } from '../utils/serviceTranslation';
 
 interface ServiceListProps {
   services: Service[];
@@ -47,7 +48,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               selectedCategory === category ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
-            {category}
+            {getCategoryName(category, language, (translations[language] as any).categories)}
           </motion.button>
         ))}
       </div>
@@ -70,7 +71,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-medium text-gray-900">{service.name}</h3>
+                <h3 className="font-medium text-gray-900">{getServiceName(service, language)}</h3>
                 <p className="text-sm text-gray-500">{service.duration} min</p>
               </div>
               <span className="text-lg font-semibold text-amber-600">
@@ -78,7 +79,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
               </span>
             </div>
             {service.description && (
-              <p className="mt-2 text-sm text-gray-600">{service.description}</p>
+              <p className="mt-2 text-sm text-gray-600">{getServiceDescription(service, language)}</p>
             )}
           </motion.div>
         ))}

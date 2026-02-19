@@ -2,6 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Service } from '../types';
 import { ServiceCard } from './ServiceCard';
+import { useLanguage } from '../hooks/useLanguage';
+import { translations } from '../i18n/translations';
+import { getCategoryName } from '../utils/serviceTranslation';
 
 interface ServiceSectionProps {
   category: string;
@@ -13,6 +16,9 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
   category,
   services,
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -21,7 +27,7 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{category}</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">{getCategoryName(category, language, (t as any).categories)}</h2>
       
       <div className="relative">
         <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory">

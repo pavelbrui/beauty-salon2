@@ -6,6 +6,7 @@ import { Booking, Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { getServiceName } from '../utils/serviceTranslation';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
 import { format } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
@@ -39,7 +40,7 @@ export const ProfilePage: React.FC = () => {
       .from('bookings')
       .select(`
         *,
-        services (name, price, duration),
+        services (name, name_en, name_ru, price, duration),
         time_slots (start_time, end_time),
         stylists (name)
       `)
@@ -279,7 +280,7 @@ export const ProfilePage: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
                           <h3 className="text-lg font-semibold text-gray-900 truncate">
-                            {booking.services?.name || '—'}
+                            {booking.services ? getServiceName(booking.services, language) : '—'}
                           </h3>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}>
                             {statusConfig.label}

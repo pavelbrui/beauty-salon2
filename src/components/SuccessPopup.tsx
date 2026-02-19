@@ -5,6 +5,7 @@ import { pl, enUS, ru } from 'date-fns/locale';
 import { Service, TimeSlot } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { getServiceName } from '../utils/serviceTranslation';
 
 interface SuccessPopupProps {
   service: Service;
@@ -49,7 +50,7 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({
             {t.booking.success.title}
           </h3>
           <div className="mt-4 text-sm text-gray-600">
-            <p className="font-medium">{service.name}</p>
+            <p className="font-medium">{getServiceName(service, language)}</p>
             <p className="mt-1">
               {format(parseISO(timeSlot.startTime), 'EEEE, d MMMM', { locale })}
             </p>

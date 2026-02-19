@@ -10,10 +10,13 @@ import { notifyAdmin, notifyClient } from '../lib/notifications';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
 import { saveUserData } from '../utils/cookies';
+import { useLanguage } from '../hooks/useLanguage';
+import { getServiceName } from '../utils/serviceTranslation';
 
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const stylistIdParam = searchParams.get('stylist') || null;
   const [service, setService] = useState<Service | null>(null);
@@ -199,8 +202,8 @@ export const BookingPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <SEO
-        title={service ? `Rezerwacja - ${service.name}` : 'Rezerwacja'}
-        description={service ? `Zarezerwuj wizytę: ${service.name} w salonie Katarzyna Brui, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w salonie kosmetycznym Katarzyna Brui w Białymstoku.'}
+        title={service ? `Rezerwacja - ${getServiceName(service, language)}` : 'Rezerwacja'}
+        description={service ? `Zarezerwuj wizytę: ${getServiceName(service, language)} w salonie Katarzyna Brui, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w salonie kosmetycznym Katarzyna Brui w Białymstoku.'}
         canonical={`/booking/${serviceId}`}
         noindex
       />

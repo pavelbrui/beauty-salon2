@@ -4,14 +4,21 @@ import { translations } from '../i18n/translations';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
+import { getStylistRole, getStylistSpecialties, getStylistDescription } from '../utils/serviceTranslation';
 
 interface Stylist {
   id: string;
   name: string;
   role: string;
+  role_en?: string;
+  role_ru?: string;
   image_url: string;
   specialties: string[];
+  specialties_en?: string[];
+  specialties_ru?: string[];
   description: string;
+  description_en?: string;
+  description_ru?: string;
 }
 
 export const StylistsPage: React.FC = () => {
@@ -75,12 +82,12 @@ export const StylistsPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <h3 className="text-xl font-semibold">{stylist.name}</h3>
-                  <p className="text-amber-300">{stylist.role}</p>
+                  <p className="text-amber-300">{getStylistRole(stylist, language)}</p>
                 </div>
               </div>
               <div className="p-6">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {stylist.specialties.map((specialty) => (
+                  {getStylistSpecialties(stylist, language).map((specialty) => (
                     <span
                       key={specialty}
                       className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
@@ -89,7 +96,7 @@ export const StylistsPage: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-600">{stylist.description}</p>
+                <p className="text-gray-600">{getStylistDescription(stylist, language)}</p>
                 <button
                   onClick={() => navigate(`/appointments?stylist=${stylist.id}`)}
                   className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium 

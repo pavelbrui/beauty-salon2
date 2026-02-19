@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Service } from '../types';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../hooks/useLanguage';
+import { getServiceName } from '../utils/serviceTranslation';
 
 interface BookingModalProps {
   service: Service;
@@ -14,6 +16,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   onClose 
 }) => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
 
   return (
     <AnimatePresence>
@@ -30,7 +33,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{service.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{getServiceName(service, language)}</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-500 transition-colors"

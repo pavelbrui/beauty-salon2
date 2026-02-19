@@ -18,6 +18,7 @@ import {
   CheckIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
+import { StylistFilter } from '../StylistFilter';
 
 interface AdminBooking extends Booking {
   contact_name?: string;
@@ -67,7 +68,7 @@ export const AdminBookings: React.FC = () => {
           .from('bookings')
           .select(`
             *,
-            services (name, price, duration),
+            services (name, name_en, name_ru, price, duration),
             time_slots (start_time, end_time),
             stylists (name)
           `)
@@ -286,22 +287,22 @@ export const AdminBookings: React.FC = () => {
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Stylist filter with photos */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <FunnelIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            <span className="text-sm font-medium text-gray-600">{ab.stylist || 'Stylistka'}</span>
+          </div>
+          <StylistFilter
+            stylists={stylists}
+            selectedId={filterStylist === 'all' ? '' : filterStylist}
+            onSelect={(id) => setFilterStylist(id || 'all')}
+            allLabel={ab.allStylists || 'Wszystkie'}
+          />
+        </div>
+
+        {/* Service + Status filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <FunnelIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-
-          {/* Stylist filter */}
-          <select
-            value={filterStylist}
-            onChange={e => setFilterStylist(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-          >
-            <option value="all">{ab.allStylists || 'Wszystkie stylistki'}</option>
-            {stylists.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-
           {/* Service filter */}
           <select
             value={filterService}

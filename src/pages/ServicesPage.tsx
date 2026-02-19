@@ -8,6 +8,7 @@ import { ServiceSection } from '../components/ServiceSection';
 import { BookingModal } from '../components/BookingModal';
 import { serviceImages } from '../assets/images';
 import { SEO } from '../components/SEO';
+import { getCategoryName } from '../utils/serviceTranslation';
 
 export const ServicesPage: React.FC = () => {
   const { category } = useParams();
@@ -103,7 +104,7 @@ export const ServicesPage: React.FC = () => {
                 category === cat ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
-              {cat}
+              {getCategoryName(cat, language, (t as any).categories)}
             </button>
           ))}
         </div>

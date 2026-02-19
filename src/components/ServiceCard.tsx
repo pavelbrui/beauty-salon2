@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Service } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { getServiceName, getServiceDescription } from '../utils/serviceTranslation';
 
 interface ServiceCardProps {
   service: Service;
@@ -31,14 +32,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
         <div className="relative h-48 overflow-hidden">
           <img
             src={service.imageUrl}
-            alt={service.name}
+            alt={getServiceName(service, language)}
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
       )}
       <div className="p-8">
-        <h3 className="text-xl font-semibold text-gray-900">{service.name}</h3>
+        <h3 className="text-xl font-semibold text-gray-900">{getServiceName(service, language)}</h3>
         <div className="mt-2 flex justify-between items-center">
           <span className="text-2xl font-bold text-amber-600">
             {formatPrice(service.price)}
@@ -48,7 +49,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           </span>
         </div>
         {service.description && (
-          <p className="mt-4 text-gray-600">{service.description}</p>
+          <p className="mt-4 text-gray-600">{getServiceDescription(service, language)}</p>
         )}
         <button
           onClick={() => navigate(`/booking/${service.id}`)}

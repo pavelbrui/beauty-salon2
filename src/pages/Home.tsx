@@ -196,7 +196,7 @@ export const Home: React.FC = () => {
                   <FaFacebook size={28} />
                 </a>
                 <a
-                  href="https://www.instagram.com/katarzyna.brui/"
+                  href="https://www.instagram.com/katarzyna.brui_"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-amber-600 hover:text-amber-700 transition-colors"
