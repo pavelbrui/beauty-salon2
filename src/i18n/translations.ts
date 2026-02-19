@@ -151,6 +151,13 @@ export const translations = {
       loginPrompt: 'Zaloguj się lub utwórz konto',
       loginBenefit: 'Śledź swoje rezerwacje i zapisz dane kontaktowe'
     },
+    training: 'Szkolenia',
+    training_page: {
+      title: 'Szkolenie z makijażu permanentnego',
+      seoDescription: 'Profesjonalne szkolenia z makijażu permanentnego w Białymstoku – nauka technik brwi, ust i kreski. Dołącz do kursu i rozpocznij karierę w beauty.',
+      header: 'Szkolenia makijażu permanentnego',
+      intro: 'Oferujemy kompleksowe kursy dla początkujących i zaawansowanych, prowadzone przez doświadczoną stylistkę.'
+    },
     admin_bookings: {
       title: 'Rezerwacje',
       listView: 'Lista',
@@ -330,6 +337,13 @@ export const translations = {
       loginPrompt: 'Sign in or create an account',
       loginBenefit: 'Track your bookings and save your contact details'
     },
+    training: 'Trainings',
+    training_page: {
+      title: 'Permanent Makeup Training',
+      seoDescription: 'Professional permanent makeup trainings in Bialystok – learn brow, lip and eyeliner techniques. Join our course and start your beauty career.',
+      header: 'Permanent Makeup Trainings',
+      intro: 'We offer comprehensive courses for beginners and advanced students, led by an experienced stylist.'
+    },
     admin_bookings: {
       title: 'Bookings',
       listView: 'List',
@@ -508,6 +522,13 @@ export const translations = {
     home: {
       loginPrompt: 'Войдите или создайте аккаунт',
       loginBenefit: 'Отслеживайте записи и сохраняйте контактные данные'
+    },
+    training: 'Обучение',
+    training_page: {
+      title: 'Обучение перманентному макияжу',
+      seoDescription: 'Профессиональное обучение перманентному макияжу в Белостоке – изучите техники бровей, губ и стрелок. Присоединяйтесь к курсу и начните карьеру в бьюти.',
+      header: 'Обучение перманентному макияжу',
+      intro: 'Мы предлагаем комплексные курсы для начинающих и продвинутых, проводимые опытным стилистом.'
     },
     admin_bookings: {
       title: 'Записи',

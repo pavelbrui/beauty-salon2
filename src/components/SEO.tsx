@@ -8,6 +8,7 @@ interface SEOProps {
   type?: string;
   image?: string;
   noindex?: boolean;
+  keywords?: string[]; // optional comma‑separated keywords
 }
 
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
@@ -32,6 +33,9 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="description" content={description} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       <link rel="canonical" href={url} />
+      {keywords && keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(', ')} />
+      )}
 
       {/* Hreflang alternate links for multilingual SEO */}
       <link rel="alternate" hrefLang="pl" href={url} />

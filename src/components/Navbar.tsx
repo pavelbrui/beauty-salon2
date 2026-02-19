@@ -52,6 +52,7 @@ export const Navbar: React.FC = () => {
 
   const navItems = [
     { path: '/services', label: t.services },
+    { path: '/training', label: t.training },
     { path: '/appointments', label: t.appointments },
     { path: '/stylists', label: t.stylists },
     { path: '/gallery', label: t.gallery }

@@ -86,8 +86,14 @@ export const ServicesPage: React.FC = () => {
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title="Usługi"
-        description="Cennik usług salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, laserowe usuwanie tatuażu. Białystok."
+        description="Cennik usług salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, laserowe usuwanie tatuażu; szkolenia z makijażu permanentnego. Białystok."
         canonical="/services"
+        keywords={[
+          'makijaż permanentny Białystok',
+          'stylizacja rzęs Białystok',
+          'laminacja brwi',
+          'kurs makijażu permanentnego'
+        ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">{t.services}</h1>

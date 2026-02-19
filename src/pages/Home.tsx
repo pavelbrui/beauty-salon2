@@ -99,8 +99,14 @@ export const Home: React.FC = () => {
     <div className="min-h-screen bg-neutral-50">
       <SEO
         title="Strona Główna"
-        description="Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, pielęgnacja brwi, peeling węglowy. Umów wizytę online! Tel: 880 435 102."
+        description="Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, pielęgnacja brwi, peeling węglowy oraz szkolenia z makijażu permanentnego. Umów wizytę online! Tel: 880 435 102."
         canonical="/"
+        keywords={[
+          'salon kosmetyczny Białystok',
+          'makijaż permanentny',
+          'szkolenia makijażu permanentnego',
+          'przedłużanie rzęs Białystok'
+        ]}
       />
       <header
         className="relative h-screen bg-cover bg-center"
@@ -191,6 +197,24 @@ export const Home: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Training callout */}
+        <section className="py-20 bg-amber-50">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {t.training_page?.header || t.training}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {t.training_page?.intro}
+            </p>
+            <button
+              onClick={() => navigate('/training')}
+              className="bg-amber-500 text-white px-6 py-3 rounded-full hover:bg-amber-600 transition-colors"
+            >
+              {t.training}
+            </button>
+          </div>
+        </section>
 
         {/* Reviews Section */}
         <div id="reviews" className="scroll-mt-20">
