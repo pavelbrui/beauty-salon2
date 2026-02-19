@@ -59,9 +59,14 @@ export const Home: React.FC = () => {
       case 'makijaż permanentny':
         return serviceImages.permanentMakeup;
       case 'rzęsy':
+      case 'stylizacja rzęs':
         return serviceImages.lashes;
       case 'laserowe usuwanie':
         return serviceImages.tattooRemoval;
+      case 'manicure':
+        return serviceImages.manicure;
+      case 'peeling węglowy':
+        return serviceImages.carbonPeeling;
       default:
         return serviceImages.browCare;
     }

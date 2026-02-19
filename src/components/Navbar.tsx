@@ -82,11 +82,16 @@ export const Navbar: React.FC = () => {
           </button>
           <div className="flex">
             <Link to="/" className="flex items-center">
+              <motion.img
+                whileHover={{ scale: 1.05 }}
+                src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
+                alt="Katarzyna Brui"
+                className="h-10 w-10 rounded-full object-cover"
+              />
               <motion.span
                 whileHover={{ scale: 1.05 }}
-                className="text-2xl font-bold bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
+                className="ml-2 text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
               >
-                KB Beauty
               </motion.span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

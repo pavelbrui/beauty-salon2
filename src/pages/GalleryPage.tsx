@@ -62,7 +62,7 @@ export const GalleryPage: React.FC = () => {
     : images.filter(img => img.category === selectedCategory);
 
   return (
-    <div className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title="Galeria"
         description="Galeria realizacji salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi. Zobacz efekty naszej pracy!"
@@ -104,6 +104,7 @@ export const GalleryPage: React.FC = () => {
                 <img
                   src={image.url}
                   alt={image.description || image.category}
+                  loading="lazy"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                 />
                 {image.description && (
@@ -138,6 +139,6 @@ export const GalleryPage: React.FC = () => {
           />
         </div>
       )}
-    </div>
+    </main>
   );
 };

@@ -131,7 +131,7 @@ export const AppointmentsPage: React.FC = () => {
   const categories = [...new Set(services.map(s => s.category))];
 
   return (
-    <div className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
+    <main className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
       <SEO
         title="Rezerwacja Wizyty"
         description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz usługę, termin i umów się bez dzwonienia!"
@@ -193,6 +193,6 @@ export const AppointmentsPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

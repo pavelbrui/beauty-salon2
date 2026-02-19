@@ -58,13 +58,17 @@ export const ProfilePage: React.FC = () => {
   };
 
   const cancelBooking = async (bookingId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const booking = bookings.find(b => b.id === bookingId);
     const slotId = booking?.time_slot_id || booking?.timeSlotId;
 
     const { error } = await supabase
       .from('bookings')
       .update({ status: 'cancelled' })
-      .eq('id', bookingId);
+      .eq('id', bookingId)
+      .eq('user_id', session.user.id);
 
     if (error) {
       console.error('Error cancelling booking:', error);
@@ -91,6 +95,9 @@ export const ProfilePage: React.FC = () => {
   };
 
   const deleteBooking = async (bookingId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const booking = bookings.find(b => b.id === bookingId);
 
     await notifyAdmin(
@@ -103,7 +110,8 @@ export const ProfilePage: React.FC = () => {
     const { error } = await supabase
       .from('bookings')
       .delete()
-      .eq('id', bookingId);
+      .eq('id', bookingId)
+      .eq('user_id', session.user.id);
 
     if (error) {
       console.error('Error deleting booking:', error);
@@ -142,6 +150,9 @@ export const ProfilePage: React.FC = () => {
   const handleRescheduleSlot = async (slot: TimeSlot) => {
     if (!rescheduleBooking) return;
 
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     try {
       const { data: newSlot, error: slotError } = await supabase
         .from('time_slots')
@@ -176,7 +187,8 @@ export const ProfilePage: React.FC = () => {
           end_time: slot.endTime,
           status: 'pending'
         })
-        .eq('id', rescheduleBooking.id);
+        .eq('id', rescheduleBooking.id)
+        .eq('user_id', session.user.id);
 
       if (updateError) {
         console.error('Error updating booking:', updateError);
@@ -228,7 +240,7 @@ export const ProfilePage: React.FC = () => {
   const isActive = (status: string) => status === 'pending' || status === 'confirmed';
 
   return (
-    <div className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title={t.profile_page?.title || 'Moje Rezerwacje'}
         description={t.profile_page?.seoDescription || 'Zarządzaj swoimi rezerwacjami w salonie Katarzyna Brui.'}
@@ -409,6 +421,6 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 };

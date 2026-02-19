@@ -29,7 +29,17 @@ export const translations = {
       'Peeling węglowy': 'Peeling węglowy',
       'Laserowe usuwanie': 'Laserowe usuwanie',
       'Pakiety': 'Pakiety',
-      'Stylizacja rzęs': 'Stylizacja rzęs'
+      'Stylizacja rzęs': 'Stylizacja rzęs',
+      'Manicure': 'Manicure',
+      'salon': 'Salon',
+      'inspiracja': 'Inspiracja',
+      'makijaz': 'Makijaż',
+      'rzesy': 'Rzęsy',
+      'brwi': 'Brwi',
+      'manicure': 'Manicure',
+      'pedicure': 'Pedicure',
+      'laser': 'Laserowe usuwanie',
+      'peeling': 'Peeling węglowy'
     },
     reviews: {
       title: 'Opinie naszych klientek',
@@ -178,7 +188,17 @@ export const translations = {
       'Peeling węglowy': 'Carbon Peeling',
       'Laserowe usuwanie': 'Laser Removal',
       'Pakiety': 'Packages',
-      'Stylizacja rzęs': 'Eyelash Styling'
+      'Stylizacja rzęs': 'Eyelash Styling',
+      'Manicure': 'Manicure',
+      'salon': 'Salon',
+      'inspiracja': 'Inspiration',
+      'makijaz': 'Makeup',
+      'rzesy': 'Eyelashes',
+      'brwi': 'Eyebrows',
+      'manicure': 'Manicure',
+      'pedicure': 'Pedicure',
+      'laser': 'Laser Removal',
+      'peeling': 'Carbon Peeling'
     },
     reviews: {
       title: 'Our Clients Reviews',
@@ -327,7 +347,17 @@ export const translations = {
       'Peeling węglowy': 'Карбоновый пилинг',
       'Laserowe usuwanie': 'Лазерное удаление',
       'Pakiety': 'Пакеты услуг',
-      'Stylizacja rzęs': 'Стилизация ресниц'
+      'Stylizacja rzęs': 'Стилизация ресниц',
+      'Manicure': 'Маникюр',
+      'salon': 'Салон',
+      'inspiracja': 'Вдохновение',
+      'makijaz': 'Макияж',
+      'rzesy': 'Ресницы',
+      'brwi': 'Брови',
+      'manicure': 'Маникюр',
+      'pedicure': 'Педикюр',
+      'laser': 'Лазерное удаление',
+      'peeling': 'Карбоновый пилинг'
     },
     reviews: {
       title: 'Отзывы наших клиентов',

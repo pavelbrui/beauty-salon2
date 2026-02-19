@@ -60,9 +60,14 @@ export const ServicesPage: React.FC = () => {
       case 'makijaż permanentny':
         return serviceImages.permanentMakeup;
       case 'rzęsy':
+      case 'stylizacja rzęs':
         return serviceImages.lashes;
       case 'laserowe usuwanie':
         return serviceImages.tattooRemoval;
+      case 'manicure':
+        return serviceImages.manicure;
+      case 'peeling węglowy':
+        return serviceImages.carbonPeeling;
       default:
         return serviceImages.browCare;
     }
@@ -78,7 +83,7 @@ export const ServicesPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title="Usługi"
         description="Cennik usług salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, laserowe usuwanie tatuażu. Białystok."
@@ -127,6 +132,6 @@ export const ServicesPage: React.FC = () => {
           />
         )}
       </div>
-    </div>
+    </main>
   );
 };

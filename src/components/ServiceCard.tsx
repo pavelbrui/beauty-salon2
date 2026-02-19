@@ -33,6 +33,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           <img
             src={service.imageUrl}
             alt={getServiceName(service, language)}
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />

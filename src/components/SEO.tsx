@@ -33,6 +33,12 @@ export const SEO: React.FC<SEOProps> = ({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       <link rel="canonical" href={url} />
 
+      {/* Hreflang alternate links for multilingual SEO */}
+      <link rel="alternate" hrefLang="pl" href={url} />
+      <link rel="alternate" hrefLang="en" href={url} />
+      <link rel="alternate" hrefLang="ru" href={url} />
+      <link rel="alternate" hrefLang="x-default" href={url} />
+
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
