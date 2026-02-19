@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ServiceCard } from '../components/ServiceCard';
+import { AuthModal } from '../components/AuthModal';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
@@ -11,13 +13,27 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
+import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 export const Home: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [user, setUser] = React.useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
   const { language } = useLanguage();
   const t = translations[language];
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   React.useEffect(() => {
     loadServices();
@@ -99,24 +115,44 @@ export const Home: React.FC = () => {
           <p className="mt-6 text-lg sm:text-xl md:text-2xl text-white/90 max-w-xl text-center">
             {t.welcomeSubtitle}
           </p>
-          <div className="mt-12 flex items-center space-x-4 justify-center">
-            <button
-              onClick={scrollToReviews}
-              className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer"
-            >
-              <span className="text-amber-500 text-2xl font-semibold">5.0</span>
-              <span className="text-gray-800 ml-2">/ 5.0</span>
-              <div className="text-sm text-gray-600">
-                <span>254 </span>
-                <span>{t.reviewsLabel}</span>
-              </div>
-            </button>
-            <button 
-              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"
-            >
-              {t.bookNow}
-            </button>
+          <div className="mt-12 flex flex-col items-center gap-4">
+            <div className="flex items-center space-x-4 justify-center">
+              <button
+                onClick={scrollToReviews}
+                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer"
+              >
+                <span className="text-amber-500 text-2xl font-semibold">5.0</span>
+                <span className="text-gray-800 ml-2">/ 5.0</span>
+                <div className="text-sm text-gray-600">
+                  <span>254 </span>
+                  <span>{t.reviewsLabel}</span>
+                </div>
+              </button>
+              <button
+                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"
+              >
+                {t.bookNow}
+              </button>
+            </div>
+
+            {!user ? (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm"
+              >
+                <UserCircleIcon className="h-5 w-5" />
+                {t.home?.loginPrompt || 'Zaloguj się lub utwórz konto'}
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm"
+              >
+                <UserCircleIcon className="h-5 w-5" />
+                {t.profile}
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -215,6 +251,15 @@ export const Home: React.FC = () => {
           <MapLocation />
         </div>
       </main>}
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        mode="signin"
+        onSuccess={() => {
+          setShowAuthModal(false);
+        }}
+      />
     </div>
   );
 };

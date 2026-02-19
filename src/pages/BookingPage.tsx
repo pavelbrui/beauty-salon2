@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
-import { saveUserData } from '../utils/cookies';
+import { saveProfile } from '../lib/profile';
 import { useLanguage } from '../hooks/useLanguage';
 import { getServiceName } from '../utils/serviceTranslation';
 
@@ -158,9 +158,9 @@ export const BookingPage: React.FC = () => {
         await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
       }
 
-      // Save contact data to cookies for future use
-      saveUserData({
-        name: contactData.name,
+      // Save contact data to profile DB + cookies for future use
+      await saveProfile({
+        full_name: contactData.name,
         phone: contactData.phone,
         email: contactData.email
       });

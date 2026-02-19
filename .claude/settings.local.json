@@ -18,7 +18,9 @@
       "Bash(echo:*)",
       "mcp__supabase__apply_migration",
       "WebFetch(domain:booksy.com)",
-      "mcp__supabase__get_advisors"
+      "mcp__supabase__get_advisors",
+      "mcp__supabase__get_logs",
+      "WebFetch(domain:d375139ucebi94.cloudfront.net)"
     ]
   }
 }

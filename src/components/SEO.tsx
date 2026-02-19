@@ -13,7 +13,7 @@ interface SEOProps {
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
 const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, pielęgnacja brwi. Umów wizytę online!';
 const BASE_URL = 'https://katarzynabrui.pl';
-const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
+const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpeg`;
 
 export const SEO: React.FC<SEOProps> = ({
   title,

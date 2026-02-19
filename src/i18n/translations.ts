@@ -118,9 +118,12 @@ export const translations = {
     noResults: 'Brak wyników',
     profile: 'Profil',
     profile_page: {
-      title: 'Moje Rezerwacje',
+      title: 'Mój Profil',
       seoDescription: 'Zarządzaj swoimi rezerwacjami w salonie Katarzyna Brui.',
+      myBookings: 'Moje Rezerwacje',
       noBookings: 'Nie masz jeszcze żadnych rezerwacji',
+      noBookingsHint: 'Zarezerwuj swoją pierwszą wizytę i śledź ją tutaj',
+      bookFirst: 'Zarezerwuj wizytę',
       statusPending: 'Oczekuje na potwierdzenie',
       statusConfirmed: 'Potwierdzona',
       statusCancelled: 'Anulowana',
@@ -129,7 +132,24 @@ export const translations = {
       cancel: 'Anuluj',
       rebook: 'Zarezerwuj ponownie',
       delete: 'Usuń',
-      rescheduleTitle: 'Zmień termin rezerwacji'
+      rescheduleTitle: 'Zmień termin rezerwacji',
+      personalInfo: 'Dane osobowe',
+      fullName: 'Imię i nazwisko',
+      phone: 'Telefon',
+      email: 'Email',
+      save: 'Zapisz zmiany',
+      saved: 'Zapisano!',
+      signOut: 'Wyloguj się',
+      signOutConfirm: 'Czy na pewno chcesz się wylogować?',
+      memberSince: 'Klient od',
+      editProfile: 'Edytuj profil',
+      activeBookings: 'Aktywne',
+      pastBookings: 'Historia',
+      allBookings: 'Wszystkie'
+    },
+    home: {
+      loginPrompt: 'Zaloguj się lub utwórz konto',
+      loginBenefit: 'Śledź swoje rezerwacje i zapisz dane kontaktowe'
     },
     admin_bookings: {
       title: 'Rezerwacje',
@@ -277,9 +297,12 @@ export const translations = {
     noResults: 'No results',
     profile: 'Profile',
     profile_page: {
-      title: 'My Bookings',
+      title: 'My Profile',
       seoDescription: 'Manage your bookings at Katarzyna Brui salon.',
+      myBookings: 'My Bookings',
       noBookings: 'You have no bookings yet',
+      noBookingsHint: 'Book your first appointment and track it here',
+      bookFirst: 'Book an appointment',
       statusPending: 'Awaiting confirmation',
       statusConfirmed: 'Confirmed',
       statusCancelled: 'Cancelled',
@@ -288,7 +311,24 @@ export const translations = {
       cancel: 'Cancel',
       rebook: 'Book again',
       delete: 'Delete',
-      rescheduleTitle: 'Reschedule booking'
+      rescheduleTitle: 'Reschedule booking',
+      personalInfo: 'Personal Information',
+      fullName: 'Full Name',
+      phone: 'Phone',
+      email: 'Email',
+      save: 'Save changes',
+      saved: 'Saved!',
+      signOut: 'Sign Out',
+      signOutConfirm: 'Are you sure you want to sign out?',
+      memberSince: 'Member since',
+      editProfile: 'Edit profile',
+      activeBookings: 'Active',
+      pastBookings: 'History',
+      allBookings: 'All'
+    },
+    home: {
+      loginPrompt: 'Sign in or create an account',
+      loginBenefit: 'Track your bookings and save your contact details'
     },
     admin_bookings: {
       title: 'Bookings',
@@ -436,9 +476,12 @@ export const translations = {
     noResults: 'Нет результатов',
     profile: 'Профиль',
     profile_page: {
-      title: 'Мои записи',
+      title: 'Мой профиль',
       seoDescription: 'Управляйте своими записями в салоне Катажина Бруй.',
+      myBookings: 'Мои записи',
       noBookings: 'У вас пока нет записей',
+      noBookingsHint: 'Запишитесь на первый визит и отслеживайте его здесь',
+      bookFirst: 'Записаться на прием',
       statusPending: 'Ожидает подтверждения',
       statusConfirmed: 'Подтверждена',
       statusCancelled: 'Отменена',
@@ -447,7 +490,24 @@ export const translations = {
       cancel: 'Отменить',
       rebook: 'Записаться снова',
       delete: 'Удалить',
-      rescheduleTitle: 'Изменить дату записи'
+      rescheduleTitle: 'Изменить дату записи',
+      personalInfo: 'Личные данные',
+      fullName: 'Имя и фамилия',
+      phone: 'Телефон',
+      email: 'Email',
+      save: 'Сохранить изменения',
+      saved: 'Сохранено!',
+      signOut: 'Выйти',
+      signOutConfirm: 'Вы уверены, что хотите выйти?',
+      memberSince: 'Клиент с',
+      editProfile: 'Редактировать профиль',
+      activeBookings: 'Активные',
+      pastBookings: 'История',
+      allBookings: 'Все'
+    },
+    home: {
+      loginPrompt: 'Войдите или создайте аккаунт',
+      loginBenefit: 'Отслеживайте записи и сохраняйте контактные данные'
     },
     admin_bookings: {
       title: 'Записи',

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { getUserData } from '../utils/cookies';
+import { loadProfile } from '../lib/profile';
 
 import { supabase } from '../lib/supabase';
 
@@ -29,12 +30,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
   });
 
   React.useEffect(() => {
+    // Try to load profile from DB first, then fall back to session email
+    loadProfile().then(profile => {
+      if (profile) {
+        setFormData(prev => ({
+          ...prev,
+          name: prev.name || profile.full_name || '',
+          phone: prev.phone || profile.phone || '',
+          email: prev.email || profile.email || ''
+        }));
+      }
+    });
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user?.email && !formData.email) {
         setFormData(prev => ({ ...prev, email: session.user.email || '' }));
       }
     });
-  }, [formData.email]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

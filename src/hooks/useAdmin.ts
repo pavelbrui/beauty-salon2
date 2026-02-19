@@ -14,25 +14,35 @@ export const useAdmin = (): UseAdminReturn => {
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-        const role = session.user.app_metadata?.role;
-        setIsAdmin(role === 'admin');
-      } else {
-        setUser(null);
+      try {
+        // getUser() fetches fresh user data from auth server (not cached JWT)
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (currentUser) {
+          setUser(currentUser);
+          const role = currentUser.app_metadata?.role;
+          setIsAdmin(role === 'admin');
+        } else {
+          setUser(null);
+          setIsAdmin(false);
+        }
+      } catch (err) {
+        console.error('checkAdmin error:', err);
         setIsAdmin(false);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkAdmin();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        setUser(session.user);
-        const role = session.user.app_metadata?.role;
-        setIsAdmin(role === 'admin');
+        // Fetch fresh user data on auth state change too
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+        if (freshUser) {
+          setUser(freshUser);
+          setIsAdmin(freshUser.app_metadata?.role === 'admin');
+        }
       } else {
         setUser(null);
         setIsAdmin(false);

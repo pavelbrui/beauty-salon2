@@ -5,6 +5,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { AuthModal } from './AuthModal';
 
 export const Navbar: React.FC = () => {
   const { language, setLanguage } = useLanguage();
@@ -14,6 +15,7 @@ export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const [user, setUser] = React.useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
 
   const isHome = location.pathname === '/';
 
@@ -86,7 +88,7 @@ export const Navbar: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
                 alt="Katarzyna Brui"
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-12 w-16 rounded-full object-cover gray-300/50 shadow-sm"
               />
               <motion.span
                 whileHover={{ scale: 1.05 }}
@@ -144,7 +146,7 @@ export const Navbar: React.FC = () => {
               </button>
             ) : (
               <button
-                onClick={() => navigate('/appointments')}
+                onClick={() => setShowAuthModal(true)}
                 className="hidden sm:block bg-amber-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
               >
                 {t.auth.signIn}
@@ -178,12 +180,12 @@ export const Navbar: React.FC = () => {
                   </Link>
                 ))}
                 {!user && (
-                  <Link
-                    to="/appointments"
-                    className={`block px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
+                  <button
+                    onClick={() => { setIsOpen(false); setShowAuthModal(true); }}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
                   >
                     {t.auth.signIn}
-                  </Link>
+                  </button>
                 )}
                 {user && (
                   <Link
@@ -198,6 +200,16 @@ export const Navbar: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        mode="signin"
+        onSuccess={() => {
+          setShowAuthModal(false);
+          navigate('/profile');
+        }}
+      />
     </motion.nav>
   );
 };
