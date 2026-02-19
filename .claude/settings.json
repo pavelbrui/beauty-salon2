@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(node -e:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "WebFetch(domain:www.virustotal.com)",
+      "WebFetch(domain:katarzynabrui.pl)",
+      "WebFetch(domain:transparencyreport.google.com)",
+      "Bash(nslookup:*)",
+      "Bash(dig:*)",
+      "Bash(powershell -Command \"Resolve-DnsName katarzynabrui.pl 2>$null | Format-Table Name,Type,IPAddress,NameHost -AutoSize\")",
+      "Bash(powershell -Command \"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { $req = [System.Net.HttpWebRequest]::Create\\(''https://katarzynabrui.pl''\\); $req.Timeout = 5000; $resp = $req.GetResponse\\(\\) } catch { $_Exception.InnerException.Message; if \\($_Exception.InnerException.InnerException\\) { $_Exception.InnerException.InnerException.Message } }\")",
+      "Bash(openssl s_client:*)",
+      "Bash(openssl x509:*)",
+      "Bash(netlify:*)"
     ]
   }
 }

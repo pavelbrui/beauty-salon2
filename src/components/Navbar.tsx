@@ -62,6 +62,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
+    <>
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -201,15 +202,17 @@ export const Navbar: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        mode="signin"
-        onSuccess={() => {
-          setShowAuthModal(false);
-          navigate('/profile');
-        }}
-      />
     </motion.nav>
+
+    <AuthModal
+      isOpen={showAuthModal}
+      onClose={() => setShowAuthModal(false)}
+      mode="signin"
+      onSuccess={() => {
+        setShowAuthModal(false);
+        navigate('/profile');
+      }}
+    />
+    </>
   );
 };

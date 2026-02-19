@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { AuthModal } from './AuthModal';
 
 interface AuthRouteProps {
   children: React.ReactNode;
@@ -30,7 +30,16 @@ export const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/appointments" replace />;
+    return (
+      <div className="pt-16 min-h-screen bg-neutral-50">
+        <AuthModal
+          isOpen={true}
+          onClose={() => {}}
+          mode="signin"
+          onSuccess={() => {}}
+        />
+      </div>
+    );
   }
 
   return <>{children}</>;

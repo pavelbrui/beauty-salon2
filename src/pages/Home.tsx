@@ -124,7 +124,7 @@ export const Home: React.FC = () => {
                 <span className="text-amber-500 text-2xl font-semibold">5.0</span>
                 <span className="text-gray-800 ml-2">/ 5.0</span>
                 <div className="text-sm text-gray-600">
-                  <span>254 </span>
+                  <span>380 </span>
                   <span>{t.reviewsLabel}</span>
                 </div>
               </button>
