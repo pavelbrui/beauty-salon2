@@ -6,6 +6,7 @@ import { AuthModal } from '../components/AuthModal';
 import { BookingForm } from '../components/BookingForm';
 import { SuccessPopup } from '../components/SuccessPopup';
 import { supabase } from '../lib/supabase';
+import { notifyAdmin, notifyClient } from '../lib/notifications';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
 import { saveUserData } from '../utils/cookies';
@@ -147,22 +148,9 @@ export const BookingPage: React.FC = () => {
 
       // 4. Create client notification & notify admin
       if (data[0]?.id) {
-        await supabase
-          .from('booking_notifications')
-          .insert({
-            booking_id: data[0].id,
-            type: 'confirmation',
-            status: 'pending'
-          });
-
-        await supabase
-          .from('admin_notifications')
-          .insert({
-            booking_id: data[0].id,
-            action: 'rebooked',
-            admin_email: 'bpl_as2@mail.ru',
-            message: `Nowa rezerwacja: ${service.name} na ${selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—'}`
-          });
+        const dateStr = selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—';
+        await notifyClient(data[0].id, 'confirmation');
+        await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
       }
 
       // Save contact data to cookies for future use

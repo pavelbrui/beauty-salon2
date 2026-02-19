@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Booking, Service } from '../types';
+import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { Booking, Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
-import { TimeSlot } from '../types';
 import { format } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { CalendarDaysIcon, ClockIcon, UserIcon, CurrencyDollarIcon, PencilSquareIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-const ADMIN_EMAIL = 'bpl_as2@mail.ru';
 const dateLocales = { pl, en: enUS, ru };
 
 export const ProfilePage: React.FC = () => {
@@ -55,35 +54,6 @@ export const ProfilePage: React.FC = () => {
 
     setBookings(data || []);
     setLoading(false);
-  };
-
-  const notifyAdmin = async (bookingId: string, action: string, message: string) => {
-    const { error } = await supabase
-      .from('admin_notifications')
-      .insert({
-        booking_id: bookingId,
-        action,
-        admin_email: ADMIN_EMAIL,
-        message
-      });
-
-    if (error) {
-      console.error('Error creating admin notification:', error);
-    }
-  };
-
-  const notifyClient = async (bookingId: string, type: 'confirmation' | 'reminder' | 'status_update') => {
-    const { error } = await supabase
-      .from('booking_notifications')
-      .insert({
-        booking_id: bookingId,
-        type,
-        status: 'pending'
-      });
-
-    if (error) {
-      console.error('Error creating client notification:', error);
-    }
   };
 
   const cancelBooking = async (bookingId: string) => {

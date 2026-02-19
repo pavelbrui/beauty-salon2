@@ -20,7 +20,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface AdminBooking extends Booking {
-  user_email?: string;
+  contact_name?: string;
+  contact_email?: string;
+  contact_phone?: string;
 }
 
 const dateLocales = { pl, en: enUS, ru };
@@ -78,28 +80,7 @@ export const AdminBookings: React.FC = () => {
       if (servicesRes.error) throw servicesRes.error;
       if (stylistsRes.error) throw stylistsRes.error;
 
-      // Fetch user emails for bookings
-      const userIds = [...new Set((bookingsRes.data || []).map(b => b.user_id).filter(Boolean))];
-      let emailMap: Record<string, string> = {};
-
-      if (userIds.length > 0) {
-        // Try to get emails from auth - admin might not have access, so handle gracefully
-        for (const uid of userIds) {
-          try {
-            const { data } = await supabase.rpc('get_user_email', { user_uid: uid });
-            if (data) emailMap[uid] = data;
-          } catch {
-            // RPC might not exist - skip
-          }
-        }
-      }
-
-      const enriched = (bookingsRes.data || []).map(b => ({
-        ...b,
-        user_email: emailMap[b.user_id] || b.user_id?.slice(0, 8) + '...'
-      }));
-
-      setBookings(enriched);
+      setBookings(bookingsRes.data || []);
       setServices(servicesRes.data || []);
       setStylists(stylistsRes.data || []);
     } catch (err) {
@@ -173,11 +154,11 @@ export const AdminBookings: React.FC = () => {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-500', label: ab.statusConfirmed || 'Potwierdzona' };
+        return { bg: 'bg-green-100', text: 'text-green-700', label: ab.statusConfirmed || 'Potwierdzona' };
       case 'cancelled':
-        return { bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500', label: ab.statusCancelled || 'Anulowana' };
+        return { bg: 'bg-red-100', text: 'text-red-700', label: ab.statusCancelled || 'Anulowana' };
       default:
-        return { bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500', label: ab.statusPending || 'Oczekuje' };
+        return { bg: 'bg-amber-100', text: 'text-amber-700', label: ab.statusPending || 'Oczekuje' };
     }
   };
 
@@ -203,15 +184,37 @@ export const AdminBookings: React.FC = () => {
 
       if (error) throw error;
 
-      // If cancelled, free the time slot
+      const slotId = editingBooking.time_slot_id || editingBooking.timeSlotId;
+
+      // If cancelled by admin, free the time slot
       if (editStatus === 'cancelled' && editingBooking.status !== 'cancelled') {
-        const slotId = editingBooking.time_slot_id || editingBooking.timeSlotId;
         if (slotId) {
           await supabase
             .from('time_slots')
             .update({ is_available: true })
             .eq('id', slotId);
         }
+      }
+
+      // If re-activated from cancelled, re-occupy the time slot
+      if (editingBooking.status === 'cancelled' && editStatus !== 'cancelled') {
+        if (slotId) {
+          await supabase
+            .from('time_slots')
+            .update({ is_available: false })
+            .eq('id', slotId);
+        }
+      }
+
+      // Notify client about status change
+      if (editStatus !== editingBooking.status) {
+        await supabase
+          .from('booking_notifications')
+          .insert({
+            booking_id: editingBooking.id,
+            type: 'status_update',
+            status: 'pending'
+          });
       }
 
       setEditingBooking(null);
@@ -413,7 +416,7 @@ export const AdminBookings: React.FC = () => {
 
                         {/* Client info */}
                         <div className="mt-2 text-xs text-gray-400">
-                          {ab.client || 'Klient'}: {booking.user_email || '—'}
+                          {ab.client || 'Klient'}: {booking.contact_name || booking.contact_email || '—'}{booking.contact_phone ? ` | ${booking.contact_phone}` : ''}
                         </div>
 
                         {!dateInfo && (
@@ -569,7 +572,10 @@ export const AdminBookings: React.FC = () => {
                 })()}
                 <div className="text-sm">
                   <span className="text-gray-500">{ab.client || 'Klient'}:</span>{' '}
-                  <span className="font-medium text-gray-900">{editingBooking.user_email || '—'}</span>
+                  <span className="font-medium text-gray-900">
+                    {editingBooking.contact_name || editingBooking.contact_email || '—'}
+                    {editingBooking.contact_phone ? ` | ${editingBooking.contact_phone}` : ''}
+                  </span>
                 </div>
                 {editingBooking.services?.price != null && (
                   <div className="text-sm">

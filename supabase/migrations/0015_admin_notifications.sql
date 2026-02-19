@@ -7,7 +7,7 @@
 
 CREATE TABLE IF NOT EXISTS admin_notifications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  booking_id uuid REFERENCES bookings(id) ON DELETE CASCADE,
+  booking_id uuid REFERENCES bookings(id) ON DELETE SET NULL,
   action text NOT NULL CHECK (action IN ('cancelled', 'rescheduled', 'rebooked', 'deleted')),
   admin_email text NOT NULL DEFAULT 'bpl_as2@mail.ru',
   message text NOT NULL,

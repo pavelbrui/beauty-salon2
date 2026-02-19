@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { format, addDays, addMonths, startOfMonth, endOfMonth, isValid, isBefore, startOfDay } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { pl, enUS, ru } from 'date-fns/locale';
 import { MonthCalendar } from './MonthCalendar';
 import { TimeGrid } from './TimeGrid';
 import { TimeSlot, Service } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { generateAvailableTimeSlots } from '../../utils/timeSlots';
+import { useLanguage } from '../../hooks/useLanguage';
+import { translations } from '../../i18n/translations';
+
+const dateLocales = { pl, en: enUS, ru };
 
 interface AdvancedBookingCalendarProps {
   service: Service;
@@ -18,6 +22,9 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   stylistId,
   onSlotSelect
 }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  const locale = dateLocales[language as keyof typeof dateLocales] || pl;
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
@@ -250,7 +257,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
 
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          {selectedDate ? format(selectedDate, 'EEEE, d MMMM', { locale: pl }) : 'Wybierz datę'}
+          {selectedDate ? format(selectedDate, 'EEEE, d MMMM', { locale }) : t.booking.selectDate}
         </h3>
 
         <TimeGrid
