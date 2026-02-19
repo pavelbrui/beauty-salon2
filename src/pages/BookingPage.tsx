@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
 import { ServiceCard } from '../components/ServiceCard';
 import { AuthModal } from '../components/AuthModal';
@@ -14,6 +14,8 @@ import { saveUserData } from '../utils/cookies';
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const stylistIdParam = searchParams.get('stylist') || null;
   const [service, setService] = useState<Service | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
@@ -210,7 +212,7 @@ export const BookingPage: React.FC = () => {
         <AdvancedBookingCalendar
           service={service}
           onSlotSelect={handleSlotSelect}
-          stylistId={null}
+          stylistId={stylistIdParam}
         />
       )}
 
