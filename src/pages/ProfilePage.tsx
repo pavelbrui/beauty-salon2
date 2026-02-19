@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Booking, Service } from '../types';
 import { SEO } from '../components/SEO';
@@ -8,13 +9,15 @@ import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingC
 import { TimeSlot } from '../types';
 import { format } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
-import { CalendarDaysIcon, ClockIcon, UserIcon, CurrencyDollarIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, ClockIcon, UserIcon, CurrencyDollarIcon, PencilSquareIcon, ArrowPathIcon, TrashIcon } from '@heroicons/react/24/outline';
 
+const ADMIN_EMAIL = 'bpl_as2@mail.ru';
 const dateLocales = { pl, en: enUS, ru };
 
 export const ProfilePage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
@@ -54,8 +57,36 @@ export const ProfilePage: React.FC = () => {
     setLoading(false);
   };
 
+  const notifyAdmin = async (bookingId: string, action: string, message: string) => {
+    const { error } = await supabase
+      .from('admin_notifications')
+      .insert({
+        booking_id: bookingId,
+        action,
+        admin_email: ADMIN_EMAIL,
+        message
+      });
+
+    if (error) {
+      console.error('Error creating admin notification:', error);
+    }
+  };
+
+  const notifyClient = async (bookingId: string, type: 'confirmation' | 'reminder' | 'status_update') => {
+    const { error } = await supabase
+      .from('booking_notifications')
+      .insert({
+        booking_id: bookingId,
+        type,
+        status: 'pending'
+      });
+
+    if (error) {
+      console.error('Error creating client notification:', error);
+    }
+  };
+
   const cancelBooking = async (bookingId: string) => {
-    // Find the booking to get its time_slot_id
     const booking = bookings.find(b => b.id === bookingId);
     const slotId = booking?.time_slot_id || booking?.timeSlotId;
 
@@ -69,7 +100,6 @@ export const ProfilePage: React.FC = () => {
       return;
     }
 
-    // Free the associated time slot so it becomes available again
     if (slotId) {
       await supabase
         .from('time_slots')
@@ -77,7 +107,46 @@ export const ProfilePage: React.FC = () => {
         .eq('id', slotId);
     }
 
+    const startTime = booking?.time_slots?.start_time || booking?.start_time;
+    const dateStr = startTime ? format(new Date(startTime), 'dd.MM.yyyy HH:mm') : '—';
+    await notifyAdmin(
+      bookingId,
+      'cancelled',
+      `Klient anulował rezerwację: ${booking?.services?.name || '—'} na ${dateStr}`
+    );
+    await notifyClient(bookingId, 'status_update');
+
     loadBookings();
+  };
+
+  const deleteBooking = async (bookingId: string) => {
+    const booking = bookings.find(b => b.id === bookingId);
+
+    await notifyAdmin(
+      bookingId,
+      'deleted',
+      `Klient usunął rezerwację: ${booking?.services?.name || '—'}`
+    );
+    await notifyClient(bookingId, 'status_update');
+
+    const { error } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', bookingId);
+
+    if (error) {
+      console.error('Error deleting booking:', error);
+      return;
+    }
+
+    loadBookings();
+  };
+
+  const rebookService = (booking: Booking) => {
+    const serviceId = booking.service_id || booking.serviceId;
+    if (serviceId) {
+      navigate(`/booking/${serviceId}`);
+    }
   };
 
   const openReschedule = async (booking: Booking) => {
@@ -103,7 +172,6 @@ export const ProfilePage: React.FC = () => {
     if (!rescheduleBooking) return;
 
     try {
-      // Create new time slot
       const { data: newSlot, error: slotError } = await supabase
         .from('time_slots')
         .insert({
@@ -120,7 +188,6 @@ export const ProfilePage: React.FC = () => {
         return;
       }
 
-      // Free old time slot if exists
       const oldSlotId = rescheduleBooking.time_slot_id || rescheduleBooking.timeSlotId;
       if (oldSlotId) {
         await supabase
@@ -129,7 +196,6 @@ export const ProfilePage: React.FC = () => {
           .eq('id', oldSlotId);
       }
 
-      // Update booking with new slot, stylist, and direct time fields
       const { error: updateError } = await supabase
         .from('bookings')
         .update({
@@ -145,6 +211,14 @@ export const ProfilePage: React.FC = () => {
         console.error('Error updating booking:', updateError);
         return;
       }
+
+      const newDateStr = format(new Date(slot.startTime), 'dd.MM.yyyy HH:mm');
+      await notifyAdmin(
+        rescheduleBooking.id,
+        'rescheduled',
+        `Klient zmienił termin rezerwacji: ${rescheduleBooking.services?.name || '—'} → nowy termin: ${newDateStr}`
+      );
+      await notifyClient(rescheduleBooking.id, 'status_update');
 
       setRescheduleBooking(null);
       setRescheduleService(null);
@@ -284,23 +358,43 @@ export const ProfilePage: React.FC = () => {
                       </div>
 
                       {/* Actions */}
-                      {isActive(booking.status) && (
-                        <div className="flex sm:flex-col gap-2 sm:items-end flex-shrink-0">
-                          <button
-                            onClick={() => openReschedule(booking)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
-                          >
-                            <PencilSquareIcon className="h-4 w-4" />
-                            {t.profile_page?.reschedule || 'Zmień termin'}
-                          </button>
-                          <button
-                            onClick={() => cancelBooking(booking.id)}
-                            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                          >
-                            {t.profile_page?.cancel || 'Anuluj'}
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex sm:flex-col gap-2 sm:items-end flex-shrink-0">
+                        {isActive(booking.status) && (
+                          <>
+                            <button
+                              onClick={() => openReschedule(booking)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                            >
+                              <PencilSquareIcon className="h-4 w-4" />
+                              {t.profile_page?.reschedule || 'Zmień termin'}
+                            </button>
+                            <button
+                              onClick={() => cancelBooking(booking.id)}
+                              className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                            >
+                              {t.profile_page?.cancel || 'Anuluj'}
+                            </button>
+                          </>
+                        )}
+                        {booking.status === 'cancelled' && (
+                          <>
+                            <button
+                              onClick={() => rebookService(booking)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                            >
+                              <ArrowPathIcon className="h-4 w-4" />
+                              {t.profile_page?.rebook || 'Zarezerwuj ponownie'}
+                            </button>
+                            <button
+                              onClick={() => deleteBooking(booking.id)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                              {t.profile_page?.delete || 'Usuń'}
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -145,6 +145,26 @@ export const BookingPage: React.FC = () => {
           .eq('id', timeSlotId);
       }
 
+      // 4. Create client notification & notify admin
+      if (data[0]?.id) {
+        await supabase
+          .from('booking_notifications')
+          .insert({
+            booking_id: data[0].id,
+            type: 'confirmation',
+            status: 'pending'
+          });
+
+        await supabase
+          .from('admin_notifications')
+          .insert({
+            booking_id: data[0].id,
+            action: 'rebooked',
+            admin_email: 'bpl_as2@mail.ru',
+            message: `Nowa rezerwacja: ${service.name} na ${selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—'}`
+          });
+      }
+
       // Save contact data to cookies for future use
       saveUserData({
         name: contactData.name,

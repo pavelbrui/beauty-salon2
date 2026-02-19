@@ -1,45 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Booking } from '../types';
-
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
 import { AdminServices } from '../components/admin/AdminServices';
 import { AdminStylists } from '../components/admin/AdminStylists';
 import { AdminTimeSlots } from '../components/admin/AdminTimeSlots';
 import { AdminGallery } from '../components/admin/AdminGallery';
 import { StylistAssignments } from '../components/admin/StylistAssignments';
+import { AdminBookings } from '../components/admin/AdminBookings';
 
 export const Admin: React.FC = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments'>('services');
-
-  useEffect(() => {
-    loadBookings();
-  }, []);
-
-  const loadBookings = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          *,
-          services (name),
-          time_slots (start_time, end_time)
-        `)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      if (data) {
-        setBookings(data);
-      }
-    } catch (err) {
-      console.error('Error loading bookings:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -106,43 +74,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'gallery' && <AdminGallery />}
       {activeTab === 'assignments' && <StylistAssignments />}
 
-      {activeTab === 'bookings' && loading ? (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-        </div>
-      ) : activeTab === 'bookings' && (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-            {bookings.map((booking) => (
-              <li key={booking.id} className="px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {booking.services?.name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {booking.time_slots?.start_time ? new Date(booking.time_slots!.start_time).toLocaleString() : '—'}
-                    </p>
-                  </div>
-                  <div>
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        booking.status === 'confirmed'
-                          ? 'bg-green-100 text-green-800'
-                          : booking.status === 'cancelled'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {activeTab === 'bookings' && <AdminBookings />}
     </div>
   );
 };

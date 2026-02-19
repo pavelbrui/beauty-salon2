@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { format, addDays, addMonths, startOfMonth, endOfMonth, isValid } from 'date-fns';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { format, addDays, addMonths, startOfMonth, endOfMonth, isValid, isBefore, startOfDay } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { MonthCalendar } from './MonthCalendar';
 import { TimeGrid } from './TimeGrid';
@@ -39,6 +39,68 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
       setAvailableDates([]);
     }
   }, [qualifiedStylistIds, currentMonth]);
+
+  // Step 2b: Auto-select first available date that actually has free slots
+  const autoSelectDates = useRef<Date[]>([]);
+  const autoSelectIndex = useRef(0);
+  const isAutoSelecting = useRef(false);
+  const hasAutoSelected = useRef(false);
+
+  useEffect(() => {
+    if (availableDates.length === 0 || hasAutoSelected.current) return;
+
+    const today = startOfDay(new Date());
+    const sorted = [...availableDates]
+      .filter(d => !isBefore(startOfDay(d), today))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    if (sorted.length > 0) {
+      autoSelectDates.current = sorted;
+      autoSelectIndex.current = 0;
+      isAutoSelecting.current = true;
+
+      const firstDate = sorted[0];
+      const firstMonth = startOfMonth(firstDate);
+      if (firstMonth.getTime() !== startOfMonth(currentMonth).getTime()) {
+        setCurrentMonth(firstMonth);
+      }
+      setSelectedDate(firstDate);
+    }
+  }, [availableDates]);
+
+  // Step 2c: If auto-selected date has no future slots, try next date
+  useEffect(() => {
+    if (!isAutoSelecting.current || isLoading) return;
+
+    const now = new Date();
+    const hasFutureSlots = timeSlots.some(s => {
+      try { return s.isAvailable && new Date(s.startTime) >= now; }
+      catch { return false; }
+    });
+
+    if (hasFutureSlots) {
+      // Found a good date
+      isAutoSelecting.current = false;
+      hasAutoSelected.current = true;
+      return;
+    }
+
+    // No slots — try next date
+    const nextIdx = autoSelectIndex.current + 1;
+    if (nextIdx < autoSelectDates.current.length) {
+      autoSelectIndex.current = nextIdx;
+      const nextDate = autoSelectDates.current[nextIdx];
+      const nextMonth = startOfMonth(nextDate);
+      if (nextMonth.getTime() !== startOfMonth(currentMonth).getTime()) {
+        setCurrentMonth(nextMonth);
+      }
+      setSelectedDate(nextDate);
+    } else {
+      // No more dates to try
+      isAutoSelecting.current = false;
+      hasAutoSelected.current = true;
+    }
+  }, [timeSlots, isLoading]);
 
   // Step 3: Load time slots when date is selected
   useEffect(() => {

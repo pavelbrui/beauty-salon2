@@ -13,7 +13,9 @@
       "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/twifcurnuhlmhhrnwpib/database/query\" -H \"Authorization: Bearer sbp_7995fd5aea537e55f1353a079da2c16fa3b8e693\" -H \"Content-Type: application/json\" -d '{\"\"query\"\": \"\"ALTER TABLE time_slots ADD COLUMN IF NOT EXISTS stylist_id uuid REFERENCES stylists\\(id\\) ON DELETE CASCADE; ALTER TABLE time_slots ADD COLUMN IF NOT EXISTS booking_id uuid REFERENCES bookings\\(id\\) ON DELETE SET NULL;\"\"}')",
       "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/twifcurnuhlmhhrnwpib/database/query\" -H \"Authorization: Bearer sbp_7995fd5aea537e55f1353a079da2c16fa3b8e693\" -H \"Content-Type: application/json\" -d '{\"\"query\"\": \"\"ALTER TABLE bookings ADD COLUMN IF NOT EXISTS start_time timestamptz; ALTER TABLE bookings ADD COLUMN IF NOT EXISTS end_time timestamptz;\"\"}')",
       "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/twifcurnuhlmhhrnwpib/database/query\" -H \"Authorization: Bearer sbp_7995fd5aea537e55f1353a079da2c16fa3b8e693\" -H \"Content-Type: application/json\" -d '{\"\"query\"\": \"\"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ''''time_slots'''' ORDER BY ordinal_position;\"\"}')",
-      "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/twifcurnuhlmhhrnwpib/database/query\" -H \"Authorization: Bearer sbp_7995fd5aea537e55f1353a079da2c16fa3b8e693\" -H \"Content-Type: application/json\" -d '{\"\"query\"\": \"\"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ''''bookings'''' ORDER BY ordinal_position;\"\"}')"
+      "Bash(curl -s -X POST \"https://api.supabase.com/v1/projects/twifcurnuhlmhhrnwpib/database/query\" -H \"Authorization: Bearer sbp_7995fd5aea537e55f1353a079da2c16fa3b8e693\" -H \"Content-Type: application/json\" -d '{\"\"query\"\": \"\"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ''''bookings'''' ORDER BY ordinal_position;\"\"}')",
+      "Bash(grep:*)",
+      "Bash(echo:*)"
     ]
   }
 }

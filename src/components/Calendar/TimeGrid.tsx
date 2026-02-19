@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, parseISO } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { TimeSlot } from '../../types';
@@ -39,6 +39,23 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   const t = translations[language];
   const locale = language === 'pl' ? pl : language === 'ru' ? ru : enUS;
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('morning');
+
+  // Auto-select the first period that has available (future) slots
+  useEffect(() => {
+    if (timeSlots.length === 0) return;
+    const now = new Date();
+    const periods: TimePeriod[] = ['morning', 'afternoon', 'evening'];
+    const firstWithSlots = periods.find(period =>
+      filterSlotsByPeriod(timeSlots, period).some(slot => {
+        try { return parseISO(slot.startTime) >= now && slot.isAvailable; }
+        catch { return false; }
+      })
+    );
+    if (firstWithSlots) {
+      setSelectedPeriod(firstWithSlots);
+    }
+  }, [timeSlots]);
+
   const filteredSlots = filterSlotsByPeriod(timeSlots, selectedPeriod);
 
   const formatTime = (time: string) => {
@@ -72,6 +89,21 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
     return <LoadingSpinner />;
   }
 
+  // Count available slots per period
+  const now = new Date();
+  const countAvailable = (period: TimePeriod) =>
+    filterSlotsByPeriod(timeSlots, period).filter(s => {
+      try { return parseISO(s.startTime) >= now && s.isAvailable; }
+      catch { return false; }
+    }).length;
+
+  const periodCounts = {
+    morning: countAvailable('morning'),
+    afternoon: countAvailable('afternoon'),
+    evening: countAvailable('evening')
+  };
+  const totalAvailable = periodCounts.morning + periodCounts.afternoon + periodCounts.evening;
+
   if (timeSlots.length === 0) {
     return (
       <div className="text-center text-gray-500 py-8">
@@ -80,37 +112,64 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
     );
   }
 
+  const periodLabels: Record<TimePeriod, string> = {
+    morning: t.booking.morning,
+    afternoon: t.booking.afternoon,
+    evening: t.booking.evening
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-center space-x-2">
-        <button
-          className={`px-4 py-2 rounded-full ${
-            selectedPeriod === 'morning' ? 'bg-amber-500 text-white' : 'bg-gray-100'
-          }`}
-          onClick={() => setSelectedPeriod('morning')}
-        >
-          {t.booking.morning}
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full ${
-            selectedPeriod === 'afternoon' ? 'bg-amber-500 text-white' : 'bg-gray-100'
-          }`}
-          onClick={() => setSelectedPeriod('afternoon')}
-        >
-          {t.booking.afternoon}
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full ${
-            selectedPeriod === 'evening' ? 'bg-amber-500 text-white' : 'bg-gray-100'
-          }`}
-          onClick={() => setSelectedPeriod('evening')}
-        >
-          {t.booking.evening}
-        </button>
+        {(['morning', 'afternoon', 'evening'] as TimePeriod[]).map(period => (
+          <button
+            key={period}
+            className={`px-4 py-2 rounded-full transition-colors ${
+              selectedPeriod === period
+                ? 'bg-amber-500 text-white'
+                : periodCounts[period] > 0
+                  ? 'bg-gray-100 hover:bg-gray-200'
+                  : 'bg-gray-50 text-gray-300'
+            }`}
+            onClick={() => setSelectedPeriod(period)}
+          >
+            {periodLabels[period]}
+            {periodCounts[period] > 0 && (
+              <span className={`ml-1.5 text-xs ${selectedPeriod === period ? 'text-amber-100' : 'text-gray-400'}`}>
+                ({periodCounts[period]})
+              </span>
+            )}
+          </button>
+        ))}
       </div>
-      
+
+      {totalAvailable === 0 && (
+        <div className="text-center text-gray-500 py-6">
+          {t.noSlotsAvailable}
+        </div>
+      )}
+
+      {totalAvailable > 0 && filteredSlots.filter(s => isSlotAvailable(s)).length === 0 && (
+        <div className="text-center text-gray-500 py-6">
+          {t.booking.noSlotsInPeriod}
+          <div className="mt-2 text-sm">
+            {(['morning', 'afternoon', 'evening'] as TimePeriod[])
+              .filter(p => p !== selectedPeriod && periodCounts[p] > 0)
+              .map(p => (
+                <button
+                  key={p}
+                  onClick={() => setSelectedPeriod(p)}
+                  className="mx-1 text-amber-600 hover:text-amber-700 underline"
+                >
+                  {periodLabels[p]} ({periodCounts[p]})
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
-      <motion.div 
+      <motion.div
         key={selectedPeriod}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
