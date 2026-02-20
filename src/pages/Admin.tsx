@@ -5,9 +5,10 @@ import { AdminTimeSlots } from '../components/admin/AdminTimeSlots';
 import { AdminGallery } from '../components/admin/AdminGallery';
 import { StylistAssignments } from '../components/admin/StylistAssignments';
 import { AdminBookings } from '../components/admin/AdminBookings';
+import { AdminTrainings } from '../components/admin/AdminTrainings';
 
 export const Admin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments' | 'trainings'>('services');
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -64,6 +65,14 @@ export const Admin: React.FC = () => {
             >
               Przypisania
             </button>
+            <button
+              onClick={() => setActiveTab('trainings')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'trainings' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Szkolenia
+            </button>
           </nav>
         </div>
       </div>
@@ -75,6 +84,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'assignments' && <StylistAssignments />}
 
       {activeTab === 'bookings' && <AdminBookings />}
+      {activeTab === 'trainings' && <AdminTrainings />}
     </div>
   );
 };

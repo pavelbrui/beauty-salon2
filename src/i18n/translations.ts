@@ -156,7 +156,19 @@ export const translations = {
       title: 'Szkolenie z makijażu permanentnego',
       seoDescription: 'Profesjonalne szkolenia z makijażu permanentnego w Białymstoku – nauka technik brwi, ust i kreski. Dołącz do kursu i rozpocznij karierę w beauty.',
       header: 'Szkolenia makijażu permanentnego',
-      intro: 'Oferujemy kompleksowe kursy dla początkujących i zaawansowanych, prowadzone przez doświadczoną stylistkę.'
+      intro: 'Oferujemy kompleksowe kursy dla początkujących i zaawansowanych, prowadzone przez doświadczoną stylistkę.',
+      heroTitle: 'Profesjonalne Szkolenia Beauty',
+      heroSubtitle: 'Rozpocznij karierę w branży beauty z naszymi certyfikowanymi kursami',
+      allCourses: 'Wszystkie kursy',
+      price: 'Cena',
+      duration: 'Czas trwania',
+      viewDetails: 'Zobacz szczegóły',
+      backToList: 'Wróć do listy szkoleń',
+      contactCta: 'Zainteresowany? Skontaktuj się z nami!',
+      contactButton: 'Umów się na konsultację',
+      noCourses: 'Brak dostępnych szkoleń',
+      published: 'Opublikowane',
+      draft: 'Szkic'
     },
     admin_bookings: {
       title: 'Rezerwacje',
@@ -342,7 +354,19 @@ export const translations = {
       title: 'Permanent Makeup Training',
       seoDescription: 'Professional permanent makeup trainings in Bialystok – learn brow, lip and eyeliner techniques. Join our course and start your beauty career.',
       header: 'Permanent Makeup Trainings',
-      intro: 'We offer comprehensive courses for beginners and advanced students, led by an experienced stylist.'
+      intro: 'We offer comprehensive courses for beginners and advanced students, led by an experienced stylist.',
+      heroTitle: 'Professional Beauty Trainings',
+      heroSubtitle: 'Start your beauty career with our certified courses',
+      allCourses: 'All courses',
+      price: 'Price',
+      duration: 'Duration',
+      viewDetails: 'View details',
+      backToList: 'Back to trainings',
+      contactCta: 'Interested? Get in touch!',
+      contactButton: 'Book a consultation',
+      noCourses: 'No courses available',
+      published: 'Published',
+      draft: 'Draft'
     },
     admin_bookings: {
       title: 'Bookings',
@@ -528,7 +552,19 @@ export const translations = {
       title: 'Обучение перманентному макияжу',
       seoDescription: 'Профессиональное обучение перманентному макияжу в Белостоке – изучите техники бровей, губ и стрелок. Присоединяйтесь к курсу и начните карьеру в бьюти.',
       header: 'Обучение перманентному макияжу',
-      intro: 'Мы предлагаем комплексные курсы для начинающих и продвинутых, проводимые опытным стилистом.'
+      intro: 'Мы предлагаем комплексные курсы для начинающих и продвинутых, проводимые опытным стилистом.',
+      heroTitle: 'Профессиональные курсы красоты',
+      heroSubtitle: 'Начните карьеру в индустрии красоты с нашими сертифицированными курсами',
+      allCourses: 'Все курсы',
+      price: 'Цена',
+      duration: 'Продолжительность',
+      viewDetails: 'Подробнее',
+      backToList: 'Вернуться к списку',
+      contactCta: 'Заинтересованы? Свяжитесь с нами!',
+      contactButton: 'Записаться на консультацию',
+      noCourses: 'Нет доступных курсов',
+      published: 'Опубликовано',
+      draft: 'Черновик'
     },
     admin_bookings: {
       title: 'Записи',

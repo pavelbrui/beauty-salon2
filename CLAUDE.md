@@ -17,9 +17,9 @@ React 18 + TypeScript + Vite + Tailwind CSS + Supabase (PostgreSQL) + Zustand + 
 ## Project Structure
 ```
 src/
-├── pages/           # Route-level components (Home, BookingPage, Admin, ServicesPage, etc.)
+├── pages/           # Route-level components (Home, BookingPage, Admin, ServicesPage, TrainingPage, etc.)
 ├── components/      # Reusable UI (Navbar, ServiceCard, AuthModal, BookingForm, etc.)
-│   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments)
+│   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments, AdminTrainings)
 │   └── Calendar/    # Booking calendar (AdvancedBookingCalendar, MonthCalendar, TimeGrid)
 ├── lib/             # Supabase client (supabase.ts), auth (auth.ts), email (email.ts)
 ├── hooks/           # useLanguage.ts (Zustand store, persisted)
@@ -27,7 +27,7 @@ src/
 ├── types/           # index.ts (TypeScript interfaces)
 ├── utils/           # timeSlots.ts, dateUtils.ts
 └── assets/          # images.ts (URLs)
-supabase/migrations/ # 13 SQL migration files
+supabase/migrations/ # 20 SQL migration files (0001–0020)
 ```
 
 ## Key Architectural Rules
@@ -39,10 +39,10 @@ supabase/migrations/ # 13 SQL migration files
 - **Prices**: Stored in cents in DB. Display: `(price / 100).toFixed(0) + ' PLN'`
 
 ## Database Tables
-`services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `email_templates` | `notifications`
+`services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `email_templates` | `notifications` | `trainings` (title, slug, category, content_blocks JSONB, is_published)
 
 ## Routes
-`/` Home | `/services` `/services/:category` | `/booking/:serviceId` | `/profile` | `/appointments` | `/stylists` | `/gallery` | `/admin` (tabs: services, bookings, stylists, timeslots, gallery, assignments)
+`/` Home | `/services` `/services/:category` | `/booking/:serviceId` | `/profile` | `/appointments` | `/stylists` | `/gallery` | `/training` `/training/:slug` | `/admin` (tabs: services, bookings, stylists, timeslots, gallery, assignments, trainings)
 
 ## Supabase Query Pattern (ALWAYS follow)
 ```typescript
@@ -50,6 +50,17 @@ const { data, error } = await supabase.from('table').select('*').eq('field', val
 if (error) { console.error('Error:', error); return; }
 if (data) setItems(data);
 ```
+
+## Trainings System (Block-Based CMS)
+The training/courses section uses a JSONB-based block editor:
+- **DB table**: `trainings` with `content_blocks` JSONB column storing an array of blocks
+- **Block types**: `heading` (H2/H3), `text`, `image` (Supabase Storage upload), `list` (bullet/check)
+- **Each block** has `id`, `type`, and multilingual fields (`text`, `text_en`, `text_ru`)
+- **Admin**: `src/components/admin/AdminTrainings.tsx` — list view + inline block editor
+- **Block editor**: `src/components/admin/BlockEditor.tsx` — per-block editing with PL/EN/RU tabs
+- **Templates**: `src/components/admin/trainingTemplates.ts` — 4 pre-made course templates
+- **Frontend**: `src/pages/TrainingPage.tsx` — list mode (`/training`) + detail mode (`/training/:slug`)
+- **Types**: `ContentBlock` (discriminated union), `Training` in `src/types/index.ts`
 
 ## Common Searches for Subagents
 When exploring this codebase, use these patterns:
@@ -63,6 +74,7 @@ When exploring this codebase, use these patterns:
 - Find auth usage: `Grep: getSession\|signIn\|signOut`
 - Find state management: `Grep: useState\|useEffect\|useLanguage`
 - Find time slot logic: `Read: src/utils/timeSlots.ts`
+- Find training system: `Glob: src/components/admin/AdminTrainings.tsx` or `Read: src/components/admin/BlockEditor.tsx`
 - Find migrations: `Glob: supabase/migrations/*.sql`
 
 ## Adding New Features Checklist
@@ -76,8 +88,11 @@ When exploring this codebase, use these patterns:
 ## Environment
 - Supabase URL: `VITE_SUPABASE_URL` in `.env`
 - Supabase Key: `VITE_SUPABASE_ANON_KEY` in `.env`
+- DeepL API: `VITE_DEEPL_API_KEYS` in `.env` (used for auto-translation)
+- Google Maps: `VITE_GOOGLE_MAPS_API_KEY` in `.env`
 - Access in code: `import.meta.env.VITE_SUPABASE_URL`
 - **E2E Tests**: Playwright (Chromium) — test files in `e2e/` directory
+- **Deployment**: Netlify (see `netlify.toml`)
 - No CI/CD pipelines
 
 ## E2E Tests (Playwright)
@@ -89,6 +104,7 @@ e2e/
 ├── booking.spec.ts     # Booking flow, appointments page
 ├── stylists.spec.ts    # Stylist cards, specialties, book button
 ├── gallery.spec.ts     # Gallery grid, category filter, image hover
+├── seo.spec.ts         # SEO meta tags, structured data
 └── admin.spec.ts       # Admin panel, tab switching, content visibility
 ```
 

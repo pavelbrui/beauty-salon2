@@ -12,7 +12,13 @@
       "Bash(powershell -Command \"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; try { $req = [System.Net.HttpWebRequest]::Create\\(''https://katarzynabrui.pl''\\); $req.Timeout = 5000; $resp = $req.GetResponse\\(\\) } catch { $_Exception.InnerException.Message; if \\($_Exception.InnerException.InnerException\\) { $_Exception.InnerException.InnerException.Message } }\")",
       "Bash(openssl s_client:*)",
       "Bash(openssl x509:*)",
-      "Bash(netlify:*)"
+      "Bash(netlify:*)",
+      "Read(//c/Users/Katarzyna/**)",
+      "Bash(/tmp/seed_training3.json:*)",
+      "Bash(/tmp/seed_training4.json:*)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }
