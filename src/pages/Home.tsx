@@ -1,39 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ServiceCard } from '../components/ServiceCard';
-import { AuthModal } from '../components/AuthModal';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { Service } from '../types';
-import { heroImage, serviceImages } from '../assets/images';
+import { serviceImages } from '../assets/images';
 import { Reviews } from '../components/Reviews';
 import { MapLocation } from '../components/MapLocation';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
-
 export const Home: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [user, setUser] = React.useState<any>(null);
-  const [showAuthModal, setShowAuthModal] = React.useState(false);
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   React.useEffect(() => {
     loadServices();
@@ -120,12 +105,21 @@ export const Home: React.FC = () => {
           'Katarzyna Brui'
         ]}
       />
-      <header
-        className="relative h-screen bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url(${heroImage})`
-        }}
-      >
+      <header className="relative h-screen">
+        {/* Mobile background (portrait photo) */}
+        <div
+          className="absolute inset-0 bg-cover bg-center md:hidden"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('/og-image2.jpg')`
+          }}
+        />
+        {/* Desktop background (collage) */}
+        <div
+          className="absolute inset-0 bg-cover bg-center hidden md:block"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('/og-image2.jpg')`
+          }}
+        />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
             {t.welcomeTitle}
@@ -153,24 +147,6 @@ export const Home: React.FC = () => {
                 {t.bookNow}
               </button>
             </div>
-
-            {!user ? (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm"
-              >
-                <UserCircleIcon className="h-5 w-5" />
-                {t.home?.loginPrompt || 'Zaloguj się lub utwórz konto'}
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate('/profile')}
-                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm"
-              >
-                <UserCircleIcon className="h-5 w-5" />
-                {t.profile}
-              </button>
-            )}
           </div>
         </div>
       </header>
@@ -288,14 +264,6 @@ export const Home: React.FC = () => {
         </div>
       </main>}
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        mode="signin"
-        onSuccess={() => {
-          setShowAuthModal(false);
-        }}
-      />
     </div>
   );
 };

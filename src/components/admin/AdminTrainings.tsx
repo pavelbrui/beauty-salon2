@@ -40,6 +40,7 @@ export const AdminTrainings: React.FC = () => {
   const [durationEn, setDurationEn] = useState('');
   const [durationRu, setDurationRu] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [coverImagePosition, setCoverImagePosition] = useState<'top' | 'center' | 'bottom'>('center');
   const [isPublished, setIsPublished] = useState(true);
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [metaLang, setMetaLang] = useState<Lang>('pl');
@@ -71,7 +72,7 @@ export const AdminTrainings: React.FC = () => {
     setDescription(''); setDescEn(''); setDescRu('');
     setPrice(''); setPriceEn(''); setPriceRu('');
     setDuration(''); setDurationEn(''); setDurationRu('');
-    setCoverImageUrl(''); setIsPublished(true);
+    setCoverImageUrl(''); setCoverImagePosition('center'); setIsPublished(true);
     setBlocks([]); setMetaLang('pl');
     setEditingTraining(null);
   };
@@ -82,7 +83,7 @@ export const AdminTrainings: React.FC = () => {
     setDescription(t.description || ''); setDescEn(t.description_en || ''); setDescRu(t.description_ru || '');
     setPrice(t.price || ''); setPriceEn(t.price_en || ''); setPriceRu(t.price_ru || '');
     setDuration(t.duration || ''); setDurationEn(t.duration_en || ''); setDurationRu(t.duration_ru || '');
-    setCoverImageUrl(t.cover_image_url || ''); setIsPublished(t.is_published);
+    setCoverImageUrl(t.cover_image_url || ''); setCoverImagePosition(t.cover_image_position || 'center'); setIsPublished(t.is_published);
     setBlocks(t.content_blocks || []);
   };
 
@@ -129,6 +130,7 @@ export const AdminTrainings: React.FC = () => {
       description_en: descEn || null,
       description_ru: descRu || null,
       cover_image_url: coverImageUrl || null,
+      cover_image_position: coverImagePosition,
       price: price || null,
       price_en: priceEn || null,
       price_ru: priceRu || null,
@@ -331,6 +333,7 @@ export const AdminTrainings: React.FC = () => {
                       src={training.cover_image_url}
                       alt={training.title}
                       className="w-full h-full object-cover"
+                      style={{ objectPosition: training.cover_image_position || 'center' }}
                     />
                   )}
                   <div className="absolute top-2 right-2 flex gap-2">
@@ -618,19 +621,40 @@ export const AdminTrainings: React.FC = () => {
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Zdjęcie okładkowe</label>
             {coverImageUrl && (
-              <div className="mb-3 relative inline-block">
-                <img
-                  src={coverImageUrl}
-                  alt="Cover"
-                  className="h-32 rounded-lg object-cover shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setCoverImageUrl('')}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
-                >
-                  ×
-                </button>
+              <div className="mb-3">
+                <div className="relative inline-block">
+                  <img
+                    src={coverImageUrl}
+                    alt="Cover"
+                    className="w-full max-h-48 rounded-lg object-cover shadow-sm"
+                    style={{ objectPosition: coverImagePosition }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCoverImageUrl('')}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+                {/* Position selector */}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-gray-500">Kadrowanie:</span>
+                  {(['top', 'center', 'bottom'] as const).map(pos => (
+                    <button
+                      key={pos}
+                      type="button"
+                      onClick={() => setCoverImagePosition(pos)}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        coverImagePosition === pos
+                          ? 'bg-amber-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {pos === 'top' ? 'Góra' : pos === 'center' ? 'Środek' : 'Dół'}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
             <div className="flex items-center gap-3">

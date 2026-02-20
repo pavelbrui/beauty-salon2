@@ -86,6 +86,7 @@ export interface ImageBlock {
   caption?: string;
   caption_en?: string;
   caption_ru?: string;
+  position?: 'top' | 'center' | 'bottom';
 }
 
 export interface ListBlock {
@@ -110,6 +111,7 @@ export interface Training {
   description_en?: string;
   description_ru?: string;
   cover_image_url?: string;
+  cover_image_position?: 'top' | 'center' | 'bottom';
   price?: string;
   price_en?: string;
   price_ru?: string;

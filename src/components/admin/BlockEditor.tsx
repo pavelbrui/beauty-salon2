@@ -155,7 +155,12 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
   const renderImageEditor = (b: ImageBlock) => (
     <div className="space-y-3">
       {b.url && (
-        <img src={b.url} alt={b.caption || ''} className="w-full max-h-48 object-cover rounded-lg" />
+        <img
+          src={b.url}
+          alt={b.caption || ''}
+          className="w-full max-h-64 object-cover rounded-lg"
+          style={{ objectPosition: b.position || 'center' }}
+        />
       )}
       <div className="flex items-center gap-3">
         <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -187,6 +192,26 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         placeholder="lub wklej URL zdjęcia..."
         className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
       />
+      {/* Position selector */}
+      {b.url && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">Kadrowanie:</span>
+          {(['top', 'center', 'bottom'] as const).map(pos => (
+            <button
+              key={pos}
+              type="button"
+              onClick={() => onUpdate(index, { ...b, position: pos })}
+              className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                (b.position || 'center') === pos
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {pos === 'top' ? 'Góra' : pos === 'center' ? 'Środek' : 'Dół'}
+            </button>
+          ))}
+        </div>
+      )}
       {renderLangTabs()}
       <input
         type="text"

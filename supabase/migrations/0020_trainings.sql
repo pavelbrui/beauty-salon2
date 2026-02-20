@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.trainings (
   description_en text,
   description_ru text,
   cover_image_url text,
+  cover_image_position text DEFAULT 'center',
   price text,
   price_en text,
   price_ru text,

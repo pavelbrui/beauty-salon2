@@ -60,7 +60,8 @@ const renderBlock = (block: ContentBlock, language: string, index: number): Reac
           <img
             src={block.url}
             alt={caption || ''}
-            className="w-full rounded-xl shadow-lg"
+            className="w-full max-h-[600px] object-cover rounded-xl shadow-lg"
+            style={{ objectPosition: block.position || 'center' }}
             loading="lazy"
           />
           {caption && (
@@ -217,6 +218,7 @@ export const TrainingPage: React.FC = () => {
               src={training.cover_image_url}
               alt={trainingTitle}
               className="w-full h-full object-cover"
+              style={{ objectPosition: training.cover_image_position || 'center' }}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
@@ -330,18 +332,18 @@ export const TrainingPage: React.FC = () => {
       />
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 py-20 md:py-28">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white/10" />
-          <div className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-white/5" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/5" />
-        </div>
+      <div className="relative overflow-hidden py-20 md:py-28">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/og-image.jpg')`
+          }}
+        />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             {tp?.heroTitle || 'Profesjonalne Szkolenia Beauty'}
           </h1>
-          <p className="text-lg md:text-xl text-amber-100 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
             {tp?.heroSubtitle || 'Rozpocznij karierę w branży beauty z naszymi certyfikowanymi kursami'}
           </p>
         </div>
@@ -378,6 +380,7 @@ export const TrainingPage: React.FC = () => {
                         src={t.cover_image_url}
                         alt={tTitle}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        style={{ objectPosition: t.cover_image_position || 'center' }}
                         loading="lazy"
                       />
                     ) : (
