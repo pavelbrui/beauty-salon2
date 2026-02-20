@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock } from '../../types';
 import { supabase } from '../../lib/supabase';
+import { CropSelector, parseCropPosition } from './CropSelector';
 
 interface BlockEditorProps {
   block: ContentBlock;
@@ -152,81 +153,64 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
     </div>
   );
 
-  const renderImageEditor = (b: ImageBlock) => (
-    <div className="space-y-3">
-      {b.url && (
-        <img
-          src={b.url}
-          alt={b.caption || ''}
-          className="w-full max-h-64 object-cover rounded-lg"
-          style={{ objectPosition: b.position || 'center' }}
-        />
-      )}
-      <div className="flex items-center gap-3">
-        <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-          uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600'
-        }`}>
-          {uploading ? 'Przesyłanie...' : (b.url ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            disabled={uploading}
-            className="hidden"
-          />
-        </label>
+  const renderImageEditor = (b: ImageBlock) => {
+    const currentCrop = parseCropPosition(b.position);
+
+    return (
+      <div className="space-y-3">
         {b.url && (
-          <button
-            type="button"
-            onClick={() => onUpdate(index, { ...b, url: '' })}
-            className="text-sm text-red-500 hover:text-red-700"
-          >
-            Usuń zdjęcie
-          </button>
+          <CropSelector
+            imageUrl={b.url}
+            crop={currentCrop}
+            onChange={(crop) => onUpdate(index, { ...b, position: JSON.stringify(crop) })}
+          />
         )}
-      </div>
-      <input
-        type="text"
-        value={b.url || ''}
-        onChange={e => onUpdate(index, { ...b, url: e.target.value })}
-        placeholder="lub wklej URL zdjęcia..."
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
-      />
-      {/* Position selector */}
-      {b.url && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Kadrowanie:</span>
-          {(['top', 'center', 'bottom'] as const).map(pos => (
+        <div className="flex items-center gap-3">
+          <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600'
+          }`}>
+            {uploading ? 'Przesyłanie...' : (b.url ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+          {b.url && (
             <button
-              key={pos}
               type="button"
-              onClick={() => onUpdate(index, { ...b, position: pos })}
-              className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
-                (b.position || 'center') === pos
-                  ? 'bg-amber-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              onClick={() => onUpdate(index, { ...b, url: '' })}
+              className="text-sm text-red-500 hover:text-red-700"
             >
-              {pos === 'top' ? 'Góra' : pos === 'center' ? 'Środek' : 'Dół'}
+              Usuń zdjęcie
             </button>
-          ))}
+          )}
         </div>
-      )}
-      {renderLangTabs()}
-      <input
-        type="text"
-        value={langTab === 'pl' ? (b.caption || '') : langTab === 'en' ? (b.caption_en || '') : (b.caption_ru || '')}
-        onChange={e => {
-          const val = e.target.value;
-          if (langTab === 'pl') onUpdate(index, { ...b, caption: val });
-          else if (langTab === 'en') onUpdate(index, { ...b, caption_en: val });
-          else onUpdate(index, { ...b, caption_ru: val });
-        }}
-        placeholder={langTab === 'pl' ? 'Podpis zdjęcia (opcjonalnie)' : langTab === 'en' ? 'Image caption (optional)' : 'Подпись к фото (необязательно)'}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
-      />
-    </div>
-  );
+        <input
+          type="text"
+          value={b.url || ''}
+          onChange={e => onUpdate(index, { ...b, url: e.target.value })}
+          placeholder="lub wklej URL zdjęcia..."
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        />
+        {renderLangTabs()}
+        <input
+          type="text"
+          value={langTab === 'pl' ? (b.caption || '') : langTab === 'en' ? (b.caption_en || '') : (b.caption_ru || '')}
+          onChange={e => {
+            const val = e.target.value;
+            if (langTab === 'pl') onUpdate(index, { ...b, caption: val });
+            else if (langTab === 'en') onUpdate(index, { ...b, caption_en: val });
+            else onUpdate(index, { ...b, caption_ru: val });
+          }}
+          placeholder={langTab === 'pl' ? 'Podpis zdjęcia (opcjonalnie)' : langTab === 'en' ? 'Image caption (optional)' : 'Подпись к фото (необязательно)'}
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        />
+      </div>
+    );
+  };
 
   const renderListEditor = (b: ListBlock) => {
     const currentItems = langTab === 'pl' ? b.items : langTab === 'en' ? (b.items_en || []) : (b.items_ru || []);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
@@ -7,7 +7,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { getServiceName } from '../utils/serviceTranslation';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
-import { format } from 'date-fns';
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import {
   CalendarDaysIcon,
@@ -17,7 +17,10 @@ import {
   PencilSquareIcon,
   ArrowPathIcon,
   TrashIcon,
-  SparklesIcon
+  SparklesIcon,
+  ListBulletIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
 const dateLocales = { pl, en: enUS, ru };
@@ -33,6 +36,9 @@ export const UserBookings: React.FC = () => {
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
   const [rescheduleService, setRescheduleService] = useState<Service | null>(null);
   const [filter, setFilter] = useState<BookingFilter>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   useEffect(() => {
     loadBookings();
@@ -242,6 +248,161 @@ export const UserBookings: React.FC = () => {
 
   const activeCount = bookings.filter(b => isActiveBooking(b.status)).length;
 
+  const locale = dateLocales[language as keyof typeof dateLocales] || pl;
+
+  const calendarDays = useMemo(() => {
+    const monthStart = startOfMonth(calendarMonth);
+    const monthEnd = endOfMonth(calendarMonth);
+    const start = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const end = endOfWeek(monthEnd, { weekStartsOn: 1 });
+    const days: Date[] = [];
+    let day = start;
+    while (day <= end) {
+      days.push(day);
+      day = addDays(day, 1);
+    }
+    return days;
+  }, [calendarMonth]);
+
+  const bookingsByDate = useMemo(() => {
+    const map: Record<string, Booking[]> = {};
+    filteredBookings.forEach(b => {
+      const startTime = b.time_slots?.start_time || b.start_time;
+      if (!startTime) return;
+      const dateKey = format(new Date(startTime), 'yyyy-MM-dd');
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(b);
+    });
+    Object.values(map).forEach(arr =>
+      arr.sort((a, b) => {
+        const ta = a.time_slots?.start_time || a.start_time || '';
+        const tb = b.time_slots?.start_time || b.start_time || '';
+        return ta.localeCompare(tb);
+      })
+    );
+    return map;
+  }, [filteredBookings]);
+
+  const weekDays = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i);
+      return format(day, 'EEEEEE', { locale });
+    });
+  }, [locale]);
+
+  const renderBookingCard = (booking: Booking) => {
+    const startTime = booking.time_slots?.start_time || booking.start_time;
+    const endTime = booking.time_slots?.end_time || booking.end_time;
+    const dateInfo = formatDateTime(startTime);
+    const endInfo = formatDateTime(endTime);
+    const statusConfig = getStatusConfig(booking.status);
+    const price = booking.services?.price;
+    const duration = booking.services?.duration;
+
+    return (
+      <div
+        key={booking.id}
+        className={`bg-white rounded-xl shadow-sm overflow-hidden transition-opacity ${
+          booking.status === 'cancelled' ? 'opacity-60' : ''
+        }`}
+      >
+        <div className="p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-3">
+                <h3 className="text-base font-semibold text-gray-900 truncate">
+                  {booking.services ? getServiceName(booking.services, language) : '—'}
+                </h3>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dot}`} />
+                  {statusConfig.label}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                {dateInfo && (
+                  <div className="flex items-center gap-2">
+                    <CalendarDaysIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <span className="capitalize">{dateInfo.dayOfWeek}, {dateInfo.date}</span>
+                  </div>
+                )}
+
+                {dateInfo && (
+                  <div className="flex items-center gap-2">
+                    <ClockIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <span>
+                      {dateInfo.time}
+                      {endInfo ? ` – ${endInfo.time}` : ''}
+                      {duration ? ` (${duration} min)` : ''}
+                    </span>
+                  </div>
+                )}
+
+                {booking.stylists?.name && (
+                  <div className="flex items-center gap-2">
+                    <UserIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <span>{booking.stylists.name}</span>
+                  </div>
+                )}
+
+                {price != null && (
+                  <div className="flex items-center gap-2">
+                    <CurrencyDollarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <span className="font-medium">{(price / 100).toFixed(0)} PLN</span>
+                  </div>
+                )}
+              </div>
+
+              {!dateInfo && (
+                <p className="text-sm text-gray-400 mt-1">
+                  {t.profile_page?.noDateInfo || 'Brak informacji o terminie'}
+                </p>
+              )}
+            </div>
+
+            <div className="flex sm:flex-col gap-2 sm:items-end flex-shrink-0">
+              {isActiveBooking(booking.status) && (
+                <>
+                  <button
+                    onClick={() => openReschedule(booking)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                  >
+                    <PencilSquareIcon className="h-4 w-4" />
+                    {t.profile_page?.reschedule || 'Zmień termin'}
+                  </button>
+                  <button
+                    onClick={() => cancelBooking(booking.id)}
+                    className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                    {t.profile_page?.cancel || 'Anuluj'}
+                  </button>
+                </>
+              )}
+              {booking.status === 'cancelled' && (
+                <>
+                  <button
+                    onClick={() => rebookService(booking)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                  >
+                    <ArrowPathIcon className="h-4 w-4" />
+                    {t.profile_page?.rebook || 'Zarezerwuj ponownie'}
+                  </button>
+                  <button
+                    onClick={() => deleteBooking(booking.id)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                    {t.profile_page?.delete || 'Usuń'}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -263,23 +424,48 @@ export const UserBookings: React.FC = () => {
             )}
           </h2>
 
-          {/* Filter Tabs */}
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
-            {(['all', 'active', 'past'] as BookingFilter[]).map((f) => (
+          <div className="flex items-center gap-2">
+             {/* View Toggle */}
+            <div className="flex items-center gap-1">
               <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  filter === f
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === 'list' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
                 }`}
+                title={t.profile_page?.listView || 'Lista'}
               >
-                {f === 'all' && (t.profile_page?.allBookings || 'Wszystkie')}
-                {f === 'active' && (t.profile_page?.activeBookings || 'Aktywne')}
-                {f === 'past' && (t.profile_page?.pastBookings || 'Historia')}
+                <ListBulletIcon className="h-5 w-5" />
               </button>
-            ))}
+              <button
+                onClick={() => setViewMode('calendar')}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === 'calendar' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
+                }`}
+                title={t.profile_page?.calendarView || 'Kalendarz'}
+              >
+                <CalendarDaysIcon className="h-5 w-5" />
+              </button>
+            </div>
+            {/* Filter Tabs */}
+            <div className="flex bg-gray-100 rounded-lg p-0.5">
+              {(['all', 'active', 'past'] as BookingFilter[]).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                    filter === f
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {f === 'all' && (t.profile_page?.allBookings || 'Wszystkie')}
+                  {f === 'active' && (t.profile_page?.activeBookings || 'Aktywne')}
+                  {f === 'past' && (t.profile_page?.pastBookings || 'Historia')}
+                </button>
+              ))}
+            </div>
+
+           
           </div>
         </div>
 
@@ -302,120 +488,120 @@ export const UserBookings: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredBookings.map((booking) => {
-              const startTime = booking.time_slots?.start_time || booking.start_time;
-              const endTime = booking.time_slots?.end_time || booking.end_time;
-              const dateInfo = formatDateTime(startTime);
-              const endInfo = formatDateTime(endTime);
-              const statusConfig = getStatusConfig(booking.status);
-              const price = booking.services?.price;
-              const duration = booking.services?.duration;
+          <>
+            {/* List View */}
+            {viewMode === 'list' && (
+              <div className="space-y-3">
+                {filteredBookings.map((booking) => renderBookingCard(booking))}
+              </div>
+            )}
 
-              return (
-                <div
-                  key={booking.id}
-                  className={`bg-white rounded-xl shadow-sm overflow-hidden transition-opacity ${
-                    booking.status === 'cancelled' ? 'opacity-60' : ''
-                  }`}
-                >
-                  <div className="p-5">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-3">
-                          <h3 className="text-base font-semibold text-gray-900 truncate">
-                            {booking.services ? getServiceName(booking.services, language) : '—'}
-                          </h3>
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dot}`} />
-                            {statusConfig.label}
-                          </span>
+            {/* Calendar View */}
+            {viewMode === 'calendar' && (
+              <div className="bg-white rounded-xl shadow-sm">
+                {/* Calendar header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                  <button
+                    onClick={() => setCalendarMonth(subMonths(calendarMonth, 1))}
+                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                  >
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  </button>
+                  <h3 className="text-lg font-semibold text-gray-900 capitalize">
+                    {format(calendarMonth, 'LLLL yyyy', { locale })}
+                  </h3>
+                  <button
+                    onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))}
+                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                  >
+                    <ChevronRightIcon className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Week day headers */}
+                <div className="grid grid-cols-7 border-b border-gray-100">
+                  {weekDays.map((day, i) => (
+                    <div key={i} className="py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar grid */}
+                <div className="grid grid-cols-7">
+                  {calendarDays.map((day, i) => {
+                    const dateKey = format(day, 'yyyy-MM-dd');
+                    const dayBookings = bookingsByDate[dateKey] || [];
+                    const isCurrentMonth = isSameMonth(day, calendarMonth);
+                    const isToday = isSameDay(day, new Date());
+                    const isSelected = selectedDay && isSameDay(day, selectedDay);
+
+                    return (
+                      <div
+                        key={i}
+                        onClick={() => {
+                          if (dayBookings.length > 0) {
+                            setSelectedDay(isSelected ? null : day);
+                          }
+                        }}
+                        className={`min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 p-1 transition-colors ${
+                          !isCurrentMonth ? 'bg-gray-50' : ''
+                        } ${isSelected ? 'bg-amber-50 ring-2 ring-amber-300 ring-inset' : ''} ${
+                          dayBookings.length > 0 ? 'cursor-pointer hover:bg-amber-50/50' : ''
+                        }`}
+                      >
+                        <div className={`text-xs font-medium mb-1 px-1 ${
+                          isToday
+                            ? 'bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                            : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'
+                        }`}>
+                          {format(day, 'd')}
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                          {dateInfo && (
-                            <div className="flex items-center gap-2">
-                              <CalendarDaysIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              <span className="capitalize">{dateInfo.dayOfWeek}, {dateInfo.date}</span>
-                            </div>
-                          )}
+                        <div className="space-y-0.5">
+                          {dayBookings.slice(0, 2).map(b => {
+                            const sc = getStatusConfig(b.status);
+                            const time = b.time_slots?.start_time || b.start_time;
+                            const timeStr = time ? format(new Date(time), 'HH:mm') : '';
 
-                          {dateInfo && (
-                            <div className="flex items-center gap-2">
-                              <ClockIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              <span>
-                                {dateInfo.time}
-                                {endInfo ? ` – ${endInfo.time}` : ''}
-                                {duration ? ` (${duration} min)` : ''}
-                              </span>
-                            </div>
-                          )}
-
-                          {booking.stylists?.name && (
-                            <div className="flex items-center gap-2">
-                              <UserIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              <span>{booking.stylists.name}</span>
-                            </div>
-                          )}
-
-                          {price != null && (
-                            <div className="flex items-center gap-2">
-                              <CurrencyDollarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              <span className="font-medium">{(price / 100).toFixed(0)} PLN</span>
+                            return (
+                              <div
+                                key={b.id}
+                                className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate ${sc.bg} ${sc.text}`}
+                                title={`${timeStr} ${b.services ? getServiceName(b.services, language) : ''}`}
+                              >
+                                <span className="font-medium">{timeStr}</span>{' '}
+                                <span className="hidden sm:inline">{b.services ? getServiceName(b.services, language) : ''}</span>
+                              </div>
+                            );
+                          })}
+                          {dayBookings.length > 2 && (
+                            <div className="text-[10px] text-gray-400 px-1">
+                              +{dayBookings.length - 2} {t.profile_page?.more || 'więcej'}
                             </div>
                           )}
                         </div>
-
-                        {!dateInfo && (
-                          <p className="text-sm text-gray-400 mt-1">
-                            {t.profile_page?.noDateInfo || 'Brak informacji o terminie'}
-                          </p>
-                        )}
                       </div>
+                    );
+                  })}
+                </div>
 
-                      <div className="flex sm:flex-col gap-2 sm:items-end flex-shrink-0">
-                        {isActiveBooking(booking.status) && (
-                          <>
-                            <button
-                              onClick={() => openReschedule(booking)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
-                            >
-                              <PencilSquareIcon className="h-4 w-4" />
-                              {t.profile_page?.reschedule || 'Zmień termin'}
-                            </button>
-                            <button
-                              onClick={() => cancelBooking(booking.id)}
-                              className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                            >
-                              {t.profile_page?.cancel || 'Anuluj'}
-                            </button>
-                          </>
-                        )}
-                        {booking.status === 'cancelled' && (
-                          <>
-                            <button
-                              onClick={() => rebookService(booking)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
-                            >
-                              <ArrowPathIcon className="h-4 w-4" />
-                              {t.profile_page?.rebook || 'Zarezerwuj ponownie'}
-                            </button>
-                            <button
-                              onClick={() => deleteBooking(booking.id)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                              <TrashIcon className="h-4 w-4" />
-                              {t.profile_page?.delete || 'Usuń'}
-                            </button>
-                          </>
-                        )}
-                      </div>
+                {/* Selected day detail panel */}
+                {selectedDay && (
+                  <div className="border-t border-gray-200 p-4">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3 capitalize">
+                      {format(selectedDay, 'EEEE, d MMMM yyyy', { locale })}
+                    </h4>
+                    <div className="space-y-3">
+                      {(bookingsByDate[format(selectedDay, 'yyyy-MM-dd')] || []).map(booking =>
+                        renderBookingCard(booking)
+                      )}
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 

@@ -145,7 +145,10 @@ export const translations = {
       editProfile: 'Edytuj profil',
       activeBookings: 'Aktywne',
       pastBookings: 'Historia',
-      allBookings: 'Wszystkie'
+      allBookings: 'Wszystkie',
+      listView: 'Lista',
+      calendarView: 'Kalendarz',
+      more: 'więcej'
     },
     home: {
       loginPrompt: 'Zaloguj się lub utwórz konto',
@@ -343,7 +346,10 @@ export const translations = {
       editProfile: 'Edit profile',
       activeBookings: 'Active',
       pastBookings: 'History',
-      allBookings: 'All'
+      allBookings: 'All',
+      listView: 'List',
+      calendarView: 'Calendar',
+      more: 'more'
     },
     home: {
       loginPrompt: 'Sign in or create an account',
@@ -541,7 +547,10 @@ export const translations = {
       editProfile: 'Редактировать профиль',
       activeBookings: 'Активные',
       pastBookings: 'История',
-      allBookings: 'Все'
+      allBookings: 'Все',
+      listView: 'Список',
+      calendarView: 'Календарь',
+      more: 'ещё'
     },
     home: {
       loginPrompt: 'Войдите или создайте аккаунт',

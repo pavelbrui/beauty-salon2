@@ -5,6 +5,7 @@ import { translations } from '../i18n/translations';
 import { SEO } from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { Training, ContentBlock } from '../types';
+import { cropPositionToStyle } from '../components/admin/CropSelector';
 
 const CATEGORY_LABELS: Record<string, { pl: string; en: string; ru: string }> = {
   permanent_makeup: { pl: 'Makijaż permanentny', en: 'Permanent Makeup', ru: 'Перманентный макияж' },
@@ -60,8 +61,8 @@ const renderBlock = (block: ContentBlock, language: string, index: number): Reac
           <img
             src={block.url}
             alt={caption || ''}
-            className="w-full max-h-[600px] object-cover rounded-xl shadow-lg"
-            style={{ objectPosition: block.position || 'center' }}
+            className="w-full max-h-[600px] rounded-xl shadow-lg"
+            style={cropPositionToStyle(block.position)}
             loading="lazy"
           />
           {caption && (
@@ -217,8 +218,8 @@ export const TrainingPage: React.FC = () => {
             <img
               src={training.cover_image_url}
               alt={trainingTitle}
-              className="w-full h-full object-cover"
-              style={{ objectPosition: training.cover_image_position || 'center' }}
+              className="w-full h-full"
+              style={cropPositionToStyle(training.cover_image_position)}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
@@ -379,8 +380,8 @@ export const TrainingPage: React.FC = () => {
                       <img
                         src={t.cover_image_url}
                         alt={tTitle}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        style={{ objectPosition: t.cover_image_position || 'center' }}
+                        className="w-full h-full group-hover:scale-105 transition-transform duration-500"
+                        style={cropPositionToStyle(t.cover_image_position)}
                         loading="lazy"
                       />
                     ) : (
