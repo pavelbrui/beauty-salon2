@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { ServiceList } from '../components/ServiceList';
+import { UserBookings } from '../components/UserBookings';
 import { Service, Stylist } from '../types';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
@@ -19,6 +20,20 @@ export const AppointmentsPage: React.FC = () => {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [stylistServiceIds, setStylistServiceIds] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // If navigated with ?service=, redirect directly to booking page
   useEffect(() => {
@@ -148,6 +163,13 @@ export const AppointmentsPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           {t.appointments}
         </h1>
+
+        {/* Show user's bookings if logged in */}
+        {isLoggedIn && (
+          <div className="mb-10">
+            <UserBookings />
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">

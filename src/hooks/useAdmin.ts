@@ -7,42 +7,64 @@ interface UseAdminReturn {
   user: any | null;
 }
 
+const AUTH_TIMEOUT_MS = 50000;
+
 export const useAdmin = (): UseAdminReturn => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const checkAdmin = async () => {
       try {
-        // getUser() fetches fresh user data from auth server (not cached JWT)
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
-        if (currentUser) {
-          setUser(currentUser);
-          const role = currentUser.app_metadata?.role;
-          setIsAdmin(role === 'admin');
-        } else {
-          setUser(null);
-          setIsAdmin(false);
+        // First try getSession() — fast, uses local cache
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          if (isMounted) {
+            setUser(null);
+            setIsAdmin(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Session exists — verify with getUser() but with a timeout
+        const userPromise = supabase.auth.getUser();
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Auth check timed out')), AUTH_TIMEOUT_MS)
+        );
+
+        const { data: { user: currentUser } } = await Promise.race([userPromise, timeoutPromise]);
+        if (isMounted) {
+          if (currentUser) {
+            setUser(currentUser);
+            setIsAdmin(currentUser.app_metadata?.role === 'admin');
+          } else {
+            setUser(null);
+            setIsAdmin(false);
+          }
         }
       } catch (err) {
         console.error('checkAdmin error:', err);
-        setIsAdmin(false);
+        if (isMounted) {
+          setIsAdmin(false);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     checkAdmin();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
       if (session?.user) {
-        // Fetch fresh user data on auth state change too
-        const { data: { user: freshUser } } = await supabase.auth.getUser();
-        if (freshUser) {
-          setUser(freshUser);
-          setIsAdmin(freshUser.app_metadata?.role === 'admin');
-        }
+        setUser(session.user);
+        setIsAdmin(session.user.app_metadata?.role === 'admin');
       } else {
         setUser(null);
         setIsAdmin(false);
@@ -50,7 +72,10 @@ export const useAdmin = (): UseAdminReturn => {
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { isAdmin, isLoading, user };
