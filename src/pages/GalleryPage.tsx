@@ -64,9 +64,17 @@ export const GalleryPage: React.FC = () => {
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
-        title="Galeria"
-        description="Galeria realizacji salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi. Zobacz efekty naszej pracy!"
+        title="Galeria Prac - Efekty Zabiegów"
+        description="Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
         canonical="/gallery"
+        keywords={[
+          'efekty makijażu permanentnego',
+          'galeria salon kosmetyczny Białystok',
+          'makijaż permanentny brwi efekty',
+          'stylizacja rzęs efekty',
+          'laminacja brwi przed i po',
+          'portfolio kosmetyczka Białystok'
+        ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>

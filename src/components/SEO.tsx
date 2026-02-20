@@ -23,6 +23,7 @@ export const SEO: React.FC<SEOProps> = ({
   type = 'website',
   image = DEFAULT_IMAGE,
   noindex = false,
+  keywords,
 }) => {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Makijaż Permanentny Białystok`;
   const url = canonical ? `${BASE_URL}${canonical}` : BASE_URL;

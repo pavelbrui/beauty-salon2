@@ -85,14 +85,20 @@ export const ServicesPage: React.FC = () => {
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
-        title="Usługi"
-        description="Cennik usług salonu Katarzyna Brui: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, laserowe usuwanie tatuażu; szkolenia z makijażu permanentnego. Białystok."
+        title="Usługi Kosmetyczne Białystok | Cennik Zabiegów"
+        description="Pełna oferta zabiegów kosmetycznych w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure, laserowe usuwanie tatuażu. Cennik i rezerwacja online."
         canonical="/services"
         keywords={[
-          'makijaż permanentny Białystok',
-          'stylizacja rzęs Białystok',
-          'laminacja brwi',
-          'kurs makijażu permanentnego'
+          'usługi kosmetyczne Białystok',
+          'zabiegi kosmetyczne cennik',
+          'makijaż permanentny Białystok cena',
+          'stylizacja rzęs Białystok cena',
+          'laminacja brwi Białystok',
+          'peeling węglowy Białystok',
+          'manicure Białystok',
+          'laserowe usuwanie tatuażu Białystok',
+          'salon kosmetyczny cennik Białystok',
+          'pielęgnacja brwi Białystok'
         ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">

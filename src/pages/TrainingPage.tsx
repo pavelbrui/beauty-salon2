@@ -17,10 +17,14 @@ export const TrainingPage: React.FC = () => {
         description={description}
         canonical="/training"
         keywords={[
-          'szkolenie makijaż permanentny',
-          'kurs makijażu permanentnego',
+          'szkolenie makijaż permanentny Białystok',
+          'kurs makijażu permanentnego Białystok',
           'szkolenia beauty Białystok',
-          'permanent makeup course'
+          'kurs linergistka',
+          'szkolenie microblading',
+          'kurs stylizacji rzęs',
+          'permanent makeup course Poland',
+          'szkolenia kosmetyczne Białystok'
         ]}
       />
       <div className="max-w-4xl mx-auto px-4 py-12">
