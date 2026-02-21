@@ -161,3 +161,39 @@ export interface Training {
   created_at: string;
   updated_at: string;
 }
+
+// Booksy integration types
+export interface BooksyBooking {
+  id: string;
+  booksy_client_name: string;
+  booksy_client_phone?: string;
+  booksy_client_email?: string;
+  booksy_service_name: string;
+  booksy_worker_name?: string;
+  booksy_price_text?: string;
+  start_time: string;
+  end_time: string;
+  stylist_id?: string;
+  time_slot_id?: string;
+  status: 'active' | 'changed' | 'cancelled';
+  sync_status: 'mapped' | 'unmapped' | 'error';
+  email_subject?: string;
+  email_message_id?: string;
+  email_type: 'new' | 'changed' | 'cancelled';
+  previous_booking_id?: string;
+  parse_errors?: string[];
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  stylists?: { name: string };
+}
+
+export interface BooksyStylistMapping {
+  id: string;
+  booksy_name: string;
+  stylist_id?: string;
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  stylists?: { name: string; image_url?: string };
+}

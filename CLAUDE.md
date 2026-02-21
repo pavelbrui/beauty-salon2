@@ -22,7 +22,7 @@ src/
 │   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments, AdminTrainings)
 │   └── Calendar/    # Booking calendar (AdvancedBookingCalendar, MonthCalendar, TimeGrid)
 ├── lib/             # Supabase client (supabase.ts), auth (auth.ts), email (email.ts)
-├── hooks/           # useLanguage.ts (Zustand store, persisted)
+├── hooks/           # useLanguage.ts (Zustand store), useLocalizedPath.ts (i18n routing helpers)
 ├── i18n/            # translations.ts (pl/en/ru)
 ├── types/           # index.ts (TypeScript interfaces)
 ├── utils/           # timeSlots.ts, dateUtils.ts
@@ -35,6 +35,7 @@ supabase/migrations/ # 20 SQL migration files (0001–0020)
 - **Auth**: Supabase Auth (email/password). Session via `supabase.auth.getSession()`. RLS enforces access.
 - **State**: Only language in Zustand. Everything else is local `useState` + `useEffect` fetching.
 - **i18n**: Always add translations for all 3 languages (pl, en, ru) in `src/i18n/translations.ts`
+- **i18n Routing**: URL-based language prefixes for SEO (`/en/...`, `/ru/...`, no prefix = Polish). See "i18n Routing System" section below.
 - **Styling**: Tailwind only. Accent color: `amber-500`/`amber-600`. No custom CSS files.
 - **Prices**: Stored in cents in DB. Display: `(price / 100).toFixed(0) + ' PLN'`
 

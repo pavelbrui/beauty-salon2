@@ -1,52 +1,243 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
   <url>
     <loc>https://katarzynabrui.pl/</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://katarzynabrui.pl/en/</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Services -->
+  <url>
     <loc>https://katarzynabrui.pl/services</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://katarzynabrui.pl/en/services</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/services</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Service categories -->
+  <url>
     <loc>https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Makija%C5%BC%20permanentny"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Makija%C5%BC%20permanentny"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://katarzynabrui.pl/services/Piel%C4%99gnacja%20brwi</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Piel%C4%99gnacja%20brwi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Piel%C4%99gnacja%20brwi"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Piel%C4%99gnacja%20brwi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Piel%C4%99gnacja%20brwi"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://katarzynabrui.pl/services/Rz%C4%99sy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Rz%C4%99sy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Rz%C4%99sy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Rz%C4%99sy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Rz%C4%99sy"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://katarzynabrui.pl/services/Laserowe%20usuwanie</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Laserowe%20usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Laserowe%20usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Appointments -->
   <url>
     <loc>https://katarzynabrui.pl/appointments</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/appointments"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/appointments"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/appointments"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/appointments"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://katarzynabrui.pl/en/appointments</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/appointments"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/appointments"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/appointments"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/appointments"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/appointments</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/appointments"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/appointments"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/appointments"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/appointments"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Stylists -->
+  <url>
     <loc>https://katarzynabrui.pl/stylists</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/stylists"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/stylists"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/stylists"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/stylists"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://katarzynabrui.pl/en/stylists</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/stylists"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/stylists"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/stylists"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/stylists"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/stylists</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/stylists"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/stylists"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/stylists"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/stylists"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Training -->
+  <url>
     <loc>https://katarzynabrui.pl/training</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/training"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/training"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/training"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/training"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://katarzynabrui.pl/en/training</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/training"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/training"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/training"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/training"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/training</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/training"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/training"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/training"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/training"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog -->
+  <url>
+    <loc>https://katarzynabrui.pl/blog</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/blog"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/blog"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/blog</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/blog"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/blog"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/blog</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/blog"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/blog"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/blog"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Gallery -->
+  <url>
     <loc>https://katarzynabrui.pl/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/gallery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/gallery"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/gallery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/gallery"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/gallery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/gallery"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/gallery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/gallery"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/gallery</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/gallery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/gallery"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/gallery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/gallery"/>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

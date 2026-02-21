@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
 import { Booking, Service, TimeSlot } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
+import { useViewMode } from '../hooks/useViewMode';
 import { translations } from '../i18n/translations';
 import { getServiceName } from '../utils/serviceTranslation';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
@@ -38,7 +39,7 @@ export const UserBookings: React.FC = () => {
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
   const [rescheduleService, setRescheduleService] = useState<Service | null>(null);
   const [filter, setFilter] = useState<BookingFilter>('all');
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [viewMode, setViewMode] = useViewMode();
   const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [quickBookDate, setQuickBookDate] = useState<Date | null>(null);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Booking, Service, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useViewMode } from '../../hooks/useViewMode';
 import { translations } from '../../i18n/translations';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, addMonths, subMonths } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
@@ -44,8 +45,8 @@ export const AdminBookings: React.FC = () => {
   const [filterService, setFilterService] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  // View mode
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  // View mode (persisted to localStorage + cookie)
+  const [viewMode, setViewMode] = useViewMode();
 
   // Calendar state
   const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
