@@ -32,7 +32,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
         <div className="relative h-48 overflow-hidden">
           <img
             src={service.imageUrl}
-            alt={getServiceName(service, language)}
+            alt={`${getServiceName(service, language)} – salon kosmetyczny Białystok`}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
           />

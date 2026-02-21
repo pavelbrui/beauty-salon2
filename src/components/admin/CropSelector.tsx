@@ -240,7 +240,7 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
         >
           <img
             src={imageUrl}
-            alt=""
+            alt="Podgląd przycinania zdjęcia"
             className="block max-h-[500px] max-w-full"
             draggable={false}
             onLoad={(e) => {

@@ -43,7 +43,11 @@ supabase/migrations/ # 20 SQL migration files (0001–0020)
 `services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `email_templates` | `notifications` | `trainings` (title, slug, category, content_blocks JSONB, is_published)
 
 ## Routes
-`/` Home | `/services` `/services/:category` | `/booking/:serviceId` | `/profile` | `/appointments` | `/stylists` | `/gallery` | `/training` `/training/:slug` | `/admin` (tabs: services, bookings, stylists, timeslots, gallery, assignments, trainings)
+All public routes support language prefixes: `/en/...` (English), `/ru/...` (Russian), no prefix = Polish (default).
+
+`/` Home | `/services` `/services/:category` | `/booking/:serviceId` | `/profile` | `/appointments` | `/stylists` | `/gallery` | `/training` `/training/:slug` | `/blog` `/blog/:slug` | `/admin` (tabs: services, bookings, stylists, timeslots, gallery, assignments, trainings, blog, booksy)
+
+Examples: `/services` (PL), `/en/services` (EN), `/ru/services` (RU). Admin at `/admin` has no prefix.
 
 ## Supabase Query Pattern (ALWAYS follow)
 ```typescript
@@ -63,6 +67,36 @@ The training/courses section uses a JSONB-based block editor:
 - **Frontend**: `src/pages/TrainingPage.tsx` — list mode (`/training`) + detail mode (`/training/:slug`)
 - **Types**: `ContentBlock` (discriminated union), `Training` in `src/types/index.ts`
 
+## i18n Routing System (Language-Prefix URLs for SEO)
+The site uses URL-based language routing so each language version has a unique, indexable URL.
+
+### URL Scheme
+| Language | URL Pattern | Example |
+|----------|-------------|---------|
+| Polski (default) | `/<path>` | `/services` |
+| English | `/en/<path>` | `/en/services` |
+| Russian | `/ru/<path>` | `/ru/services` |
+| Admin | `/admin` (no prefix) | `/admin` |
+
+### Key Files
+- **`src/hooks/useLocalizedPath.ts`** — Core utilities: `localizedPath()`, `stripLangPrefix()`, `detectLangFromPath()`, `useLocalizedNavigate()`, `useLanguagePrefix()`
+- **`src/components/LocalizedLink.tsx`** — Drop-in replacement for `<Link>` that auto-prepends language prefix
+- **`src/components/LanguageLayout.tsx`** — Layout route component that syncs URL language → Zustand store → `<html lang>`
+- **`src/App.tsx`** — Routes defined once in `publicRoutes`, rendered 3x under `/` (pl), `/en`, `/ru`
+- **`src/components/SEO.tsx`** — Generates proper hreflang tags with 3 distinct URLs per page + `x-default`
+
+### Rules for New Pages/Components
+1. **Use `<LocalizedLink to="/path">` instead of `<Link to="/path">`** for all internal navigation (except `/admin`)
+2. **Use `useLocalizedNavigate()` instead of `useNavigate()`** for programmatic navigation
+3. Path strings stay bare (e.g. `"/services"`, `"/booking/${id}"`) — prefixing is automatic
+4. **Admin links** (`/admin`) keep plain `<Link>` — admin panel is outside language routing
+5. **`navigate(-1)` still works** — numeric args pass through without prefixing
+6. **New routes** must be added to the `publicRoutes` fragment in `App.tsx` (defined once, shared across all 3 language groups)
+7. **SEO canonical** prop should be a bare path (e.g. `canonical="/blog/my-post"`) — `SEO.tsx` handles prefixing
+
+### Language Switcher
+In `Navbar.tsx`, the `switchLanguage()` function strips the current prefix, then navigates to the new prefixed path. Query params and hash are preserved.
+
 ## Common Searches for Subagents
 When exploring this codebase, use these patterns:
 - Find all DB queries: `Grep: supabase.from`
@@ -74,6 +108,7 @@ When exploring this codebase, use these patterns:
 - Find styling patterns: `Grep: amber-500`
 - Find auth usage: `Grep: getSession\|signIn\|signOut`
 - Find state management: `Grep: useState\|useEffect\|useLanguage`
+- Find i18n routing: `Read: src/hooks/useLocalizedPath.ts` or `Grep: LocalizedLink\|useLocalizedNavigate`
 - Find time slot logic: `Read: src/utils/timeSlots.ts`
 - Find training system: `Glob: src/components/admin/AdminTrainings.tsx` or `Read: src/components/admin/BlockEditor.tsx`
 - Find migrations: `Glob: supabase/migrations/*.sql`
@@ -81,10 +116,11 @@ When exploring this codebase, use these patterns:
 ## Adding New Features Checklist
 1. Types → `src/types/index.ts`
 2. Component → `src/components/` (or `admin/` subfolder)
-3. Page + route → `src/pages/` + `src/App.tsx`
+3. Page + route → `src/pages/` + add to `publicRoutes` in `src/App.tsx` (automatically available under `/`, `/en/`, `/ru/`)
 4. Translations → `src/i18n/translations.ts` (all 3 langs!)
-5. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
-6. DB table → new file in `supabase/migrations/`
+5. Navigation → use `<LocalizedLink>` and `useLocalizedNavigate()`, NOT plain `<Link>` / `useNavigate()`
+6. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
+7. DB table → new file in `supabase/migrations/`
 
 ## Environment
 - Supabase URL: `VITE_SUPABASE_URL` in `.env`

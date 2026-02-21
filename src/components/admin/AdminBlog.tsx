@@ -260,7 +260,7 @@ export const AdminBlog: React.FC = () => {
             {posts.map(p => (
               <div key={p.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
                 {p.cover_image_url ? (
-                  <img src={p.cover_image_url} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                  <img src={p.cover_image_url} alt={p.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                 ) : (
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex-shrink-0" />
                 )}
@@ -400,7 +400,7 @@ export const AdminBlog: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">Zdjęcie okładki</label>
           <div className="flex items-center gap-4">
             {coverImageUrl && (
-              <img src={coverImageUrl} alt="" className="w-24 h-16 object-cover rounded-lg" />
+              <img src={coverImageUrl} alt={title || 'Okładka posta'} className="w-24 h-16 object-cover rounded-lg" />
             )}
             <label className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
               {uploadingCover ? 'Wysyłanie...' : 'Wybierz plik'}

@@ -105,6 +105,52 @@ export const Home: React.FC = () => {
           'lifting rzęs Białystok',
           'Katarzyna Brui'
         ]}
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'BeautySalon',
+          'name': 'Salon Kosmetyczny Katarzyna Brui',
+          'image': 'https://katarzynabrui.pl/og-image.jpg',
+          'url': 'https://katarzynabrui.pl',
+          'telephone': '+48880435102',
+          'priceRange': '$$',
+          'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': 'ul. Młynowa 46, Lok U11',
+            'addressLocality': 'Białystok',
+            'postalCode': '15-404',
+            'addressCountry': 'PL'
+          },
+          'geo': {
+            '@type': 'GeoCoordinates',
+            'latitude': 53.1274782,
+            'longitude': 23.1462283
+          },
+          'openingHoursSpecification': [
+            {
+              '@type': 'OpeningHoursSpecification',
+              'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+              'opens': '09:00',
+              'closes': '20:00'
+            },
+            {
+              '@type': 'OpeningHoursSpecification',
+              'dayOfWeek': 'Saturday',
+              'opens': '09:00',
+              'closes': '16:00'
+            }
+          ],
+          'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': '5.0',
+            'reviewCount': '380',
+            'bestRating': '5',
+            'worstRating': '1'
+          },
+          'sameAs': [
+            'https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/',
+            'https://www.instagram.com/katarzyna.brui_'
+          ]
+        }}
       />
       <header className="relative h-screen">
         {/* Mobile background (portrait photo) */}

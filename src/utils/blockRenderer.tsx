@@ -47,7 +47,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
         <figure key={block.id || index} className="my-8">
           <img
             src={block.url}
-            alt={caption || ''}
+            alt={caption || 'Zabieg kosmetyczny – salon Katarzyna Brui Białystok'}
             className="w-full max-h-[600px] rounded-xl shadow-lg"
             style={cropPositionToStyle(block.position)}
             loading="lazy"
