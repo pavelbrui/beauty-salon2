@@ -213,13 +213,13 @@ export const TrainingPage: React.FC = () => {
         />
 
         {/* Hero section */}
-        <div className="relative h-72 md:h-96 overflow-hidden">
-          {training.cover_image_url ? (
+        <div className="relative overflow-hidden" style={{ height: `${training.cover_height_detail ?? 384}px` }}>
+          {(training.cover_image_url_detail || training.cover_image_url) ? (
             <img
-              src={training.cover_image_url}
+              src={training.cover_image_url_detail || training.cover_image_url!}
               alt={trainingTitle}
               className="w-full h-full"
-              style={cropPositionToStyle(training.cover_image_position)}
+              style={cropPositionToStyle(training.cover_crop_detail || training.cover_image_position)}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
@@ -375,13 +375,13 @@ export const TrainingPage: React.FC = () => {
                   className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   {/* Cover */}
-                  <div className="relative h-56 overflow-hidden">
+                  <div className="relative overflow-hidden" style={{ height: `${t.cover_height_card ?? 224}px` }}>
                     {t.cover_image_url ? (
                       <img
                         src={t.cover_image_url}
                         alt={tTitle}
                         className="w-full h-full group-hover:scale-105 transition-transform duration-500"
-                        style={cropPositionToStyle(t.cover_image_position)}
+                        style={cropPositionToStyle(t.cover_crop_card || t.cover_image_position)}
                         loading="lazy"
                       />
                     ) : (

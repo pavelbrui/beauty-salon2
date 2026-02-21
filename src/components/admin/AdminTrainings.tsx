@@ -41,11 +41,21 @@ export const AdminTrainings: React.FC = () => {
   const [durationEn, setDurationEn] = useState('');
   const [durationRu, setDurationRu] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [coverImagePosition, setCoverImagePosition] = useState('50% 50%');
+  const [coverCropCard, setCoverCropCard] = useState('');
+  const [coverCropDetail, setCoverCropDetail] = useState('');
+  const [coverImageUrlDetail, setCoverImageUrlDetail] = useState('');
+  const [useSeparateDetailImage, setUseSeparateDetailImage] = useState(false);
+  const [coverHeightCard, setCoverHeightCard] = useState(224);
+  const [coverHeightDetail, setCoverHeightDetail] = useState(384);
   const [isPublished, setIsPublished] = useState(true);
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [metaLang, setMetaLang] = useState<Lang>('pl');
-  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingCard, setUploadingCard] = useState(false);
+  const [uploadingDetail, setUploadingDetail] = useState(false);
+
+  // Reference widths for aspect ratio computation (approx card/detail container widths)
+  const CARD_REF_WIDTH = 550;
+  const DETAIL_REF_WIDTH = 1400;
 
   useEffect(() => {
     loadTrainings();
@@ -73,7 +83,9 @@ export const AdminTrainings: React.FC = () => {
     setDescription(''); setDescEn(''); setDescRu('');
     setPrice(''); setPriceEn(''); setPriceRu('');
     setDuration(''); setDurationEn(''); setDurationRu('');
-    setCoverImageUrl(''); setCoverImagePosition('50% 50%'); setIsPublished(true);
+    setCoverImageUrl(''); setCoverCropCard(''); setCoverCropDetail('');
+    setCoverImageUrlDetail(''); setUseSeparateDetailImage(false);
+    setCoverHeightCard(224); setCoverHeightDetail(384); setIsPublished(true);
     setBlocks([]); setMetaLang('pl');
     setEditingTraining(null);
   };
@@ -84,7 +96,12 @@ export const AdminTrainings: React.FC = () => {
     setDescription(t.description || ''); setDescEn(t.description_en || ''); setDescRu(t.description_ru || '');
     setPrice(t.price || ''); setPriceEn(t.price_en || ''); setPriceRu(t.price_ru || '');
     setDuration(t.duration || ''); setDurationEn(t.duration_en || ''); setDurationRu(t.duration_ru || '');
-    setCoverImageUrl(t.cover_image_url || ''); setCoverImagePosition(t.cover_image_position || '50% 50%'); setIsPublished(t.is_published);
+    setCoverImageUrl(t.cover_image_url || '');
+    setCoverCropCard(t.cover_crop_card || t.cover_image_position || '');
+    setCoverCropDetail(t.cover_crop_detail || t.cover_image_position || '');
+    setCoverImageUrlDetail(t.cover_image_url_detail || '');
+    setUseSeparateDetailImage(!!t.cover_image_url_detail);
+    setCoverHeightCard(t.cover_height_card ?? 224); setCoverHeightDetail(t.cover_height_detail ?? 384); setIsPublished(t.is_published);
     setBlocks(t.content_blocks || []);
   };
 
@@ -131,7 +148,12 @@ export const AdminTrainings: React.FC = () => {
       description_en: descEn || null,
       description_ru: descRu || null,
       cover_image_url: coverImageUrl || null,
-      cover_image_position: coverImagePosition,
+      cover_image_position: coverCropCard || null,
+      cover_crop_card: coverCropCard || null,
+      cover_crop_detail: coverCropDetail || null,
+      cover_image_url_detail: useSeparateDetailImage ? (coverImageUrlDetail || null) : null,
+      cover_height_card: coverHeightCard,
+      cover_height_detail: coverHeightDetail,
       price: price || null,
       price_en: priceEn || null,
       price_ru: priceRu || null,
@@ -179,7 +201,11 @@ export const AdminTrainings: React.FC = () => {
     }
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setUrl: (url: string) => void,
+    setUploading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
@@ -187,7 +213,7 @@ export const AdminTrainings: React.FC = () => {
       return;
     }
 
-    setUploadingCover(true);
+    setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `training-cover-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
@@ -201,14 +227,17 @@ export const AdminTrainings: React.FC = () => {
       const { data: urlData } = supabase.storage
         .from('service-images')
         .getPublicUrl(filePath);
-      if (urlData) setCoverImageUrl(urlData.publicUrl);
+      if (urlData) setUrl(urlData.publicUrl);
     } catch (err) {
       console.error('Error uploading cover:', err);
       alert('Błąd podczas przesyłania zdjęcia');
     } finally {
-      setUploadingCover(false);
+      setUploading(false);
     }
   };
+
+  // Effective detail image URL (falls back to card image)
+  const effectiveDetailImageUrl = useSeparateDetailImage ? coverImageUrlDetail : coverImageUrl;
 
   // Block operations
   const addBlock = (type: ContentBlock['type']) => {
@@ -334,7 +363,7 @@ export const AdminTrainings: React.FC = () => {
                       src={training.cover_image_url}
                       alt={training.title}
                       className="w-full h-full"
-                      style={cropPositionToStyle(training.cover_image_position)}
+                      style={cropPositionToStyle(training.cover_crop_card || training.cover_image_position)}
                     />
                   )}
                   <div className="absolute top-2 right-2 flex gap-2">
@@ -618,48 +647,151 @@ export const AdminTrainings: React.FC = () => {
             />
           </div>
 
-          {/* Cover Image */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Zdjęcie okładkowe</label>
-            {coverImageUrl && (
-              <div className="mb-3">
-                <div className="flex justify-end mb-1">
-                  <button
-                    type="button"
-                    onClick={() => { setCoverImageUrl(''); setCoverImagePosition(''); }}
-                    className="text-xs text-red-500 hover:text-red-700"
-                  >
-                    Usuń zdjęcie
-                  </button>
-                </div>
-                <CropSelector
-                  imageUrl={coverImageUrl}
-                  crop={parseCropPosition(coverImagePosition)}
-                  onChange={(crop) => setCoverImagePosition(JSON.stringify(crop))}
+          {/* Cover Images — Card & Detail */}
+          <div className="mt-6 space-y-4">
+            <h4 className="text-md font-medium text-gray-800 flex items-center gap-2">
+              <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Zdjęcia okładkowe
+            </h4>
+
+            {/* --- CARD COVER --- */}
+            <div className="p-4 border border-gray-200 rounded-lg space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="text-sm font-semibold text-gray-700">Karta szkolenia</h5>
+                <span className="text-xs text-gray-400">~{CARD_REF_WIDTH}px szer.</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Wysokość (px)</label>
+                <input
+                  type="number"
+                  min={100}
+                  max={600}
+                  step={10}
+                  value={coverHeightCard}
+                  onChange={e => setCoverHeightCard(parseInt(e.target.value) || 224)}
+                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
                 />
               </div>
-            )}
-            <div className="flex items-center gap-3">
-              <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                uploadingCover ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}>
-                {uploadingCover ? 'Przesyłanie...' : 'Wgraj zdjęcie'}
+
+              <div className="flex items-center gap-3">
+                <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  uploadingCard ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}>
+                  {uploadingCard ? 'Przesyłanie...' : (coverImageUrl ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => handleImageUpload(e, setCoverImageUrl, setUploadingCard)}
+                    disabled={uploadingCard}
+                    className="hidden"
+                  />
+                </label>
+                <span className="text-gray-300">lub</span>
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
-                  disabled={uploadingCover}
-                  className="hidden"
+                  type="text"
+                  value={coverImageUrl}
+                  onChange={e => setCoverImageUrl(e.target.value)}
+                  placeholder="URL zdjęcia..."
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
                 />
+                {coverImageUrl && (
+                  <button
+                    type="button"
+                    onClick={() => { setCoverImageUrl(''); setCoverCropCard(''); }}
+                    className="text-xs text-red-500 hover:text-red-700 whitespace-nowrap"
+                  >
+                    Usuń
+                  </button>
+                )}
+              </div>
+
+              {coverImageUrl && (
+                <CropSelector
+                  imageUrl={coverImageUrl}
+                  crop={parseCropPosition(coverCropCard)}
+                  onChange={(crop) => setCoverCropCard(JSON.stringify(crop))}
+                  aspectRatio={CARD_REF_WIDTH / coverHeightCard}
+                  previewHeight={Math.min(coverHeightCard, 200)}
+                />
+              )}
+            </div>
+
+            {/* --- DETAIL PAGE COVER --- */}
+            <div className="p-4 border border-gray-200 rounded-lg space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="text-sm font-semibold text-gray-700">Strona szkolenia</h5>
+                <span className="text-xs text-gray-400">~{DETAIL_REF_WIDTH}px szer.</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Wysokość (px)</label>
+                <input
+                  type="number"
+                  min={150}
+                  max={800}
+                  step={10}
+                  value={coverHeightDetail}
+                  onChange={e => setCoverHeightDetail(parseInt(e.target.value) || 384)}
+                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                />
+              </div>
+
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useSeparateDetailImage}
+                  onChange={e => setUseSeparateDetailImage(e.target.checked)}
+                  className="rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+                />
+                Użyj innego zdjęcia niż na karcie
               </label>
-              <span className="text-gray-300">lub</span>
-              <input
-                type="text"
-                value={coverImageUrl}
-                onChange={e => setCoverImageUrl(e.target.value)}
-                placeholder="Wklej URL zdjęcia..."
-                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
-              />
+
+              {useSeparateDetailImage && (
+                <div className="flex items-center gap-3">
+                  <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    uploadingDetail ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}>
+                    {uploadingDetail ? 'Przesyłanie...' : (coverImageUrlDetail ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={e => handleImageUpload(e, setCoverImageUrlDetail, setUploadingDetail)}
+                      disabled={uploadingDetail}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="text-gray-300">lub</span>
+                  <input
+                    type="text"
+                    value={coverImageUrlDetail}
+                    onChange={e => setCoverImageUrlDetail(e.target.value)}
+                    placeholder="URL zdjęcia..."
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                  />
+                  {coverImageUrlDetail && (
+                    <button
+                      type="button"
+                      onClick={() => { setCoverImageUrlDetail(''); setCoverCropDetail(''); }}
+                      className="text-xs text-red-500 hover:text-red-700 whitespace-nowrap"
+                    >
+                      Usuń
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {effectiveDetailImageUrl && (
+                <CropSelector
+                  imageUrl={effectiveDetailImageUrl}
+                  crop={parseCropPosition(coverCropDetail)}
+                  onChange={(crop) => setCoverCropDetail(JSON.stringify(crop))}
+                  aspectRatio={DETAIL_REF_WIDTH / coverHeightDetail}
+                  previewHeight={Math.min(coverHeightDetail, 200)}
+                />
+              )}
             </div>
           </div>
         </div>

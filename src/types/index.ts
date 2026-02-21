@@ -112,6 +112,11 @@ export interface Training {
   description_ru?: string;
   cover_image_url?: string;
   cover_image_position?: string;
+  cover_crop_card?: string;
+  cover_crop_detail?: string;
+  cover_image_url_detail?: string;
+  cover_height_card?: number;
+  cover_height_detail?: number;
   price?: string;
   price_en?: string;
   price_ru?: string;

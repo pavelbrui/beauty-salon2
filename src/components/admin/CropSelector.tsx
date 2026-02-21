@@ -51,6 +51,10 @@ interface CropSelectorProps {
   imageUrl: string;
   crop: CropRect | null;
   onChange: (crop: CropRect) => void;
+  /** Display container aspect ratio (width/height). Locks crop to this ratio. */
+  aspectRatio?: number;
+  /** Height (px) for the crop preview container */
+  previewHeight?: number;
 }
 
 type DragMode = 'none' | 'draw' | 'move' | 'nw' | 'ne' | 'sw' | 'se';
@@ -59,6 +63,8 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
   imageUrl,
   crop,
   onChange,
+  aspectRatio,
+  previewHeight,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragMode, setDragMode] = useState<DragMode>('none');
@@ -79,14 +85,29 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
     };
   }, []);
 
-  // Constraint: crop pixel height <= crop pixel width * 2/3
-  // In percentages: h * imgH <= w * imgW * 2/3  →  h <= w * (imgW/imgH) * 2/3  →  h <= w * imgRatio * 2/3
+  // When aspectRatio is set: lock crop to that ratio
+  // h_% = w_% * imgRatio / aspectRatio
+  // When no aspectRatio: free-form with max height constraint (h <= w * imgRatio * 2/3)
   const clamp = useCallback(
     (c: CropRect): CropRect => {
       let { x, y, w, h } = c;
       w = Math.max(10, Math.min(100, w));
-      const maxH = Math.min(100, w * imgRatio * (2 / 3));
-      h = Math.max(5, Math.min(maxH, h));
+
+      if (aspectRatio && imgRatio > 0) {
+        // Fixed aspect ratio mode
+        h = w * imgRatio / aspectRatio;
+        if (h > 100) {
+          h = 100;
+          w = h * aspectRatio / imgRatio;
+          w = Math.min(100, w);
+        }
+        h = Math.max(5, h);
+      } else {
+        // Free-form with max height constraint
+        const maxH = Math.min(100, w * imgRatio * (2 / 3));
+        h = Math.max(5, Math.min(maxH, h));
+      }
+
       x = Math.max(0, Math.min(100 - w, x));
       y = Math.max(0, Math.min(100 - h, y));
       return {
@@ -96,7 +117,7 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
         h: Math.round(h * 10) / 10,
       };
     },
-    [imgRatio]
+    [imgRatio, aspectRatio]
   );
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -188,6 +209,24 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
       window.removeEventListener('mouseup', onUp);
     };
   }, [dragMode, getPos, clamp, onChange]);
+
+  // Re-clamp crop when aspect ratio or image ratio changes
+  const prevAspectRef = useRef(aspectRatio);
+  const prevImgRatioRef = useRef(imgRatio);
+  useEffect(() => {
+    if (
+      (prevAspectRef.current !== aspectRatio || prevImgRatioRef.current !== imgRatio) &&
+      crop && imgRatio > 0
+    ) {
+      prevAspectRef.current = aspectRatio;
+      prevImgRatioRef.current = imgRatio;
+      const reclamped = clamp(crop);
+      if (reclamped.x !== crop.x || reclamped.y !== crop.y ||
+          reclamped.w !== crop.w || reclamped.h !== crop.h) {
+        onChange(reclamped);
+      }
+    }
+  });
 
   const defaultCrop = clamp({ x: 0, y: 0, w: 100, h: 100 });
 
@@ -288,7 +327,10 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
       {/* Crop preview */}
       {crop && (
         <div className="mt-2">
-          <div className="h-32 rounded-lg overflow-hidden border border-gray-200">
+          <div
+            className="rounded-lg overflow-hidden border border-gray-200"
+            style={{ height: `${previewHeight ? Math.min(previewHeight, 200) : 128}px` }}
+          >
             <img
               src={imageUrl}
               alt="Podgląd"
