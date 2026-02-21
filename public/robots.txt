@@ -1,6 +1,12 @@
 User-agent: *
 Allow: /
+
 Disallow: /admin
 Disallow: /profile
+Disallow: /en/profile
+Disallow: /ru/profile
+Disallow: /booking
+Disallow: /en/booking
+Disallow: /ru/booking
 
 Sitemap: https://katarzynabrui.pl/sitemap.xml

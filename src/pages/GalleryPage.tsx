@@ -61,12 +61,31 @@ export const GalleryPage: React.FC = () => {
     ? images
     : images.filter(img => img.category === selectedCategory);
 
+  const gallerySchema = images.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ImageGallery',
+    'name': 'Galeria prac – Salon Katarzyna Brui Białystok',
+    'description': 'Efekty zabiegów kosmetycznych: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.',
+    'url': 'https://katarzynabrui.pl/gallery',
+    'image': images.slice(0, 20).map(img => ({
+      '@type': 'ImageObject',
+      'url': img.url,
+      'name': img.description || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
+      'description': img.description || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
+    })),
+    'author': {
+      '@type': 'BeautySalon',
+      'name': 'Salon Kosmetyczny Katarzyna Brui',
+    },
+  } : undefined;
+
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title="Galeria Prac - Efekty Zabiegów"
         description="Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
         canonical="/gallery"
+        image={images[0]?.url}
         keywords={[
           'efekty makijażu permanentnego',
           'galeria salon kosmetyczny Białystok',
@@ -75,6 +94,7 @@ export const GalleryPage: React.FC = () => {
           'laminacja brwi przed i po',
           'portfolio kosmetyczka Białystok'
         ]}
+        structuredData={gallerySchema}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>
@@ -111,7 +131,8 @@ export const GalleryPage: React.FC = () => {
               >
                 <img
                   src={image.url}
-                  alt={image.description || image.category}
+                  alt={image.description || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
+                  title={image.description || `${getCategoryLabel(image.category)} – efekty zabiegów`}
                   loading="lazy"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                 />
@@ -141,7 +162,7 @@ export const GalleryPage: React.FC = () => {
           </button>
           <img
             src={lightboxImage.url}
-            alt={lightboxImage.description || lightboxImage.category}
+            alt={lightboxImage.description || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />

@@ -109,7 +109,10 @@ export const Home: React.FC = () => {
           '@context': 'https://schema.org',
           '@type': 'BeautySalon',
           'name': 'Salon Kosmetyczny Katarzyna Brui',
-          'image': 'https://katarzynabrui.pl/og-image.jpg',
+          'image': [
+            'https://katarzynabrui.pl/og-image.jpg',
+            'https://katarzynabrui.pl/og-image2.jpg'
+          ],
           'url': 'https://katarzynabrui.pl',
           'telephone': '+48880435102',
           'priceRange': '$$',
@@ -153,20 +156,13 @@ export const Home: React.FC = () => {
         }}
       />
       <header className="relative h-screen">
-        {/* Mobile background (portrait photo) */}
-        <div
-          className="absolute inset-0 bg-cover bg-center md:hidden"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('/og-image2.jpg')`
-          }}
+        {/* Hero image — semantic <img> for Google Image indexing */}
+        <img
+          src="/og-image2.jpg"
+          alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Desktop background (collage) */}
-        <div
-          className="absolute inset-0 bg-cover bg-center hidden md:block"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('/og-image2.jpg')`
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
             {t.welcomeTitle}

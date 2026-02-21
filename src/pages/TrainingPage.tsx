@@ -114,6 +114,7 @@ export const TrainingPage: React.FC = () => {
           title={trainingTitle}
           description={trainingDesc}
           canonical={`/training/${training.slug}`}
+          image={training.cover_image_url_detail || training.cover_image_url || undefined}
           keywords={[
             `szkolenie ${training.title.toLowerCase()} Białystok`,
             `kurs ${training.title.toLowerCase()}`,
@@ -126,7 +127,7 @@ export const TrainingPage: React.FC = () => {
           {(training.cover_image_url_detail || training.cover_image_url) ? (
             <img
               src={training.cover_image_url_detail || training.cover_image_url!}
-              alt={trainingTitle}
+              alt={`${trainingTitle} – szkolenie w Białymstoku, salon Katarzyna Brui`}
               className="w-full h-full"
               style={cropPositionToStyle(training.cover_crop_detail || training.cover_image_position)}
             />
@@ -288,7 +289,7 @@ export const TrainingPage: React.FC = () => {
                     {t.cover_image_url ? (
                       <img
                         src={t.cover_image_url}
-                        alt={tTitle}
+                        alt={`${tTitle} – kurs w Białymstoku, salon Katarzyna Brui`}
                         className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                         style={cropPositionToStyle(t.cover_crop_card || t.cover_image_position)}
                         loading="lazy"

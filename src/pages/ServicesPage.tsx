@@ -242,12 +242,18 @@ export const ServicesPage: React.FC = () => {
 
   const seo = category ? (categorySEOData[category] || defaultSEO) : defaultSEO;
 
+  // Pick a representative image for og:image based on current category
+  const categoryImage = category
+    ? getDefaultImageForCategory(category)
+    : serviceImages.permanentMakeup;
+
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title={seo.title}
         description={seo.description}
         canonical={category ? `/services/${encodeURIComponent(category)}` : '/services'}
+        image={categoryImage}
         keywords={seo.keywords}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">

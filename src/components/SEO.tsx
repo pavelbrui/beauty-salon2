@@ -75,9 +75,11 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:image" content={image} />
       <meta property="og:locale" content={OG_LOCALES[language]} />
 
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content={title || 'Salon Kosmetyczny Katarzyna Brui Białystok'} />
       {structuredData && (
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
