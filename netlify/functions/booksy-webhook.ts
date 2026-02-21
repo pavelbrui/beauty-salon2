@@ -143,9 +143,10 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
   const emailType = detectEmailType(subject, html);
   const text = stripHtml(html);
 
-  // Extract client name from subject
+  // Extract client name from subject (handle "Fwd:" prefix in forwarded emails)
   let clientName = '';
-  const subjectNameMatch = subject.match(/^(.+?):\s*(nowa rezerwacja|zmienił rezerwację)/);
+  const cleanedSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '');
+  const subjectNameMatch = cleanedSubject.match(/^(.+?):\s*(nowa rezerwacja|zmienił rezerwację)/);
   if (subjectNameMatch) {
     clientName = subjectNameMatch[1].trim();
   } else if (emailType === 'cancelled') {
@@ -169,9 +170,11 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     text.match(/([\d\s+()-]{9,})/);
   const clientPhone = phoneMatch ? phoneMatch[1].replace(/\s+/g, ' ').trim() : undefined;
 
-  // Extract email
-  const emailMatch = text.match(/[\w.+-]+@[\w.-]+\.\w+/);
-  const clientEmail = emailMatch ? emailMatch[0] : undefined;
+  // Extract client email (skip system emails like booksy, icloud forwarding headers)
+  const allEmails = text.match(/[\w.+-]+@[\w.-]+\.\w+/g) || [];
+  const clientEmail = allEmails.find(
+    (e) => !e.includes('booksy.com') && !e.includes('icloud.com') && !e.includes('noreply')
+  );
 
   // Extract worker name: "pracownik: Agnessa"
   const workerMatch = text.match(/pracownik\s*:\s*(.+?)(?:\n|$)/i);
@@ -217,7 +220,8 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     }
   } else if (emailType === 'changed') {
     // Old time: "z dnia środa, 4 marca 2026 15:45"
-    const oldMatch = text.match(/z dnia\s+\w+,\s*(.+?)(?:\s*na inny termin|$)/s);
+    // Use \S+ instead of \w+ because Polish day names contain diacritics (ś, etc.)
+    const oldMatch = text.match(/z dnia\s+\S+,\s*(.+?)(?:\s*na inny termin|$)/s);
     if (oldMatch) {
       const oldDt = parsePolishDateTime(oldMatch[1]);
       if (oldDt) {
@@ -236,7 +240,8 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     }
   } else if (emailType === 'cancelled') {
     // "w dniu poniedziałek, 23 lutego 2026 o godzinie 15:45"
-    const cancelDateMatch = text.match(/w dniu\s+\w+,\s*(.+)/i);
+    // Use \S+ instead of \w+ because Polish day names contain diacritics (ł, ś, etc.)
+    const cancelDateMatch = text.match(/w dniu\s+\S+,\s*(.+)/i);
     if (cancelDateMatch) {
       const dt = parsePolishDateTime(cancelDateMatch[1]);
       if (dt) {
@@ -534,18 +539,27 @@ export const handler: Handler = async (event: HandlerEvent) => {
     const emailHeaders = params.get('headers') || '';
     const from = params.get('from') || '';
 
-    // Validate sender is from Booksy
-    if (!from.toLowerCase().includes('booksy')) {
+    // Validate sender is from Booksy (also accept forwarded emails that contain Booksy content)
+    const isFromBooksy = from.toLowerCase().includes('booksy');
+    const hasBooksyContent =
+      subject.toLowerCase().includes('rezerwacj') ||
+      subject.toLowerCase().includes('odwołał') ||
+      html.toLowerCase().includes('booksy.com') ||
+      html.toLowerCase().includes('booksy wiesz');
+    if (!isFromBooksy && !hasBooksyContent) {
       return { statusCode: 200, body: 'Not a Booksy email, ignoring' };
     }
+
+    // Strip "Fwd:" / "Fw:" / "FW:" prefix from subject (forwarded emails)
+    const cleanSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '').trim();
 
     // Extract Message-ID for idempotency
     const msgIdMatch = emailHeaders.match(/Message-I[dD]:\s*<([^>]+)>/);
     const messageId =
       msgIdMatch?.[1] || `gen-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
-    // Parse the email
-    const parsed = parseBookingEmail(subject, html);
+    // Parse the email (use cleaned subject without Fwd: prefix)
+    const parsed = parseBookingEmail(cleanSubject, html);
     if (!parsed) {
       console.error('Failed to parse Booksy email:', { subject, bodyLength: html.length });
 
