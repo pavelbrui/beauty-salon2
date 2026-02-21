@@ -103,7 +103,9 @@ export const translations = {
       signInDescription: 'Zaloguj się aby zarezerwować wizytę',
       signUpDescription: 'Utwórz konto aby zarezerwować wizytę',
       noAccount: 'Nie masz konta? Zarejestruj się',
-      hasAccount: 'Masz już konto? Zaloguj się'
+      hasAccount: 'Masz już konto? Zaloguj się',
+      orContinueWith: 'lub kontynuuj przez',
+      continueWithGoogle: 'Kontynuuj z Google'
     },
     footer: {
       rights: 'Wszelkie prawa zastrzeżone.'
@@ -172,6 +174,30 @@ export const translations = {
       noCourses: 'Brak dostępnych szkoleń',
       published: 'Opublikowane',
       draft: 'Szkic'
+    },
+    blog: 'Blog',
+    blog_page: {
+      heroTitle: 'Blog Beauty',
+      heroSubtitle: 'Porady, trendy i wiedza o zabiegach kosmetycznych',
+      seoDescription: 'Blog kosmetyczny salonu Katarzyna Brui w Białymstoku. Porady o makijażu permanentnym, pielęgnacji brwi i rzęs, manicure. Sprawdź najnowsze trendy beauty.',
+      allPosts: 'Wszystkie',
+      readMore: 'Czytaj więcej',
+      backToBlog: 'Wróć do bloga',
+      author: 'Autor',
+      readingTime: 'min czytania',
+      publishedOn: 'Opublikowano',
+      relatedPosts: 'Podobne artykuły',
+      noPosts: 'Brak artykułów',
+      bookCta: 'Chcesz wypróbować? Umów wizytę!',
+      bookButton: 'Zarezerwuj wizytę',
+      recentBlog: 'Najnowsze z naszego bloga',
+      viewAll: 'Zobacz wszystkie artykuły',
+      categories: {
+        permanent_makeup: 'Makijaż permanentny',
+        brows_lashes: 'Brwi i Rzęsy',
+        manicure: 'Manicure',
+        tips: 'Porady'
+      }
     },
     admin_bookings: {
       title: 'Rezerwacje',
@@ -304,7 +330,9 @@ export const translations = {
       signInDescription: 'Sign in to book an appointment',
       signUpDescription: 'Create an account to book an appointment',
       noAccount: "Don't have an account? Sign up",
-      hasAccount: 'Already have an account? Sign in'
+      hasAccount: 'Already have an account? Sign in',
+      orContinueWith: 'or continue with',
+      continueWithGoogle: 'Continue with Google'
     },
     footer: {
       rights: 'All rights reserved.'
@@ -505,7 +533,9 @@ export const translations = {
       signInDescription: 'Войдите, чтобы записаться на прием',
       signUpDescription: 'Создайте аккаунт, чтобы записаться на прием',
       noAccount: 'Нет аккаунта? Зарегистрируйтесь',
-      hasAccount: 'Уже есть аккаунт? Войдите'
+      hasAccount: 'Уже есть аккаунт? Войдите',
+      orContinueWith: 'или продолжить через',
+      continueWithGoogle: 'Продолжить с Google'
     },
     footer: {
       rights: 'Все права защищены.'
