@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { LocalizedLink } from '../components/LocalizedLink';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { SEO } from '../components/SEO';
 import { supabase } from '../lib/supabase';
-import { Training, ContentBlock } from '../types';
+import { Training } from '../types';
 import { cropPositionToStyle } from '../components/admin/CropSelector';
+import { getLocalizedField, renderBlock } from '../utils/blockRenderer';
 
 const CATEGORY_LABELS: Record<string, { pl: string; en: string; ru: string }> = {
   permanent_makeup: { pl: 'Makijaż permanentny', en: 'Permanent Makeup', ru: 'Перманентный макияж' },
@@ -13,99 +15,6 @@ const CATEGORY_LABELS: Record<string, { pl: string; en: string; ru: string }> = 
   brows: { pl: 'Brwi', en: 'Brows', ru: 'Брови' },
   lashes: { pl: 'Rzęsy', en: 'Lashes', ru: 'Ресницы' },
   other: { pl: 'Inne', en: 'Other', ru: 'Другое' },
-};
-
-const getLocalizedText = (block: { text: string; text_en?: string; text_ru?: string }, language: string): string => {
-  if (language === 'en' && block.text_en) return block.text_en;
-  if (language === 'ru' && block.text_ru) return block.text_ru;
-  return block.text;
-};
-
-const getLocalizedField = (obj: Record<string, unknown> | Training, field: string, language: string): string => {
-  const o = obj as Record<string, unknown>;
-  if (language === 'en' && o[`${field}_en`]) return o[`${field}_en`] as string;
-  if (language === 'ru' && o[`${field}_ru`]) return o[`${field}_ru`] as string;
-  return (o[field] as string) || '';
-};
-
-const renderBlock = (block: ContentBlock, language: string, index: number): React.ReactNode => {
-  switch (block.type) {
-    case 'heading': {
-      const text = getLocalizedText(block, language);
-      if (block.level === 2) {
-        return (
-          <h2 key={block.id || index} className="text-2xl font-bold text-gray-900 mt-10 mb-4 pb-2 border-b border-amber-200">
-            {text}
-          </h2>
-        );
-      }
-      return (
-        <h3 key={block.id || index} className="text-xl font-semibold text-gray-800 mt-8 mb-3">
-          {text}
-        </h3>
-      );
-    }
-    case 'text': {
-      const text = getLocalizedText(block, language);
-      return (
-        <p key={block.id || index} className="text-gray-700 leading-relaxed mb-4">
-          {text}
-        </p>
-      );
-    }
-    case 'image': {
-      if (!block.url) return null;
-      const caption = language === 'en' ? (block.caption_en || block.caption) : language === 'ru' ? (block.caption_ru || block.caption) : block.caption;
-      return (
-        <figure key={block.id || index} className="my-8">
-          <img
-            src={block.url}
-            alt={caption || ''}
-            className="w-full max-h-[600px] rounded-xl shadow-lg"
-            style={cropPositionToStyle(block.position)}
-            loading="lazy"
-          />
-          {caption && (
-            <figcaption className="text-sm text-gray-500 mt-3 text-center italic">
-              {caption}
-            </figcaption>
-          )}
-        </figure>
-      );
-    }
-    case 'list': {
-      const items = language === 'en' && block.items_en?.length ? block.items_en
-        : language === 'ru' && block.items_ru?.length ? block.items_ru
-        : block.items;
-
-      if (block.style === 'check') {
-        return (
-          <ul key={block.id || index} className="my-4 space-y-2.5">
-            {items.map((item, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-5 h-5 mt-0.5 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span className="text-gray-700">{item}</span>
-              </li>
-            ))}
-          </ul>
-        );
-      }
-
-      return (
-        <ul key={block.id || index} className="my-4 space-y-2 list-disc pl-6">
-          {items.map((item, i) => (
-            <li key={i} className="text-gray-700">{item}</li>
-          ))}
-        </ul>
-      );
-    }
-    default:
-      return null;
-  }
 };
 
 export const TrainingPage: React.FC = () => {
@@ -186,9 +95,9 @@ export const TrainingPage: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {language === 'pl' ? 'Szkolenie nie znalezione' : language === 'ru' ? 'Обучение не найдено' : 'Training not found'}
             </h1>
-            <Link to="/training" className="text-amber-600 hover:text-amber-700 font-medium">
+            <LocalizedLink to="/training" className="text-amber-600 hover:text-amber-700 font-medium">
               {tp?.backToList || 'Wróć do listy szkoleń'}
-            </Link>
+            </LocalizedLink>
           </div>
         </main>
       );
@@ -257,7 +166,7 @@ export const TrainingPage: React.FC = () => {
 
         {/* Back link */}
         <div className="max-w-4xl mx-auto px-4 pt-6">
-          <Link
+          <LocalizedLink
             to="/training"
             className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 font-medium"
           >
@@ -265,7 +174,7 @@ export const TrainingPage: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             {tp?.backToList || 'Wróć do listy szkoleń'}
-          </Link>
+          </LocalizedLink>
         </div>
 
         {/* Content */}
@@ -369,7 +278,7 @@ export const TrainingPage: React.FC = () => {
               const tDuration = getLocalizedField(t, 'duration', language);
 
               return (
-                <Link
+                <LocalizedLink
                   key={t.id}
                   to={`/training/${t.slug}`}
                   className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
@@ -434,7 +343,7 @@ export const TrainingPage: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                </Link>
+                </LocalizedLink>
               );
             })}
           </div>

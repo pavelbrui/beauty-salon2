@@ -15,7 +15,15 @@
       "Bash(netlify:*)",
       "Read(//c/Users/Katarzyna/**)",
       "Bash(/tmp/seed_training3.json:*)",
-      "Bash(/tmp/seed_training4.json:*)"
+      "Bash(/tmp/seed_training4.json:*)",
+      "Bash(npx playwright test)",
+      "WebFetch(domain:www.instagram.com)",
+      "WebFetch(domain:glamio.pl)",
+      "WebFetch(domain:www.fresha.com)",
+      "WebFetch(domain:www.juliephaxay.com)",
+      "WebFetch(domain:www.inspiredbymsamberred.com)",
+      "mcp__supabase__list_projects",
+      "WebFetch(domain:unsplash.com)"
     ],
     "additionalDirectories": [
       "\\tmp"

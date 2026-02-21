@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
 import { getStylistRole, getStylistSpecialties, getStylistDescription } from '../utils/serviceTranslation';
@@ -24,7 +24,7 @@ interface Stylist {
 export const StylistsPage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [loading, setLoading] = useState(true);
 

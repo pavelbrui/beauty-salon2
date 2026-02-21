@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { ServiceCard } from '../components/ServiceCard';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
@@ -12,13 +12,14 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
+import { BlogTeaser } from '../components/BlogTeaser';
 export const Home: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   React.useEffect(() => {
     loadServices();
@@ -203,6 +204,9 @@ export const Home: React.FC = () => {
             </button>
           </div>
         </section>
+
+        {/* Blog teaser */}
+        <BlogTeaser />
 
         {/* Reviews Section */}
         <div id="reviews" className="scroll-mt-20">

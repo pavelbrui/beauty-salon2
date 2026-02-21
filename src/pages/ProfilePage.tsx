@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { loadProfile, saveProfile, UserProfile } from '../lib/profile';
 import { signOut } from '../lib/auth';
@@ -22,7 +22,7 @@ const dateLocales = { pl, en: enUS, ru };
 export const ProfilePage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);

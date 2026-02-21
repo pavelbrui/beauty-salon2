@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock } from '../../types';
+import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { CropSelector, parseCropPosition } from './CropSelector';
 
@@ -18,6 +18,7 @@ const BLOCK_LABELS: Record<string, string> = {
   text: 'Tekst',
   image: 'Obraz',
   list: 'Lista',
+  embed: 'Embed',
 };
 
 const BLOCK_COLORS: Record<string, string> = {
@@ -25,6 +26,7 @@ const BLOCK_COLORS: Record<string, string> = {
   text: 'bg-blue-100 text-blue-700',
   image: 'bg-green-100 text-green-700',
   list: 'bg-orange-100 text-orange-700',
+  embed: 'bg-pink-100 text-pink-700',
 };
 
 type Lang = 'pl' | 'en' | 'ru';
@@ -84,6 +86,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'text': return (block.text || '(pusty tekst)').slice(0, 60) + (block.text.length > 60 ? '...' : '');
       case 'image': return block.caption || (block.url ? 'Zdjęcie' : '(brak zdjęcia)');
       case 'list': return `${block.items.length} pozycji (${block.style === 'check' ? 'check' : 'bullet'})`;
+      case 'embed': return `${block.embed_type} — ${block.url ? block.url.slice(0, 40) + '...' : '(brak URL)'}`;
     }
   };
 
@@ -286,12 +289,54 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
     );
   };
 
+  const renderEmbedEditor = (b: EmbedBlock) => (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <label className="text-xs font-medium text-gray-500">Typ:</label>
+        <select
+          value={b.embed_type}
+          onChange={e => onUpdate(index, { ...b, embed_type: e.target.value as 'instagram' | 'youtube' })}
+          className="rounded-md border-gray-300 text-sm py-1 px-2 focus:border-amber-500 focus:ring-amber-500"
+        >
+          <option value="instagram">Instagram</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <input
+        type="text"
+        value={b.url}
+        onChange={e => onUpdate(index, { ...b, url: e.target.value })}
+        placeholder={b.embed_type === 'instagram' ? 'https://www.instagram.com/reel/...' : 'https://www.youtube.com/watch?v=...'}
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+      />
+      {b.url && (
+        <div className="bg-gray-50 rounded-lg p-3 text-center">
+          <span className="text-xs text-gray-500">Podgląd dostępny na stronie bloga</span>
+        </div>
+      )}
+      {renderLangTabs()}
+      <input
+        type="text"
+        value={langTab === 'pl' ? (b.caption || '') : langTab === 'en' ? (b.caption_en || '') : (b.caption_ru || '')}
+        onChange={e => {
+          const val = e.target.value;
+          if (langTab === 'pl') onUpdate(index, { ...b, caption: val });
+          else if (langTab === 'en') onUpdate(index, { ...b, caption_en: val });
+          else onUpdate(index, { ...b, caption_ru: val });
+        }}
+        placeholder={langTab === 'pl' ? 'Podpis (opcjonalnie)' : langTab === 'en' ? 'Caption (optional)' : 'Подпись (необязательно)'}
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+      />
+    </div>
+  );
+
   const renderEditor = () => {
     switch (block.type) {
       case 'heading': return renderHeadingEditor(block);
       case 'text': return renderTextEditor(block);
       case 'image': return renderImageEditor(block);
       case 'list': return renderListEditor(block);
+      case 'embed': return renderEmbedEditor(block);
     }
   };
 

@@ -152,6 +152,14 @@ export const translations = {
       calendarView: 'Kalendarz',
       more: 'więcej'
     },
+    quick_booking: {
+      addBooking: 'Zarezerwuj wizytę',
+      newReservation: 'Nowa',
+      selectService: 'Wybierz usługę',
+      selectTime: 'Wybierz godzinę',
+      searchPlaceholder: 'Szukaj usługi...',
+      noResults: 'Nie znaleziono usług'
+    },
     home: {
       loginPrompt: 'Zaloguj się lub utwórz konto',
       loginBenefit: 'Śledź swoje rezerwacje i zapisz dane kontaktowe'
@@ -379,6 +387,14 @@ export const translations = {
       calendarView: 'Calendar',
       more: 'more'
     },
+    quick_booking: {
+      addBooking: 'Book an appointment',
+      newReservation: 'New',
+      selectService: 'Select a service',
+      selectTime: 'Select time',
+      searchPlaceholder: 'Search services...',
+      noResults: 'No services found'
+    },
     home: {
       loginPrompt: 'Sign in or create an account',
       loginBenefit: 'Track your bookings and save your contact details'
@@ -401,6 +417,30 @@ export const translations = {
       noCourses: 'No courses available',
       published: 'Published',
       draft: 'Draft'
+    },
+    blog: 'Blog',
+    blog_page: {
+      heroTitle: 'Beauty Blog',
+      heroSubtitle: 'Tips, trends and knowledge about beauty treatments',
+      seoDescription: 'Beauty blog of Katarzyna Brui salon in Bialystok. Tips on permanent makeup, brow and lash care, manicure. Check out the latest beauty trends.',
+      allPosts: 'All',
+      readMore: 'Read more',
+      backToBlog: 'Back to blog',
+      author: 'Author',
+      readingTime: 'min read',
+      publishedOn: 'Published',
+      relatedPosts: 'Related articles',
+      noPosts: 'No articles',
+      bookCta: 'Want to try it? Book an appointment!',
+      bookButton: 'Book appointment',
+      recentBlog: 'Latest from our blog',
+      viewAll: 'View all articles',
+      categories: {
+        permanent_makeup: 'Permanent Makeup',
+        brows_lashes: 'Brows & Lashes',
+        manicure: 'Manicure',
+        tips: 'Tips'
+      }
     },
     admin_bookings: {
       title: 'Bookings',
@@ -582,6 +622,14 @@ export const translations = {
       calendarView: 'Календарь',
       more: 'ещё'
     },
+    quick_booking: {
+      addBooking: 'Записаться на приём',
+      newReservation: 'Новая',
+      selectService: 'Выберите услугу',
+      selectTime: 'Выберите время',
+      searchPlaceholder: 'Поиск услуг...',
+      noResults: 'Услуги не найдены'
+    },
     home: {
       loginPrompt: 'Войдите или создайте аккаунт',
       loginBenefit: 'Отслеживайте записи и сохраняйте контактные данные'
@@ -604,6 +652,30 @@ export const translations = {
       noCourses: 'Нет доступных курсов',
       published: 'Опубликовано',
       draft: 'Черновик'
+    },
+    blog: 'Блог',
+    blog_page: {
+      heroTitle: 'Бьюти-блог',
+      heroSubtitle: 'Советы, тренды и знания о косметических процедурах',
+      seoDescription: 'Косметический блог салона Катажина Бруй в Белостоке. Советы о перманентном макияже, уходе за бровями и ресницами, маникюре.',
+      allPosts: 'Все',
+      readMore: 'Читать далее',
+      backToBlog: 'Вернуться к блогу',
+      author: 'Автор',
+      readingTime: 'мин чтения',
+      publishedOn: 'Опубликовано',
+      relatedPosts: 'Похожие статьи',
+      noPosts: 'Нет статей',
+      bookCta: 'Хотите попробовать? Запишитесь на приём!',
+      bookButton: 'Записаться',
+      recentBlog: 'Новое в нашем блоге',
+      viewAll: 'Смотреть все статьи',
+      categories: {
+        permanent_makeup: 'Перманентный макияж',
+        brows_lashes: 'Брови и ресницы',
+        manicure: 'Маникюр',
+        tips: 'Советы'
+      }
     },
     admin_bookings: {
       title: 'Записи',

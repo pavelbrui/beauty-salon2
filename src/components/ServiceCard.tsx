@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { Service } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
@@ -10,7 +10,7 @@ interface ServiceCardProps {
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { language } = useLanguage();
   const t = translations[language];
 

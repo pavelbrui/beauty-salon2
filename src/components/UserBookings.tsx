@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
 import { Booking, Service, TimeSlot } from '../types';
@@ -7,8 +7,9 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { getServiceName } from '../utils/serviceTranslation';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth, startOfDay, isBefore } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
+import { QuickBookingPopup } from './QuickBookingPopup';
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -20,7 +21,8 @@ import {
   SparklesIcon,
   ListBulletIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 
 const dateLocales = { pl, en: enUS, ru };
@@ -30,7 +32,7 @@ type BookingFilter = 'all' | 'active' | 'past';
 export const UserBookings: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [rescheduleBooking, setRescheduleBooking] = useState<Booking | null>(null);
@@ -39,6 +41,7 @@ export const UserBookings: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [quickBookDate, setQuickBookDate] = useState<Date | null>(null);
 
   useEffect(() => {
     loadBookings();
@@ -535,6 +538,8 @@ export const UserBookings: React.FC = () => {
                     const isCurrentMonth = isSameMonth(day, calendarMonth);
                     const isToday = isSameDay(day, new Date());
                     const isSelected = selectedDay && isSameDay(day, selectedDay);
+                    const isPast = isBefore(startOfDay(day), startOfDay(new Date()));
+                    const canQuickBook = isCurrentMonth && !isPast;
 
                     return (
                       <div
@@ -544,7 +549,7 @@ export const UserBookings: React.FC = () => {
                             setSelectedDay(isSelected ? null : day);
                           }
                         }}
-                        className={`min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 p-1 transition-colors ${
+                        className={`relative group min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 p-1 transition-colors ${
                           !isCurrentMonth ? 'bg-gray-50' : ''
                         } ${isSelected ? 'bg-amber-50 ring-2 ring-amber-300 ring-inset' : ''} ${
                           dayBookings.length > 0 ? 'cursor-pointer hover:bg-amber-50/50' : ''
@@ -557,6 +562,21 @@ export const UserBookings: React.FC = () => {
                         }`}>
                           {format(day, 'd')}
                         </div>
+
+                        {/* Quick book "+" button — centered in cell */}
+                        {canQuickBook && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setQuickBookDate(day);
+                            }}
+                            className="absolute inset-0 m-auto w-fit h-fit flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 hover:scale-105 transition-all shadow-md opacity-0 sm:group-hover:opacity-100 active:opacity-100 text-[11px] font-semibold whitespace-nowrap z-10"
+                            title={t.quick_booking?.addBooking || 'Zarezerwuj wizytę'}
+                          >
+                            <PlusIcon className="h-4 w-4 flex-shrink-0" />
+                            <span>{t.quick_booking?.newReservation || 'Nowa'}</span>
+                          </button>
+                        )}
 
                         <div className="space-y-0.5">
                           {dayBookings.slice(0, 2).map(b => {
@@ -604,6 +624,18 @@ export const UserBookings: React.FC = () => {
           </>
         )}
       </div>
+
+      {/* Quick Booking Popup */}
+      {quickBookDate && (
+        <QuickBookingPopup
+          date={quickBookDate}
+          onClose={() => setQuickBookDate(null)}
+          onBooked={() => {
+            setQuickBookDate(null);
+            loadBookings();
+          }}
+        />
+      )}
 
       {/* Reschedule Modal */}
       {rescheduleBooking && rescheduleService && (

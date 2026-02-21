@@ -5,12 +5,14 @@ import { Footer } from './components/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AdminRoute } from './components/AdminRoute';
 import { AuthRoute } from './components/AuthRoute';
+import { LanguageLayout } from './components/LanguageLayout';
 
 // Lazy-loaded pages for code splitting
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
 const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const TrainingPage = lazy(() => import('./pages/TrainingPage').then(m => ({ default: m.TrainingPage })));
+const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
 
 const BookingPage = lazy(() => import('./pages/BookingPage').then(m => ({ default: m.BookingPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
@@ -23,6 +25,24 @@ const PageLoader = () => (
   <div className="flex justify-center items-center min-h-screen">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
   </div>
+);
+
+// Public routes shared across all language prefixes
+const publicRoutes = (
+  <>
+    <Route index element={<Home />} />
+    <Route path="services" element={<ServicesPage />} />
+    <Route path="services/:category" element={<ServicesPage />} />
+    <Route path="booking/:serviceId" element={<BookingPage />} />
+    <Route path="profile" element={<AuthRoute><ProfilePage /></AuthRoute>} />
+    <Route path="appointments" element={<AppointmentsPage />} />
+    <Route path="stylists" element={<StylistsPage />} />
+    <Route path="gallery" element={<GalleryPage />} />
+    <Route path="training" element={<TrainingPage />} />
+    <Route path="training/:slug" element={<TrainingPage />} />
+    <Route path="blog" element={<BlogPage />} />
+    <Route path="blog/:slug" element={<BlogPage />} />
+  </>
 );
 
 function App() {
@@ -44,17 +64,25 @@ const AppContent: React.FC = () => {
       {!isAdminRoute && <Navbar />}
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/services/:category" element={<ServicesPage />} />
-          <Route path="/booking/:serviceId" element={<BookingPage />} />
-          <Route path="/profile" element={<AuthRoute><ProfilePage /></AuthRoute>} />
-          <Route path="/appointments" element={<AppointmentsPage />} />
-          <Route path="/stylists" element={<StylistsPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/training" element={<TrainingPage />} />
-          <Route path="/training/:slug" element={<TrainingPage />} />
+          {/* Polish (default) — no prefix */}
+          <Route element={<LanguageLayout />}>
+            {publicRoutes}
+          </Route>
+
+          {/* English — /en prefix */}
+          <Route path="/en" element={<LanguageLayout />}>
+            {publicRoutes}
+          </Route>
+
+          {/* Russian — /ru prefix */}
+          <Route path="/ru" element={<LanguageLayout />}>
+            {publicRoutes}
+          </Route>
+
+          {/* Admin stays outside language routing */}
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+
+          {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>

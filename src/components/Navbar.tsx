@@ -6,6 +6,10 @@ import { translations } from '../i18n/translations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { AuthModal } from './AuthModal';
+import { useAdmin } from '../hooks/useAdmin';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { LocalizedLink } from './LocalizedLink';
+import { stripLangPrefix, localizedPath, SupportedLanguage } from '../hooks/useLocalizedPath';
 
 export const Navbar: React.FC = () => {
   const { language, setLanguage } = useLanguage();
@@ -16,8 +20,10 @@ export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = React.useState(false);
   const [user, setUser] = React.useState<any>(null);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const { isAdmin } = useAdmin();
 
-  const isHome = location.pathname === '/';
+  const barePath = stripLangPrefix(location.pathname);
+  const isHome = barePath === '/' || barePath === '';
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -45,16 +51,24 @@ export const Navbar: React.FC = () => {
   const hoverTextClass = showSolid ? 'hover:text-amber-600' : 'hover:text-amber-200';
 
   const isActive = (path: string) => {
-    return location.pathname === path ||
+    return barePath === path ||
            (path.startsWith('/#') && location.hash === path.substring(1)) ||
-           (path === '/services' && location.pathname.startsWith('/services'));
+           (path === '/services' && barePath.startsWith('/services'));
+  };
+
+  const switchLanguage = (newLang: SupportedLanguage) => {
+    const currentBarePath = stripLangPrefix(location.pathname);
+    const searchAndHash = location.search + location.hash;
+    setLanguage(newLang);
+    navigate(localizedPath(currentBarePath || '/', newLang) + searchAndHash);
   };
 
   const navItems = [
     { path: '/services', label: t.services },
-    { path: '/training', label: t.training },
     { path: '/appointments', label: t.appointments },
     { path: '/stylists', label: t.stylists },
+    { path: '/training', label: t.training },
+    { path: '/blog', label: (t as Record<string, unknown>).blog as string || 'Blog' },
     { path: '/gallery', label: t.gallery }
   ];
 
@@ -85,7 +99,7 @@ export const Navbar: React.FC = () => {
             )}
           </button>
           <div className="flex">
-            <Link to="/" className="flex items-center">
+            <LocalizedLink to="/" className="flex items-center">
               <motion.img
                 whileHover={{ scale: 1.05 }}
                 src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
@@ -97,10 +111,10 @@ export const Navbar: React.FC = () => {
                 className="ml-2 text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
               >
               </motion.span>
-            </Link>
+            </LocalizedLink>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navItems.map(({ path, label }) => (
-                <Link
+                <LocalizedLink
                   key={path}
                   to={path}
                   className={`relative inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors
@@ -113,7 +127,7 @@ export const Navbar: React.FC = () => {
                       className={`absolute bottom-0 left-0 right-0 h-0.5 ${showSolid ? 'bg-amber-600' : 'bg-amber-400'}`}
                     />
                   )}
-                </Link>
+                </LocalizedLink>
               ))}
             </div>
           </div>
@@ -125,7 +139,7 @@ export const Navbar: React.FC = () => {
                   key={lang}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setLanguage(lang)}
+                  onClick={() => switchLanguage(lang)}
                   aria-label={langLabels[lang]}
                   className={`w-8 h-8 rounded-full text-xs font-medium uppercase flex items-center justify-center transition-colors ${
                     language === lang
@@ -138,9 +152,19 @@ export const Navbar: React.FC = () => {
               ))}
             </div>
 
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'}`}
+                aria-label="Admin"
+              >
+                <Cog6ToothIcon className="h-5 w-5" />
+              </Link>
+            )}
+
             {user ? (
               <button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate(localizedPath('/profile', language))}
                 className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'}`}
                 aria-label="Profile"
               >
@@ -169,7 +193,7 @@ export const Navbar: React.FC = () => {
             >
               <div className={`px-2 pt-2 pb-3 space-y-1 ${showSolid ? 'bg-gray-50' : 'bg-black/30 backdrop-blur-sm'} rounded-lg mt-2`}>
                 {navItems.map(({ path, label }) => (
-                  <Link
+                  <LocalizedLink
                     key={path}
                     to={path}
                     className={`block px-3 py-2 rounded-md text-base font-medium ${
@@ -179,7 +203,7 @@ export const Navbar: React.FC = () => {
                     }`}
                   >
                     {label}
-                  </Link>
+                  </LocalizedLink>
                 ))}
                 {!user && (
                   <button
@@ -190,11 +214,20 @@ export const Navbar: React.FC = () => {
                   </button>
                 )}
                 {user && (
-                  <Link
+                  <LocalizedLink
                     to="/profile"
                     className={`block px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
                   >
                     {language === 'pl' ? 'Profil' : language === 'ru' ? 'Профиль' : 'Profile'}
+                  </LocalizedLink>
+                )}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
+                  >
+                    <Cog6ToothIcon className="h-5 w-5" />
+                    {language === 'pl' ? 'Panel admina' : language === 'ru' ? 'Админ панель' : 'Admin panel'}
                   </Link>
                 )}
               </div>
@@ -211,7 +244,7 @@ export const Navbar: React.FC = () => {
       mode="signin"
       onSuccess={() => {
         setShowAuthModal(false);
-        navigate('/profile');
+        navigate(localizedPath('/profile', language));
       }}
     />
     </>

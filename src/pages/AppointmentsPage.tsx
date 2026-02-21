@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { ServiceList } from '../components/ServiceList';
@@ -13,7 +14,7 @@ export const AppointmentsPage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedStylistId, setSelectedStylistId] = useState<string>('');
   const [services, setServices] = useState<Service[]>([]);

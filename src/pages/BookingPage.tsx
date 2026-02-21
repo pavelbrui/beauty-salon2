@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
 import { ServiceCard } from '../components/ServiceCard';
 import { AuthModal } from '../components/AuthModal';
@@ -15,7 +16,7 @@ import { getServiceName } from '../utils/serviceTranslation';
 
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const stylistIdParam = searchParams.get('stylist') || null;

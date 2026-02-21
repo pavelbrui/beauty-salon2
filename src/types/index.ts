@@ -98,7 +98,39 @@ export interface ListBlock {
   style: 'bullet' | 'check';
 }
 
-export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock;
+export interface EmbedBlock {
+  id: string;
+  type: 'embed';
+  url: string;
+  embed_type: 'instagram' | 'youtube';
+  caption?: string;
+  caption_en?: string;
+  caption_ru?: string;
+}
+
+export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock | EmbedBlock;
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  title_en?: string;
+  title_ru?: string;
+  slug: string;
+  category: string;
+  excerpt?: string;
+  excerpt_en?: string;
+  excerpt_ru?: string;
+  author: string;
+  cover_image_url?: string;
+  seo_keywords?: string[];
+  content_blocks: ContentBlock[];
+  is_published: boolean;
+  published_at?: string;
+  reading_time_minutes: number;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Training {
   id: string;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
@@ -176,7 +177,7 @@ export const ServicesPage: React.FC = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const { language } = useLanguage();
   const t = translations[language];
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
 
   useEffect(() => {
     loadServices();

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Service } from '../types';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
-import { useNavigate } from 'react-router-dom';
+import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { useLanguage } from '../hooks/useLanguage';
 import { getServiceName } from '../utils/serviceTranslation';
 
@@ -15,7 +15,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   service, 
   onClose 
 }) => {
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const { language } = useLanguage();
 
   return (

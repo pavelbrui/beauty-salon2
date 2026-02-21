@@ -325,22 +325,32 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
       </div>
 
       {/* Crop preview */}
-      {crop && (
-        <div className="mt-2">
-          <div
-            className="rounded-lg overflow-hidden border border-gray-200"
-            style={{ height: `${previewHeight ? Math.min(previewHeight, 200) : 128}px` }}
-          >
-            <img
-              src={imageUrl}
-              alt="Podgląd"
-              className="w-full h-full"
-              style={cropPositionToStyle(JSON.stringify(crop))}
-            />
+      {crop && (() => {
+        const ph = previewHeight ? Math.min(previewHeight, 200) : 128;
+        const previewStyle = aspectRatio
+          ? { height: `${ph}px`, width: `${Math.round(ph * aspectRatio)}px`, maxWidth: '100%' as const }
+          : { maxHeight: '200px' };
+
+        return (
+          <div className="mt-2">
+            <div
+              className="rounded-lg overflow-hidden border border-gray-200"
+              style={aspectRatio ? previewStyle : undefined}
+            >
+              <img
+                src={imageUrl}
+                alt="Podgląd"
+                className={aspectRatio ? 'w-full h-full' : 'w-full'}
+                style={aspectRatio
+                  ? cropPositionToStyle(JSON.stringify(crop))
+                  : { ...cropPositionToStyle(JSON.stringify(crop)), maxHeight: '200px' }
+                }
+              />
+            </div>
+            <span className="text-xs text-gray-400">Podgląd kadrowania</span>
           </div>
-          <span className="text-xs text-gray-400">Podgląd kadrowania</span>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

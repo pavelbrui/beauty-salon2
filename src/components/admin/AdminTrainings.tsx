@@ -357,7 +357,10 @@ export const AdminTrainings: React.FC = () => {
                 className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
               >
                 {/* Cover image */}
-                <div className="h-40 bg-gradient-to-br from-amber-400 to-amber-600 relative overflow-hidden">
+                <div
+                  className="bg-gradient-to-br from-amber-400 to-amber-600 relative overflow-hidden"
+                  style={{ height: `${Math.min(training.cover_height_card ?? 224, 200)}px` }}
+                >
                   {training.cover_image_url && (
                     <img
                       src={training.cover_image_url}
