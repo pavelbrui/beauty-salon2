@@ -509,6 +509,74 @@ async function handleCancelledBooking(
   return { status: 200, body: `Cancelled Booksy booking: ${existing?.id || 'not found'}` };
 }
 
+// --- Parse multipart/form-data (SendGrid Inbound Parse format) ---
+function parseMultipartFormData(body: string, boundary: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  const parts = body.split(`--${boundary}`);
+
+  for (const part of parts) {
+    // Skip preamble and closing boundary
+    if (!part || part.trim() === '--' || part.trim() === '') continue;
+
+    // Find the end of headers (double newline, handle both \r\n and \n)
+    let headerEnd = part.indexOf('\r\n\r\n');
+    let valueStart = headerEnd + 4;
+    if (headerEnd === -1) {
+      headerEnd = part.indexOf('\n\n');
+      valueStart = headerEnd + 2;
+    }
+    if (headerEnd === -1) continue;
+
+    const headers = part.substring(0, headerEnd);
+    let value = part.substring(valueStart);
+
+    // Remove trailing \r\n or \n
+    value = value.replace(/\r?\n$/, '');
+
+    const nameMatch = headers.match(/name="([^"]+)"/);
+    if (nameMatch) {
+      result[nameMatch[1]] = value;
+    }
+  }
+
+  return result;
+}
+
+// --- Extract form fields from request body (supports both URL-encoded and multipart) ---
+function extractFormFields(event: HandlerEvent): Record<string, string> {
+  const body = event.body || '';
+  const decodedBody = event.isBase64Encoded
+    ? Buffer.from(body, 'base64').toString('utf-8')
+    : body;
+
+  // Check content-type for multipart/form-data
+  const contentType = event.headers['content-type'] || event.headers['Content-Type'] || '';
+  const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^\s;]+))/);
+
+  if (boundaryMatch) {
+    const boundary = boundaryMatch[1] || boundaryMatch[2];
+    return parseMultipartFormData(decodedBody, boundary);
+  }
+
+  // Fallback: try URL-encoded parsing
+  const params = new URLSearchParams(decodedBody);
+  const result: Record<string, string> = {};
+  params.forEach((value, key) => {
+    result[key] = value;
+  });
+
+  // If URL-encoded parsing yielded no useful fields, try multipart heuristic
+  // (some proxies strip content-type but body is still multipart)
+  if (!result['subject'] && !result['from'] && !result['html']) {
+    const heuristicBoundary = decodedBody.match(/^--([^\r\n]+)/);
+    if (heuristicBoundary) {
+      return parseMultipartFormData(decodedBody, heuristicBoundary[1]);
+    }
+  }
+
+  return result;
+}
+
 // --- Main handler ---
 export const handler: Handler = async (event: HandlerEvent) => {
   // Only accept POST
@@ -529,19 +597,14 @@ export const handler: Handler = async (event: HandlerEvent) => {
   let logId: string | null = null;
 
   try {
-    // SendGrid Inbound Parse sends URL-encoded form data
+    // SendGrid Inbound Parse sends multipart/form-data (or sometimes URL-encoded)
     // Key fields: from, to, subject, html, text, headers
-    const body = event.body || '';
-    const decodedBody = event.isBase64Encoded
-      ? Buffer.from(body, 'base64').toString('utf-8')
-      : body;
-
-    const params = new URLSearchParams(decodedBody);
-    const subject = params.get('subject') || '';
-    const html = params.get('html') || params.get('text') || '';
-    const rawText = params.get('text') || '';
-    const emailHeaders = params.get('headers') || '';
-    const from = params.get('from') || '';
+    const fields = extractFormFields(event);
+    const subject = fields['subject'] || '';
+    const html = fields['html'] || fields['text'] || '';
+    const rawText = fields['text'] || '';
+    const emailHeaders = fields['headers'] || '';
+    const from = fields['from'] || '';
 
     // --- LOG EVERY INCOMING EMAIL (before any validation) ---
     const { data: logEntry } = await supabase
@@ -554,7 +617,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         raw_headers: emailHeaders.substring(0, 10000),
         processing_status: 'received',
         is_base64: event.isBase64Encoded || false,
-        body_length: body.length,
+        body_length: (event.body || '').length,
       })
       .select('id')
       .single();
