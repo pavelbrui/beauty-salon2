@@ -525,6 +525,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
   }
 
+  // Log ID for tracking through the pipeline
+  let logId: string | null = null;
+
   try {
     // SendGrid Inbound Parse sends URL-encoded form data
     // Key fields: from, to, subject, html, text, headers
@@ -536,8 +539,26 @@ export const handler: Handler = async (event: HandlerEvent) => {
     const params = new URLSearchParams(decodedBody);
     const subject = params.get('subject') || '';
     const html = params.get('html') || params.get('text') || '';
+    const rawText = params.get('text') || '';
     const emailHeaders = params.get('headers') || '';
     const from = params.get('from') || '';
+
+    // --- LOG EVERY INCOMING EMAIL (before any validation) ---
+    const { data: logEntry } = await supabase
+      .from('booksy_email_log')
+      .insert({
+        from_address: from.substring(0, 500),
+        subject: subject.substring(0, 1000),
+        raw_html: html.substring(0, 100000),
+        raw_text: rawText.substring(0, 50000),
+        raw_headers: emailHeaders.substring(0, 10000),
+        processing_status: 'received',
+        is_base64: event.isBase64Encoded || false,
+        body_length: body.length,
+      })
+      .select('id')
+      .single();
+    logId = logEntry?.id || null;
 
     // Validate sender is from Booksy (also accept forwarded emails that contain Booksy content)
     const isFromBooksy = from.toLowerCase().includes('booksy');
@@ -547,6 +568,13 @@ export const handler: Handler = async (event: HandlerEvent) => {
       html.toLowerCase().includes('booksy.com') ||
       html.toLowerCase().includes('booksy wiesz');
     if (!isFromBooksy && !hasBooksyContent) {
+      // Update log: rejected
+      if (logId) {
+        await supabase
+          .from('booksy_email_log')
+          .update({ processing_status: 'rejected', rejection_reason: 'Not a Booksy email' })
+          .eq('id', logId);
+      }
       return { statusCode: 200, body: 'Not a Booksy email, ignoring' };
     }
 
@@ -558,10 +586,23 @@ export const handler: Handler = async (event: HandlerEvent) => {
     const messageId =
       msgIdMatch?.[1] || `gen-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
+    // Update log with message ID
+    if (logId) {
+      await supabase.from('booksy_email_log').update({ message_id: messageId }).eq('id', logId);
+    }
+
     // Parse the email (use cleaned subject without Fwd: prefix)
     const parsed = parseBookingEmail(cleanSubject, html);
     if (!parsed) {
       console.error('Failed to parse Booksy email:', { subject, bodyLength: html.length });
+
+      // Update log: parse error
+      if (logId) {
+        await supabase
+          .from('booksy_email_log')
+          .update({ processing_status: 'parse_error', error_message: 'Failed to parse email content' })
+          .eq('id', logId);
+      }
 
       // Store as error record for admin review
       await supabase
@@ -598,9 +639,35 @@ export const handler: Handler = async (event: HandlerEvent) => {
         break;
     }
 
+    // Update log: processed successfully
+    if (logId) {
+      await supabase
+        .from('booksy_email_log')
+        .update({
+          processing_status: 'processed',
+          parsed_email_type: parsed.emailType,
+          parsed_client_name: parsed.clientName,
+          parsed_service_name: parsed.serviceName,
+        })
+        .eq('id', logId);
+    }
+
     return { statusCode: result.status, body: result.body };
   } catch (error) {
     console.error('Booksy webhook error:', error);
+
+    // Update log: error
+    if (logId) {
+      await supabase
+        .from('booksy_email_log')
+        .update({
+          processing_status: 'parse_error',
+          error_message: error instanceof Error ? error.message : 'Unknown error',
+        })
+        .eq('id', logId)
+        .then(() => {});
+    }
+
     // Return 200 to prevent SendGrid from retrying
     return {
       statusCode: 200,

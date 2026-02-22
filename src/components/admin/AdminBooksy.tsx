@@ -13,6 +13,9 @@ import {
   LinkIcon,
   PhoneIcon,
   EnvelopeIcon,
+  InboxIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 
 const dateLocales = { pl, en: enUS, ru };
@@ -27,6 +30,26 @@ export const AdminBooksy: React.FC = () => {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [bookings, setBookings] = useState<BooksyBooking[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Email log state
+  interface EmailLogEntry {
+    id: string;
+    received_at: string;
+    from_address: string | null;
+    subject: string | null;
+    processing_status: string;
+    rejection_reason: string | null;
+    parsed_email_type: string | null;
+    parsed_client_name: string | null;
+    parsed_service_name: string | null;
+    error_message: string | null;
+    message_id: string | null;
+    body_length: number | null;
+    raw_html: string | null;
+  }
+  const [emailLogs, setEmailLogs] = useState<EmailLogEntry[]>([]);
+  const [showEmailLog, setShowEmailLog] = useState(true);
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
   // Filters
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -44,7 +67,7 @@ export const AdminBooksy: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [mappingsRes, stylistsRes, bookingsRes] = await Promise.all([
+      const [mappingsRes, stylistsRes, bookingsRes, logsRes] = await Promise.all([
         supabase
           .from('booksy_stylist_mapping')
           .select('*, stylists(name, image_url)')
@@ -55,15 +78,22 @@ export const AdminBooksy: React.FC = () => {
           .select('*, stylists(name)')
           .order('start_time', { ascending: false })
           .limit(200),
+        supabase
+          .from('booksy_email_log')
+          .select('id, received_at, from_address, subject, processing_status, rejection_reason, parsed_email_type, parsed_client_name, parsed_service_name, error_message, message_id, body_length, raw_html')
+          .order('received_at', { ascending: false })
+          .limit(50),
       ]);
 
       if (mappingsRes.error) console.error('Error loading mappings:', mappingsRes.error);
       if (stylistsRes.error) console.error('Error loading stylists:', stylistsRes.error);
       if (bookingsRes.error) console.error('Error loading booksy bookings:', bookingsRes.error);
+      if (logsRes.error) console.error('Error loading email logs:', logsRes.error);
 
       if (mappingsRes.data) setMappings(mappingsRes.data);
       if (stylistsRes.data) setStylists(stylistsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data);
+      if (logsRes.data) setEmailLogs(logsRes.data);
     } finally {
       setLoading(false);
     }
@@ -242,6 +272,157 @@ export const AdminBooksy: React.FC = () => {
           <ArrowPathIcon className="h-4 w-4" />
           {ab.refreshData || 'Refresh'}
         </button>
+      </div>
+
+      {/* Email Log Section (Debug) */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <InboxIcon className="h-5 w-5 text-amber-500" />
+            Email Log
+            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+              {emailLogs.length}
+            </span>
+          </h3>
+          <button
+            onClick={() => setShowEmailLog(!showEmailLog)}
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md"
+          >
+            {showEmailLog ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+            {showEmailLog ? 'Ukryj' : 'Pokaż'}
+          </button>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          {language === 'pl'
+            ? 'Każdy email przychodzący do webhooka jest tutaj logowany — nawet jeśli nie przeszedł walidacji.'
+            : language === 'ru'
+              ? 'Каждое письмо, поступающее в вебхук, логируется здесь — даже если не прошло валидацию.'
+              : 'Every email hitting the webhook is logged here — even if it fails validation.'}
+        </p>
+
+        {showEmailLog && (
+          emailLogs.length === 0 ? (
+            <div className="text-center py-8">
+              <InboxIcon className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-400 text-sm">
+                {language === 'pl'
+                  ? 'Brak logów — żaden email jeszcze nie dotarł do webhooka'
+                  : language === 'ru'
+                    ? 'Нет логов — ни одно письмо ещё не пришло в вебхук'
+                    : 'No logs yet — no emails have reached the webhook'}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      {language === 'pl' ? 'Czas' : 'Time'}
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      {language === 'pl' ? 'Od' : 'From'}
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      {language === 'pl' ? 'Temat' : 'Subject'}
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Status
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      {language === 'pl' ? 'Wynik' : 'Result'}
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      HTML
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {emailLogs.map((log) => (
+                    <React.Fragment key={log.id}>
+                      <tr
+                        className={
+                          log.processing_status === 'processed'
+                            ? 'bg-green-50'
+                            : log.processing_status === 'rejected'
+                              ? 'bg-gray-50'
+                              : log.processing_status === 'parse_error'
+                                ? 'bg-red-50'
+                                : 'bg-blue-50'
+                        }
+                      >
+                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">
+                          {format(new Date(log.received_at), 'dd.MM HH:mm:ss', { locale })}
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-600 max-w-[150px] truncate">
+                          {log.from_address || '—'}
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-900 max-w-[200px] truncate font-medium">
+                          {log.subject || '(brak)'}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                              log.processing_status === 'processed'
+                                ? 'bg-green-100 text-green-800'
+                                : log.processing_status === 'rejected'
+                                  ? 'bg-gray-200 text-gray-700'
+                                  : log.processing_status === 'parse_error'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-blue-100 text-blue-800'
+                            }`}
+                          >
+                            {log.processing_status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-600">
+                          {log.processing_status === 'processed' && (
+                            <span>
+                              {log.parsed_email_type} — {log.parsed_client_name} — {log.parsed_service_name}
+                            </span>
+                          )}
+                          {log.processing_status === 'rejected' && (
+                            <span className="text-gray-500">{log.rejection_reason}</span>
+                          )}
+                          {log.processing_status === 'parse_error' && (
+                            <span className="text-red-600">{log.error_message}</span>
+                          )}
+                          {log.processing_status === 'received' && (
+                            <span className="text-blue-600">
+                              {language === 'pl' ? 'W trakcie...' : 'Processing...'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {log.raw_html && (
+                            <button
+                              onClick={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
+                              className="text-xs text-amber-600 hover:text-amber-700 underline"
+                            >
+                              {expandedLogId === log.id ? 'Ukryj' : `${(log.body_length || 0).toLocaleString()} B`}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                      {expandedLogId === log.id && log.raw_html && (
+                        <tr>
+                          <td colSpan={6} className="px-3 py-3 bg-gray-50">
+                            <div className="max-h-64 overflow-auto rounded border border-gray-200 bg-white p-3">
+                              <pre className="text-xs text-gray-700 whitespace-pre-wrap break-all">
+                                {log.raw_html.substring(0, 5000)}
+                                {(log.raw_html.length || 0) > 5000 && '\n\n... (truncated)'}
+                              </pre>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
       </div>
 
       {/* Stylist Mapping Section */}

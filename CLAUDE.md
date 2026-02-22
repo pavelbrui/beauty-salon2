@@ -32,7 +32,7 @@ supabase/migrations/ # 20 SQL migration files (0001–0020)
 
 ## Key Architectural Rules
 - **No REST API** - All DB queries go directly from components to Supabase via `src/lib/supabase.ts`
-- **Auth**: Supabase Auth (email/password). Session via `supabase.auth.getSession()`. RLS enforces access.
+- **Auth**: Supabase Auth (email/password + Google OAuth). Session via `supabase.auth.getSession()`. RLS enforces access.
 - **State**: Only language in Zustand. Everything else is local `useState` + `useEffect` fetching.
 - **i18n**: Always add translations for all 3 languages (pl, en, ru) in `src/i18n/translations.ts`
 - **i18n Routing**: URL-based language prefixes for SEO (`/en/...`, `/ru/...`, no prefix = Polish). See "i18n Routing System" section below.
@@ -122,12 +122,36 @@ When exploring this codebase, use these patterns:
 6. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
 7. DB table → new file in `supabase/migrations/`
 
+## Google OAuth Setup
+Google login uses Supabase Auth with the Google provider. The flow: App → Google → Supabase callback → App redirect.
+
+### Required Configuration
+1. **Supabase Dashboard** → Authentication → URL Configuration:
+   - **Site URL**: `https://katarzynabrui.pl`
+   - **Redirect URLs**: `https://katarzynabrui.pl/**`, `http://localhost:3000/**`
+2. **Supabase Dashboard** → Authentication → Providers → Google:
+   - Enable Google provider, add Client ID + Client Secret from Google Cloud Console
+3. **Google Cloud Console** → APIs & Services → Credentials → OAuth 2.0 Client:
+   - **Authorized JavaScript origins**: `https://katarzynabrui.pl`, `http://localhost:3000`
+   - **Authorized redirect URIs**: `https://twifcurnuhlmhhrnwpib.supabase.co/auth/v1/callback`
+
+### Code
+- `src/lib/auth.ts` — `signInWithGoogle()` uses `window.location.origin` as `redirectTo`
+- `src/components/AuthModal.tsx` — Google login button UI
+- Auth state listeners (`onAuthStateChange`) in Navbar, AuthRoute, useAdmin pick up session after redirect
+
+### Troubleshooting
+- **Redirects to localhost on production**: Site URL in Supabase is set to `http://localhost:3000` — change to `https://katarzynabrui.pl`
+- **Redirect URL mismatch**: Production domain not in Supabase Redirect URLs whitelist
+- **Google error**: Callback URL `https://<project>.supabase.co/auth/v1/callback` missing from Google OAuth redirect URIs
+
 ## Environment
 - Supabase URL: `VITE_SUPABASE_URL` in `.env`
 - Supabase Key: `VITE_SUPABASE_ANON_KEY` in `.env`
 - DeepL API: `VITE_DEEPL_API_KEYS` in `.env` (used for auto-translation)
 - Google Maps: `VITE_GOOGLE_MAPS_API_KEY` in `.env`
 - Access in code: `import.meta.env.VITE_SUPABASE_URL`
+- **Production domain**: `https://katarzynabrui.pl` (Netlify)
 - **E2E Tests**: Playwright (Chromium) — test files in `e2e/` directory
 - **Deployment**: Netlify (see `netlify.toml`)
 - No CI/CD pipelines
