@@ -52,8 +52,18 @@
 2. Navigate to `/booking/:serviceId` or use `BookingModal`
 3. **Calendar picks date** → queries `stylist_working_hours` + `bookings` to generate available slots via [src/utils/timeSlots.ts](src/utils/timeSlots.ts) `generateAvailableTimeSlots()`
 4. **Select time slot** → if not authenticated, show `AuthModal`
-5. **Fill BookingForm** → creates record in `bookings` table
+5. **Fill BookingForm** → creates `time_slots` (blocked), then `bookings`, then links `time_slots.booking_id`
 6. **Email notification** via `sendEmail()` template system (stores template in `email_templates`, creates `notifications` record)
+
+### Booking Data Consistency Rules
+
+- Keep both links in sync:
+  - `bookings.time_slot_id -> time_slots.id`
+  - `time_slots.booking_id -> bookings.id`
+- When rebooking/rescheduling:
+  - old slot must be released (`is_available = true`) and unlinked (`booking_id = null`)
+  - new slot must be linked to the booking (`booking_id = booking.id`)
+- Keep `bookings.start_time/end_time` synchronized with the selected `time_slots` window.
 
 ## Key Conventions
 
@@ -117,6 +127,7 @@ The admin interface is tab-based in [src/pages/Admin.tsx](src/pages/Admin.tsx) w
 **Tab Structure:**
 - `services` → [AdminServices](src/components/admin/AdminServices.tsx) - CRUD services, assign stylists
 - `bookings` → Inline bookings list with status badges (pending/confirmed/cancelled)
+- `bookings` (current): full edit modal (service/stylist/date-time/price/status/contact) + manual booking creation for phone reservations
 - `stylists` → [AdminStylists](src/components/admin/AdminStylists.tsx) - manage stylist profiles
 - `timeslots` → [AdminTimeSlots](src/components/admin/AdminTimeSlots.tsx) - configure working hours via [StylistCalendar](src/components/admin/StylistCalendar.tsx)
 - `gallery` → [AdminGallery](src/components/admin/AdminGallery.tsx) - upload/delete service images

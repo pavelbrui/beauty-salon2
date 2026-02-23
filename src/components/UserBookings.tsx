@@ -182,7 +182,7 @@ export const UserBookings: React.FC = () => {
       if (oldSlotId) {
         await supabase
           .from('time_slots')
-          .update({ is_available: true })
+          .update({ is_available: true, booking_id: null })
           .eq('id', oldSlotId);
       }
 
@@ -199,6 +199,12 @@ export const UserBookings: React.FC = () => {
         .eq('user_id', session.user.id);
 
       if (updateError) return;
+
+      // Keep reverse relation consistent for admin/debug views.
+      await supabase
+        .from('time_slots')
+        .update({ booking_id: rescheduleBooking.id })
+        .eq('id', newSlot.id);
 
       const newDateStr = format(new Date(slot.startTime), 'dd.MM.yyyy HH:mm');
       await notifyAdmin(
