@@ -151,6 +151,9 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
+    let createdTimeSlotId: string | null = null;
+    let createdBookingId: string | null = null;
+
     try {
       // 1. Create time_slot record
       const { data: newSlot } = await supabase
@@ -163,6 +166,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         })
         .select('id')
         .single();
+      createdTimeSlotId = newSlot?.id || null;
 
       // 2. Create booking
       const bookingData: Record<string, unknown> = {
@@ -182,27 +186,51 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
       const { data, error } = await supabase.from('bookings').insert(bookingData).select();
       if (error) throw error;
       if (!data) throw new Error('Failed to create booking');
+      createdBookingId = data[0]?.id || null;
 
       // 3. Link time_slot → booking
       if (newSlot?.id && data[0]?.id) {
-        await supabase.from('time_slots').update({ booking_id: data[0].id }).eq('id', newSlot.id);
+        const { error: linkSlotError } = await supabase
+          .from('time_slots')
+          .update({ booking_id: data[0].id })
+          .eq('id', newSlot.id);
+
+        if (linkSlotError) {
+          console.error('Error linking time slot to booking:', linkSlotError);
+        }
       }
 
       // 4. Notifications
       if (data[0]?.id) {
-        const dateStr = new Date(selectedSlot.startTime).toLocaleString('pl-PL');
-        await notifyClient(data[0].id, 'confirmation');
-        await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+        try {
+          const dateStr = new Date(selectedSlot.startTime).toLocaleString('pl-PL');
+          await notifyClient(data[0].id, 'confirmation');
+          await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+        } catch (notifyError) {
+          console.error('Quick booking created, but notifications failed:', notifyError);
+        }
       }
 
-      await saveProfile({
-        full_name: contactData.name,
-        phone: contactData.phone,
-        email: contactData.email,
-      });
+      // Best-effort profile sync; booking should not fail because of this.
+      try {
+        await saveProfile({
+          full_name: contactData.name,
+          phone: contactData.phone,
+          email: contactData.email,
+        });
+      } catch (profileError) {
+        console.error('Quick booking created, but profile save failed:', profileError);
+      }
 
       setStep('success');
     } catch (err) {
+      if (createdTimeSlotId && !createdBookingId) {
+        // Roll back temporary blocked slot when booking insert fails.
+        await supabase
+          .from('time_slots')
+          .delete()
+          .eq('id', createdTimeSlotId);
+      }
       console.error('Quick booking error:', err);
     }
   };

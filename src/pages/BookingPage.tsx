@@ -105,6 +105,9 @@ export const BookingPage: React.FC = () => {
     notes?: string;
   }) => {
     setError(null);
+    let createdTimeSlotId: string | null = null;
+    let createdBookingId: string | null = null;
+
     try {
       if (!selectedSlot || !service) return;
 
@@ -117,6 +120,7 @@ export const BookingPage: React.FC = () => {
 
       // 1. Try to create time_slot record (may fail if migration 0014 not applied)
       const timeSlotId = await createTimeSlotRecord(selectedSlot, service.id);
+      createdTimeSlotId = timeSlotId;
 
       // 2. Create booking (core fields that exist in all schema versions)
       const bookingData: Record<string, unknown> = {
@@ -143,32 +147,52 @@ export const BookingPage: React.FC = () => {
 
       if (error) throw error;
       if (!data) throw new Error('Failed to create booking');
+      createdBookingId = data[0]?.id || null;
 
       // 3. Link time_slot back to booking (best-effort, for profile/admin display)
       if (timeSlotId && data[0]?.id) {
-        await supabase
+        const { error: linkSlotError } = await supabase
           .from('time_slots')
           .update({ booking_id: data[0].id })
           .eq('id', timeSlotId);
+
+        if (linkSlotError) {
+          console.error('Error linking time slot to booking:', linkSlotError);
+        }
       }
 
       // 4. Create client notification & notify admin
       if (data[0]?.id) {
-        const dateStr = selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—';
-        await notifyClient(data[0].id, 'confirmation');
-        await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
+        try {
+          const dateStr = selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—';
+          await notifyClient(data[0].id, 'confirmation');
+          await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
+        } catch (notifyError) {
+          console.error('Booking created, but notifications failed:', notifyError);
+        }
       }
 
-      // Save contact data to profile DB + cookies for future use
-      await saveProfile({
-        full_name: contactData.name,
-        phone: contactData.phone,
-        email: contactData.email
-      });
+      // Save contact data to profile DB + cookies for future use (best-effort).
+      try {
+        await saveProfile({
+          full_name: contactData.name,
+          phone: contactData.phone,
+          email: contactData.email
+        });
+      } catch (profileError) {
+        console.error('Booking created, but profile save failed:', profileError);
+      }
 
       setShowBookingForm(false);
       setShowSuccessPopup(true);
     } catch (error) {
+      if (createdTimeSlotId && !createdBookingId) {
+        // Roll back temporary blocked slot when booking insert fails.
+        await supabase
+          .from('time_slots')
+          .delete()
+          .eq('id', createdTimeSlotId);
+      }
       console.error('Error creating booking:', error);
       setError('Could not complete booking. Please try again.');
       setShowBookingForm(false);
