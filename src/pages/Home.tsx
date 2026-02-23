@@ -1,10 +1,8 @@
 import React from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
-import { ServiceCard } from '../components/ServiceCard';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
-import { Service } from '../types';
 import { serviceImages } from '../assets/images';
 import { Reviews } from '../components/Reviews';
 import { MapLocation } from '../components/MapLocation';
@@ -13,8 +11,16 @@ import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
+import { getCategoryName } from '../utils/serviceTranslation';
+
+interface CategoryInfo {
+  name: string;
+  count: number;
+  image: string;
+}
+
 export const Home: React.FC = () => {
-  const [services, setServices] = React.useState<Service[]>([]);
+  const [categories, setCategories] = React.useState<CategoryInfo[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const { language } = useLanguage();
@@ -22,29 +28,35 @@ export const Home: React.FC = () => {
   const navigate = useLocalizedNavigate();
 
   React.useEffect(() => {
-    loadServices();
+    loadCategories();
   }, []);
 
-  const loadServices = async () => {
+  const loadCategories = async () => {
     try {
       setLoading(true);
       setError(null);
       
       const { data, error } = await supabase
         .from('services')
-        .select('*, service_images(url)')
+        .select('category')
         .order('category');
       
       if (error) {
         throw error;
       }
-      
-      const servicesWithImages = data.map(service => ({
-        ...service,
-        imageUrl: service.service_images?.[0]?.url || getDefaultImageForCategory(service.category)
+
+      const categoryMap = new Map<string, number>();
+      data.forEach((s: { category: string }) => {
+        categoryMap.set(s.category, (categoryMap.get(s.category) || 0) + 1);
+      });
+
+      const cats: CategoryInfo[] = Array.from(categoryMap.entries()).map(([name, count]) => ({
+        name,
+        count,
+        image: getDefaultImageForCategory(name),
       }));
-      
-      setServices(servicesWithImages);
+
+      setCategories(cats);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load services';
       setError(message);
@@ -210,21 +222,43 @@ export const Home: React.FC = () => {
       </section>
 
       {!loading && !error && <main className="max-w-7xl mx-auto py-16 sm:px-6 lg:px-8">
-        <div id="services" className="px-4 sm:px-0 scroll-mt-20 overflow-hidden">
+        <div id="services" className="px-4 sm:px-0 scroll-mt-20">
           <h2 className="text-3xl font-semibold text-gray-900 mb-2 text-center">
-            {t.ourServices}
+            {t.ourCategories}
           </h2>
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-            {t.servicesDescription}
+            {t.categoriesDescription}
           </p>
           
-          <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory">
-            {services.map(service => (
-              <div key={service.id} className="snap-center shrink-0" style={{ width: '300px' }}>
-                <ServiceCard
-                  service={service}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map(cat => (
+              <button
+                key={cat.name}
+                onClick={() => navigate(`/services/${encodeURIComponent(cat.name)}`)}
+                className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              >
+                <img
+                  src={cat.image}
+                  alt={getCategoryName(cat.name, language, (t as any).categories)}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-              </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-300 group-hover:from-black/80" />
+                <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">
+                  <h3 className="text-xl font-bold text-white mb-1">
+                    {getCategoryName(cat.name, language, (t as any).categories)}
+                  </h3>
+                  <p className="text-white/70 text-sm mb-3">
+                    {cat.count} {t.servicesCount}
+                  </p>
+                  <span className="inline-flex items-center text-amber-400 text-sm font-medium transition-transform duration-300 group-hover:translate-x-1">
+                    {t.viewCategoryServices}
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </button>
             ))}
           </div>
         </div>
