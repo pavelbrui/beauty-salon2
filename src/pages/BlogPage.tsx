@@ -167,7 +167,7 @@ export const BlogPage: React.FC = () => {
               <span className="inline-block px-3 py-1 bg-rose-500 text-white rounded-full text-sm font-medium mb-3">
                 {getCategoryLabel(post.category)}
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{postTitle}</h1>
+              <h1 className="text-3xl md:text-4xl font-serif font-bold text-white mb-3">{postTitle}</h1>
               <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
                 <span>{post.author}</span>
                 <span className="w-1 h-1 rounded-full bg-white/50" />
@@ -275,7 +275,7 @@ export const BlogPage: React.FC = () => {
           style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('/og-image.jpg')` }}
         />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">
             {(bp?.heroTitle as string) || 'Blog Beauty'}
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">

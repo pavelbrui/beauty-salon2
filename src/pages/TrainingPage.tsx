@@ -140,7 +140,7 @@ export const TrainingPage: React.FC = () => {
               <span className="inline-block px-3 py-1 bg-rose-500 text-white rounded-full text-sm font-medium mb-3">
                 {getCategoryLabel(training.category)}
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+              <h1 className="text-3xl md:text-4xl font-serif font-bold text-white mb-3">
                 {trainingTitle}
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
@@ -251,7 +251,7 @@ export const TrainingPage: React.FC = () => {
           }}
         />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">
             {tp?.heroTitle || 'Profesjonalne Szkolenia Beauty'}
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
