@@ -80,7 +80,7 @@ export const TrainingPage: React.FC = () => {
   if (slug) {
     if (loading) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-white">
           <div className="flex justify-center items-center py-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
           </div>
@@ -90,7 +90,7 @@ export const TrainingPage: React.FC = () => {
 
     if (!training) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-white">
           <div className="max-w-4xl mx-auto px-4 py-20 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {language === 'pl' ? 'Szkolenie nie znalezione' : language === 'ru' ? 'Обучение не найдено' : 'Training not found'}
@@ -109,7 +109,7 @@ export const TrainingPage: React.FC = () => {
     const trainingDuration = getLocalizedField(training, 'duration', language);
 
     return (
-      <main className="pt-16 min-h-screen bg-neutral-50">
+      <main className="pt-16 min-h-screen bg-white">
         <SEO
           title={trainingTitle}
           description={trainingDesc}
@@ -225,7 +225,7 @@ export const TrainingPage: React.FC = () => {
   const pageDesc = tp?.seoDescription || '';
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-white">
       <SEO
         title={pageTitle}
         description={pageDesc}

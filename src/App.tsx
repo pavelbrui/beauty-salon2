@@ -23,15 +23,13 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ defa
 
 const PageLoader = () => (
   <div className="flex flex-col justify-center items-center min-h-screen bg-white">
-    <div className="relative w-32 h-32 mb-8">
-      <img
-        src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
-        alt="Loading..."
-        className="w-full h-full object-contain animate-pulse"
-      />
+    <div className="mb-6">
+      <div className="h-16 w-16 rounded-full bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/20 animate-pulse">
+        <span className="text-white font-serif text-xl font-bold">AN</span>
+      </div>
     </div>
-    <div className="w-16 h-1 bg-gradient-to-r from-rose-400 via-rose-500 to-rose-400 rounded-full overflow-hidden">
-      <div className="h-full bg-rose-600 animate-slideRight" />
+    <div className="w-20 h-0.5 bg-rose-100 rounded-full overflow-hidden">
+      <div className="h-full bg-gradient-to-r from-rose-400 to-rose-600 animate-slideRight" />
     </div>
   </div>
 );

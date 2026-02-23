@@ -80,7 +80,7 @@ export const GalleryPage: React.FC = () => {
   } : undefined;
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-white">
       <SEO
         title="Galeria Prac - Efekty Zabiegów"
         description="Zobacz efekty zabiegów studia Anna Nowak w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
@@ -96,10 +96,16 @@ export const GalleryPage: React.FC = () => {
         ]}
         structuredData={gallerySchema}
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center mb-14">
+          <p className="text-rose-500 text-sm uppercase tracking-[0.2em] mb-3 font-medium">
+            {language === 'pl' ? 'Portfolio' : language === 'ru' ? 'Портфолио' : 'Portfolio'}
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">{t.gallery}</h1>
+          <div className="w-16 h-0.5 bg-rose-300 mx-auto" />
+        </div>
 
-        <div className="flex flex-wrap justify-center mb-8 gap-2">
+        <div className="flex flex-wrap justify-center mb-10 gap-2">
           {categories.map((category) => (
             <button
               key={category}

@@ -57,9 +57,13 @@ export const BlogTeaser: React.FC = () => {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
-          {(bp?.recentBlog as string) || 'Najnowsze z naszego bloga'}
-        </h2>
+        <div className="text-center mb-14">
+          <p className="text-rose-500 text-sm uppercase tracking-[0.2em] mb-3 font-medium">Blog</p>
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">
+            {(bp?.recentBlog as string) || 'Najnowsze z naszego bloga'}
+          </h2>
+          <div className="w-16 h-0.5 bg-rose-300 mx-auto" />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           {posts.map(p => {

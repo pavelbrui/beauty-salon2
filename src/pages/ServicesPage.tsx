@@ -266,7 +266,7 @@ export const ServicesPage: React.FC = () => {
     : serviceImages.permanentMakeup;
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-white">
       <SEO
         title={seo.title}
         description={seo.description}
@@ -274,8 +274,14 @@ export const ServicesPage: React.FC = () => {
         image={categoryImage}
         keywords={seo.keywords}
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <p className="text-rose-500 text-sm uppercase tracking-[0.2em] mb-3 font-medium">
+            {language === 'pl' ? 'Nasze usługi' : language === 'ru' ? 'Наши услуги' : 'Our services'}
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">{t.services}</h1>
+          <div className="w-16 h-0.5 bg-rose-300 mx-auto" />
+        </div>
         
         <div className="flex flex-wrap gap-2 justify-center mb-10">
           <button

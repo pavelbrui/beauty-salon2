@@ -99,7 +99,7 @@ export const BlogPage: React.FC = () => {
   if (slug) {
     if (loading) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-white">
           <div className="flex justify-center items-center py-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
           </div>
@@ -109,7 +109,7 @@ export const BlogPage: React.FC = () => {
 
     if (!post) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-white">
           <div className="max-w-4xl mx-auto px-4 py-20 text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {language === 'pl' ? 'Artykuł nie znaleziony' : language === 'ru' ? 'Статья не найдена' : 'Article not found'}
@@ -143,7 +143,7 @@ export const BlogPage: React.FC = () => {
     };
 
     return (
-      <main className="pt-16 min-h-screen bg-neutral-50">
+      <main className="pt-16 min-h-screen bg-white">
         <SEO
           title={postTitle}
           description={postExcerpt}
@@ -254,7 +254,7 @@ export const BlogPage: React.FC = () => {
   const pageDesc = (bp?.seoDescription as string) || '';
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-white">
       <SEO
         title={pageTitle}
         description={pageDesc}

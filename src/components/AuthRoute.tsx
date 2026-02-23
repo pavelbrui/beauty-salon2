@@ -31,7 +31,7 @@ export const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="pt-16 min-h-screen bg-neutral-50">
+      <div className="pt-16 min-h-screen bg-white">
         <AuthModal
           isOpen={true}
           onClose={() => {}}
