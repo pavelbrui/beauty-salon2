@@ -2,12 +2,30 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+if (!hasSupabaseConfig) {
+  console.error(
+    'Missing Supabase environment variables. Running in limited mode until VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are configured.'
+  );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const fallbackSupabaseUrl = 'https://placeholder.supabase.co';
+const fallbackSupabaseAnonKey = 'placeholder-anon-key';
+
+export const supabase = createClient(
+  supabaseUrl ?? fallbackSupabaseUrl,
+  supabaseAnonKey ?? fallbackSupabaseAnonKey,
+  {
+    auth: {
+      persistSession: hasSupabaseConfig,
+      autoRefreshToken: hasSupabaseConfig,
+      detectSessionInUrl: hasSupabaseConfig,
+    },
+  }
+);
+
+export const isSupabaseConfigured = hasSupabaseConfig;
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any) => {
