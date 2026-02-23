@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Service } from '../types';
 import { ServiceCard } from './ServiceCard';
 import { useLanguage } from '../hooks/useLanguage';
@@ -14,6 +13,8 @@ interface ServiceSectionProps {
 }
 
 const SCROLL_AMOUNT = 280;
+const CARD_WIDTH = 300;
+const GAP = 24;
 
 export const ServiceSection: React.FC<ServiceSectionProps> = ({
   category,
@@ -25,13 +26,20 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
-  }, []);
+    const left = el.scrollLeft;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setCanScrollLeft(left > 2);
+    setCanScrollRight(left < maxScroll - 2);
+    // Approximate active dot from scroll position
+    const cardTotal = CARD_WIDTH + GAP;
+    const idx = Math.round(left / cardTotal);
+    setActiveIndex(Math.min(idx, Math.max(0, services.length - 1)));
+  }, [services.length]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -57,7 +65,17 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
     scrollRef.current?.scrollBy({ left: dir === 'left' ? -SCROLL_AMOUNT : SCROLL_AMOUNT, behavior: 'smooth' });
   };
 
-  const showArrows = isMobile && services.length > 1;
+  const scrollToDot = (dotIdx: number) => {
+    const el = scrollRef.current;
+    if (!el || dotCount <= 1) return;
+    const serviceIdx = Math.round((dotIdx / (dotCount - 1)) * (services.length - 1));
+    const cardTotal = CARD_WIDTH + GAP;
+    el.scrollTo({ left: serviceIdx * cardTotal, behavior: 'smooth' });
+  };
+
+  const showHint = isMobile && services.length > 1;
+  const dotCount = Math.min(services.length, 5);
+  const activeDot = dotCount <= 1 ? 0 : Math.round((activeIndex / (services.length - 1)) * (dotCount - 1));
 
   return (
     <motion.section
@@ -70,30 +88,25 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-6">{getCategoryName(category, language, (t as any).categories)}</h2>
       
       <div className="relative">
-        {/* Left scroll hint - mobile only */}
-        {showArrows && canScrollLeft && (
+        {/* Tap zones - invisible, mobile only */}
+        {showHint && canScrollLeft && (
           <button
             onClick={() => scroll('left')}
             aria-label="Przewiń w lewo"
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-white/95 shadow-lg border border-gray-100 text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-all duration-200 -ml-2"
-          >
-            <ChevronLeftIcon className="w-6 h-6" strokeWidth={2} />
-          </button>
+            className="absolute left-0 top-0 bottom-6 w-12 z-10 md:hidden bg-transparent"
+          />
         )}
-        {/* Right scroll hint - mobile only */}
-        {showArrows && canScrollRight && (
+        {showHint && canScrollRight && (
           <button
             onClick={() => scroll('right')}
             aria-label="Przewiń w prawo"
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-white/95 shadow-lg border border-gray-100 text-amber-600 hover:bg-amber-50 hover:text-amber-700 transition-all duration-200 -mr-2"
-          >
-            <ChevronRightIcon className="w-6 h-6" strokeWidth={2} />
-          </button>
+            className="absolute right-0 top-0 bottom-6 w-12 z-10 md:hidden bg-transparent"
+          />
         )}
 
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex overflow-x-auto gap-6 pb-2 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {services.map((service) => (
             <motion.div
@@ -108,6 +121,22 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
             </motion.div>
           ))}
         </div>
+
+        {/* Scroll dots - minimal, elegant */}
+        {showHint && (
+          <div className="flex justify-center gap-1.5 pt-4 pb-4 md:hidden">
+            {Array.from({ length: dotCount }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => scrollToDot(i)}
+                aria-label={`Pozycja ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  activeDot === i ? 'w-4 bg-amber-500' : 'w-1.5 bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-neutral-50 to-transparent pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-neutral-50 to-transparent pointer-events-none" />
