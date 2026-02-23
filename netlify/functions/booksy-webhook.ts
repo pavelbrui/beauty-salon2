@@ -61,12 +61,43 @@ interface ParsedBooking {
 
 type MirrorStatus = 'confirmed' | 'cancelled';
 
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ł/g, 'l');
+}
+
+function containsAnyPhrase(value: string, phrases: string[]): boolean {
+  return phrases.some((phrase) => value.includes(phrase));
+}
+
 // --- Email type detection ---
 function detectEmailType(subject: string, html: string): 'new' | 'changed' | 'cancelled' {
-  if (subject.includes('odwołał swoją usługę') || html.includes('odwołał swoją usługę')) {
+  const normalized = normalizeSearchText(`${subject}\n${html}`);
+
+  if (
+    containsAnyPhrase(normalized, [
+      'odwolal swoja usluge',
+      'odwolala swoja usluge',
+      'odwolal wizyte',
+      'odwolala wizyte',
+      'odwolanie wizyty',
+      'anulowal wizyte',
+      'anulowala wizyte',
+    ])
+  ) {
     return 'cancelled';
   }
-  if (subject.includes('zmienił rezerwację') || html.includes('zmienił rezerwację') || html.includes('przesunął swoją wizytę')) {
+  if (
+    containsAnyPhrase(normalized, [
+      'zmienil rezerwacje',
+      'zmienila rezerwacje',
+      'przesunal swoja wizyte',
+      'przesunela swoja wizyte',
+    ])
+  ) {
     return 'changed';
   }
   return 'new';
@@ -100,7 +131,7 @@ function parsePolishDateTime(text: string): { start: string; end: string } | nul
 
   // Pattern with single time: day month year [o godzinie] HH:MM
   const singlePattern =
-    /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4})\s+(?:o godzinie\s+)?(\d{1,2}):(\d{2})/i;
+    /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4}),?\s+(?:o godzinie\s+|godz\.?\s*)?(\d{1,2}):(\d{2})/i;
   const singleMatch = text.match(singlePattern);
 
   if (singleMatch) {
@@ -275,23 +306,50 @@ function decodeQuotedPrintable(value: string): string {
     return value;
   }
 
-  return value
-    .replace(/=\r?\n/g, '')
-    .replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+  const normalized = value.replace(/=\r?\n/g, '');
+  const bytes: number[] = [];
+
+  for (let i = 0; i < normalized.length; i += 1) {
+    const char = normalized[i];
+    const maybeHex = normalized.slice(i + 1, i + 3);
+
+    if (char === '=' && /^[0-9A-Fa-f]{2}$/.test(maybeHex)) {
+      bytes.push(parseInt(maybeHex, 16));
+      i += 2;
+      continue;
+    }
+
+    bytes.push(normalized.charCodeAt(i) & 0xff);
+  }
+
+  return Buffer.from(bytes).toString('utf-8');
+}
+
+function extractClientNameFromSubject(cleanedSubject: string): string {
+  const subjectRegexes = [
+    /^(.+?):\s*(?:nowa rezerwacja|zmieni(?:ł|l|ła|la)\s+rezerwacj(?:ę|e)|odwoła(?:ł|l|ła|la)\s+(?:swoj(?:ą|a)\s+usług(?:ę|e)|wizyt(?:ę|e))|odwołanie wizyty|anulowa(?:ł|l|ła|la)\s+wizyt(?:ę|e))/i,
+    /^(.+?)\s+(?:nowa rezerwacja|zmieni(?:ł|l|ła|la)\s+rezerwacj(?:ę|e)|odwoła(?:ł|l|ła|la)\s+(?:swoj(?:ą|a)\s+usług(?:ę|e)|wizyt(?:ę|e))|odwołanie wizyty|anulowa(?:ł|l|ła|la)\s+wizyt(?:ę|e))/i,
+  ];
+
+  for (const regex of subjectRegexes) {
+    const match = cleanedSubject.match(regex);
+    if (match?.[1]) {
+      return match[1].trim();
+    }
+  }
+
+  return '';
 }
 
 // --- Main email parser ---
 function parseBookingEmail(subject: string, html: string): ParsedBooking | null {
   const emailType = detectEmailType(subject, html);
   const text = stripHtml(html);
+  const cleanedSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '').trim();
 
   // Extract client name from subject (handle "Fwd:" prefix in forwarded emails)
-  let clientName = '';
-  const cleanedSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '');
-  const subjectNameMatch = cleanedSubject.match(/^(.+?):\s*(nowa rezerwacja|zmienił rezerwację)/);
-  if (subjectNameMatch) {
-    clientName = subjectNameMatch[1].trim();
-  } else if (emailType === 'cancelled') {
+  let clientName = extractClientNameFromSubject(cleanedSubject);
+  if (!clientName && emailType === 'cancelled') {
     const cancelNameMatch = text.match(/Klient\s+(.+?)\s+odwołał/i);
     if (cancelNameMatch) clientName = cancelNameMatch[1].trim();
   }
@@ -324,9 +382,21 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
   // Extract service name
   let serviceName = '';
   if (emailType === 'cancelled') {
-    // "odwołał swoją usługę Lifting rzęs / laminacja rzęs w dniu..."
-    const svcMatch = text.match(/odwołał swoją usługę\s+(.+?)\s+w dniu/i);
-    if (svcMatch) serviceName = svcMatch[1].trim();
+    // Supports both variants:
+    // - "odwołał swoją usługę ... w dniu ..."
+    // - "odwołał wizytę ... z dnia ..."
+    const cancelServiceRegexes = [
+      /odwoła(?:ł|l|ła|la)\s+swoj(?:ą|a)\s+usług(?:ę|e)\s+(.+?)\s+(?:w|z)\s+dniu/i,
+      /odwoła(?:ł|l|ła|la)\s+wizyt(?:ę|e)\s+(.+?)\s+z dnia/i,
+      /odwoła(?:ł|l|ła|la)\s+wizyt(?:ę|e)\s+(.+?)\s+w dniu/i,
+    ];
+    for (const regex of cancelServiceRegexes) {
+      const svcMatch = text.match(regex);
+      if (svcMatch?.[1]) {
+        serviceName = svcMatch[1].trim();
+        break;
+      }
+    }
   } else if (emailType === 'changed') {
     // "przesunął swoją wizytę Uzupełnienie 1-1:2 z dnia"
     const svcMatch = text.match(/przesunął swoją wizytę\s+(.+?)\s+z dnia/i);
@@ -372,14 +442,33 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
       }
     }
   } else if (emailType === 'cancelled') {
-    // "w dniu poniedziałek, 23 lutego 2026 o godzinie 15:45"
-    // Use \S+ instead of \w+ because Polish day names contain diacritics (ł, ś, etc.)
-    const cancelDateMatch = text.match(/w dniu\s+\S+,\s*(.+)/i);
-    if (cancelDateMatch) {
-      const dt = parsePolishDateTime(cancelDateMatch[1]);
+    // Supports both variants:
+    // - "... w dniu poniedziałek, 23 lutego 2026 o godzinie 18:00"
+    // - "... z dnia poniedziałek, 23 lutego 2026 18:00"
+    const cancelDateCandidates: string[] = [];
+    const cancelDateRegexes = [
+      /w dniu\s+\S+,\s*(.+)/i,
+      /w dniu\s+(.+)/i,
+      /z dnia\s+\S+,\s*(.+)/i,
+      /z dnia\s+(.+)/i,
+    ];
+    for (const regex of cancelDateRegexes) {
+      const match = text.match(regex);
+      if (match?.[1]) {
+        cancelDateCandidates.push(match[1].trim());
+      }
+    }
+
+    // Fallbacks: some cancellation subjects carry the date even when body format changes.
+    cancelDateCandidates.push(cleanedSubject);
+    cancelDateCandidates.push(text);
+
+    for (const candidate of cancelDateCandidates) {
+      const dt = parsePolishDateTime(candidate);
       if (dt) {
         startTime = dt.start;
         endTime = dt.end;
+        break;
       }
     }
   }
