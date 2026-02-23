@@ -36,9 +36,39 @@ interface ParsedBooking {
   oldEndTime?: string;
 }
 
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ł/g, 'l');
+}
+
+function containsAnyPhrase(value: string, phrases: string[]): boolean {
+  return phrases.some((phrase) => value.includes(phrase));
+}
+
 function detectEmailType(subject: string, html: string): 'new' | 'changed' | 'cancelled' {
-  if (subject.includes('odwołał swoją usługę') || html.includes('odwołał swoją usługę')) return 'cancelled';
-  if (subject.includes('zmienił rezerwację') || html.includes('zmienił rezerwację') || html.includes('przesunął swoją wizytę')) return 'changed';
+  const normalized = normalizeSearchText(`${subject}\n${html}`);
+  if (
+    containsAnyPhrase(normalized, [
+      'odwolal swoja usluge',
+      'odwolala swoja usluge',
+      'odwolal wizyte',
+      'odwolala wizyte',
+      'odwolanie wizyty',
+      'anulowal wizyte',
+      'anulowala wizyte',
+    ])
+  ) return 'cancelled';
+  if (
+    containsAnyPhrase(normalized, [
+      'zmienil rezerwacje',
+      'zmienila rezerwacje',
+      'przesunal swoja wizyte',
+      'przesunela swoja wizyte',
+    ])
+  ) return 'changed';
   return 'new';
 }
 
@@ -61,7 +91,7 @@ function parsePolishDateTime(text: string): { start: string; end: string } | nul
     };
   }
 
-  const singlePattern = /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4})\s+(?:o godzinie\s+)?(\d{1,2}):(\d{2})/i;
+  const singlePattern = /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4}),?\s+(?:o godzinie\s+|godz\.?\s*)?(\d{1,2}):(\d{2})/i;
   const singleMatch = text.match(singlePattern);
   if (singleMatch) {
     const day = parseInt(singleMatch[1]);
@@ -206,16 +236,27 @@ function extractNewBookingServiceName(text: string, html: string, clientName: st
   return bestCandidate || '';
 }
 
+function extractClientNameFromSubject(cleanedSubject: string): string {
+  const subjectRegexes = [
+    /^(.+?):\s*(?:nowa rezerwacja|zmieni(?:ł|l|ła|la)\s+rezerwacj(?:ę|e)|odwoła(?:ł|l|ła|la)\s+(?:swoj(?:ą|a)\s+usług(?:ę|e)|wizyt(?:ę|e))|odwołanie wizyty|anulowa(?:ł|l|ła|la)\s+wizyt(?:ę|e))/i,
+    /^(.+?)\s+(?:nowa rezerwacja|zmieni(?:ł|l|ła|la)\s+rezerwacj(?:ę|e)|odwoła(?:ł|l|ła|la)\s+(?:swoj(?:ą|a)\s+usług(?:ę|e)|wizyt(?:ę|e))|odwołanie wizyty|anulowa(?:ł|l|ła|la)\s+wizyt(?:ę|e))/i,
+  ];
+
+  for (const regex of subjectRegexes) {
+    const match = cleanedSubject.match(regex);
+    if (match?.[1]) return match[1].trim();
+  }
+
+  return '';
+}
+
 function parseBookingEmail(subject: string, html: string): ParsedBooking | null {
   const emailType = detectEmailType(subject, html);
   const text = stripHtml(html);
+  const cleanedSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '').trim();
 
-  let clientName = '';
-  const cleanedSubject = subject.replace(/^(?:Fwd?|FW)\s*:\s*/i, '');
-  const subjectNameMatch = cleanedSubject.match(/^(.+?):\s*(nowa rezerwacja|zmienił rezerwację)/);
-  if (subjectNameMatch) {
-    clientName = subjectNameMatch[1].trim();
-  } else if (emailType === 'cancelled') {
+  let clientName = extractClientNameFromSubject(cleanedSubject);
+  if (!clientName && emailType === 'cancelled') {
     const cancelNameMatch = text.match(/Klient\s+(.+?)\s+odwołał/i);
     if (cancelNameMatch) clientName = cancelNameMatch[1].trim();
   }
@@ -241,8 +282,18 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
 
   let serviceName = '';
   if (emailType === 'cancelled') {
-    const svcMatch = text.match(/odwołał swoją usługę\s+(.+?)\s+w dniu/i);
-    if (svcMatch) serviceName = svcMatch[1].trim();
+    const cancelServiceRegexes = [
+      /odwoła(?:ł|l|ła|la)\s+swoj(?:ą|a)\s+usług(?:ę|e)\s+(.+?)\s+(?:w|z)\s+dniu/i,
+      /odwoła(?:ł|l|ła|la)\s+wizyt(?:ę|e)\s+(.+?)\s+z dnia/i,
+      /odwoła(?:ł|l|ła|la)\s+wizyt(?:ę|e)\s+(.+?)\s+w dniu/i,
+    ];
+    for (const regex of cancelServiceRegexes) {
+      const svcMatch = text.match(regex);
+      if (svcMatch?.[1]) {
+        serviceName = svcMatch[1].trim();
+        break;
+      }
+    }
   } else if (emailType === 'changed') {
     const svcMatch = text.match(/przesunął swoją wizytę\s+(.+?)\s+z dnia/i);
     if (svcMatch) serviceName = svcMatch[1].trim();
@@ -273,10 +324,24 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
       if (newDt) { startTime = newDt.start; endTime = newDt.end; }
     }
   } else if (emailType === 'cancelled') {
-    const cancelDateMatch = text.match(/w dniu\s+\S+,\s*(.+)/i);
-    if (cancelDateMatch) {
-      const dt = parsePolishDateTime(cancelDateMatch[1]);
+    const cancelDateCandidates: string[] = [];
+    const cancelDateRegexes = [
+      /w dniu\s+\S+,\s*(.+)/i,
+      /w dniu\s+(.+)/i,
+      /z dnia\s+\S+,\s*(.+)/i,
+      /z dnia\s+(.+)/i,
+    ];
+    for (const regex of cancelDateRegexes) {
+      const match = text.match(regex);
+      if (match?.[1]) cancelDateCandidates.push(match[1].trim());
+    }
+    cancelDateCandidates.push(cleanedSubject);
+    cancelDateCandidates.push(text);
+
+    for (const candidate of cancelDateCandidates) {
+      const dt = parsePolishDateTime(candidate);
       if (dt) { startTime = dt.start; endTime = dt.end; }
+      if (dt) break;
     }
   }
 
@@ -451,6 +516,27 @@ test('Phone = 660 638 066', () => assert(cancel!.clientPhone?.includes('660') ==
 test('Email = wiktoria_karpiej@o2.pl', () => assert(cancel!.clientEmail === 'wiktoria_karpiej@o2.pl', `got: "${cancel!.clientEmail}"`));
 test('Service includes "Lifting rzęs"', () => assert(cancel!.serviceName.includes('Lifting rzęs'), `got: "${cancel!.serviceName}"`));
 test('Start time = 2026-02-23T15:45', () => assert(cancel!.startTime.includes('2026-02-23T15:45'), `got: "${cancel!.startTime}"`));
+
+// EMAIL 1b: Cancellation variant from subject "odwołał wizytę z dnia ..."
+const cancelVisitSubject = 'Anna M: odwołał wizytę z dnia poniedziałek, 23 lutego 2026 18:00';
+const cancelVisitHtml = `
+<div>
+  <p>Klient <strong>Anna M</strong> odwołał wizytę Lifting rzęs / laminacja rzęs + botox + farbowanie z dnia <strong>poniedziałek, 23 lutego 2026 18:00</strong>.</p>
+  <div>
+    <strong>Anna M</strong><br>
+    515 134 577<br>
+    <a href="mailto:ania-1004@wp.pl">ania-1004@wp.pl</a>
+  </div>
+</div>`;
+
+console.log('\n=== EMAIL 1b: CANCELLATION (odwołał wizytę z dnia) ===');
+const cancelVisit = parseBookingEmail(cancelVisitSubject, cancelVisitHtml);
+console.log('  Result:', JSON.stringify(cancelVisit, null, 2));
+test('Parsed successfully', () => assert(cancelVisit !== null, 'should not be null'));
+test('Email type = cancelled', () => assert(cancelVisit!.emailType === 'cancelled', `got: ${cancelVisit!.emailType}`));
+test('Client name = Anna M', () => assert(cancelVisit!.clientName === 'Anna M', `got: "${cancelVisit!.clientName}"`));
+test('Service includes "Lifting rzęs"', () => assert(cancelVisit!.serviceName.includes('Lifting rzęs'), `got: "${cancelVisit!.serviceName}"`));
+test('Start time = 2026-02-23T18:00', () => assert(cancelVisit!.startTime.includes('2026-02-23T18:00'), `got: "${cancelVisit!.startTime}"`));
 
 console.log('\n=== EMAIL 2: NEW BOOKING ===');
 const newBooking = parseBookingEmail(newSubject, newHtml);
