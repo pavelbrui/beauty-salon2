@@ -38,6 +38,10 @@ export const AdminStylists: React.FC = () => {
   const [descRu, setDescRu] = useState('');
   const [translating, setTranslating] = useState(false);
 
+  // Save state
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   useEffect(() => {
     loadStylists();
   }, []);
@@ -148,33 +152,43 @@ export const AdminStylists: React.FC = () => {
   };
 
   const handleSave = async (stylist: Stylist) => {
-    const { error } = await supabase
-      .from('stylists')
-      .upsert({
-        id: stylist.id,
-        name: stylist.name,
-        role: stylist.role,
-        role_en: roleEn || null,
-        role_ru: roleRu || null,
-        image_url: stylist.image_url,
-        specialties: stylist.specialties,
-        specialties_en: specEn ? specEn.split(',').map(s => s.trim()) : null,
-        specialties_ru: specRu ? specRu.split(',').map(s => s.trim()) : null,
-        description: stylist.description,
-        description_en: descEn || null,
-        description_ru: descRu || null,
-      });
+    setSaving(true);
+    setSaveError(null);
 
-    if (error) {
-      console.error('Error saving stylist:', error);
-      return;
+    try {
+      const { error } = await supabase
+        .from('stylists')
+        .upsert({
+          id: stylist.id,
+          name: stylist.name,
+          role: stylist.role,
+          role_en: roleEn || null,
+          role_ru: roleRu || null,
+          image_url: stylist.image_url,
+          specialties: stylist.specialties,
+          specialties_en: specEn ? specEn.split(',').map(s => s.trim()) : null,
+          specialties_ru: specRu ? specRu.split(',').map(s => s.trim()) : null,
+          description: stylist.description,
+          description_en: descEn || null,
+          description_ru: descRu || null,
+        });
+
+      if (error) {
+        setSaveError(`Błąd zapisu stylisty: ${error.message}`);
+        return;
+      }
+
+      await loadStylists();
+      setIsModalOpen(false);
+      setEditingStylist(null);
+      resetTranslationState();
+      resetImageState();
+      setSaveError(null);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Nieznany błąd');
+    } finally {
+      setSaving(false);
     }
-
-    loadStylists();
-    setIsModalOpen(false);
-    setEditingStylist(null);
-    resetTranslationState();
-    resetImageState();
   };
 
   const handleEdit = (stylist: Stylist) => {
@@ -189,6 +203,7 @@ export const AdminStylists: React.FC = () => {
     setUploadedImageUrl('');
     setImageUrlInput(stylist.image_url || '');
     setUploadError(null);
+    setSaveError(null);
     setIsModalOpen(true);
   };
 
@@ -201,6 +216,7 @@ export const AdminStylists: React.FC = () => {
             setEditingStylist(null);
             resetTranslationState();
             resetImageState();
+            setSaveError(null);
             setIsModalOpen(true);
           }}
           className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"
@@ -253,6 +269,13 @@ export const AdminStylists: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">
               {editingStylist ? 'Edytuj stylistę' : 'Dodaj stylistę'}
             </h2>
+
+            {saveError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-700">{saveError}</p>
+              </div>
+            )}
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -502,16 +525,24 @@ export const AdminStylists: React.FC = () => {
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => { setIsModalOpen(false); resetImageState(); }}
+                  onClick={() => { setIsModalOpen(false); resetImageState(); setSaveError(null); }}
                   className="px-4 py-2 text-gray-700 hover:text-gray-900"
+                  disabled={saving}
                 >
                   Anuluj
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600"
+                  disabled={saving || uploading}
+                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Zapisz
+                  {saving && (
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  )}
+                  {saving ? 'Zapisywanie...' : 'Zapisz'}
                 </button>
               </div>
             </form>
