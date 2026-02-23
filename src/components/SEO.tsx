@@ -56,17 +56,17 @@ export const SEO: React.FC<SEOProps> = ({
       <html lang={language} />
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
       <link rel="canonical" href={url} />
       {keywords && keywords.length > 0 && (
         <meta name="keywords" content={keywords.join(', ')} />
       )}
 
-      {/* Hreflang alternate links — each pointing to a unique URL per language */}
-      {LANGUAGES.map(lang => (
+      {/* Hreflang alternate links — skip for noindex pages */}
+      {!noindex && LANGUAGES.map(lang => (
         <link key={lang} rel="alternate" hrefLang={lang} href={getLocalizedUrl(barePath, lang)} />
       ))}
-      <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${barePath}`} />
+      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${barePath}`} />}
 
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />

@@ -152,13 +152,7 @@ export const AppointmentsPage: React.FC = () => {
         title="Rezerwacja Online - Umów Wizytę"
         description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
         canonical="/appointments"
-        keywords={[
-          'rezerwacja online salon kosmetyczny Białystok',
-          'umów wizytę kosmetyczka Białystok',
-          'rezerwacja makijaż permanentny',
-          'rezerwacja stylizacja rzęs',
-          'zarezerwuj zabieg kosmetyczny Białystok'
-        ]}
+        noindex
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
