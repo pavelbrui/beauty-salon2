@@ -1,6 +1,6 @@
 export const translations = {
   pl: {
-    services: 'Usługi',
+    services: 'Zabiegi',
     appointments: 'Rezerwacje',
     stylists: 'Styliści',
     gallery: 'Galeria',
@@ -10,14 +10,14 @@ export const translations = {
     reviewsLabel: 'opinii',
     aboutTitle: 'Witaj w Świecie Piękna',
     aboutText: 'Specjalizujemy się w profesjonalnych zabiegach kosmetycznych, wykorzystując najnowocześniejsze technologie i produkty najwyższej jakości.',
-    ourServices: 'Nasze Usługi',
-    ourCategories: 'Nasze Usługi',
+    ourServices: 'Nasze Zabiegi',
+    ourCategories: 'Nasze Zabiegi',
     categoriesDescription: 'Wybierz kategorię i poznaj naszą pełną ofertę zabiegów',
     servicesCount: 'zabiegów',
     viewCategoryServices: 'Zobacz zabiegi',
-    servicesDescription: 'Oferujemy szeroki zakres profesjonalnych usług kosmetycznych wykonywanych przez wykwalifikowanych specjalistów',
-    selectService: 'Wybierz usługę',
-    pleaseSelectService: 'Wybierz usługę, aby zobaczyć dostępne terminy',
+    servicesDescription: 'Oferujemy szeroki zakres profesjonalnych zabiegów kosmetycznych wykonywanych przez wykwalifikowanych specjalistów',
+    selectService: 'Wybierz zabieg',
+    pleaseSelectService: 'Wybierz zabieg, aby zobaczyć dostępne terminy',
     all: 'Wszystkie',
     availableSlots: 'Dostępne terminy',
     noSlotsAvailable: 'Brak dostępnych terminów',
@@ -159,10 +159,10 @@ export const translations = {
     quick_booking: {
       addBooking: 'Zarezerwuj wizytę',
       newReservation: 'Nowa',
-      selectService: 'Wybierz usługę',
+      selectService: 'Wybierz zabieg',
       selectTime: 'Wybierz godzinę',
-      searchPlaceholder: 'Szukaj usługi...',
-      noResults: 'Nie znaleziono usług'
+      searchPlaceholder: 'Szukaj zabiegu...',
+      noResults: 'Nie znaleziono zabiegów'
     },
     home: {
       loginPrompt: 'Zaloguj się lub utwórz konto',
@@ -237,7 +237,7 @@ export const translations = {
       endTime: 'Koniec wizyty',
       price: 'Cena',
       customPrice: 'indywidualna',
-      useServicePrice: 'Cena z usługi',
+      useServicePrice: 'Cena z zabiegu',
       status: 'Status',
       stylist: 'Stylistka',
       contactName: 'Imię i nazwisko',
