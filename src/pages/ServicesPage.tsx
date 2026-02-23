@@ -185,10 +185,28 @@ export const ServicesPage: React.FC = () => {
 
   useEffect(() => {
     if (services.length > 0) {
-      const uniqueCategories = Array.from(new Set(services.map(s => s.category)));
-      setCategories(uniqueCategories);
+      sortCategoriesByOrder(Array.from(new Set(services.map(s => s.category))));
     }
   }, [services]);
+
+  const sortCategoriesByOrder = async (cats: string[]) => {
+    const { data } = await supabase
+      .from('service_categories')
+      .select('name, sort_order')
+      .order('sort_order');
+
+    if (data && data.length > 0) {
+      const orderMap = new Map(data.map((c: { name: string; sort_order: number }) => [c.name, c.sort_order]));
+      const sorted = [...cats].sort((a, b) => {
+        const oa = orderMap.get(a) ?? 999;
+        const ob = orderMap.get(b) ?? 999;
+        return oa - ob;
+      });
+      setCategories(sorted);
+    } else {
+      setCategories(cats);
+    }
+  };
 
   const loadServices = async () => {
     setIsLoading(true);
@@ -257,45 +275,32 @@ export const ServicesPage: React.FC = () => {
         keywords={seo.keywords}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">{t.services}</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
         
-        <div className="relative mb-12">
-          <div className="flex overflow-x-auto gap-1 pb-px scrollbar-hide" role="tablist">
+        <div className="flex flex-wrap gap-2 justify-center mb-10">
+          <button
+            onClick={() => navigate('/services')}
+            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
+              !category
+                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+            }`}
+          >
+            {t.all}
+          </button>
+          {categories.map(cat => (
             <button
-              role="tab"
-              aria-selected={!category}
-              onClick={() => navigate('/services')}
-              className={`relative px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                !category
-                  ? 'text-amber-600'
-                  : 'text-gray-500 hover:text-gray-900'
+              key={cat}
+              onClick={() => handleCategoryClick(cat)}
+              className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
+                category === cat
+                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
               }`}
             >
-              {t.all}
-              {!category && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full" />
-              )}
+              {getCategoryName(cat, language, (t as any).categories)}
             </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                role="tab"
-                aria-selected={category === cat}
-                onClick={() => handleCategoryClick(cat)}
-                className={`relative px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                  category === cat
-                    ? 'text-amber-600'
-                    : 'text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                {getCategoryName(cat, language, (t as any).categories)}
-                {category === cat && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full" />
-                )}
-              </button>
-            ))}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-200" />
+          ))}
         </div>
         
         <div className="space-y-16">
