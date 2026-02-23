@@ -27,6 +27,22 @@ export const BookingPage: React.FC = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Restore selected slot after Google OAuth redirect
+  useEffect(() => {
+    const saved = sessionStorage.getItem('pendingBookingSlot');
+    if (!saved) return;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        try {
+          const slot = JSON.parse(saved) as TimeSlot;
+          setSelectedSlot(slot);
+          setShowBookingForm(true);
+        } catch { /* ignore parse errors */ }
+        sessionStorage.removeItem('pendingBookingSlot');
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (serviceId) {
       loadService();
@@ -57,6 +73,8 @@ export const BookingPage: React.FC = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSelectedSlot(slot);
       if (!session) {
+        // Persist slot so it survives Google OAuth redirect
+        sessionStorage.setItem('pendingBookingSlot', JSON.stringify(slot));
         setShowAuthModal(true);
       } else {
         setShowBookingForm(true);
@@ -263,6 +281,7 @@ export const BookingPage: React.FC = () => {
         onClose={() => setShowAuthModal(false)}
         mode="signin"
         onSuccess={() => {
+          sessionStorage.removeItem('pendingBookingSlot');
           setShowBookingForm(true);
         }}
       />
