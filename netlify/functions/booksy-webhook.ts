@@ -138,6 +138,155 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+const WORKER_LABEL_PATTERN =
+  '(?:pracownik|pracownica|stylista|stylistka|wykonawca|specjalista|employee|staff|worker)';
+
+function normalizeWhitespace(value: string): string {
+  return value.replace(/\u00a0/g, ' ').replace(/[ \t]+/g, ' ').trim();
+}
+
+function normalizePersonName(value: string): string {
+  return normalizeWhitespace(value).replace(/[.,;:!?]+$/, '');
+}
+
+function extractWorkerName(text: string, html: string): string | undefined {
+  const workerRegexes = [
+    new RegExp(`${WORKER_LABEL_PATTERN}\\s*:\\s*([^\\n<,;|]+)`, 'i'),
+    new RegExp(`${WORKER_LABEL_PATTERN}\\s*-\\s*([^\\n<,;|]+)`, 'i'),
+  ];
+
+  for (const regex of workerRegexes) {
+    const fromText = text.match(regex);
+    if (fromText?.[1]) {
+      return normalizePersonName(fromText[1]);
+    }
+    const fromHtml = html.match(regex);
+    if (fromHtml?.[1]) {
+      return normalizePersonName(fromHtml[1]);
+    }
+  }
+
+  // Fallback: worker name can be inside service prefix, e.g. "(Top-stylistka Agnessa): ...".
+  const fromServiceLine = text.match(
+    /\((?:[^)]*?(?:stylistka|stylista|pracownik|worker|employee)\s+([^()]+))\)\s*:/i
+  );
+  if (fromServiceLine?.[1]) {
+    return normalizePersonName(fromServiceLine[1]);
+  }
+
+  return undefined;
+}
+
+function cleanServiceNameForNewBooking(rawServiceName: string): string {
+  let value = normalizeWhitespace(rawServiceName)
+    .replace(new RegExp(`\\s*(?:,|\\|)?\\s*${WORKER_LABEL_PATTERN}\\s*[:\\-].*$`, 'i'), '')
+    .replace(/[.,;:!?]+$/, '')
+    .trim();
+
+  // Strip category/role prefix only for "Category : Service" style names.
+  if (/\s:\s/.test(value) || /\([^)]*\)\s*:/.test(value)) {
+    const firstColonIndex = value.indexOf(':');
+    if (firstColonIndex > -1 && firstColonIndex < value.length - 1) {
+      value = value.slice(firstColonIndex + 1).trim();
+    }
+  }
+
+  return value;
+}
+
+function isServiceNoise(candidate: string, clientName: string): boolean {
+  const normalized = candidate.toLowerCase();
+
+  if (!candidate || candidate.length < 3) return true;
+  if (!/[a-ząćęłńóśźż]/i.test(candidate)) return true;
+  if (normalized === 'booksy') return true;
+  if (new RegExp(WORKER_LABEL_PATTERN, 'i').test(candidate)) return true;
+  if (/\d[\d\s,.]*\s*zł/i.test(candidate)) return true;
+  if (clientName && normalized === clientName.toLowerCase()) return true;
+
+  if (
+    normalized.includes('nowa rezerwacja') ||
+    normalized.includes('zmienił rezerwację') ||
+    normalized.includes('odwołał swoją usługę') ||
+    normalized.includes('nowy termin wizyty') ||
+    normalized.includes('dzięki booksy')
+  ) {
+    return true;
+  }
+
+  if (
+    /(poniedziałek|wtorek|środa|czwartek|piątek|sobota|niedziela)/i.test(candidate) ||
+    /\b(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\b/i.test(
+      candidate
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function scoreServiceCandidate(candidate: string): number {
+  return (
+    candidate.length +
+    (candidate.includes(':') ? 4 : 0) +
+    (candidate.includes('+') ? 2 : 0) +
+    (candidate.split(' ').length >= 2 ? 3 : 0)
+  );
+}
+
+function extractNewBookingServiceName(text: string, html: string, clientName: string): string {
+  const normalizedText = text.replace(/\r/g, '\n');
+  const lines = normalizedText
+    .split('\n')
+    .map((line) => normalizeWhitespace(line))
+    .filter(Boolean);
+
+  const serviceCandidates: string[] = [];
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (!/\d[\d\s,.]*\s*zł/i.test(line)) continue;
+
+    const inlineServiceMatch = line.match(/^(.*?)\s+\d[\d\s,.]*\s*zł/i);
+    if (inlineServiceMatch?.[1]) {
+      serviceCandidates.push(inlineServiceMatch[1]);
+    }
+
+    for (let prev = i - 1; prev >= 0; prev -= 1) {
+      if (lines[prev]) {
+        serviceCandidates.push(lines[prev]);
+        break;
+      }
+    }
+  }
+
+  // Fallback for HTML where service and price are rendered in one table cell.
+  const htmlCandidates = Array.from(
+    html.matchAll(/([^<>\n]{3,200}?)<br\s*\/?>\s*[\d,.]+\s*zł/gi),
+    (match) => match[1]
+  );
+  serviceCandidates.push(...htmlCandidates);
+
+  const bestCandidate = serviceCandidates
+    .map((candidate) => cleanServiceNameForNewBooking(candidate))
+    .filter((candidate) => !isServiceNoise(candidate, clientName))
+    .sort((a, b) => scoreServiceCandidate(b) - scoreServiceCandidate(a))[0];
+
+  return bestCandidate || '';
+}
+
+function decodeQuotedPrintable(value: string): string {
+  // Decode only if quoted-printable markers are present.
+  if (!/=\r?\n|=[0-9A-Fa-f]{2}/.test(value)) {
+    return value;
+  }
+
+  return value
+    .replace(/=\r?\n/g, '')
+    .replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
 // --- Main email parser ---
 function parseBookingEmail(subject: string, html: string): ParsedBooking | null {
   const emailType = detectEmailType(subject, html);
@@ -176,9 +325,8 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     (e) => !e.includes('booksy.com') && !e.includes('icloud.com') && !e.includes('noreply')
   );
 
-  // Extract worker name: "pracownik: Agnessa"
-  const workerMatch = text.match(/pracownik\s*:\s*(.+?)(?:\n|$)/i);
-  const workerName = workerMatch ? workerMatch[1].trim() : undefined;
+  // Extract worker name (supports multiple labels and separators).
+  const workerName = extractWorkerName(text, html);
 
   // Extract service name
   let serviceName = '';
@@ -191,15 +339,7 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     const svcMatch = text.match(/przesunął swoją wizytę\s+(.+?)\s+z dnia/i);
     if (svcMatch) serviceName = svcMatch[1].trim();
   } else {
-    // New booking: look for service line with price
-    // Pattern in HTML: "Service Name\n126,00 zł, 17:00 - 19:00"
-    const svcLineMatch = text.match(/(.+?)\n\s*[\d,.]+\s*zł/);
-    if (svcLineMatch) {
-      serviceName = svcLineMatch[1].trim();
-      // Clean up: remove "Category (Role): " prefix if present
-      const cleanMatch = serviceName.match(/(?:.*?:\s*)?([^:]+)$/);
-      if (cleanMatch) serviceName = cleanMatch[1].trim();
-    }
+    serviceName = extractNewBookingServiceName(text, html, clientName);
   }
 
   // Extract price
@@ -600,11 +740,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
     // SendGrid Inbound Parse sends multipart/form-data (or sometimes URL-encoded)
     // Key fields: from, to, subject, html, text, headers
     const fields = extractFormFields(event);
-    const subject = fields['subject'] || '';
-    const html = fields['html'] || fields['text'] || '';
-    const rawText = fields['text'] || '';
-    const emailHeaders = fields['headers'] || '';
-    const from = fields['from'] || '';
+    const subject = decodeQuotedPrintable(fields['subject'] || '');
+    const html = decodeQuotedPrintable(fields['html'] || fields['text'] || '');
+    const rawText = decodeQuotedPrintable(fields['text'] || '');
+    const emailHeaders = decodeQuotedPrintable(fields['headers'] || '');
+    const from = decodeQuotedPrintable(fields['from'] || '');
 
     // --- LOG EVERY INCOMING EMAIL (before any validation) ---
     const { data: logEntry } = await supabase
