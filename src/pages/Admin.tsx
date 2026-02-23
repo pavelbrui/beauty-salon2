@@ -11,9 +11,10 @@ import { AdminTrainings } from '../components/admin/AdminTrainings';
 import { AdminBlog } from '../components/admin/AdminBlog';
 import { AdminBooksy } from '../components/admin/AdminBooksy';
 import { AdminCategories } from '../components/admin/AdminCategories';
+import { AdminUsers } from '../components/admin/AdminUsers';
 
 export const Admin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments' | 'trainings' | 'blog' | 'booksy' | 'categories'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments' | 'trainings' | 'blog' | 'booksy' | 'categories' | 'users'>('services');
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -111,6 +112,14 @@ export const Admin: React.FC = () => {
             >
               Kategorie
             </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'users' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Użytkownicy
+            </button>
           </nav>
         </div>
       </div>
@@ -126,6 +135,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'blog' && <AdminBlog />}
       {activeTab === 'booksy' && <AdminBooksy />}
       {activeTab === 'categories' && <AdminCategories />}
+      {activeTab === 'users' && <AdminUsers />}
     </div>
   );
 };
