@@ -32,7 +32,13 @@ export interface Booking {
   services?: { name: string; name_en?: string; name_ru?: string; price: number; duration: number };
   time_slots?: { start_time: string; end_time: string };
   stylists?: { name: string };
+  price_override?: number | null;
+  notes?: string | null;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
   service_id?: string;
+  user_id?: string | null;
   time_slot_id?: string;
   start_time?: string;
   end_time?: string;

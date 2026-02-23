@@ -17,7 +17,8 @@ import {
   ChevronRightIcon,
   XMarkIcon,
   CheckIcon,
-  PencilIcon
+  PencilIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 import { StylistFilter } from '../StylistFilter';
 
@@ -27,7 +28,81 @@ interface AdminBooking extends Booking {
   contact_phone?: string;
 }
 
+interface StylistAssignment {
+  service_id: string;
+  stylist_id: string;
+}
+
+type BookingStatus = 'pending' | 'confirmed' | 'cancelled';
+
+interface BookingFormData {
+  serviceId: string;
+  stylistId: string;
+  status: BookingStatus;
+  startAt: string;
+  pricePln: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  notes: string;
+}
+
 const dateLocales = { pl, en: enUS, ru };
+const emptyBookingForm: BookingFormData = {
+  serviceId: '',
+  stylistId: '',
+  status: 'pending',
+  startAt: '',
+  pricePln: '',
+  contactName: '',
+  contactPhone: '',
+  contactEmail: '',
+  notes: ''
+};
+
+const toDateTimeLocalValue = (dateInput?: string) => {
+  if (!dateInput) return '';
+  const date = new Date(dateInput);
+  if (Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+const toIsoFromLocal = (localValue: string) => {
+  const date = new Date(localValue);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString();
+};
+
+const formatPricePlnFromCents = (priceCents?: number | null) => {
+  if (priceCents == null) return '';
+  return (priceCents / 100).toFixed(0);
+};
+
+const parsePricePlnToCents = (pricePln: string) => {
+  const normalized = pricePln.replace(',', '.').trim();
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  if (Number.isNaN(parsed) || parsed < 0) return null;
+  return Math.round(parsed * 100);
+};
+
+const getNextHourStart = () => {
+  const date = new Date();
+  date.setMinutes(0, 0, 0);
+  date.setHours(date.getHours() + 1);
+  return toDateTimeLocalValue(date.toISOString());
+};
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string' && err.trim()) return err;
+  return fallback;
+};
 
 export const AdminBookings: React.FC = () => {
   const { language } = useLanguage();
@@ -38,6 +113,7 @@ export const AdminBookings: React.FC = () => {
   const [bookings, setBookings] = useState<AdminBooking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [stylists, setStylists] = useState<Stylist[]>([]);
+  const [assignments, setAssignments] = useState<StylistAssignment[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -53,18 +129,24 @@ export const AdminBookings: React.FC = () => {
 
   // Edit modal
   const [editingBooking, setEditingBooking] = useState<AdminBooking | null>(null);
-  const [editStatus, setEditStatus] = useState<string>('');
-  const [editStylist, setEditStylist] = useState<string>('');
+  const [editForm, setEditForm] = useState<BookingFormData | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Create modal
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState<BookingFormData>(emptyBookingForm);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [bookingsRes, servicesRes, stylistsRes] = await Promise.all([
+      const [bookingsRes, servicesRes, stylistsRes, assignmentsRes] = await Promise.all([
         supabase
           .from('bookings')
           .select(`
@@ -75,21 +157,50 @@ export const AdminBookings: React.FC = () => {
           `)
           .order('created_at', { ascending: false }),
         supabase.from('services').select('*').order('name'),
-        supabase.from('stylists').select('*').order('name')
+        supabase.from('stylists').select('*').order('name'),
+        supabase.from('stylist_service_assignments').select('service_id, stylist_id')
       ]);
 
       if (bookingsRes.error) throw bookingsRes.error;
       if (servicesRes.error) throw servicesRes.error;
       if (stylistsRes.error) throw stylistsRes.error;
+      if (assignmentsRes.error) throw assignmentsRes.error;
 
       setBookings(bookingsRes.data || []);
       setServices(servicesRes.data || []);
       setStylists(stylistsRes.data || []);
+      setAssignments(assignmentsRes.data || []);
     } catch (err) {
       console.error('Error loading admin bookings data:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const serviceMap = useMemo(() => {
+    return new Map(services.map(service => [service.id, service]));
+  }, [services]);
+
+  const stylistIdsByService = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    assignments.forEach(assignment => {
+      const existing = map.get(assignment.service_id) || new Set<string>();
+      existing.add(assignment.stylist_id);
+      map.set(assignment.service_id, existing);
+    });
+    return map;
+  }, [assignments]);
+
+  const getStylistsForService = (serviceId: string) => {
+    const stylistIds = stylistIdsByService.get(serviceId);
+    if (!stylistIds || stylistIds.size === 0) return stylists;
+    return stylists.filter(stylist => stylistIds.has(stylist.id));
+  };
+
+  const getBookingDisplayPrice = (booking: AdminBooking) => {
+    if (booking.price_override != null) return booking.price_override;
+    if (booking.services?.price != null) return booking.services.price;
+    return null;
   };
 
   // Filtered bookings
@@ -164,52 +275,246 @@ export const AdminBookings: React.FC = () => {
     }
   };
 
-  // Edit handlers
+  const getFormSchedule = (formData: BookingFormData | null) => {
+    if (!formData || !formData.startAt || !formData.serviceId) return null;
+    const service = serviceMap.get(formData.serviceId);
+    if (!service) return null;
+
+    const startIso = toIsoFromLocal(formData.startAt);
+    if (!startIso) return null;
+
+    const startDate = new Date(startIso);
+    const endDate = new Date(startDate.getTime() + service.duration * 60000);
+    return {
+      startIso,
+      endIso: endDate.toISOString(),
+      duration: service.duration
+    };
+  };
+
+  const buildFormFromBooking = (booking: AdminBooking): BookingFormData => {
+    const serviceId = booking.service_id || booking.serviceId || services[0]?.id || '';
+    const startAt = toDateTimeLocalValue(booking.start_time || booking.time_slots?.start_time);
+    const displayPrice = getBookingDisplayPrice(booking);
+
+    return {
+      serviceId,
+      stylistId: booking.stylist_id || '',
+      status: booking.status,
+      startAt,
+      pricePln: formatPricePlnFromCents(displayPrice),
+      contactName: booking.contact_name || '',
+      contactPhone: booking.contact_phone || '',
+      contactEmail: booking.contact_email || '',
+      notes: booking.notes || ''
+    };
+  };
+
+  const parseFormData = (formData: BookingFormData) => {
+    if (!formData.serviceId) {
+      throw new Error(ab.missingService || 'Wybierz zabieg.');
+    }
+
+    const service = serviceMap.get(formData.serviceId);
+    if (!service) {
+      throw new Error(ab.invalidService || 'Wybrany zabieg nie istnieje.');
+    }
+
+    if (!formData.startAt) {
+      throw new Error(ab.missingDateTime || 'Wybierz termin.');
+    }
+
+    const startIso = toIsoFromLocal(formData.startAt);
+    if (!startIso) {
+      throw new Error(ab.invalidDateTime || 'Nieprawidłowa data lub godzina.');
+    }
+
+    const startDate = new Date(startIso);
+    const endDate = new Date(startDate.getTime() + service.duration * 60000);
+    const endIso = endDate.toISOString();
+
+    const priceCents = parsePricePlnToCents(formData.pricePln);
+    if (priceCents == null) {
+      throw new Error(ab.invalidPrice || 'Podaj poprawną cenę.');
+    }
+
+    const contactName = formData.contactName.trim();
+    const contactPhone = formData.contactPhone.trim();
+    const contactEmail = formData.contactEmail.trim();
+    if (!contactName && !contactPhone && !contactEmail) {
+      throw new Error(ab.missingContact || 'Podaj przynajmniej jedno dane kontaktowe.');
+    }
+
+    return {
+      service,
+      startIso,
+      endIso,
+      contactName,
+      contactPhone,
+      contactEmail,
+      notes: formData.notes.trim(),
+      priceOverride: priceCents === service.price ? null : priceCents
+    };
+  };
+
+  const hasTimeSlotConflict = async (
+    stylistId: string,
+    startIso: string,
+    endIso: string,
+    excludeSlotId?: string | null
+  ) => {
+    if (!stylistId) return false;
+
+    let query = supabase
+      .from('time_slots')
+      .select('id')
+      .eq('stylist_id', stylistId)
+      .eq('is_available', false)
+      .lt('start_time', endIso)
+      .gt('end_time', startIso)
+      .limit(1);
+
+    if (excludeSlotId) {
+      query = query.neq('id', excludeSlotId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).length > 0;
+  };
+
   const openEdit = (booking: AdminBooking) => {
     setEditingBooking(booking);
-    setEditStatus(booking.status);
-    setEditStylist(booking.stylist_id || '');
+    setEditForm(buildFormFromBooking(booking));
+    setEditError(null);
+  };
+
+  const openCreate = () => {
+    const firstService = services[0];
+    if (!firstService) return;
+
+    const availableStylists = getStylistsForService(firstService.id);
+
+    setCreateForm({
+      serviceId: firstService.id,
+      stylistId: availableStylists[0]?.id || '',
+      status: 'pending',
+      startAt: getNextHourStart(),
+      pricePln: formatPricePlnFromCents(firstService.price),
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      notes: ''
+    });
+    setCreateError(null);
+    setShowCreateModal(true);
+  };
+
+  const handleEditServiceChange = (serviceId: string) => {
+    if (!editForm) return;
+    const service = serviceMap.get(serviceId);
+    const availableStylists = getStylistsForService(serviceId);
+    const stylistStillAvailable = availableStylists.some(stylist => stylist.id === editForm.stylistId);
+
+    setEditForm({
+      ...editForm,
+      serviceId,
+      stylistId: stylistStillAvailable ? editForm.stylistId : '',
+      pricePln: service ? formatPricePlnFromCents(service.price) : editForm.pricePln
+    });
+  };
+
+  const handleCreateServiceChange = (serviceId: string) => {
+    const service = serviceMap.get(serviceId);
+    const availableStylists = getStylistsForService(serviceId);
+    const stylistStillAvailable = availableStylists.some(stylist => stylist.id === createForm.stylistId);
+
+    setCreateForm({
+      ...createForm,
+      serviceId,
+      stylistId: stylistStillAvailable ? createForm.stylistId : '',
+      pricePln: service ? formatPricePlnFromCents(service.price) : createForm.pricePln
+    });
   };
 
   const saveEdit = async () => {
-    if (!editingBooking) return;
+    if (!editingBooking || !editForm) return;
     setSaving(true);
+    setEditError(null);
+    let createdSlotId: string | null = null;
 
     try {
-      const updates: Record<string, any> = { status: editStatus };
-      if (editStylist) updates.stylist_id = editStylist;
+      const parsed = parseFormData(editForm);
+      const currentSlotId = editingBooking.time_slot_id || editingBooking.timeSlotId || null;
 
-      const { error } = await supabase
+      if (editForm.status !== 'cancelled' && editForm.stylistId) {
+        const conflict = await hasTimeSlotConflict(editForm.stylistId, parsed.startIso, parsed.endIso, currentSlotId);
+        if (conflict) {
+          throw new Error(ab.slotConflict || 'Wybrana stylistka ma już rezerwację w tym czasie.');
+        }
+      }
+
+      let slotId = currentSlotId;
+      if (slotId) {
+        const { error: updateSlotError } = await supabase
+          .from('time_slots')
+          .update({
+            stylist_id: editForm.stylistId || null,
+            start_time: parsed.startIso,
+            end_time: parsed.endIso,
+            is_available: editForm.status === 'cancelled'
+          })
+          .eq('id', slotId);
+
+        if (updateSlotError) throw updateSlotError;
+      } else {
+        const { data: newSlot, error: createSlotError } = await supabase
+          .from('time_slots')
+          .insert({
+            stylist_id: editForm.stylistId || null,
+            start_time: parsed.startIso,
+            end_time: parsed.endIso,
+            is_available: editForm.status === 'cancelled'
+          })
+          .select('id')
+          .single();
+
+        if (createSlotError || !newSlot?.id) throw createSlotError || new Error('Failed to create time slot');
+        slotId = newSlot.id;
+        createdSlotId = newSlot.id;
+      }
+
+      const { error: bookingError } = await supabase
         .from('bookings')
-        .update(updates)
+        .update({
+          service_id: parsed.service.id,
+          stylist_id: editForm.stylistId || null,
+          status: editForm.status,
+          start_time: parsed.startIso,
+          end_time: parsed.endIso,
+          time_slot_id: slotId,
+          price_override: parsed.priceOverride,
+          contact_name: parsed.contactName,
+          contact_phone: parsed.contactPhone,
+          contact_email: parsed.contactEmail,
+          notes: parsed.notes
+        })
         .eq('id', editingBooking.id);
 
-      if (error) throw error;
+      if (bookingError) throw bookingError;
 
-      const slotId = editingBooking.time_slot_id || editingBooking.timeSlotId;
+      if (slotId) {
+        const { error: linkSlotError } = await supabase
+          .from('time_slots')
+          .update({ booking_id: editingBooking.id })
+          .eq('id', slotId);
 
-      // If cancelled by admin, free the time slot
-      if (editStatus === 'cancelled' && editingBooking.status !== 'cancelled') {
-        if (slotId) {
-          await supabase
-            .from('time_slots')
-            .update({ is_available: true })
-            .eq('id', slotId);
+        if (linkSlotError) {
+          console.error('Error linking time slot to booking:', linkSlotError);
         }
       }
 
-      // If re-activated from cancelled, re-occupy the time slot
-      if (editingBooking.status === 'cancelled' && editStatus !== 'cancelled') {
-        if (slotId) {
-          await supabase
-            .from('time_slots')
-            .update({ is_available: false })
-            .eq('id', slotId);
-        }
-      }
-
-      // Notify client about status change
-      if (editStatus !== editingBooking.status) {
+      if (editForm.status !== editingBooking.status) {
         await supabase
           .from('booking_notifications')
           .insert({
@@ -220,11 +525,95 @@ export const AdminBookings: React.FC = () => {
       }
 
       setEditingBooking(null);
-      loadData();
+      setEditForm(null);
+      await loadData();
     } catch (err) {
+      if (createdSlotId) {
+        await supabase
+          .from('time_slots')
+          .delete()
+          .eq('id', createdSlotId);
+      }
       console.error('Error updating booking:', err);
+      setEditError(getErrorMessage(err, ab.updateError || 'Nie udało się zapisać zmian.'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const createBooking = async () => {
+    setCreating(true);
+    setCreateError(null);
+    let createdSlotId: string | null = null;
+
+    try {
+      const parsed = parseFormData(createForm);
+
+      if (createForm.status !== 'cancelled' && createForm.stylistId) {
+        const conflict = await hasTimeSlotConflict(createForm.stylistId, parsed.startIso, parsed.endIso);
+        if (conflict) {
+          throw new Error(ab.slotConflict || 'Wybrana stylistka ma już rezerwację w tym czasie.');
+        }
+      }
+
+      const { data: newSlot, error: createSlotError } = await supabase
+        .from('time_slots')
+        .insert({
+          stylist_id: createForm.stylistId || null,
+          start_time: parsed.startIso,
+          end_time: parsed.endIso,
+          is_available: createForm.status === 'cancelled'
+        })
+        .select('id')
+        .single();
+
+      if (createSlotError || !newSlot?.id) throw createSlotError || new Error('Failed to create time slot');
+      createdSlotId = newSlot.id;
+
+      const { data: newBooking, error: createBookingError } = await supabase
+        .from('bookings')
+        .insert({
+          service_id: parsed.service.id,
+          user_id: null,
+          time_slot_id: newSlot.id,
+          stylist_id: createForm.stylistId || null,
+          status: createForm.status,
+          contact_name: parsed.contactName,
+          contact_phone: parsed.contactPhone,
+          contact_email: parsed.contactEmail,
+          notes: parsed.notes,
+          start_time: parsed.startIso,
+          end_time: parsed.endIso,
+          price_override: parsed.priceOverride
+        })
+        .select('id')
+        .single();
+
+      if (createBookingError || !newBooking?.id) throw createBookingError || new Error('Failed to create booking');
+
+      const { error: linkSlotError } = await supabase
+        .from('time_slots')
+        .update({ booking_id: newBooking.id })
+        .eq('id', newSlot.id);
+
+      if (linkSlotError) {
+        console.error('Error linking created time slot to booking:', linkSlotError);
+      }
+
+      setShowCreateModal(false);
+      setCreateForm(emptyBookingForm);
+      await loadData();
+    } catch (err) {
+      if (createdSlotId) {
+        await supabase
+          .from('time_slots')
+          .delete()
+          .eq('id', createdSlotId);
+      }
+      console.error('Error creating booking:', err);
+      setCreateError(getErrorMessage(err, ab.createError || 'Nie udało się utworzyć rezerwacji.'));
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -242,6 +631,15 @@ export const AdminBookings: React.FC = () => {
       return format(day, 'EEEEEE', { locale });
     });
   }, [locale]);
+
+  const editAvailableStylists = editForm?.serviceId ? getStylistsForService(editForm.serviceId) : stylists;
+  const createAvailableStylists = createForm.serviceId ? getStylistsForService(createForm.serviceId) : stylists;
+  const editSchedule = getFormSchedule(editForm);
+  const createSchedule = getFormSchedule(createForm);
+  const editStartInfo = editSchedule ? formatDateTime(editSchedule.startIso) : null;
+  const editEndInfo = editSchedule ? formatDateTime(editSchedule.endIso) : null;
+  const createStartInfo = createSchedule ? formatDateTime(createSchedule.startIso) : null;
+  const createEndInfo = createSchedule ? formatDateTime(createSchedule.endIso) : null;
 
   if (loading) {
     return (
@@ -267,6 +665,14 @@ export const AdminBookings: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={openCreate}
+              disabled={services.length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+            >
+              <PlusIcon className="h-4 w-4" />
+              {ab.newBooking || 'Nowa rezerwacja'}
+            </button>
             <button
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-lg transition-colors ${
@@ -355,7 +761,8 @@ export const AdminBookings: React.FC = () => {
               const dateInfo = formatDateTime(startTime);
               const endInfo = formatDateTime(endTime);
               const statusConfig = getStatusConfig(booking.status);
-              const price = booking.services?.price;
+              const price = getBookingDisplayPrice(booking);
+              const hasCustomPrice = booking.price_override != null;
               const duration = booking.services?.duration;
 
               return (
@@ -411,7 +818,10 @@ export const AdminBookings: React.FC = () => {
                           {price != null && (
                             <div className="flex items-center gap-1.5">
                               <CurrencyDollarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
-                              <span className="font-medium">{(price / 100).toFixed(0)} PLN</span>
+                              <span className="font-medium">
+                                {(price / 100).toFixed(0)} PLN
+                                {hasCustomPrice ? ` (${ab.customPrice || 'indywidualna'})` : ''}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -533,16 +943,20 @@ export const AdminBookings: React.FC = () => {
       )}
 
       {/* Edit Modal */}
-      {editingBooking && (
+      {editingBooking && editForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">
                   {ab.editBooking || 'Edytuj rezerwację'}
                 </h2>
                 <button
-                  onClick={() => setEditingBooking(null)}
+                  onClick={() => {
+                    setEditingBooking(null);
+                    setEditForm(null);
+                    setEditError(null);
+                  }}
                   className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <XMarkIcon className="h-5 w-5" />
@@ -551,56 +965,123 @@ export const AdminBookings: React.FC = () => {
             </div>
 
             <div className="p-6 space-y-5">
-              {/* Booking details (read-only) */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <div className="text-sm">
-                  <span className="text-gray-500">{ab.service || 'Zabieg'}:</span>{' '}
-                  <span className="font-medium text-gray-900">{editingBooking.services?.name || '—'}</span>
+              {editError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {editError}
                 </div>
-                {(() => {
-                  const st = editingBooking.time_slots?.start_time || editingBooking.start_time;
-                  const et = editingBooking.time_slots?.end_time || editingBooking.end_time;
-                  const di = formatDateTime(st);
-                  const ei = formatDateTime(et);
-                  return di ? (
-                    <div className="text-sm">
-                      <span className="text-gray-500">{ab.dateTime || 'Termin'}:</span>{' '}
-                      <span className="font-medium text-gray-900 capitalize">
-                        {di.dayOfWeek}, {di.date}, {di.time}
-                        {ei ? ` – ${ei.time}` : ''}
-                      </span>
-                    </div>
-                  ) : null;
-                })()}
-                <div className="text-sm">
-                  <span className="text-gray-500">{ab.client || 'Klient'}:</span>{' '}
-                  <span className="font-medium text-gray-900">
-                    {editingBooking.contact_name || editingBooking.contact_email || '—'}
-                    {editingBooking.contact_phone ? ` | ${editingBooking.contact_phone}` : ''}
-                  </span>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.service || 'Zabieg'}
+                  </label>
+                  <select
+                    value={editForm.serviceId}
+                    onChange={e => handleEditServiceChange(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                    <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
+                    {services.map(service => (
+                      <option key={service.id} value={service.id}>
+                        {service.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                {editingBooking.services?.price != null && (
-                  <div className="text-sm">
-                    <span className="text-gray-500">{ab.price || 'Cena'}:</span>{' '}
-                    <span className="font-medium text-gray-900">{(editingBooking.services.price / 100).toFixed(0)} PLN</span>
-                  </div>
-                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.stylist || 'Stylistka'}
+                  </label>
+                  <select
+                    value={editForm.stylistId}
+                    onChange={e => setEditForm({ ...editForm, stylistId: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                    <option value="">{ab.noStylist || 'Brak stylistki'}</option>
+                    {editAvailableStylists.map(stylist => (
+                      <option key={stylist.id} value={stylist.id}>
+                        {stylist.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* Edit: Status */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.dateTime || 'Termin'}
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={editForm.startAt}
+                    onChange={e => setEditForm({ ...editForm, startAt: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+
+                <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-700">
+                  <div className="font-medium text-gray-900 mb-1">{ab.endTime || 'Koniec wizyty'}</div>
+                  {editStartInfo && editEndInfo ? (
+                    <div>
+                      <div className="capitalize">
+                        {editStartInfo.dayOfWeek}, {editStartInfo.date} {editStartInfo.time}
+                      </div>
+                      <div>
+                        {editEndInfo.time}
+                        {editSchedule ? ` (${editSchedule.duration} min)` : ''}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">{ab.noDateInfo || 'Brak informacji o terminie'}</div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {ab.price || 'Cena'}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editForm.pricePln}
+                    onChange={e => setEditForm({ ...editForm, pricePln: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="0"
+                  />
+                  <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const service = serviceMap.get(editForm.serviceId);
+                      if (!service) return;
+                      setEditForm({ ...editForm, pricePln: formatPricePlnFromCents(service.price) });
+                    }}
+                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                  >
+                    {ab.useServicePrice || 'Cena z usługi'}
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {ab.status || 'Status'}
                 </label>
                 <div className="flex gap-2">
-                  {(['pending', 'confirmed', 'cancelled'] as const).map(status => {
+                  {(['pending', 'confirmed', 'cancelled'] as BookingStatus[]).map(status => {
                     const sc = getStatusConfig(status);
                     return (
                       <button
                         key={status}
-                        onClick={() => setEditStatus(status)}
+                        onClick={() => setEditForm({ ...editForm, status })}
                         className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
-                          editStatus === status
+                          editForm.status === status
                             ? `${sc.bg} ${sc.text} border-current`
                             : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                         }`}
@@ -612,28 +1093,62 @@ export const AdminBookings: React.FC = () => {
                 </div>
               </div>
 
-              {/* Edit: Stylist */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactName || 'Imię i nazwisko'}
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.contactName}
+                    onChange={e => setEditForm({ ...editForm, contactName: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactPhone || 'Telefon'}
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.contactPhone}
+                    onChange={e => setEditForm({ ...editForm, contactPhone: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactEmail || 'E-mail'}
+                  </label>
+                  <input
+                    type="email"
+                    value={editForm.contactEmail}
+                    onChange={e => setEditForm({ ...editForm, contactEmail: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {ab.stylist || 'Stylistka'}
+                  {ab.notes || 'Notatki'}
                 </label>
-                <select
-                  value={editStylist}
-                  onChange={e => setEditStylist(e.target.value)}
+                <textarea
+                  rows={3}
+                  value={editForm.notes}
+                  onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                >
-                  <option value="">{ab.noStylist || 'Brak stylistki'}</option>
-                  {stylists.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
-            {/* Modal footer */}
             <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
               <button
-                onClick={() => setEditingBooking(null)}
+                onClick={() => {
+                  setEditingBooking(null);
+                  setEditForm(null);
+                  setEditError(null);
+                }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 {ab.cancelEdit || 'Anuluj'}
@@ -649,6 +1164,232 @@ export const AdminBookings: React.FC = () => {
                   <CheckIcon className="h-4 w-4" />
                 )}
                 {ab.save || 'Zapisz'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {ab.createBooking || 'Nowa rezerwacja'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setCreateError(null);
+                  }}
+                  className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {createError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {createError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.service || 'Zabieg'}
+                  </label>
+                  <select
+                    value={createForm.serviceId}
+                    onChange={e => handleCreateServiceChange(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                    <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
+                    {services.map(service => (
+                      <option key={service.id} value={service.id}>
+                        {service.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.stylist || 'Stylistka'}
+                  </label>
+                  <select
+                    value={createForm.stylistId}
+                    onChange={e => setCreateForm({ ...createForm, stylistId: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                    <option value="">{ab.noStylist || 'Brak stylistki'}</option>
+                    {createAvailableStylists.map(stylist => (
+                      <option key={stylist.id} value={stylist.id}>
+                        {stylist.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.dateTime || 'Termin'}
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={createForm.startAt}
+                    onChange={e => setCreateForm({ ...createForm, startAt: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+
+                <div className="bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-700">
+                  <div className="font-medium text-gray-900 mb-1">{ab.endTime || 'Koniec wizyty'}</div>
+                  {createStartInfo && createEndInfo ? (
+                    <div>
+                      <div className="capitalize">
+                        {createStartInfo.dayOfWeek}, {createStartInfo.date} {createStartInfo.time}
+                      </div>
+                      <div>
+                        {createEndInfo.time}
+                        {createSchedule ? ` (${createSchedule.duration} min)` : ''}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">{ab.noDateInfo || 'Brak informacji o terminie'}</div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {ab.price || 'Cena'}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={createForm.pricePln}
+                    onChange={e => setCreateForm({ ...createForm, pricePln: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="0"
+                  />
+                  <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const service = serviceMap.get(createForm.serviceId);
+                      if (!service) return;
+                      setCreateForm({ ...createForm, pricePln: formatPricePlnFromCents(service.price) });
+                    }}
+                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                  >
+                    {ab.useServicePrice || 'Cena z usługi'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {ab.status || 'Status'}
+                </label>
+                <div className="flex gap-2">
+                  {(['pending', 'confirmed', 'cancelled'] as BookingStatus[]).map(status => {
+                    const sc = getStatusConfig(status);
+                    return (
+                      <button
+                        key={status}
+                        onClick={() => setCreateForm({ ...createForm, status })}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
+                          createForm.status === status
+                            ? `${sc.bg} ${sc.text} border-current`
+                            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {sc.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactName || 'Imię i nazwisko'}
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.contactName}
+                    onChange={e => setCreateForm({ ...createForm, contactName: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactPhone || 'Telefon'}
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.contactPhone}
+                    onChange={e => setCreateForm({ ...createForm, contactPhone: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {ab.contactEmail || 'E-mail'}
+                  </label>
+                  <input
+                    type="email"
+                    value={createForm.contactEmail}
+                    onChange={e => setCreateForm({ ...createForm, contactEmail: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {ab.notes || 'Notatki'}
+                </label>
+                <textarea
+                  rows={3}
+                  value={createForm.notes}
+                  onChange={e => setCreateForm({ ...createForm, notes: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setCreateError(null);
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                {ab.cancelEdit || 'Anuluj'}
+              </button>
+              <button
+                onClick={createBooking}
+                disabled={creating}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+              >
+                {creating ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <CheckIcon className="h-4 w-4" />
+                )}
+                {ab.create || 'Utwórz'}
               </button>
             </div>
           </div>
