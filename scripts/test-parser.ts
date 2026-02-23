@@ -97,6 +97,123 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+const WORKER_LABEL_PATTERN =
+  '(?:pracownik|pracownica|stylista|stylistka|wykonawca|specjalista|employee|staff|worker)';
+
+function normalizeWhitespace(value: string): string {
+  return value.replace(/\u00a0/g, ' ').replace(/[ \t]+/g, ' ').trim();
+}
+
+function normalizePersonName(value: string): string {
+  return normalizeWhitespace(value).replace(/[.,;:!?]+$/, '');
+}
+
+function extractWorkerName(text: string, html: string): string | undefined {
+  const workerRegexes = [
+    new RegExp(`${WORKER_LABEL_PATTERN}\\s*:\\s*([^\\n<,;|]+)`, 'i'),
+    new RegExp(`${WORKER_LABEL_PATTERN}\\s*-\\s*([^\\n<,;|]+)`, 'i'),
+  ];
+
+  for (const regex of workerRegexes) {
+    const fromText = text.match(regex);
+    if (fromText?.[1]) return normalizePersonName(fromText[1]);
+    const fromHtml = html.match(regex);
+    if (fromHtml?.[1]) return normalizePersonName(fromHtml[1]);
+  }
+
+  const fromServiceLine = text.match(
+    /\((?:[^)]*?(?:stylistka|stylista|pracownik|worker|employee)\s+([^()]+))\)\s*:/i
+  );
+  if (fromServiceLine?.[1]) return normalizePersonName(fromServiceLine[1]);
+
+  return undefined;
+}
+
+function cleanServiceNameForNewBooking(rawServiceName: string): string {
+  let value = normalizeWhitespace(rawServiceName)
+    .replace(new RegExp(`\\s*(?:,|\\|)?\\s*${WORKER_LABEL_PATTERN}\\s*[:\\-].*$`, 'i'), '')
+    .replace(/[.,;:!?]+$/, '')
+    .trim();
+
+  if (/\s:\s/.test(value) || /\([^)]*\)\s*:/.test(value)) {
+    const firstColonIndex = value.indexOf(':');
+    if (firstColonIndex > -1 && firstColonIndex < value.length - 1) {
+      value = value.slice(firstColonIndex + 1).trim();
+    }
+  }
+
+  return value;
+}
+
+function isServiceNoise(candidate: string, clientName: string): boolean {
+  const normalized = candidate.toLowerCase();
+  if (!candidate || candidate.length < 3) return true;
+  if (!/[a-ząćęłńóśźż]/i.test(candidate)) return true;
+  if (normalized === 'booksy') return true;
+  if (new RegExp(WORKER_LABEL_PATTERN, 'i').test(candidate)) return true;
+  if (/\d[\d\s,.]*\s*zł/i.test(candidate)) return true;
+  if (clientName && normalized === clientName.toLowerCase()) return true;
+  if (
+    normalized.includes('nowa rezerwacja') ||
+    normalized.includes('zmienił rezerwację') ||
+    normalized.includes('odwołał swoją usługę') ||
+    normalized.includes('nowy termin wizyty') ||
+    normalized.includes('dzięki booksy')
+  ) return true;
+  if (
+    /(poniedziałek|wtorek|środa|czwartek|piątek|sobota|niedziela)/i.test(candidate) ||
+    /\b(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\b/i.test(candidate)
+  ) return true;
+  return false;
+}
+
+function scoreServiceCandidate(candidate: string): number {
+  return (
+    candidate.length +
+    (candidate.includes(':') ? 4 : 0) +
+    (candidate.includes('+') ? 2 : 0) +
+    (candidate.split(' ').length >= 2 ? 3 : 0)
+  );
+}
+
+function extractNewBookingServiceName(text: string, html: string, clientName: string): string {
+  const normalizedText = text.replace(/\r/g, '\n');
+  const lines = normalizedText
+    .split('\n')
+    .map((line) => normalizeWhitespace(line))
+    .filter(Boolean);
+
+  const serviceCandidates: string[] = [];
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (!/\d[\d\s,.]*\s*zł/i.test(line)) continue;
+
+    const inlineServiceMatch = line.match(/^(.*?)\s+\d[\d\s,.]*\s*zł/i);
+    if (inlineServiceMatch?.[1]) serviceCandidates.push(inlineServiceMatch[1]);
+
+    for (let prev = i - 1; prev >= 0; prev -= 1) {
+      if (lines[prev]) {
+        serviceCandidates.push(lines[prev]);
+        break;
+      }
+    }
+  }
+
+  const htmlCandidates = Array.from(
+    html.matchAll(/([^<>\n]{3,200}?)<br\s*\/?>\s*[\d,.]+\s*zł/gi),
+    (match) => match[1]
+  );
+  serviceCandidates.push(...htmlCandidates);
+
+  const bestCandidate = serviceCandidates
+    .map((candidate) => cleanServiceNameForNewBooking(candidate))
+    .filter((candidate) => !isServiceNoise(candidate, clientName))
+    .sort((a, b) => scoreServiceCandidate(b) - scoreServiceCandidate(a))[0];
+
+  return bestCandidate || '';
+}
+
 function parseBookingEmail(subject: string, html: string): ParsedBooking | null {
   const emailType = detectEmailType(subject, html);
   const text = stripHtml(html);
@@ -128,8 +245,7 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     (e) => !e.includes('booksy.com') && !e.includes('icloud.com') && !e.includes('noreply')
   );
 
-  const workerMatch = text.match(/pracownik\s*:\s*(.+?)(?:\n|$)/i);
-  const workerName = workerMatch ? workerMatch[1].trim() : undefined;
+  const workerName = extractWorkerName(text, html);
 
   let serviceName = '';
   if (emailType === 'cancelled') {
@@ -139,12 +255,7 @@ function parseBookingEmail(subject: string, html: string): ParsedBooking | null 
     const svcMatch = text.match(/przesunął swoją wizytę\s+(.+?)\s+z dnia/i);
     if (svcMatch) serviceName = svcMatch[1].trim();
   } else {
-    const svcLineMatch = text.match(/(.+?)\n\s*[\d,.]+\s*zł/);
-    if (svcLineMatch) {
-      serviceName = svcLineMatch[1].trim();
-      const cleanMatch = serviceName.match(/(?:.*?:\s*)?([^:]+)$/);
-      if (cleanMatch) serviceName = cleanMatch[1].trim();
-    }
+    serviceName = extractNewBookingServiceName(text, html, clientName);
   }
 
   const priceMatch = text.match(/([\d,.\s]+)\s*zł/);
@@ -271,6 +382,29 @@ const changedHtmlAutoFwd = `
   </div>
 </div>`;
 
+// EMAIL 4: Forwarded new booking with "Booksy" summary block
+const forwardedNewSubject = 'Fwd: Małgorzata Romaniuk: nowa rezerwacja wtorek, 17 marca 2026 16:15';
+const forwardedNewHtml = `
+<div>
+  Отправлено с iPhone<br><br>
+  Начало переадресованного сообщения:<br><br>
+</div>
+<div style="background: #teal; text-align: center;">
+  <img src="booksy-logo.png" alt="booksy">
+</div>
+<div>
+  <p><strong>Małgorzata Romaniuk: nowa rezerwacja</strong></p>
+  <p>wtorek, 17 marca 2026, 16:15 - 16:50</p>
+  <table>
+    <tr>
+      <td>Booksy<br>90,00 zł</td>
+    </tr>
+    <tr>
+      <td>Pielęgnacja brwi : Regulacja brwi + henna<br>90,00 zł, 16:15 - 16:50<br>stylistka: Ksenia</td>
+    </tr>
+  </table>
+</div>`;
+
 // ---- RUN TESTS ----
 
 function test(name: string, fn: () => void) {
@@ -359,5 +493,16 @@ console.log('  Result:', JSON.stringify(changedAuto, null, 2));
 test('Parsed successfully', () => assert(changedAuto !== null, 'should not be null'));
 test('Client name = Sylwia Żmiejko', () => assert(changedAuto!.clientName === 'Sylwia Żmiejko', `got: "${changedAuto!.clientName}"`));
 test('Email = sylwia.iwanicka51@gmail.com', () => assert(changedAuto!.clientEmail === 'sylwia.iwanicka51@gmail.com', `got: "${changedAuto!.clientEmail}"`));
+
+console.log('\n=== EMAIL 4: NEW (forwarded summary + stylistka label) ===');
+const forwardedNew = parseBookingEmail(forwardedNewSubject, forwardedNewHtml);
+console.log('  Result:', JSON.stringify(forwardedNew, null, 2));
+test('Parsed successfully', () => assert(forwardedNew !== null, 'should not be null'));
+test('Email type = new', () => assert(forwardedNew!.emailType === 'new', `got: ${forwardedNew!.emailType}`));
+test('Client name = Małgorzata Romaniuk', () => assert(forwardedNew!.clientName === 'Małgorzata Romaniuk', `got: "${forwardedNew!.clientName}"`));
+test('Service = Regulacja brwi + henna', () => assert(forwardedNew!.serviceName === 'Regulacja brwi + henna', `got: "${forwardedNew!.serviceName}"`));
+test('Worker = Ksenia', () => assert(forwardedNew!.workerName === 'Ksenia', `got: "${forwardedNew!.workerName}"`));
+test('Start = 2026-03-17T16:15', () => assert(forwardedNew!.startTime.includes('2026-03-17T16:15'), `got: "${forwardedNew!.startTime}"`));
+test('End = 2026-03-17T16:50', () => assert(forwardedNew!.endTime.includes('2026-03-17T16:50'), `got: "${forwardedNew!.endTime}"`));
 
 console.log('\n=== SUMMARY ===');
