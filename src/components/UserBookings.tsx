@@ -178,14 +178,6 @@ export const UserBookings: React.FC = () => {
 
       if (slotError || !newSlot) return;
 
-      const oldSlotId = rescheduleBooking.time_slot_id || rescheduleBooking.timeSlotId;
-      if (oldSlotId) {
-        await supabase
-          .from('time_slots')
-          .update({ is_available: true, booking_id: null })
-          .eq('id', oldSlotId);
-      }
-
       const { error: updateError } = await supabase
         .from('bookings')
         .update({
@@ -198,7 +190,22 @@ export const UserBookings: React.FC = () => {
         .eq('id', rescheduleBooking.id)
         .eq('user_id', session.user.id);
 
-      if (updateError) return;
+      if (updateError) {
+        // Roll back newly blocked slot when booking update fails.
+        await supabase
+          .from('time_slots')
+          .delete()
+          .eq('id', newSlot.id);
+        return;
+      }
+
+      const oldSlotId = rescheduleBooking.time_slot_id || rescheduleBooking.timeSlotId;
+      if (oldSlotId) {
+        await supabase
+          .from('time_slots')
+          .update({ is_available: true, booking_id: null })
+          .eq('id', oldSlotId);
+      }
 
       // Keep reverse relation consistent for admin/debug views.
       await supabase
@@ -207,12 +214,16 @@ export const UserBookings: React.FC = () => {
         .eq('id', newSlot.id);
 
       const newDateStr = format(new Date(slot.startTime), 'dd.MM.yyyy HH:mm');
-      await notifyAdmin(
-        rescheduleBooking.id,
-        'rescheduled',
-        `Klient zmienił termin rezerwacji: ${rescheduleBooking.services?.name || '—'} → nowy termin: ${newDateStr}`
-      );
-      await notifyClient(rescheduleBooking.id, 'status_update');
+      try {
+        await notifyAdmin(
+          rescheduleBooking.id,
+          'rescheduled',
+          `Klient zmienił termin rezerwacji: ${rescheduleBooking.services?.name || '—'} → nowy termin: ${newDateStr}`
+        );
+        await notifyClient(rescheduleBooking.id, 'status_update');
+      } catch (notifyError) {
+        console.error('Reschedule completed, but notifications failed:', notifyError);
+      }
 
       setRescheduleBooking(null);
       setRescheduleService(null);
