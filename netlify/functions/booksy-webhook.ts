@@ -178,18 +178,9 @@ function extractWorkerName(text: string, html: string): string | undefined {
 }
 
 function cleanServiceNameForNewBooking(rawServiceName: string): string {
-  let value = normalizeWhitespace(rawServiceName)
+  const value = normalizeWhitespace(rawServiceName)
     .replace(new RegExp(`\\s*(?:,|\\|)?\\s*${WORKER_LABEL_PATTERN}\\s*[:\\-].*$`, 'i'), '')
-    .replace(/[.,;:!?]+$/, '')
     .trim();
-
-  // Strip category/role prefix only for "Category : Service" style names.
-  if (/\s:\s/.test(value) || /\([^)]*\)\s*:/.test(value)) {
-    const firstColonIndex = value.indexOf(':');
-    if (firstColonIndex > -1 && firstColonIndex < value.length - 1) {
-      value = value.slice(firstColonIndex + 1).trim();
-    }
-  }
 
   return value;
 }
@@ -200,7 +191,7 @@ function isServiceNoise(candidate: string, clientName: string): boolean {
   if (!candidate || candidate.length < 3) return true;
   if (!/[a-ząćęłńóśźż]/i.test(candidate)) return true;
   if (normalized === 'booksy') return true;
-  if (new RegExp(WORKER_LABEL_PATTERN, 'i').test(candidate)) return true;
+  if (new RegExp(`^${WORKER_LABEL_PATTERN}\\s*[:\\-]`, 'i').test(candidate)) return true;
   if (/\d[\d\s,.]*\s*zł/i.test(candidate)) return true;
   if (clientName && normalized === clientName.toLowerCase()) return true;
 
