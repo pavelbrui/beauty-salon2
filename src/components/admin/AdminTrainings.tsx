@@ -293,7 +293,7 @@ export const AdminTrainings: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowTemplateSelector(!showTemplateSelector)}
-              className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm font-medium flex items-center gap-2"
+              className="bg-rose-500 text-white px-4 py-2 rounded-md hover:bg-rose-600 transition-colors text-sm font-medium flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -309,9 +309,9 @@ export const AdminTrainings: React.FC = () => {
                   <button
                     key={i}
                     onClick={() => handleNewFromTemplate(i)}
-                    className="w-full text-left px-4 py-3 hover:bg-amber-50 transition-colors flex items-center gap-3 border-b border-gray-50 last:border-0"
+                    className="w-full text-left px-4 py-3 hover:bg-rose-50 transition-colors flex items-center gap-3 border-b border-gray-50 last:border-0"
                   >
-                    <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
                       {tmpl.title.charAt(0)}
                     </div>
                     <div>
@@ -358,7 +358,7 @@ export const AdminTrainings: React.FC = () => {
               >
                 {/* Cover image */}
                 <div
-                  className="bg-gradient-to-br from-amber-400 to-amber-600 relative overflow-hidden"
+                  className="bg-gradient-to-br from-rose-400 to-rose-600 relative overflow-hidden"
                   style={{ height: `${Math.min(training.cover_height_card ?? 224, 200)}px` }}
                 >
                   {training.cover_image_url && (
@@ -418,7 +418,7 @@ export const AdminTrainings: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEdit(training)}
-                      className="flex-1 bg-amber-500 text-white px-3 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm font-medium"
+                      className="flex-1 bg-rose-500 text-white px-3 py-2 rounded-md hover:bg-rose-600 transition-colors text-sm font-medium"
                     >
                       Edytuj
                     </button>
@@ -494,7 +494,7 @@ export const AdminTrainings: React.FC = () => {
               type="checkbox"
               checked={isPublished}
               onChange={e => setIsPublished(e.target.checked)}
-              className="rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+              className="rounded border-gray-300 text-rose-500 focus:ring-rose-500"
             />
             Opublikowane
           </label>
@@ -502,7 +502,7 @@ export const AdminTrainings: React.FC = () => {
             onClick={handleSave}
             disabled={saving}
             className={`px-5 py-2 rounded-md text-sm font-medium text-white transition-colors ${
-              saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600'
+              saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-rose-500 hover:bg-rose-600'
             }`}
           >
             {saving ? 'Zapisywanie...' : 'Zapisz'}
@@ -514,7 +514,7 @@ export const AdminTrainings: React.FC = () => {
         {/* --- METADATA SECTION --- */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Informacje podstawowe
@@ -529,7 +529,7 @@ export const AdminTrainings: React.FC = () => {
                 onClick={() => setMetaLang(lang)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   metaLang === lang
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-rose-500 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -556,7 +556,7 @@ export const AdminTrainings: React.FC = () => {
                   } else if (metaLang === 'en') setTitleEn(v);
                   else setTitleRu(v);
                 }}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 placeholder={metaLang === 'pl' ? 'Nazwa szkolenia' : metaLang === 'en' ? 'Training name' : 'Название обучения'}
               />
             </div>
@@ -572,7 +572,7 @@ export const AdminTrainings: React.FC = () => {
                   type="text"
                   value={slug}
                   onChange={e => setSlug(e.target.value)}
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                   placeholder="makijaz-permanentny"
                 />
               </div>
@@ -584,7 +584,7 @@ export const AdminTrainings: React.FC = () => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
               >
                 {CATEGORIES.map(c => (
                   <option key={c.value} value={c.value}>{c.label}</option>
@@ -606,7 +606,7 @@ export const AdminTrainings: React.FC = () => {
                   else if (metaLang === 'en') setPriceEn(v);
                   else setPriceRu(v);
                 }}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 placeholder="np. od 2 500 PLN"
               />
             </div>
@@ -625,7 +625,7 @@ export const AdminTrainings: React.FC = () => {
                   else if (metaLang === 'en') setDurationEn(v);
                   else setDurationRu(v);
                 }}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 placeholder="np. 3 dni (24h)"
               />
             </div>
@@ -645,7 +645,7 @@ export const AdminTrainings: React.FC = () => {
                 else setDescRu(v);
               }}
               rows={3}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
               placeholder={metaLang === 'pl' ? 'Krótki opis szkolenia...' : metaLang === 'en' ? 'Short description...' : 'Краткое описание...'}
             />
           </div>
@@ -653,7 +653,7 @@ export const AdminTrainings: React.FC = () => {
           {/* Cover Images — Card & Detail */}
           <div className="mt-6 space-y-4">
             <h4 className="text-md font-medium text-gray-800 flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Zdjęcia okładkowe
@@ -675,7 +675,7 @@ export const AdminTrainings: React.FC = () => {
                   step={10}
                   value={coverHeightCard}
                   onChange={e => setCoverHeightCard(parseInt(e.target.value) || 224)}
-                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 />
               </div>
 
@@ -698,7 +698,7 @@ export const AdminTrainings: React.FC = () => {
                   value={coverImageUrl}
                   onChange={e => setCoverImageUrl(e.target.value)}
                   placeholder="URL zdjęcia..."
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 />
                 {coverImageUrl && (
                   <button
@@ -738,7 +738,7 @@ export const AdminTrainings: React.FC = () => {
                   step={10}
                   value={coverHeightDetail}
                   onChange={e => setCoverHeightDetail(parseInt(e.target.value) || 384)}
-                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                  className="w-32 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                 />
               </div>
 
@@ -747,7 +747,7 @@ export const AdminTrainings: React.FC = () => {
                   type="checkbox"
                   checked={useSeparateDetailImage}
                   onChange={e => setUseSeparateDetailImage(e.target.checked)}
-                  className="rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+                  className="rounded border-gray-300 text-rose-500 focus:ring-rose-500"
                 />
                 Użyj innego zdjęcia niż na karcie
               </label>
@@ -772,7 +772,7 @@ export const AdminTrainings: React.FC = () => {
                     value={coverImageUrlDetail}
                     onChange={e => setCoverImageUrlDetail(e.target.value)}
                     placeholder="URL zdjęcia..."
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                   />
                   {coverImageUrlDetail && (
                     <button
@@ -802,7 +802,7 @@ export const AdminTrainings: React.FC = () => {
         {/* --- CONTENT BLOCKS SECTION --- */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
             Bloki treści
@@ -815,7 +815,7 @@ export const AdminTrainings: React.FC = () => {
             <button
               type="button"
               onClick={() => addBlock('heading')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-colors text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-rose-300 hover:bg-rose-50 transition-colors text-sm"
             >
               <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -825,7 +825,7 @@ export const AdminTrainings: React.FC = () => {
             <button
               type="button"
               onClick={() => addBlock('text')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-colors text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-rose-300 hover:bg-rose-50 transition-colors text-sm"
             >
               <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
@@ -835,7 +835,7 @@ export const AdminTrainings: React.FC = () => {
             <button
               type="button"
               onClick={() => addBlock('image')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-colors text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-rose-300 hover:bg-rose-50 transition-colors text-sm"
             >
               <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -845,7 +845,7 @@ export const AdminTrainings: React.FC = () => {
             <button
               type="button"
               onClick={() => addBlock('list')}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-amber-300 hover:bg-amber-50 transition-colors text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-md border border-gray-200 hover:border-rose-300 hover:bg-rose-50 transition-colors text-sm"
             >
               <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -893,7 +893,7 @@ export const AdminTrainings: React.FC = () => {
             onClick={handleSave}
             disabled={saving}
             className={`px-6 py-2 rounded-md text-sm font-medium text-white transition-colors ${
-              saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600'
+              saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-rose-500 hover:bg-rose-600'
             }`}
           >
             {saving ? 'Zapisywanie...' : 'Zapisz szkolenie'}

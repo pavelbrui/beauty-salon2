@@ -106,7 +106,7 @@ export const GalleryPage: React.FC = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full transition-colors ${
                 selectedCategory === category
-                  ? 'bg-amber-500 text-white'
+                  ? 'bg-rose-500 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -117,7 +117,7 @@ export const GalleryPage: React.FC = () => {
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" role="status" aria-label="Loading" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500" role="status" aria-label="Loading" />
           </div>
         ) : filteredImages.length === 0 ? (
           <p className="text-center text-gray-500 py-20">{t.noResults}</p>

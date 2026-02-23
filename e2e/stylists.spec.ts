@@ -31,7 +31,7 @@ test.describe('Stylists Page', () => {
     // Wait for spinner to disappear and cards to render
     await page.waitForSelector('.animate-spin', { state: 'hidden', timeout: 10000 }).catch(() => {});
     await page.waitForSelector('.grid > div', { timeout: 10000 });
-    const badges = page.locator('.bg-amber-100');
+    const badges = page.locator('.bg-rose-100');
     await expect(badges.first()).toBeVisible({ timeout: 10000 });
   });
 

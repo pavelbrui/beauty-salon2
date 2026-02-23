@@ -81,17 +81,17 @@ export const BlogTeaser: React.FC = () => {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />
+                    <div className="w-full h-full bg-gradient-to-br from-rose-400 to-rose-600 group-hover:from-rose-500 group-hover:to-rose-700 transition-all duration-500" />
                   )}
                   <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-amber-700 rounded-full text-xs font-semibold">
+                    <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-rose-700 rounded-full text-xs font-semibold">
                       {getCategoryLabel(p.category)}
                     </span>
                   </div>
                 </div>
 
                 <div className="p-5">
-                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-rose-600 transition-colors">
                     {pTitle}
                   </h3>
                   {pExcerpt && (
@@ -99,7 +99,7 @@ export const BlogTeaser: React.FC = () => {
                   )}
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>{formatDate(p.published_at)}</span>
-                    <span className="text-amber-600 font-medium">
+                    <span className="text-rose-600 font-medium">
                       {(bp?.readMore as string) || 'Czytaj więcej'} &rarr;
                     </span>
                   </div>
@@ -112,7 +112,7 @@ export const BlogTeaser: React.FC = () => {
         <div className="text-center">
           <LocalizedLink
             to="/blog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-full font-medium hover:bg-amber-600 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-rose-500 text-white rounded-full font-medium hover:bg-rose-600 transition-colors"
           >
             {(bp?.viewAll as string) || 'Zobacz wszystkie artykuły'}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

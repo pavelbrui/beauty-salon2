@@ -8,9 +8,9 @@ export const Reviews: React.FC = () => {
   const t = translations[language];
 
   return (
-    <div className="py-16 bg-neutral-50">
+    <div className="py-20 bg-cream-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-gray-900 text-center mb-12">
+        <h2 className="font-display text-4xl font-bold text-stone-900 text-center mb-12">
           {t.reviews.title}
         </h2>
         <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory">
@@ -26,7 +26,7 @@ export const Reviews: React.FC = () => {
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
-                        className="text-amber-400"
+                        className="text-rose-400"
                       />
                     ))}
                   </div>
@@ -41,7 +41,7 @@ export const Reviews: React.FC = () => {
             href="https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-600 hover:text-amber-700 font-medium"
+            className="text-rose-600 hover:text-rose-700 font-medium"
           >
             {t.reviews.viewMore} →
           </a>

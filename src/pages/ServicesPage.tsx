@@ -282,8 +282,8 @@ export const ServicesPage: React.FC = () => {
             onClick={() => navigate('/services')}
             className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
               !category
-                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300 hover:text-rose-600'
             }`}
           >
             {t.all}
@@ -294,8 +294,8 @@ export const ServicesPage: React.FC = () => {
               onClick={() => handleCategoryClick(cat)}
               className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
                 category === cat
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                  ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300 hover:text-rose-600'
               }`}
             >
               {getCategoryName(cat, language, (t as any).categories)}

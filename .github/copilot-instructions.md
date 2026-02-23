@@ -92,7 +92,7 @@ if (data) setServices(data);
 ### Styling
 
 - **Tailwind CSS**: utility-first (no custom CSS files except globals)
-- **Accent color**: `bg-amber-500` / `hover:bg-amber-600` (repeats throughout)
+- **Accent color**: `bg-rose-500` / `hover:bg-rose-600` (repeats throughout)
 - **Responsive**: `sm:`, `md:` breakpoints standard
 - **Animations**: Framer Motion for Navbar, ServiceCard hover effects
 
@@ -138,7 +138,7 @@ The admin interface is tab-based in [src/pages/Admin.tsx](src/pages/Admin.tsx) w
 <button
   onClick={() => setActiveTab('tabId')}
   className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-    activeTab === 'tabId' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+    activeTab === 'tabId' ? 'border-rose-500 text-rose-600' : 'border-transparent text-gray-500 hover:text-gray-700'
   }`}
 >
   Tab Label

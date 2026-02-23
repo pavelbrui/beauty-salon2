@@ -17,14 +17,14 @@ test.describe('Admin Panel', () => {
 
   test('services tab is active by default', async ({ page }) => {
     const servicesTab = page.getByRole('button', { name: 'Usługi' });
-    await expect(servicesTab).toHaveClass(/amber/);
+    await expect(servicesTab).toHaveClass(/rose/);
   });
 
   test('clicking bookings tab switches content', async ({ page }) => {
     await page.getByRole('button', { name: 'Rezerwacje' }).click();
     // Bookings tab should now be active
     const bookingsTab = page.getByRole('button', { name: 'Rezerwacje' });
-    await expect(bookingsTab).toHaveClass(/amber/);
+    await expect(bookingsTab).toHaveClass(/rose/);
   });
 
   test('all tabs are clickable and switch views', async ({ page }) => {
@@ -32,7 +32,7 @@ test.describe('Admin Panel', () => {
     for (const tabName of tabs) {
       await page.getByRole('button', { name: tabName }).click();
       const tab = page.getByRole('button', { name: tabName });
-      await expect(tab).toHaveClass(/amber/);
+      await expect(tab).toHaveClass(/rose/);
     }
   });
 

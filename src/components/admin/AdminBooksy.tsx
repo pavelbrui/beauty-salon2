@@ -182,7 +182,7 @@ export const AdminBooksy: React.FC = () => {
         );
       case 'changed':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
             <ArrowPathIcon className="h-3 w-3" />
             {ab.statusChanged || 'Changed'}
           </span>
@@ -237,7 +237,7 @@ export const AdminBooksy: React.FC = () => {
         );
       case 'changed':
         return (
-          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700">
             {ab.emailChanged || 'Change'}
           </span>
         );
@@ -255,7 +255,7 @@ export const AdminBooksy: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <ArrowPathIcon className="h-8 w-8 text-amber-500 animate-spin" />
+        <ArrowPathIcon className="h-8 w-8 text-rose-500 animate-spin" />
       </div>
     );
   }
@@ -278,7 +278,7 @@ export const AdminBooksy: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <InboxIcon className="h-5 w-5 text-amber-500" />
+            <InboxIcon className="h-5 w-5 text-rose-500" />
             Email Log
             <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
               {emailLogs.length}
@@ -397,7 +397,7 @@ export const AdminBooksy: React.FC = () => {
                           {log.raw_html && (
                             <button
                               onClick={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
-                              className="text-xs text-amber-600 hover:text-amber-700 underline"
+                              className="text-xs text-rose-600 hover:text-rose-700 underline"
                             >
                               {expandedLogId === log.id ? 'Ukryj' : `${(log.body_length || 0).toLocaleString()} B`}
                             </button>
@@ -429,7 +429,7 @@ export const AdminBooksy: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <LinkIcon className="h-5 w-5 text-amber-500" />
+            <LinkIcon className="h-5 w-5 text-rose-500" />
             {ab.mappingsTitle || 'Stylist Mapping'}
             {unmappedCount > 0 && (
               <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -478,7 +478,7 @@ export const AdminBooksy: React.FC = () => {
                         <select
                           value={editingStylistId}
                           onChange={(e) => setEditingStylistId(e.target.value)}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
                         >
                           <option value="">{ab.selectStylist || 'Select stylist'}</option>
                           {stylists.map((s) => (
@@ -501,7 +501,7 @@ export const AdminBooksy: React.FC = () => {
                           <button
                             onClick={() => saveMapping(mapping)}
                             disabled={savingMapping}
-                            className="px-3 py-1 text-sm font-medium text-white bg-amber-500 rounded-md hover:bg-amber-600 disabled:opacity-50"
+                            className="px-3 py-1 text-sm font-medium text-white bg-rose-500 rounded-md hover:bg-rose-600 disabled:opacity-50"
                           >
                             {ab.save || 'Save'}
                           </button>
@@ -515,7 +515,7 @@ export const AdminBooksy: React.FC = () => {
                       ) : (
                         <button
                           onClick={() => startEditMapping(mapping)}
-                          className="px-3 py-1 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-md"
+                          className="px-3 py-1 text-sm font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-md"
                         >
                           {mapping.stylist_id
                             ? (language === 'pl' ? 'Zmień' : language === 'ru' ? 'Изменить' : 'Change')
@@ -543,7 +543,7 @@ export const AdminBooksy: React.FC = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+              className="rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
             >
               <option value="all">{ab.allStatuses || 'All statuses'}</option>
               <option value="active">{ab.statusActive || 'Active'}</option>
@@ -554,7 +554,7 @@ export const AdminBooksy: React.FC = () => {
             <select
               value={filterSync}
               onChange={(e) => setFilterSync(e.target.value)}
-              className="rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+              className="rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
             >
               <option value="all">{ab.allSync || 'All'}</option>
               <option value="mapped">{ab.syncMapped || 'Synced'}</option>

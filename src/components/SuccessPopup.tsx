@@ -61,7 +61,7 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({
           <div className="mt-6">
             <button
               onClick={onClose}
-              className="w-full bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transform hover:scale-105 transition-all duration-200"
+              className="w-full bg-rose-500 text-white px-4 py-2 rounded-md hover:bg-rose-600 transform hover:scale-105 transition-all duration-200"
             >
               {t.booking.success.close}
             </button>
