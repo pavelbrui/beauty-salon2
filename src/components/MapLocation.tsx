@@ -13,7 +13,7 @@ import { translations } from '../i18n/translations';
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 const PLACE_ID = 'ChIJzQK31Dv9H0cR0aqPnVAPkDo';
 const SALON_COORDS = { lat: 53.1274782, lng: 23.1462283 };
-const SALON_TITLE = 'Makijaż Permanentny Białystok | Katarzyna Brui';
+const SALON_TITLE = 'Makijaż Permanentny Białystok | Anna Nowak';
 
 export const MapLocation: React.FC = () => {
   const { language } = useLanguage();
@@ -77,7 +77,7 @@ export const MapLocation: React.FC = () => {
 
   return (
     <div className="w-full p-6 rounded-lg bg-white shadow-lg">
-      <div className="flex items-center justify-center space-x-3 text-amber-600 mb-4">
+      <div className="flex items-center justify-center space-x-3 text-rose-600 mb-4">
         <FaMapMarkerAlt className="w-8 h-8" />
         <h3 className="text-xl font-semibold">{t.contact.location.title}</h3>
       </div>
@@ -85,7 +85,7 @@ export const MapLocation: React.FC = () => {
       <div className="w-full rounded-lg overflow-hidden mb-4">
         {mapFailed ? (
           <iframe
-            title="Katarzyna Brui - lokalizacja"
+            title="Anna Nowak - lokalizacja"
             src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2400.5!2d23.1440396!3d53.1274782!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s${PLACE_ID}!2sMakija%C5%BC%20Permanentny%20Bia%C5%82ystok%20%7C%20Katarzyna%20Brui!5e0!3m2!1s${language}!2spl!4v1700000000000`}
             width="100%"
             height="350"

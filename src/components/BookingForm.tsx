@@ -30,7 +30,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
   });
 
   React.useEffect(() => {
-    // Try to load profile from DB first, then fall back to session email
     loadProfile().then(profile => {
       if (profile) {
         setFormData(prev => ({
@@ -64,13 +63,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full mx-auto"
+      className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full mx-auto border border-rose-100/50"
     >
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold">{t.booking.contactDetails}</h3>
+        <h3 className="text-xl font-serif font-semibold text-gray-900">{t.booking.contactDetails}</h3>
         <button
           onClick={onCancel}
-          className="text-gray-400 hover:text-gray-500"
+          className="text-gray-300 hover:text-gray-500 transition-colors"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -79,7 +78,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
             {t.booking.name} *
           </label>
           <input
@@ -88,12 +87,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
+            className="block w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-rose-400 focus:ring-rose-400 transition-all bg-gray-50/50 hover:border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
             {t.booking.phone} *
           </label>
           <input
@@ -102,12 +101,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.phone}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
+            className="block w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-rose-400 focus:ring-rose-400 transition-all bg-gray-50/50 hover:border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
             {t.booking.email} *
           </label>
           <input
@@ -116,12 +115,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+            className="block w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-rose-400 focus:ring-rose-400 transition-all bg-gray-50/50 hover:border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
             {t.booking.notes}
           </label>
           <textarea
@@ -129,7 +128,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             rows={3}
             value={formData.notes}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+            className="block w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-rose-400 focus:ring-rose-400 transition-all bg-gray-50/50 hover:border-gray-300"
           />
         </div>
 
@@ -137,13 +136,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-gray-700 hover:text-gray-900"
+            className="px-5 py-2.5 text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
           >
             {t.booking.cancel}
           </button>
           <button
             type="submit"
-            className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+            className="px-6 py-3 bg-rose-500 text-white rounded-xl hover:bg-rose-600 transition-all font-medium hover:shadow-lg hover:shadow-rose-500/20"
           >
             {t.booking.confirm}
           </button>

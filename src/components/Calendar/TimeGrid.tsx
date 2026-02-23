@@ -126,7 +126,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
             key={period}
             className={`px-4 py-2 rounded-full transition-colors ${
               selectedPeriod === period
-                ? 'bg-amber-500 text-white'
+                ? 'bg-rose-500 text-white'
                 : periodCounts[period] > 0
                   ? 'bg-gray-100 hover:bg-gray-200'
                   : 'bg-gray-50 text-gray-300'
@@ -135,7 +135,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
           >
             {periodLabels[period]}
             {periodCounts[period] > 0 && (
-              <span className={`ml-1.5 text-xs ${selectedPeriod === period ? 'text-amber-100' : 'text-gray-400'}`}>
+              <span className={`ml-1.5 text-xs ${selectedPeriod === period ? 'text-rose-100' : 'text-gray-400'}`}>
                 ({periodCounts[period]})
               </span>
             )}
@@ -159,7 +159,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
                 <button
                   key={p}
                   onClick={() => setSelectedPeriod(p)}
-                  className="mx-1 text-amber-600 hover:text-amber-700 underline"
+                  className="mx-1 text-rose-600 hover:text-rose-700 underline"
                 >
                   {periodLabels[p]} ({periodCounts[p]})
                 </button>
@@ -192,22 +192,22 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
             disabled={!available}
             className={`relative p-3 rounded-lg text-center transition-all duration-200 ${
               isSelected 
-                ? 'bg-amber-500 text-white ring-2 ring-amber-300 ring-offset-2 scale-105' 
+                ? 'bg-rose-500 text-white ring-2 ring-rose-300 ring-offset-2 scale-105' 
                 : !isSelected && available 
-                  ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:scale-105 hover:shadow-md' 
+                  ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 hover:scale-105 hover:shadow-md' 
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
             {formatTime(slot.startTime)}
             {available && (
-              <div className={`text-xs mt-1 ${isSelected ? 'text-white' : 'text-amber-600'}`}>
+              <div className={`text-xs mt-1 ${isSelected ? 'text-white' : 'text-rose-600'}`}>
                 {t.booking.available}
               </div>
             )}
             {isSelected && (
               <motion.div
                 layoutId="selected-indicator"
-                className="absolute -inset-px rounded-lg border-2 border-amber-500"
+                className="absolute -inset-px rounded-lg border-2 border-rose-500"
                 transition={{ duration: 0.2 }}
               />
             )}

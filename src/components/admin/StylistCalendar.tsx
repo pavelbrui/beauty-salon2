@@ -177,7 +177,7 @@ export const StylistCalendar: React.FC<StylistCalendarProps> = ({ stylistId, onS
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600"
+            className="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600"
           >
             Edytuj godziny pracy
           </button>
@@ -221,7 +221,7 @@ export const StylistCalendar: React.FC<StylistCalendarProps> = ({ stylistId, onS
                   id="recurring"
                   checked={isRecurring}
                   onChange={(e) => setIsRecurring(e.target.checked)}
-                  className="rounded text-amber-500 focus:ring-amber-500"
+                  className="rounded text-rose-500 focus:ring-rose-500"
                 />
                 <label htmlFor="recurring" className="text-sm text-gray-700">
                   Cyklicznie
@@ -249,7 +249,7 @@ export const StylistCalendar: React.FC<StylistCalendarProps> = ({ stylistId, onS
               </button>
               <button
                 onClick={handleSave}
-                className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600"
+                className="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600"
               >
                 Zapisz
               </button>

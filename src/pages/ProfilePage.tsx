@@ -85,7 +85,7 @@ export const ProfilePage: React.FC = () => {
     return (
       <main className="pt-16 min-h-screen bg-neutral-50">
         <div className="flex justify-center py-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500" />
         </div>
       </main>
     );
@@ -103,12 +103,12 @@ export const ProfilePage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Header Card */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
-          <div className="h-24 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500" />
+          <div className="h-24 bg-gradient-to-r from-rose-400 via-rose-500 to-fuchsia-400" />
           <div className="px-6 pb-6 -mt-10">
             <div className="flex flex-col sm:flex-row sm:items-end gap-4">
               {/* Avatar */}
               <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center ring-4 ring-white">
-                <span className="text-2xl font-bold text-amber-600">
+                <span className="text-2xl font-bold text-rose-600">
                   {(profile?.full_name || userEmail || '?')[0].toUpperCase()}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export const ProfilePage: React.FC = () => {
               <div className="flex gap-2 sm:pb-1">
                 <button
                   onClick={() => setEditingProfile(!editingProfile)}
-                  className="px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors"
                 >
                   {t.profile_page?.editProfile || 'Edytuj profil'}
                 </button>
@@ -162,7 +162,7 @@ export const ProfilePage: React.FC = () => {
                         type="text"
                         value={profileForm.full_name}
                         onChange={e => setProfileForm(prev => ({ ...prev, full_name: e.target.value }))}
-                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-rose-500 focus:ring-rose-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -176,7 +176,7 @@ export const ProfilePage: React.FC = () => {
                         type="tel"
                         value={profileForm.phone}
                         onChange={e => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-rose-500 focus:ring-rose-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -185,7 +185,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     onClick={handleSaveProfile}
                     disabled={saving}
-                    className="px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-4 py-2 bg-rose-500 text-white text-sm font-medium rounded-lg hover:bg-rose-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {saving ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />

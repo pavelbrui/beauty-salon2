@@ -15,8 +15,8 @@ interface SEOProps {
   structuredData?: Record<string, unknown>;
 }
 
-const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
-const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, pielęgnacja brwi. Umów wizytę online!';
+const SITE_NAME = 'Studio Urody Anna Nowak';
+const DEFAULT_DESCRIPTION = 'Profesjonalne studio urody w Białymstoku. Makijaż permanentny, stylizacja rzęs, pielęgnacja brwi. Umów wizytę online!';
 const BASE_URL = 'https://katarzynabrui.pl';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
 
@@ -62,7 +62,6 @@ export const SEO: React.FC<SEOProps> = ({
         <meta name="keywords" content={keywords.join(', ')} />
       )}
 
-      {/* Hreflang alternate links — skip for noindex pages */}
       {!noindex && LANGUAGES.map(lang => (
         <link key={lang} rel="alternate" hrefLang={lang} href={getLocalizedUrl(barePath, lang)} />
       ))}
@@ -79,7 +78,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-      <meta name="twitter:image:alt" content={title || 'Salon Kosmetyczny Katarzyna Brui Białystok'} />
+      <meta name="twitter:image:alt" content={title || 'Studio Urody Anna Nowak Białystok'} />
       {structuredData && (
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}

@@ -64,18 +64,18 @@ export const GalleryPage: React.FC = () => {
   const gallerySchema = images.length > 0 ? {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
-    'name': 'Galeria prac – Salon Katarzyna Brui Białystok',
+    'name': 'Galeria prac – Studio Anna Nowak Białystok',
     'description': 'Efekty zabiegów kosmetycznych: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.',
     'url': 'https://katarzynabrui.pl/gallery',
     'image': images.slice(0, 20).map(img => ({
       '@type': 'ImageObject',
       'url': img.url,
-      'name': img.description || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
+      'name': img.description || `${getCategoryLabel(img.category)} – studio Anna Nowak Białystok`,
       'description': img.description || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
     })),
     'author': {
       '@type': 'BeautySalon',
-      'name': 'Salon Kosmetyczny Katarzyna Brui',
+      'name': 'Studio Urody Anna Nowak',
     },
   } : undefined;
 
@@ -83,7 +83,7 @@ export const GalleryPage: React.FC = () => {
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title="Galeria Prac - Efekty Zabiegów"
-        description="Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
+        description="Zobacz efekty zabiegów studia Anna Nowak w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
         canonical="/gallery"
         image={images[0]?.url}
         keywords={[
@@ -106,7 +106,7 @@ export const GalleryPage: React.FC = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full transition-colors ${
                 selectedCategory === category
-                  ? 'bg-amber-500 text-white'
+                  ? 'bg-rose-500 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -117,7 +117,7 @@ export const GalleryPage: React.FC = () => {
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" role="status" aria-label="Loading" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500" role="status" aria-label="Loading" />
           </div>
         ) : filteredImages.length === 0 ? (
           <p className="text-center text-gray-500 py-20">{t.noResults}</p>
@@ -131,7 +131,7 @@ export const GalleryPage: React.FC = () => {
               >
                 <img
                   src={image.url}
-                  alt={image.description || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
+                  alt={image.description || `${getCategoryLabel(image.category)} – studio Anna Nowak Białystok`}
                   title={image.description || `${getCategoryLabel(image.category)} – efekty zabiegów`}
                   loading="lazy"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
@@ -162,7 +162,7 @@ export const GalleryPage: React.FC = () => {
           </button>
           <img
             src={lightboxImage.url}
-            alt={lightboxImage.description || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
+            alt={lightboxImage.description || `${getCategoryLabel(lightboxImage.category)} – studio Anna Nowak Białystok`}
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />

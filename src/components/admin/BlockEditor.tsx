@@ -99,7 +99,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
           onClick={() => setLangTab(lang)}
           className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
             langTab === lang
-              ? 'bg-amber-500 text-white'
+              ? 'bg-rose-500 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
@@ -116,7 +116,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         <select
           value={b.level}
           onChange={e => onUpdate(index, { ...b, level: parseInt(e.target.value) as 2 | 3 })}
-          className="rounded-md border-gray-300 text-sm py-1 px-2 focus:border-amber-500 focus:ring-amber-500"
+          className="rounded-md border-gray-300 text-sm py-1 px-2 focus:border-rose-500 focus:ring-rose-500"
         >
           <option value={2}>H2 — Sekcja</option>
           <option value={3}>H3 — Podsekcja</option>
@@ -133,7 +133,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
           else onUpdate(index, { ...b, text_ru: val });
         }}
         placeholder={langTab === 'pl' ? 'Tekst nagłówka...' : langTab === 'en' ? 'Heading text...' : 'Текст заголовка...'}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
       />
     </div>
   );
@@ -151,7 +151,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         }}
         rows={4}
         placeholder={langTab === 'pl' ? 'Treść akapitu...' : langTab === 'en' ? 'Paragraph text...' : 'Текст абзаца...'}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
       />
     </div>
   );
@@ -170,7 +170,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         )}
         <div className="flex items-center gap-3">
           <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600'
+            uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-rose-500 text-white hover:bg-rose-600'
           }`}>
             {uploading ? 'Przesyłanie...' : (b.url ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
             <input
@@ -196,7 +196,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
           value={b.url || ''}
           onChange={e => onUpdate(index, { ...b, url: e.target.value })}
           placeholder="lub wklej URL zdjęcia..."
-          className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
         />
         {renderLangTabs()}
         <input
@@ -209,7 +209,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
             else onUpdate(index, { ...b, caption_ru: val });
           }}
           placeholder={langTab === 'pl' ? 'Podpis zdjęcia (opcjonalnie)' : langTab === 'en' ? 'Image caption (optional)' : 'Подпись к фото (необязательно)'}
-          className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+          className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
         />
       </div>
     );
@@ -232,7 +232,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
             type="button"
             onClick={() => onUpdate(index, { ...b, style: 'bullet' })}
             className={`px-3 py-1 text-xs rounded-md transition-colors ${
-              b.style === 'bullet' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              b.style === 'bullet' ? 'bg-rose-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             • Punkty
@@ -241,7 +241,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
             type="button"
             onClick={() => onUpdate(index, { ...b, style: 'check' })}
             className={`px-3 py-1 text-xs rounded-md transition-colors ${
-              b.style === 'check' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              b.style === 'check' ? 'bg-rose-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             ✓ Checklist
@@ -260,7 +260,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
                   newItems[i] = e.target.value;
                   updateItems(newItems);
                 }}
-                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
               />
               <button
                 type="button"
@@ -278,7 +278,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         <button
           type="button"
           onClick={() => updateItems([...currentItems, ''])}
-          className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+          className="text-sm text-rose-600 hover:text-rose-700 font-medium flex items-center gap-1"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -296,7 +296,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         <select
           value={b.embed_type}
           onChange={e => onUpdate(index, { ...b, embed_type: e.target.value as 'instagram' | 'youtube' })}
-          className="rounded-md border-gray-300 text-sm py-1 px-2 focus:border-amber-500 focus:ring-amber-500"
+          className="rounded-md border-gray-300 text-sm py-1 px-2 focus:border-rose-500 focus:ring-rose-500"
         >
           <option value="instagram">Instagram</option>
           <option value="youtube">YouTube</option>
@@ -307,7 +307,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
         value={b.url}
         onChange={e => onUpdate(index, { ...b, url: e.target.value })}
         placeholder={b.embed_type === 'instagram' ? 'https://www.instagram.com/reel/...' : 'https://www.youtube.com/watch?v=...'}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
       />
       {b.url && (
         <div className="bg-gray-50 rounded-lg p-3 text-center">
@@ -325,7 +325,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
           else onUpdate(index, { ...b, caption_ru: val });
         }}
         placeholder={langTab === 'pl' ? 'Podpis (opcjonalnie)' : langTab === 'en' ? 'Caption (optional)' : 'Подпись (необязательно)'}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 text-sm"
       />
     </div>
   );
