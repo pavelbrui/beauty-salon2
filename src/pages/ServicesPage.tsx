@@ -257,28 +257,45 @@ export const ServicesPage: React.FC = () => {
         keywords={seo.keywords}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">{t.services}</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">{t.services}</h1>
         
-        <div className="flex flex-wrap gap-4 justify-center mb-8">
-          <button
-            onClick={() => navigate('/services')}
-            className={`px-6 py-3 rounded-full transition-colors ${
-              !category ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
-            }`}
-          >
-            {t.all}
-          </button>
-          {categories.map(cat => (
+        <div className="relative mb-12">
+          <div className="flex overflow-x-auto gap-1 pb-px scrollbar-hide" role="tablist">
             <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`px-6 py-3 rounded-full transition-colors ${
-                category === cat ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+              role="tab"
+              aria-selected={!category}
+              onClick={() => navigate('/services')}
+              className={`relative px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+                !category
+                  ? 'text-amber-600'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
-              {getCategoryName(cat, language, (t as any).categories)}
+              {t.all}
+              {!category && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full" />
+              )}
             </button>
-          ))}
+            {categories.map(cat => (
+              <button
+                key={cat}
+                role="tab"
+                aria-selected={category === cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`relative px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+                  category === cat
+                    ? 'text-amber-600'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                {getCategoryName(cat, language, (t as any).categories)}
+                {category === cat && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-200" />
         </div>
         
         <div className="space-y-16">
