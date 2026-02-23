@@ -12,4 +12,44 @@ Disallow: /appointments
 Disallow: /en/appointments
 Disallow: /ru/appointments
 
+# Explicit policy for OpenAI crawlers used by ChatGPT products.
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /en/profile
+Disallow: /ru/profile
+Disallow: /booking/
+Disallow: /en/booking/
+Disallow: /ru/booking/
+Disallow: /appointments
+Disallow: /en/appointments
+Disallow: /ru/appointments
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /en/profile
+Disallow: /ru/profile
+Disallow: /booking/
+Disallow: /en/booking/
+Disallow: /ru/booking/
+Disallow: /appointments
+Disallow: /en/appointments
+Disallow: /ru/appointments
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /en/profile
+Disallow: /ru/profile
+Disallow: /booking/
+Disallow: /en/booking/
+Disallow: /ru/booking/
+Disallow: /appointments
+Disallow: /en/appointments
+Disallow: /ru/appointments
+
 Sitemap: https://katarzynabrui.pl/sitemap.xml
