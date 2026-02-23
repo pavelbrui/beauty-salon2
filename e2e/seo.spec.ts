@@ -20,8 +20,8 @@ test.describe('SEO regression checks', () => {
     await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute('href', 'https://katarzynabrui.pl/services');
   });
 
-  test('booking page is marked as noindex', async ({ page }) => {
-    await page.goto('/booking/test-service-id');
+  test('appointments page is marked as noindex', async ({ page }) => {
+    await page.goto('/appointments');
     const robots = page.locator('meta[name="robots"]');
     await expect(robots).toHaveCount(1);
     await expect(robots).toHaveAttribute('content', /noindex/);
