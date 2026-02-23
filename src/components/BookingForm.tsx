@@ -64,7 +64,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full mx-auto"
+      className="bg-white rounded-2xl shadow-xl shadow-stone-200/50 p-8 max-w-lg w-full mx-auto border border-stone-100"
     >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-semibold">{t.booking.contactDetails}</h3>
@@ -88,7 +88,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
+            className="mt-1 block w-full rounded-xl border-stone-200 shadow-sm focus:border-rose-500 focus:ring-rose-500 transition-shadow duration-200 hover:shadow-md"
           />
         </div>
 
@@ -102,7 +102,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.phone}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 transition-shadow duration-200 hover:shadow-md"
+            className="mt-1 block w-full rounded-xl border-stone-200 shadow-sm focus:border-rose-500 focus:ring-rose-500 transition-shadow duration-200 hover:shadow-md"
           />
         </div>
 
@@ -116,7 +116,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             required
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+            className="mt-1 block w-full rounded-xl border-stone-200 shadow-sm focus:border-rose-500 focus:ring-rose-500"
           />
         </div>
 
@@ -129,7 +129,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
             rows={3}
             value={formData.notes}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+            className="mt-1 block w-full rounded-xl border-stone-200 shadow-sm focus:border-rose-500 focus:ring-rose-500"
           />
         </div>
 
@@ -143,7 +143,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
           </button>
           <button
             type="submit"
-            className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+            className="px-6 py-3 bg-rose-500 text-white rounded-xl font-semibold hover:bg-rose-600 transform hover:scale-105 transition-all duration-200 shadow-lg shadow-rose-500/20"
           >
             {t.booking.confirm}
           </button>

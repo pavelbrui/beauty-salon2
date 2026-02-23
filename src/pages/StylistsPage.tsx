@@ -51,7 +51,7 @@ export const StylistsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="pt-16 min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
       </div>
     );
   }
@@ -91,7 +91,7 @@ export const StylistsPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <h3 className="text-xl font-semibold">{stylist.name}</h3>
-                  <p className="text-amber-300">{getStylistRole(stylist, language)}</p>
+                  <p className="text-rose-300">{getStylistRole(stylist, language)}</p>
                 </div>
               </div>
               <div className="p-6">
@@ -99,7 +99,7 @@ export const StylistsPage: React.FC = () => {
                   {getStylistSpecialties(stylist, language).map((specialty) => (
                     <span
                       key={specialty}
-                      className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
+                      className="px-3 py-1 bg-rose-100 text-rose-800 rounded-full text-sm"
                     >
                       {specialty}
                     </span>
@@ -108,8 +108,8 @@ export const StylistsPage: React.FC = () => {
                 <p className="text-gray-600">{getStylistDescription(stylist, language)}</p>
                 <button
                   onClick={() => navigate(`/appointments?stylist=${stylist.id}`)}
-                  className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium 
-                           hover:bg-amber-600 transition-colors shadow-sm"
+                  className="mt-4 w-full bg-rose-500 text-white py-3 px-6 rounded-lg font-medium 
+                           hover:bg-rose-600 transition-colors shadow-sm"
                 >
                   {t.bookNow}
                 </button>

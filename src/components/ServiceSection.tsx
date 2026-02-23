@@ -131,7 +131,7 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
                 onClick={() => scrollToDot(i)}
                 aria-label={`Pozycja ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeDot === i ? 'w-4 bg-amber-500' : 'w-1.5 bg-gray-300'
+                  activeDot === i ? 'w-4 bg-rose-500' : 'w-1.5 bg-gray-300'
                 }`}
               />
             ))}

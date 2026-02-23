@@ -27,7 +27,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
+    <div className="bg-white rounded-2xl shadow-lg shadow-stone-200/50 overflow-hidden transform hover:scale-[1.02] hover:shadow-xl transition-all duration-300 border border-stone-100">
       {service.imageUrl && (
         <div className="relative h-48 overflow-hidden">
           <img
@@ -42,7 +42,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
       <div className="p-8">
         <h3 className="text-xl font-semibold text-gray-900">{getServiceName(service, language)}</h3>
         <div className="mt-2 flex justify-between items-center">
-          <span className="text-2xl font-bold text-amber-600">
+          <span className="text-2xl font-bold text-rose-600">
             {formatPrice(service.price)}
           </span>
           <span className="text-sm text-gray-500">
@@ -54,7 +54,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
         )}
         <button
           onClick={() => navigate(`/booking/${service.id}`)}
-          className="mt-6 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+          className="mt-6 w-full bg-rose-500 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-rose-600 hover:scale-[1.02] transition-all shadow-md shadow-rose-500/20"
         >
           {t.bookNow}
         </button>

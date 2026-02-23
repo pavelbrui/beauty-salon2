@@ -300,7 +300,7 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
               ].map((style, i) => (
                 <div
                   key={i}
-                  className="absolute w-3.5 h-3.5 bg-white border-2 border-amber-500 rounded-sm pointer-events-none"
+                  className="absolute w-3.5 h-3.5 bg-white border-2 border-rose-500 rounded-sm pointer-events-none"
                   style={{ ...style, transform: 'translate(-50%, -50%)' }}
                 />
               ))}
@@ -318,7 +318,7 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
         <button
           type="button"
           onClick={() => onChange(defaultCrop)}
-          className="text-xs text-amber-600 hover:text-amber-700"
+          className="text-xs text-rose-600 hover:text-rose-700"
         >
           Resetuj
         </button>

@@ -30,8 +30,8 @@ const PageLoader = () => (
         className="w-full h-full object-contain animate-pulse"
       />
     </div>
-    <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 rounded-full overflow-hidden">
-      <div className="h-full bg-amber-600 animate-slideRight" />
+    <div className="w-16 h-1 bg-gradient-to-r from-rose-400 via-rose-500 to-rose-400 rounded-full overflow-hidden">
+      <div className="h-full bg-rose-600 animate-slideRight" />
     </div>
   </div>
 );

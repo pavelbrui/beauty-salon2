@@ -45,10 +45,10 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const showSolid = scrolled || !isHome;
-  const bgClass = showSolid ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-black/20 backdrop-blur-sm';
-  const textClass = showSolid ? 'text-gray-800' : 'text-white';
-  const activeTextClass = showSolid ? 'text-amber-600' : 'text-amber-400';
-  const hoverTextClass = showSolid ? 'hover:text-amber-600' : 'hover:text-amber-200';
+  const bgClass = showSolid ? 'bg-cream-50/95 backdrop-blur-xl shadow-md shadow-stone-200/30' : 'bg-black/20 backdrop-blur-sm';
+  const textClass = showSolid ? 'text-stone-800' : 'text-white';
+  const activeTextClass = showSolid ? 'text-rose-600' : 'text-rose-300';
+  const hoverTextClass = showSolid ? 'hover:text-rose-600' : 'hover:text-rose-200';
 
   const isActive = (path: string) => {
     return barePath === path ||
@@ -108,7 +108,7 @@ export const Navbar: React.FC = () => {
               />
               <motion.span
                 whileHover={{ scale: 1.05 }}
-                className="ml-2 text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
+                className="ml-2 text-lg font-bold bg-gradient-to-r from-rose-300 via-rose-400 to-rose-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer"
               >
               </motion.span>
             </LocalizedLink>
@@ -124,7 +124,7 @@ export const Navbar: React.FC = () => {
                   {isActive(path) && (
                     <motion.div
                       layoutId="navbar-underline"
-                      className={`absolute bottom-0 left-0 right-0 h-0.5 ${showSolid ? 'bg-amber-600' : 'bg-amber-400'}`}
+                      className={`absolute bottom-0 left-0 right-0 h-0.5 ${showSolid ? 'bg-rose-600' : 'bg-rose-400'}`}
                     />
                   )}
                 </LocalizedLink>
@@ -133,7 +133,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className={`${showSolid ? 'bg-gray-100' : 'bg-black/30'} rounded-full p-0.5 flex space-x-0.5`}>
+            <div className={`${showSolid ? 'bg-stone-200/80' : 'bg-black/30'} rounded-full p-0.5 flex space-x-0.5`}>
               {(['pl', 'en', 'ru'] as const).map((lang) => (
                 <motion.button
                   key={lang}
@@ -143,8 +143,8 @@ export const Navbar: React.FC = () => {
                   aria-label={langLabels[lang]}
                   className={`w-8 h-8 rounded-full text-xs font-medium uppercase flex items-center justify-center transition-colors ${
                     language === lang
-                      ? 'bg-amber-500 text-white'
-                      : showSolid ? 'text-gray-600 hover:bg-gray-200' : 'text-white/80 hover:bg-white/10'
+                      ? 'bg-rose-500 text-white'
+                      : showSolid ? 'text-stone-600 hover:bg-stone-200' : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
                   {lang}
@@ -155,7 +155,7 @@ export const Navbar: React.FC = () => {
             {isAdmin && (
               <Link
                 to="/admin"
-                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'}`}
+                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-stone-100 text-stone-700' : 'hover:bg-white/10 text-white'}`}
                 aria-label="Admin"
               >
                 <Cog6ToothIcon className="h-5 w-5" />
@@ -165,7 +165,7 @@ export const Navbar: React.FC = () => {
             {user ? (
               <button
                 onClick={() => navigate(localizedPath('/profile', language))}
-                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-700' : 'hover:bg-white/10 text-white'}`}
+                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-stone-100 text-stone-700' : 'hover:bg-white/10 text-white'}`}
                 aria-label="Profile"
               >
                 <UserIcon className="h-5 w-5" />
@@ -173,7 +173,7 @@ export const Navbar: React.FC = () => {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="hidden sm:block bg-amber-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
+                className="hidden sm:block bg-rose-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-rose-600 transition-colors"
               >
                 {t.auth.signIn}
               </button>
@@ -191,15 +191,15 @@ export const Navbar: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
               className="sm:hidden"
             >
-              <div className={`px-2 pt-2 pb-3 space-y-1 ${showSolid ? 'bg-gray-50' : 'bg-black/30 backdrop-blur-sm'} rounded-lg mt-2`}>
+              <div className={`px-2 pt-2 pb-3 space-y-1 ${showSolid ? 'bg-white/95 rounded-2xl shadow-lg' : 'bg-black/30 backdrop-blur-sm rounded-xl'} mt-2`}>
                 {navItems.map(({ path, label }) => (
                   <LocalizedLink
                     key={path}
                     to={path}
                     className={`block px-3 py-2 rounded-md text-base font-medium ${
                       isActive(path)
-                        ? 'bg-amber-500 text-white'
-                        : `${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`
+                        ? 'bg-rose-500 text-white'
+                        : `${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`
                     }`}
                   >
                     {label}
@@ -208,7 +208,7 @@ export const Navbar: React.FC = () => {
                 {!user && (
                   <button
                     onClick={() => { setIsOpen(false); setShowAuthModal(true); }}
-                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
                   >
                     {t.auth.signIn}
                   </button>
@@ -216,7 +216,7 @@ export const Navbar: React.FC = () => {
                 {user && (
                   <LocalizedLink
                     to="/profile"
-                    className={`block px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
                   >
                     {language === 'pl' ? 'Profil' : language === 'ru' ? 'Профиль' : 'Profile'}
                   </LocalizedLink>
@@ -224,7 +224,7 @@ export const Navbar: React.FC = () => {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-gray-100' : 'hover:bg-white/10'}`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
                   >
                     <Cog6ToothIcon className="h-5 w-5" />
                     {language === 'pl' ? 'Panel admina' : language === 'ru' ? 'Админ панель' : 'Admin panel'}

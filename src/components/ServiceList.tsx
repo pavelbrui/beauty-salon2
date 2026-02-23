@@ -34,7 +34,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
           whileTap={{ scale: 0.95 }}
           onClick={() => setSelectedCategory(null)}
           className={`px-4 py-2 rounded-full transition-colors ${
-            !selectedCategory ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+            !selectedCategory ? 'bg-rose-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
           }`}
         >
           {t.all}
@@ -45,7 +45,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
             whileTap={{ scale: 0.95 }}
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full transition-colors ${
-              selectedCategory === category ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+              selectedCategory === category ? 'bg-rose-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
             {getCategoryName(category, language, (translations[language] as any).categories)}
@@ -67,14 +67,14 @@ export const ServiceList: React.FC<ServiceListProps> = ({
             whileHover={{ scale: 1.02 }}
             onClick={() => onServiceSelect(service)}
             className={`bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow
-              ${selectedService?.id === service.id ? 'ring-2 ring-amber-500' : ''}`}
+              ${selectedService?.id === service.id ? 'ring-2 ring-rose-500' : ''}`}
           >
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-medium text-gray-900">{getServiceName(service, language)}</h3>
                 <p className="text-sm text-gray-500">{service.duration} min</p>
               </div>
-              <span className="text-lg font-semibold text-amber-600">
+              <span className="text-lg font-semibold text-rose-600">
                 {(service.price / 100).toFixed(2)} zł
               </span>
             </div>

@@ -36,7 +36,7 @@ supabase/migrations/ # 20 SQL migration files (0001–0020)
 - **State**: Only language in Zustand. Everything else is local `useState` + `useEffect` fetching.
 - **i18n**: Always add translations for all 3 languages (pl, en, ru) in `src/i18n/translations.ts`
 - **i18n Routing**: URL-based language prefixes for SEO (`/en/...`, `/ru/...`, no prefix = Polish). See "i18n Routing System" section below.
-- **Styling**: Tailwind only. Accent color: `amber-500`/`amber-600`. No custom CSS files.
+- **Styling**: Tailwind only. Accent color: `rose-500`/`rose-600`. No custom CSS files.
 - **Prices**: Stored in cents in DB. Display: `(price / 100).toFixed(0) + ' PLN'`
 
 ## Database Tables
@@ -105,7 +105,7 @@ When exploring this codebase, use these patterns:
 - Find admin feature: `Glob: src/components/admin/*.tsx`
 - Find translations: `Grep: translations\[language\]` or `Read: src/i18n/translations.ts`
 - Find types: `Read: src/types/index.ts`
-- Find styling patterns: `Grep: amber-500`
+- Find styling patterns: `Grep: rose-500`
 - Find auth usage: `Grep: getSession\|signIn\|signOut`
 - Find state management: `Grep: useState\|useEffect\|useLanguage`
 - Find i18n routing: `Read: src/hooks/useLocalizedPath.ts` or `Grep: LocalizedLink\|useLocalizedNavigate`

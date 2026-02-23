@@ -77,7 +77,7 @@ export const MapLocation: React.FC = () => {
 
   return (
     <div className="w-full p-6 rounded-lg bg-white shadow-lg">
-      <div className="flex items-center justify-center space-x-3 text-amber-600 mb-4">
+      <div className="flex items-center justify-center space-x-3 text-rose-600 mb-4">
         <FaMapMarkerAlt className="w-8 h-8" />
         <h3 className="text-xl font-semibold">{t.contact.location.title}</h3>
       </div>
