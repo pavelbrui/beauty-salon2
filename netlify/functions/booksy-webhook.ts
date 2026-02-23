@@ -59,6 +59,8 @@ interface ParsedBooking {
   oldEndTime?: string;
 }
 
+type MirrorStatus = 'confirmed' | 'cancelled';
+
 // --- Email type detection ---
 function detectEmailType(subject: string, html: string): 'new' | 'changed' | 'cancelled' {
   if (subject.includes('odwołał swoją usługę') || html.includes('odwołał swoją usługę')) {
@@ -178,18 +180,9 @@ function extractWorkerName(text: string, html: string): string | undefined {
 }
 
 function cleanServiceNameForNewBooking(rawServiceName: string): string {
-  let value = normalizeWhitespace(rawServiceName)
+  const value = normalizeWhitespace(rawServiceName)
     .replace(new RegExp(`\\s*(?:,|\\|)?\\s*${WORKER_LABEL_PATTERN}\\s*[:\\-].*$`, 'i'), '')
-    .replace(/[.,;:!?]+$/, '')
     .trim();
-
-  // Strip category/role prefix only for "Category : Service" style names.
-  if (/\s:\s/.test(value) || /\([^)]*\)\s*:/.test(value)) {
-    const firstColonIndex = value.indexOf(':');
-    if (firstColonIndex > -1 && firstColonIndex < value.length - 1) {
-      value = value.slice(firstColonIndex + 1).trim();
-    }
-  }
 
   return value;
 }
@@ -200,7 +193,7 @@ function isServiceNoise(candidate: string, clientName: string): boolean {
   if (!candidate || candidate.length < 3) return true;
   if (!/[a-ząćęłńóśźż]/i.test(candidate)) return true;
   if (normalized === 'booksy') return true;
-  if (new RegExp(WORKER_LABEL_PATTERN, 'i').test(candidate)) return true;
+  if (new RegExp(`^${WORKER_LABEL_PATTERN}\\s*[:\\-]`, 'i').test(candidate)) return true;
   if (/\d[\d\s,.]*\s*zł/i.test(candidate)) return true;
   if (clientName && normalized === clientName.toLowerCase()) return true;
 
@@ -481,6 +474,69 @@ async function unblockTimeSlot(booksyBookingId: string): Promise<void> {
   }
 }
 
+// --- Mirror Booksy bookings into main admin bookings list ---
+async function createMirrorAdminBooking(
+  parsed: ParsedBooking,
+  stylistId: string | null,
+  status: MirrorStatus = 'confirmed'
+): Promise<void> {
+  const notes = `[Booksy] ${parsed.serviceName}`;
+  const payload = {
+    service_id: null,
+    user_id: null,
+    time_slot_id: null,
+    stylist_id: stylistId,
+    status,
+    contact_name: parsed.clientName || '',
+    contact_phone: parsed.clientPhone || '',
+    contact_email: parsed.clientEmail || '',
+    notes,
+    start_time: parsed.startTime,
+    end_time: parsed.endTime,
+  };
+
+  const { error } = await supabase.from('bookings').insert(payload);
+  if (error) {
+    console.error('Error creating mirrored admin booking:', error);
+  }
+}
+
+async function cancelMirrorAdminBookingByTime(
+  clientName: string,
+  startTime: string | undefined
+): Promise<void> {
+  if (!startTime || !clientName) return;
+
+  const startDate = new Date(startTime);
+  const startPlus1 = new Date(startDate.getTime() + 60000);
+
+  const { data: mirrors, error: selectError } = await supabase
+    .from('bookings')
+    .select('id')
+    .eq('contact_name', clientName)
+    .like('notes', '[Booksy]%')
+    .neq('status', 'cancelled')
+    .gte('start_time', startDate.toISOString())
+    .lt('start_time', startPlus1.toISOString());
+
+  if (selectError) {
+    console.error('Error finding mirrored admin booking to cancel:', selectError);
+    return;
+  }
+
+  const mirrorIds = (mirrors || []).map((m) => m.id).filter(Boolean);
+  if (mirrorIds.length === 0) return;
+
+  const { error: updateError } = await supabase
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .in('id', mirrorIds);
+
+  if (updateError) {
+    console.error('Error cancelling mirrored admin booking:', updateError);
+  }
+}
+
 // --- Handle new booking ---
 async function handleNewBooking(
   parsed: ParsedBooking,
@@ -525,6 +581,7 @@ async function handleNewBooking(
       await supabase.from('booksy_bookings').update({ time_slot_id: slotId }).eq('id', booking.id);
     }
   }
+  await createMirrorAdminBooking(parsed, stylistId, 'confirmed');
 
   return { status: 200, body: `New Booksy booking created: ${booking?.id}` };
 }
@@ -559,6 +616,7 @@ async function handleChangedBooking(
       await unblockTimeSlot(oldBooking.id);
     }
   }
+  await cancelMirrorAdminBookingByTime(parsed.clientName, parsed.oldStartTime);
 
   const { data: booking, error: insertError } = await supabase
     .from('booksy_bookings')
@@ -596,6 +654,7 @@ async function handleChangedBooking(
       await supabase.from('booksy_bookings').update({ time_slot_id: slotId }).eq('id', booking.id);
     }
   }
+  await createMirrorAdminBooking(parsed, stylistId, 'confirmed');
 
   return { status: 200, body: `Changed Booksy booking: ${booking?.id}` };
 }
@@ -607,6 +666,8 @@ async function handleCancelledBooking(
   messageId: string,
   html: string
 ): Promise<{ status: number; body: string }> {
+  await cancelMirrorAdminBookingByTime(parsed.clientName, parsed.startTime);
+
   // Find active booking by client name + time
   const startDate = new Date(parsed.startTime);
   const startPlus1 = new Date(startDate.getTime() + 60000);

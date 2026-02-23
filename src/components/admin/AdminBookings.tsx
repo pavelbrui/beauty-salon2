@@ -26,6 +26,7 @@ interface AdminBooking extends Booking {
   contact_name?: string;
   contact_email?: string;
   contact_phone?: string;
+  notes?: string;
 }
 
 interface StylistAssignment {
@@ -263,6 +264,17 @@ export const AdminBookings: React.FC = () => {
       return null;
     }
   };
+
+  const getServiceLabel = (booking: AdminBooking) => {
+    if (booking.services?.name) return booking.services.name;
+    const notes = booking.notes || '';
+    if (notes.startsWith('[Booksy]')) {
+      return notes.replace(/^\[Booksy\]\s*/, '').trim() || 'Booksy';
+    }
+    return '—';
+  };
+
+  const isBooksyMirror = (booking: AdminBooking) => (booking.notes || '').startsWith('[Booksy]');
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -782,8 +794,13 @@ export const AdminBookings: React.FC = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-base font-semibold text-gray-900 truncate">
-                            {booking.services?.name || '—'}
+                            {getServiceLabel(booking)}
                           </h3>
+                          {isBooksyMirror(booking) && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-700">
+                              Booksy
+                            </span>
+                          )}
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}>
                             {statusConfig.label}
                           </span>
@@ -925,7 +942,7 @@ export const AdminBookings: React.FC = () => {
                           title={`${timeStr} ${b.services?.name || ''} - ${b.stylists?.name || ''}`}
                         >
                           <span className="font-medium">{timeStr}</span>{' '}
-                          {b.services?.name || ''}
+                          {getServiceLabel(b)}
                         </button>
                       );
                     })}
@@ -965,6 +982,12 @@ export const AdminBookings: React.FC = () => {
             </div>
 
             <div className="p-6 space-y-5">
+              {isBooksyMirror(editingBooking) && (
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-700">
+                  <span className="font-medium">Booksy:</span> {getServiceLabel(editingBooking)}
+                </div>
+              )}
+
               {editError && (
                 <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
                   {editError}
