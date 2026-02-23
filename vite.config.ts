@@ -28,9 +28,10 @@ export default defineConfig({
         renderAfterTime: 3000,
       },
       postProcess(renderedRoute) {
+        // Keep module scripts in prerendered HTML so React can hydrate and handle button clicks.
         renderedRoute.html = renderedRoute.html
-          .replace(/<script\s+type="module"[^>]*><\/script>/g, '')
           .replace(/\s{2,}/g, ' ');
+        return renderedRoute;
       },
     }),
   ],
