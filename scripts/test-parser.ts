@@ -130,17 +130,9 @@ function extractWorkerName(text: string, html: string): string | undefined {
 }
 
 function cleanServiceNameForNewBooking(rawServiceName: string): string {
-  let value = normalizeWhitespace(rawServiceName)
+  const value = normalizeWhitespace(rawServiceName)
     .replace(new RegExp(`\\s*(?:,|\\|)?\\s*${WORKER_LABEL_PATTERN}\\s*[:\\-].*$`, 'i'), '')
-    .replace(/[.,;:!?]+$/, '')
     .trim();
-
-  if (/\s:\s/.test(value) || /\([^)]*\)\s*:/.test(value)) {
-    const firstColonIndex = value.indexOf(':');
-    if (firstColonIndex > -1 && firstColonIndex < value.length - 1) {
-      value = value.slice(firstColonIndex + 1).trim();
-    }
-  }
 
   return value;
 }
@@ -150,7 +142,7 @@ function isServiceNoise(candidate: string, clientName: string): boolean {
   if (!candidate || candidate.length < 3) return true;
   if (!/[a-ząćęłńóśźż]/i.test(candidate)) return true;
   if (normalized === 'booksy') return true;
-  if (new RegExp(WORKER_LABEL_PATTERN, 'i').test(candidate)) return true;
+  if (new RegExp(`^${WORKER_LABEL_PATTERN}\\s*[:\\-]`, 'i').test(candidate)) return true;
   if (/\d[\d\s,.]*\s*zł/i.test(candidate)) return true;
   if (clientName && normalized === clientName.toLowerCase()) return true;
   if (
@@ -468,7 +460,7 @@ test('Email type = new', () => assert(newBooking!.emailType === 'new', `got: ${n
 test('Client name = Wiktoria Karpiej', () => assert(newBooking!.clientName === 'Wiktoria Karpiej', `got: "${newBooking!.clientName}"`));
 test('Phone = 660 638 066', () => assert(newBooking!.clientPhone?.includes('660') === true, `got: "${newBooking!.clientPhone}"`));
 test('Email = wiktoria_karpiej@o2.pl', () => assert(newBooking!.clientEmail === 'wiktoria_karpiej@o2.pl', `got: "${newBooking!.clientEmail}"`));
-test('Service = Manicure hybrydowy', () => assert(newBooking!.serviceName === 'Manicure hybrydowy', `got: "${newBooking!.serviceName}"`));
+test('Service keeps Booksy name', () => assert(newBooking!.serviceName === 'Manicure (Top-stylistka Agnessa): Manicure hybrydowy', `got: "${newBooking!.serviceName}"`));
 test('Worker = Agnessa', () => assert(newBooking!.workerName === 'Agnessa', `got: "${newBooking!.workerName}"`));
 test('Price includes "126"', () => assert(newBooking!.priceText?.includes('126') === true, `got: "${newBooking!.priceText}"`));
 test('Start = 2026-02-23T17:00', () => assert(newBooking!.startTime.includes('2026-02-23T17:00'), `got: "${newBooking!.startTime}"`));
@@ -500,7 +492,7 @@ console.log('  Result:', JSON.stringify(forwardedNew, null, 2));
 test('Parsed successfully', () => assert(forwardedNew !== null, 'should not be null'));
 test('Email type = new', () => assert(forwardedNew!.emailType === 'new', `got: ${forwardedNew!.emailType}`));
 test('Client name = Małgorzata Romaniuk', () => assert(forwardedNew!.clientName === 'Małgorzata Romaniuk', `got: "${forwardedNew!.clientName}"`));
-test('Service = Regulacja brwi + henna', () => assert(forwardedNew!.serviceName === 'Regulacja brwi + henna', `got: "${forwardedNew!.serviceName}"`));
+test('Service keeps forwarded Booksy name', () => assert(forwardedNew!.serviceName === 'Pielęgnacja brwi : Regulacja brwi + henna', `got: "${forwardedNew!.serviceName}"`));
 test('Worker = Ksenia', () => assert(forwardedNew!.workerName === 'Ksenia', `got: "${forwardedNew!.workerName}"`));
 test('Start = 2026-03-17T16:15', () => assert(forwardedNew!.startTime.includes('2026-03-17T16:15'), `got: "${forwardedNew!.startTime}"`));
 test('End = 2026-03-17T16:50', () => assert(forwardedNew!.endTime.includes('2026-03-17T16:50'), `got: "${forwardedNew!.endTime}"`));
