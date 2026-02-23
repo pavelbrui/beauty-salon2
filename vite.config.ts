@@ -28,10 +28,9 @@ export default defineConfig({
         renderAfterTime: 3000,
       },
       postProcess(renderedRoute) {
-        renderedRoute.html = renderedRoute.html.replace(
-          /<script\s+type="module"[^>]*><\/script>/g,
-          (match) => match
-        );
+        renderedRoute.html = renderedRoute.html
+          .replace(/<script\s+type="module"[^>]*><\/script>/g, '')
+          .replace(/\s{2,}/g, ' ');
       },
     }),
   ],
