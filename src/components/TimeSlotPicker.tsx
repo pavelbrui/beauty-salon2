@@ -38,7 +38,7 @@ export const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
             onClick={() => onSelectSlot(slot)}
             className={`p-3 rounded-lg text-center transition-colors ${
               slot.isAvailable
-                ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                ? 'bg-brand-50 text-brand-600 hover:bg-brand-100'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
             disabled={!slot.isAvailable}

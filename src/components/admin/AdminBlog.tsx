@@ -230,7 +230,7 @@ export const AdminBlog: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowTemplateSelector(!showTemplateSelector)}
-              className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm font-medium"
+              className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-medium"
             >
               + Nowy post
             </button>
@@ -251,7 +251,7 @@ export const AdminBlog: React.FC = () => {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
           </div>
         ) : posts.length === 0 ? (
           <p className="text-gray-500 text-center py-12">Brak postów. Kliknij &quot;+ Nowy post&quot; aby dodać.</p>
@@ -262,7 +262,7 @@ export const AdminBlog: React.FC = () => {
                 {p.cover_image_url ? (
                   <img src={p.cover_image_url} alt={p.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex-shrink-0" />
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex-shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -279,7 +279,7 @@ export const AdminBlog: React.FC = () => {
                   <button onClick={() => handleTogglePublish(p)} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50">
                     {p.is_published ? 'Ukryj' : 'Publikuj'}
                   </button>
-                  <button onClick={() => handleEdit(p)} className="px-3 py-1.5 text-xs rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100">
+                  <button onClick={() => handleEdit(p)} className="px-3 py-1.5 text-xs rounded-lg bg-brand-50 text-brand-600 hover:bg-brand-100">
                     Edytuj
                   </button>
                   <button onClick={() => setDeletingId(p.id)} className="px-3 py-1.5 text-xs rounded-lg text-red-600 hover:bg-red-50">
@@ -312,16 +312,16 @@ export const AdminBlog: React.FC = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => { resetForm(); setView('list'); }} className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1">
+        <button onClick={() => { resetForm(); setView('list'); }} className="text-sm text-brand-600 hover:text-brand-600 font-medium flex items-center gap-1">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           Wróć do listy
         </button>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={isPublished} onChange={e => setIsPublished(e.target.checked)} className="rounded text-amber-500 focus:ring-amber-500" />
+            <input type="checkbox" checked={isPublished} onChange={e => setIsPublished(e.target.checked)} className="rounded text-brand focus:ring-brand" />
             Opublikowany
           </label>
-          <button onClick={handleSave} disabled={saving} className="px-5 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 text-sm font-medium">
+          <button onClick={handleSave} disabled={saving} className="px-5 py-2 bg-brand text-white rounded-lg hover:bg-brand-600 disabled:opacity-50 text-sm font-medium">
             {saving ? 'Zapisywanie...' : 'Zapisz'}
           </button>
         </div>
@@ -334,7 +334,7 @@ export const AdminBlog: React.FC = () => {
             <button
               key={lang}
               onClick={() => setMetaLang(lang)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase ${metaLang === lang ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase ${metaLang === lang ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               {lang}
             </button>
@@ -345,11 +345,11 @@ export const AdminBlog: React.FC = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Tytuł ({metaLang.toUpperCase()})</label>
           {metaLang === 'pl' ? (
-            <input value={title} onChange={e => { setTitle(e.target.value); if (!editingPost) setSlug(generateSlug(e.target.value)); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Tytuł artykułu" />
+            <input value={title} onChange={e => { setTitle(e.target.value); if (!editingPost) setSlug(generateSlug(e.target.value)); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Tytuł artykułu" />
           ) : metaLang === 'en' ? (
-            <input value={titleEn} onChange={e => setTitleEn(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Article title (EN)" />
+            <input value={titleEn} onChange={e => setTitleEn(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Article title (EN)" />
           ) : (
-            <input value={titleRu} onChange={e => setTitleRu(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Заголовок статьи (RU)" />
+            <input value={titleRu} onChange={e => setTitleRu(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Заголовок статьи (RU)" />
           )}
         </div>
 
@@ -357,11 +357,11 @@ export const AdminBlog: React.FC = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Opis SEO ({metaLang.toUpperCase()})</label>
           {metaLang === 'pl' ? (
-            <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Krótki opis do meta description (150-200 znaków)" />
+            <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Krótki opis do meta description (150-200 znaków)" />
           ) : metaLang === 'en' ? (
-            <textarea value={excerptEn} onChange={e => setExcerptEn(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Short SEO description (EN)" />
+            <textarea value={excerptEn} onChange={e => setExcerptEn(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Short SEO description (EN)" />
           ) : (
-            <textarea value={excerptRu} onChange={e => setExcerptRu(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Краткое описание SEO (RU)" />
+            <textarea value={excerptRu} onChange={e => setExcerptRu(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="Краткое описание SEO (RU)" />
           )}
         </div>
 
@@ -369,17 +369,17 @@ export const AdminBlog: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-            <input value={slug} onChange={e => setSlug(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="url-slug" />
+            <input value={slug} onChange={e => setSlug(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="url-slug" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Kategoria</label>
-            <select value={category} onChange={e => setCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm">
+            <select value={category} onChange={e => setCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm">
               {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Autor</label>
-            <input value={author} onChange={e => setAuthor(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" />
+            <input value={author} onChange={e => setAuthor(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" />
           </div>
         </div>
 
@@ -387,11 +387,11 @@ export const AdminBlog: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Słowa kluczowe SEO (rozdzielone przecinkami)</label>
-            <input value={seoKeywords} onChange={e => setSeoKeywords(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="makijaż permanentny, białystok" />
+            <input value={seoKeywords} onChange={e => setSeoKeywords(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" placeholder="makijaż permanentny, białystok" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Czas czytania (min)</label>
-            <input type="number" value={readingTime} onChange={e => setReadingTime(parseInt(e.target.value) || 5)} min={1} max={30} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" />
+            <input type="number" value={readingTime} onChange={e => setReadingTime(parseInt(e.target.value) || 5)} min={1} max={30} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand text-sm" />
           </div>
         </div>
 

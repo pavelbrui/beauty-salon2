@@ -22,7 +22,7 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage').then(m => ({ defaul
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const PageLoader = () => (
-  <div className="flex flex-col justify-center items-center min-h-screen bg-white">
+  <div className="flex flex-col justify-center items-center min-h-screen bg-dark">
     <div className="relative w-32 h-32 mb-8">
       <img
         src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
@@ -30,8 +30,8 @@ const PageLoader = () => (
         className="w-full h-full object-contain animate-pulse"
       />
     </div>
-    <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 rounded-full overflow-hidden">
-      <div className="h-full bg-amber-600 animate-slideRight" />
+    <div className="w-16 h-1 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-400 rounded-full overflow-hidden">
+      <div className="h-full bg-brand-600 animate-slideRight" />
     </div>
   </div>
 );

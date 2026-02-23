@@ -76,8 +76,8 @@ export const MapLocation: React.FC = () => {
   }, [language, mapFailed]);
 
   return (
-    <div className="w-full p-6 rounded-lg bg-white shadow-lg">
-      <div className="flex items-center justify-center space-x-3 text-amber-600 mb-4">
+    <div className="w-full p-6 bg-dark-50 border border-brand/20">
+      <div className="flex items-center justify-center space-x-3 text-brand mb-4">
         <FaMapMarkerAlt className="w-8 h-8" />
         <h3 className="text-xl font-semibold">{t.contact.location.title}</h3>
       </div>
@@ -100,13 +100,13 @@ export const MapLocation: React.FC = () => {
       </div>
 
       <div className="text-center space-y-2">
-        <p className="text-gray-700 font-medium">
+        <p className="text-cream font-medium">
           ul. Młynowa 46, Lok U11
         </p>
-        <p className="text-gray-700">
+        <p className="text-cream-300">
           15-404 Białystok
         </p>
-        <p className="text-gray-600 text-sm mt-4">
+        <p className="text-cream-300 text-sm mt-4">
           {t.contact.location.description}
         </p>
       </div>

@@ -35,7 +35,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('services')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'services' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'services' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Usługi
@@ -43,7 +43,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('bookings')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'bookings' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'bookings' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Rezerwacje
@@ -51,7 +51,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('stylists')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'stylists' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'stylists' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Styliści
@@ -59,7 +59,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('timeslots')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'timeslots' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'timeslots' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Terminy
@@ -67,7 +67,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('gallery')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'gallery' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'gallery' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Galeria
@@ -75,7 +75,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('assignments')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'assignments' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'assignments' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Przypisania
@@ -83,7 +83,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('trainings')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'trainings' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'trainings' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Szkolenia
@@ -91,7 +91,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('blog')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'blog' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'blog' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Blog
@@ -99,7 +99,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('booksy')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'booksy' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'booksy' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Booksy
@@ -107,7 +107,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('categories')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'categories' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'categories' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Kategorie
@@ -115,7 +115,7 @@ export const Admin: React.FC = () => {
             <button
               onClick={() => setActiveTab('users')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'users' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === 'users' ? 'border-brand text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Użytkownicy

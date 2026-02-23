@@ -201,8 +201,8 @@ export const BookingPage: React.FC = () => {
 
   if (!service && !error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+      <div className="flex justify-center items-center min-h-screen bg-dark pt-16">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -225,7 +225,7 @@ export const BookingPage: React.FC = () => {
   }
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-8">
+    <main className="max-w-4xl mx-auto px-4 py-8 pt-24 min-h-screen bg-dark">
       <SEO
         title={service ? `Rezerwacja - ${getServiceName(service, language)}` : 'Rezerwacja'}
         description={service ? `Zarezerwuj wizytę: ${getServiceName(service, language)} w salonie Katarzyna Brui, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w salonie kosmetycznym Katarzyna Brui w Białymstoku.'}
@@ -233,7 +233,7 @@ export const BookingPage: React.FC = () => {
         noindex
       />
       {service && (
-        <h1 className="text-2xl font-bold text-gray-900 mt-20 mb-6">
+        <h1 className="font-display text-2xl font-bold text-cream mt-20 mb-6">
           {`Rezerwacja: ${getServiceName(service, language)}`}
         </h1>
       )}

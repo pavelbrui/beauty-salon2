@@ -103,7 +103,7 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-dark">
       <SEO
         title="Salon Kosmetyczny Białystok"
         description="Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online. ul. Młynowa 46. Tel: 880 435 102."
@@ -176,39 +176,39 @@ export const Home: React.FC = () => {
           ]
         }}
       />
-      <header className="relative h-screen">
-        {/* Hero image — semantic <img> for Google Image indexing */}
+      {/* Hero — full viewport, dramatic overlay */}
+      <header className="relative min-h-screen flex flex-col justify-end">
         <img
           src="/og-image2.jpg"
           alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
-        <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
-            {t.welcomeTitle}
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl md:text-2xl text-white/90 max-w-xl text-center">
-            {t.welcomeSubtitle}
-          </p>
-          <div className="mt-12 flex flex-col items-center gap-4">
-            <div className="flex items-center space-x-4 justify-center">
-              <button
-                onClick={scrollToReviews}
-                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer"
-              >
-                <span className="text-amber-500 text-2xl font-semibold">5.0</span>
-                <span className="text-gray-800 ml-2">/ 5.0</span>
-                <div className="text-sm text-gray-600">
-                  <span>380 </span>
-                  <span>{t.reviewsLabel}</span>
-                </div>
-              </button>
+        <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-dark/30" />
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-24 pt-32">
+          <div className="max-w-4xl">
+            <p className="text-brand font-medium tracking-[0.3em] uppercase text-sm mb-4">
+              Białystok
+            </p>
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-cream leading-tight mb-6">
+              {t.welcomeTitle}
+            </h1>
+            <p className="text-lg sm:text-xl text-cream-300 max-w-2xl mb-12">
+              {t.welcomeSubtitle}
+            </p>
+            <div className="flex flex-col sm:flex-row items-start gap-4">
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"
+                className="bg-brand text-dark px-8 py-4 rounded-none font-semibold hover:bg-brand-400 transition-all duration-300 uppercase tracking-wider"
               >
                 {t.bookNow}
+              </button>
+              <button
+                onClick={scrollToReviews}
+                className="flex items-center gap-3 px-6 py-4 border border-brand/50 text-cream hover:bg-brand/10 transition-all"
+              >
+                <span className="text-brand font-bold text-xl">5.0</span>
+                <span className="text-cream-300">/ 5.0</span>
+                <span className="text-cream-300 text-sm">380 {t.reviewsLabel}</span>
               </button>
             </div>
           </div>
@@ -218,33 +218,35 @@ export const Home: React.FC = () => {
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
 
-      {/* About Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">{t.aboutTitle}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {t.aboutText}
-            </p>
-          </div>
+      {/* About — dark section with gold accent */}
+      <section className="py-24 bg-dark-100 border-y border-brand/10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-cream mb-8">{t.aboutTitle}</h2>
+          <p className="text-lg text-cream-300 leading-relaxed">
+            {t.aboutText}
+          </p>
         </div>
       </section>
 
-      {!loading && !error && <main className="max-w-7xl mx-auto py-16 sm:px-6 lg:px-8">
-        <div id="services" className="px-4 sm:px-0 scroll-mt-20">
-          <h2 className="text-3xl font-semibold text-gray-900 mb-2 text-center">
-            {t.ourCategories}
-          </h2>
-          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-            {t.categoriesDescription}
-          </p>
+      {!loading && !error && <main className="max-w-7xl mx-auto py-20 sm:px-6 lg:px-8">
+        <div id="services" className="px-4 sm:px-0 scroll-mt-24">
+          <div className="text-center mb-16">
+            <p className="text-brand font-medium tracking-[0.2em] uppercase text-sm mb-3">{t.services}</p>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-cream mb-4">
+              {t.ourCategories}
+            </h2>
+            <p className="text-cream-300 max-w-2xl mx-auto">
+              {t.categoriesDescription}
+            </p>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map(cat => (
+            {categories.map((cat, i) => (
               <button
                 key={cat.name}
                 onClick={() => navigate(`/services/${encodeURIComponent(cat.name)}`)}
-                className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+                className="group relative rounded-none overflow-hidden h-72 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-dark"
+                style={{ animationDelay: `${i * 50}ms` }}
               >
                 <img
                   src={cat.image}
@@ -252,15 +254,15 @@ export const Home: React.FC = () => {
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-300 group-hover:from-black/80" />
-                <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">
-                  <h3 className="text-xl font-bold text-white mb-1">
+                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-transparent transition-all duration-300 group-hover:from-dark/90" />
+                <div className="absolute inset-0 flex flex-col justify-end p-6 text-left border-l-4 border-transparent group-hover:border-brand transition-colors">
+                  <h3 className="font-display text-xl font-bold text-cream mb-1">
                     {getCategoryName(cat.name, language, (t as any).categories)}
                   </h3>
-                  <p className="text-white/70 text-sm mb-3">
+                  <p className="text-cream-300 text-sm mb-3">
                     {cat.count} {t.servicesCount}
                   </p>
-                  <span className="inline-flex items-center text-amber-400 text-sm font-medium transition-transform duration-300 group-hover:translate-x-1">
+                  <span className="inline-flex items-center text-brand text-sm font-medium transition-transform duration-300 group-hover:translate-x-1">
                     {t.viewCategoryServices}
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -273,17 +275,17 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Training callout */}
-        <section className="py-20 bg-amber-50">
+        <section className="py-24 bg-dark-50 border-y border-brand/10 my-20">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-cream mb-4">
               {t.training_page?.header || t.training}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-cream-300 mb-8">
               {t.training_page?.intro}
             </p>
             <button
               onClick={() => navigate('/training')}
-              className="bg-amber-500 text-white px-6 py-3 rounded-full hover:bg-amber-600 transition-colors"
+              className="bg-brand text-dark px-8 py-4 rounded-none font-semibold hover:bg-brand-400 transition-colors uppercase tracking-wider"
             >
               {t.training}
             </button>
@@ -294,46 +296,47 @@ export const Home: React.FC = () => {
         <BlogTeaser />
 
         {/* Reviews Section */}
-        <div id="reviews" className="scroll-mt-20">
+        <div id="reviews" className="scroll-mt-24">
           <Reviews />
         </div>
 
-        <div className="mt-24 bg-gradient-to-br from-amber-50 to-white shadow-lg rounded-xl p-12">
-          <h2 className="text-3xl font-semibold text-gray-900 mb-8 text-center">
+        {/* Contact block */}
+        <div className="mt-24 bg-dark-100 border border-brand/20 p-12 sm:p-16">
+          <h2 className="font-display text-3xl font-bold text-cream mb-12 text-center">
             {t.contact.title}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div className="text-center">
-              <h3 className="text-xl font-medium text-amber-600 mb-4">
+              <h3 className="font-display text-lg font-semibold text-brand mb-4">
                 {t.contact.address}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-cream-300">
                 ul. Młynowa 46, Lok U11<br />
                 15-404, Białystok<br />
-                Tel: <a href="tel:880435102" className="text-amber-600 hover:text-amber-700">880 435 102</a><br />
+                Tel: <a href="tel:880435102" className="text-brand hover:text-brand-400 transition-colors">880 435 102</a><br />
                 Katarzyna
               </p>
             </div>
             <div className="text-center">
-              <h3 className="text-xl font-medium text-amber-600 mb-4">
+              <h3 className="font-display text-lg font-semibold text-brand mb-4">
                 {t.contact.openingHours.title}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-cream-300">
                 {t.contact.openingHours.weekdays}<br />
                 {t.contact.openingHours.saturday}<br />
                 {t.contact.openingHours.sunday}
               </p>
             </div>
             <div className="text-center">
-              <h3 className="text-xl font-medium text-amber-600 mb-4">
+              <h3 className="font-display text-lg font-semibold text-brand mb-4">
                 {t.contact.socialMedia.title}
               </h3>
-              <div className="flex justify-center space-x-4 mb-4">
+              <div className="flex justify-center gap-6 mb-4">
                 <a
                   href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-600 hover:text-amber-700 transition-colors"
+                  className="text-cream-300 hover:text-brand transition-colors"
                 >
                   <FaFacebook size={28} />
                 </a>
@@ -341,18 +344,17 @@ export const Home: React.FC = () => {
                   href="https://www.instagram.com/katarzyna.brui_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-600 hover:text-amber-700 transition-colors"
+                  className="text-cream-300 hover:text-brand transition-colors"
                 >
                   <FaInstagram size={28} />
                 </a>
               </div>
-              <p className="text-gray-600">{t.contact.socialMedia.followUs}</p>
+              <p className="text-cream-300">{t.contact.socialMedia.followUs}</p>
             </div>
           </div>
           <MapLocation />
         </div>
       </main>}
-
     </div>
   );
 };

@@ -110,7 +110,7 @@ export const AdminCategories = () => {
           <button
             onClick={saveOrder}
             disabled={saving}
-            className="bg-amber-500 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+            className="bg-brand text-white text-sm px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
           >
             {saving ? 'Zapisywanie...' : 'Zapisz kolejność'}
           </button>
@@ -150,7 +150,7 @@ export const AdminCategories = () => {
                   type="number"
                   value={cat.sort_order}
                   onChange={(e) => handleSortChange(cat.id, parseInt(e.target.value) || 0)}
-                  className="w-16 text-sm text-center border border-gray-200 rounded-md px-2 py-1 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-16 text-sm text-center border border-gray-200 rounded-md px-2 py-1 focus:ring-2 focus:ring-brand focus:border-brand"
                 />
               </div>
             </li>

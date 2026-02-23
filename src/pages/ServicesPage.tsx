@@ -266,7 +266,7 @@ export const ServicesPage: React.FC = () => {
     : serviceImages.permanentMakeup;
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-dark">
       <SEO
         title={seo.title}
         description={seo.description}
@@ -275,15 +275,15 @@ export const ServicesPage: React.FC = () => {
         keywords={seo.keywords}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
+        <h1 className="font-display text-4xl font-bold text-cream mb-6 text-center">{t.services}</h1>
         
         <div className="flex flex-wrap gap-2 justify-center mb-10">
           <button
             onClick={() => navigate('/services')}
             className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
               !category
-                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                ? 'bg-brand text-dark border-brand shadow-sm'
+                : 'bg-dark-50 text-cream-300 border-brand/20 hover:border-brand/50 hover:text-brand'
             }`}
           >
             {t.all}
@@ -294,8 +294,8 @@ export const ServicesPage: React.FC = () => {
               onClick={() => handleCategoryClick(cat)}
               className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
                 category === cat
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                  ? 'bg-brand text-dark border-brand shadow-sm'
+                  : 'bg-dark-50 text-cream-300 border-brand/20 hover:border-brand/50 hover:text-brand'
               }`}
             >
               {getCategoryName(cat, language, (t as any).categories)}

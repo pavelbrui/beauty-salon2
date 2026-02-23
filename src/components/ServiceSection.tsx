@@ -85,7 +85,7 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
       transition={{ duration: 0.5 }}
       className="relative"
     >
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{getCategoryName(category, language, (t as any).categories)}</h2>
+      <h2 className="font-display text-2xl font-bold text-cream mb-6">{getCategoryName(category, language, (t as any).categories)}</h2>
       
       <div className="relative">
         {/* Tap zones - invisible, mobile only */}
@@ -131,15 +131,15 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
                 onClick={() => scrollToDot(i)}
                 aria-label={`Pozycja ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeDot === i ? 'w-4 bg-amber-500' : 'w-1.5 bg-gray-300'
+                  activeDot === i ? 'w-4 bg-brand' : 'w-1.5 bg-brand/30'
                 }`}
               />
             ))}
           </div>
         )}
         
-        <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-neutral-50 to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-neutral-50 to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-6 w-8 bg-gradient-to-r from-dark to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-6 w-8 bg-gradient-to-l from-dark to-transparent pointer-events-none" />
       </div>
     </motion.section>
   );

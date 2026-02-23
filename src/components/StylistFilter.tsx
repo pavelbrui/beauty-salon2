@@ -74,12 +74,12 @@ export const StylistFilter: React.FC<StylistFilterProps> = ({
         onClick={() => onSelect('')}
         className={`${isVertical ? 'w-full' : ''} flex items-center gap-${isVertical ? '3' : '2'} px-3 py-${isVertical ? '2.5' : '2'} rounded-lg transition-all text-${isVertical ? 'left' : 'sm'} ${
           isAllSelected
-            ? 'bg-amber-50 ring-2 ring-amber-500 text-amber-700 font-medium'
+            ? 'bg-brand-50 ring-2 ring-brand text-brand-600 font-medium'
             : isVertical ? 'hover:bg-gray-50 text-gray-700' : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
         }`}
       >
         <div className={`${avatarSize} rounded-full flex items-center justify-center flex-shrink-0 ${
-          isAllSelected ? 'bg-amber-500' : 'bg-gray-200'
+          isAllSelected ? 'bg-brand' : 'bg-gray-200'
         }`}>
           <GroupIcon className={`${iconSize} ${isAllSelected ? 'text-white' : 'text-gray-500'}`} />
         </div>
@@ -95,7 +95,7 @@ export const StylistFilter: React.FC<StylistFilterProps> = ({
             onClick={() => onSelect(stylist.id)}
             className={`${isVertical ? 'w-full' : ''} flex items-center gap-${isVertical ? '3' : '2'} px-3 py-${isVertical ? '2.5' : '2'} rounded-lg transition-all text-${isVertical ? 'left' : 'sm'} ${
               isSelected
-                ? 'bg-amber-50 ring-2 ring-amber-500 text-amber-700 font-medium'
+                ? 'bg-brand-50 ring-2 ring-brand text-brand-600 font-medium'
                 : isVertical ? 'hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
             }`}
           >
@@ -108,7 +108,7 @@ export const StylistFilter: React.FC<StylistFilterProps> = ({
             />
             {isVertical && showRole ? (
               <div className="min-w-0">
-                <p className={`text-sm font-medium truncate ${isSelected ? 'text-amber-700' : 'text-gray-900'}`}>
+                <p className={`text-sm font-medium truncate ${isSelected ? 'text-brand-600' : 'text-gray-900'}`}>
                   {stylist.name}
                 </p>
                 {stylist.role && (

@@ -109,8 +109,8 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
               disabled={!isSelectable}
               className={`
                 p-2 rounded-lg text-center
-                ${isSelected ? 'bg-amber-500 text-white' : ''}
-                ${isHighlighted && !isSelected ? 'bg-amber-100' : ''}
+                ${isSelected ? 'bg-brand text-white' : ''}
+                ${isHighlighted && !isSelected ? 'bg-brand-100' : ''}
                 ${!isSelectable ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100'}
               `}
             >
