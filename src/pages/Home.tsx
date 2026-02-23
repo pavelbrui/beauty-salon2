@@ -36,25 +36,34 @@ export const Home: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      const { data, error } = await supabase
-        .from('services')
-        .select('category')
-        .order('category');
+      const [servicesRes, catOrderRes] = await Promise.all([
+        supabase.from('services').select('category').order('category'),
+        supabase.from('service_categories').select('name, sort_order').order('sort_order'),
+      ]);
       
-      if (error) {
-        throw error;
+      if (servicesRes.error) {
+        throw servicesRes.error;
       }
 
       const categoryMap = new Map<string, number>();
-      data.forEach((s: { category: string }) => {
+      servicesRes.data.forEach((s: { category: string }) => {
         categoryMap.set(s.category, (categoryMap.get(s.category) || 0) + 1);
       });
 
-      const cats: CategoryInfo[] = Array.from(categoryMap.entries()).map(([name, count]) => ({
-        name,
-        count,
-        image: getDefaultImageForCategory(name),
-      }));
+      const orderMap = new Map<string, number>();
+      if (catOrderRes.data) {
+        catOrderRes.data.forEach((c: { name: string; sort_order: number }) => {
+          orderMap.set(c.name, c.sort_order);
+        });
+      }
+
+      const cats: CategoryInfo[] = Array.from(categoryMap.entries())
+        .map(([name, count]) => ({
+          name,
+          count,
+          image: getDefaultImageForCategory(name),
+        }))
+        .sort((a, b) => (orderMap.get(a.name) ?? 999) - (orderMap.get(b.name) ?? 999));
 
       setCategories(cats);
     } catch (err) {
