@@ -100,8 +100,13 @@ const getNextHourStart = () => {
 };
 
 const getErrorMessage = (err: unknown, fallback: string) => {
-  if (err instanceof Error) return err.message;
+  if (err instanceof Error && err.message) return err.message;
   if (typeof err === 'string' && err.trim()) return err;
+  // PostgrestError / Supabase error object
+  const obj = err as { message?: string; details?: string; hint?: string };
+  if (obj?.message) return obj.message;
+  if (obj?.details) return obj.details;
+  if (obj?.hint) return obj.hint;
   return fallback;
 };
 
