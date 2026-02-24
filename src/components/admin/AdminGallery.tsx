@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { withTimeout } from '../../utils/withTimeout';
 
 interface GalleryImage {
   id: string;
@@ -14,69 +16,65 @@ export const AdminGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadImages();
   }, []);
 
   const loadImages = async () => {
-    const { data, error } = await supabase
-      .from('service_images')
-      .select('*')
-      .order('created_at', { ascending: false });
+    setError(null);
+    const { data, error } = await withTimeout(
+      supabase.from('service_images').select('*').order('created_at', { ascending: false }),
+      20000,
+      'Ładowanie galerii trwa zbyt długo'
+    );
 
-    if (!error && data) {
-      setImages(data);
+    if (error) {
+      console.error('Error loading gallery images:', error);
+      setError(`Nie udało się załadować galerii: ${error.message}`);
+      return;
     }
+
+    setImages(data || []);
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
+      setError(null);
       const file = event.target.files?.[0];
       if (!file) return;
 
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
-        alert('File size must be less than 5MB');
+        alert('Plik musi być mniejszy niż 5MB');
         return;
       }
 
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `gallery/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
-
-      if (!urlData) throw new Error('Failed to get public URL');
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'gallery', timeoutMs: 20000 });
 
       // Save to service_images table
-      const { error: dbError } = await supabase
-        .from('service_images')
-        .insert({
-          url: urlData.publicUrl,
+      const { error: dbError } = await withTimeout(
+        supabase.from('service_images').insert({
+          url: publicUrl,
           description: '',
-          category: 'general'
-        });
+          category: 'general',
+        }),
+        20000,
+        'Zapis zdjęcia w bazie trwa zbyt długo'
+      );
 
       if (dbError) throw dbError;
 
       loadImages();
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Error uploading image. Please try again.');
+      setError(error instanceof Error ? error.message : 'Błąd podczas dodawania zdjęcia');
+      alert('Błąd podczas dodawania zdjęcia. Spróbuj ponownie.');
     } finally {
       setUploading(false);
+      event.target.value = '';
     }
   };
 
@@ -132,6 +130,14 @@ export const AdminGallery: React.FC = () => {
           </label>
         </div>
       </div>
+
+      {error && (
+        <div className="px-4 pb-4 sm:px-6">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        </div>
+      )}
       
       {images.length === 0 ? (
         <div className="text-center py-12 text-gray-500">

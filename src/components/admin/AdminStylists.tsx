@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { translateFromPolish } from '../../utils/translateService';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { withTimeout } from '../../utils/withTimeout';
 
 interface Stylist {
   id: string;
@@ -21,6 +23,7 @@ export const AdminStylists: React.FC = () => {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [editingStylist, setEditingStylist] = useState<Stylist | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Image upload state
   const [imageMode, setImageMode] = useState<'upload' | 'url'>('upload');
@@ -46,18 +49,22 @@ export const AdminStylists: React.FC = () => {
     loadStylists();
   }, []);
 
-  const loadStylists = async () => {
-    const { data, error } = await supabase
-      .from('stylists')
-      .select('*')
-      .order('name');
+  const loadStylists = async (): Promise<boolean> => {
+    setLoadError(null);
+    const { data, error } = await withTimeout(
+      supabase.from('stylists').select('*').order('name'),
+      20000,
+      'Ładowanie stylistek trwa zbyt długo'
+    );
 
     if (error) {
       console.error('Error loading stylists:', error);
-      return;
+      setLoadError(`Nie udało się załadować stylistek: ${error.message}`);
+      return false;
     }
 
     setStylists(data || []);
+    return true;
   };
 
   const resetTranslationState = () => {
@@ -87,25 +94,13 @@ export const AdminStylists: React.FC = () => {
     setUploadError(null);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `stylist-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-      const filePath = `stylists/${fileName}`;
-
-      const { error: uploadErr } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-
-      if (uploadErr) throw uploadErr;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
-
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'stylists', timeoutMs: 20000 });
       setUploadedImageUrl(publicUrl);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Błąd podczas wgrywania zdjęcia');
     } finally {
       setUploading(false);
+      event.target.value = '';
     }
   };
 
@@ -156,29 +151,39 @@ export const AdminStylists: React.FC = () => {
     setSaveError(null);
 
     try {
-      const { error } = await supabase
-        .from('stylists')
-        .upsert({
+      const cleanSpecialties = (stylist.specialties || []).map(s => s.trim()).filter(Boolean);
+      const cleanSpecialtiesEn = specEn ? specEn.split(',').map(s => s.trim()).filter(Boolean) : null;
+      const cleanSpecialtiesRu = specRu ? specRu.split(',').map(s => s.trim()).filter(Boolean) : null;
+
+      const { error } = await withTimeout(
+        supabase.from('stylists').upsert({
           id: stylist.id,
           name: stylist.name,
           role: stylist.role,
           role_en: roleEn || null,
           role_ru: roleRu || null,
           image_url: stylist.image_url,
-          specialties: stylist.specialties,
-          specialties_en: specEn ? specEn.split(',').map(s => s.trim()) : null,
-          specialties_ru: specRu ? specRu.split(',').map(s => s.trim()) : null,
+          specialties: cleanSpecialties,
+          specialties_en: cleanSpecialtiesEn,
+          specialties_ru: cleanSpecialtiesRu,
           description: stylist.description,
           description_en: descEn || null,
           description_ru: descRu || null,
-        });
+        }),
+        20000,
+        'Zapis trwa zbyt długo'
+      );
 
       if (error) {
         setSaveError(`Błąd zapisu stylisty: ${error.message}`);
         return;
       }
 
-      await loadStylists();
+      const ok = await loadStylists();
+      if (!ok) {
+        setSaveError('Zapisano, ale nie udało się odświeżyć listy. Odśwież stronę.');
+        return;
+      }
       setIsModalOpen(false);
       setEditingStylist(null);
       resetTranslationState();
@@ -224,6 +229,14 @@ export const AdminStylists: React.FC = () => {
           Dodaj stylistę
         </button>
       </div>
+
+      {loadError && (
+        <div className="px-6 pb-2">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-700">{loadError}</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {stylists.map((stylist) => (

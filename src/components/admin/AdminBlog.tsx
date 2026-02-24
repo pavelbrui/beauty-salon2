@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { BlogPost, ContentBlock } from '../../types';
 import { BlockEditor } from './BlockEditor';
 import { blogTemplates, generateSlug } from './blogTemplates';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
 
 type View = 'list' | 'editor';
 type Lang = 'pl' | 'en' | 'ru';
@@ -162,20 +163,15 @@ export const AdminBlog: React.FC = () => {
 
     setUploadingCover(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `blog-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-      const filePath = `blog/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage.from('service-images').upload(filePath, file);
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from('service-images').getPublicUrl(filePath);
-      setCoverImageUrl(data.publicUrl);
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'blog', timeoutMs: 20000 });
+      setCoverImageUrl(publicUrl);
     } catch (err) {
       console.error('Upload error:', err);
       alert('Błąd uploadu');
+    } finally {
+      setUploadingCover(false);
+      e.target.value = '';
     }
-    setUploadingCover(false);
   };
 
   const handleBlockUpdate = (index: number, block: ContentBlock) => {

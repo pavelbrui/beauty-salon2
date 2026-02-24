@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { uploadPublicImage } from '../utils/uploadPublicImage';
+import { withTimeout } from '../utils/withTimeout';
 
 interface ImageUploadProps {
   serviceId: string;
@@ -18,30 +20,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ serviceId, onUploadCom
       const file = event.target.files?.[0];
       if (!file) return;
 
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${serviceId}-${Math.random()}.${fileExt}`;
-      const filePath = `service-images/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'service-images', timeoutMs: 20000 });
 
       // Save to service_images table
-      const { error: dbError } = await supabase
-        .from('service_images')
-        .insert({
+      const { error: dbError } = await withTimeout(
+        supabase.from('service_images').insert({
           service_id: serviceId,
           url: publicUrl,
-          alt_text: file.name
-        });
+          alt_text: file.name,
+        }),
+        20000,
+        'Zapis zdjęcia w bazie trwa zbyt długo'
+      );
 
       if (dbError) throw dbError;
 
@@ -50,6 +40,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ serviceId, onUploadCom
       setError(err instanceof Error ? err.message : 'Error uploading image');
     } finally {
       setUploading(false);
+      event.target.value = '';
     }
   };
 
