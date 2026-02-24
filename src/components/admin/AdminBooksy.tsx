@@ -63,10 +63,15 @@ export const AdminBooksy: React.FC = () => {
   // Booksy sync state
   const [syncLogs, setSyncLogs] = useState<BooksySyncLog[]>([]);
   const [booksySession, setBooksySession] = useState<BooksySession | null>(null);
-  const [showCookieModal, setShowCookieModal] = useState(false);
-  const [cookieInput, setCookieInput] = useState('');
-  const [savingCookies, setSavingCookies] = useState(false);
+  const [showTokenModal, setShowTokenModal] = useState(false);
+  const [tokenInput, setTokenInput] = useState('');
+  const [savingToken, setSavingToken] = useState(false);
   const [syncFilterStatus, setSyncFilterStatus] = useState<string>('all');
+
+  // Resource ID editing
+  const [editingResourceMappingId, setEditingResourceMappingId] = useState<string | null>(null);
+  const [editingResourceId, setEditingResourceId] = useState<string>('');
+  const [savingResourceId, setSavingResourceId] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -183,16 +188,13 @@ export const AdminBooksy: React.FC = () => {
     }
   };
 
-  // Save cookies from admin input
-  const saveCookies = async () => {
-    setSavingCookies(true);
+  // Save access token from admin input
+  const saveToken = async () => {
+    setSavingToken(true);
     try {
-      let parsed: unknown[];
-      try {
-        parsed = JSON.parse(cookieInput);
-        if (!Array.isArray(parsed)) throw new Error('Not an array');
-      } catch {
-        alert(language === 'pl' ? 'Nieprawidłowy format JSON. Wklej tablicę cookies.' : 'Invalid JSON format. Paste a cookies array.');
+      const token = tokenInput.trim();
+      if (!token) {
+        alert(language === 'pl' ? 'Wklej access token.' : 'Paste access token.');
         return;
       }
 
@@ -200,22 +202,46 @@ export const AdminBooksy: React.FC = () => {
         .from('booksy_session')
         .upsert({
           id: 'default',
-          cookies: parsed,
+          access_token: token,
+          cookies: [],
           last_used_at: new Date().toISOString(),
           is_valid: true,
         });
 
       if (error) {
-        console.error('Error saving cookies:', error);
-        alert(language === 'pl' ? 'Błąd zapisu cookies' : 'Error saving cookies');
+        console.error('Error saving token:', error);
+        alert(language === 'pl' ? 'Błąd zapisu tokenu' : 'Error saving token');
         return;
       }
 
-      setShowCookieModal(false);
-      setCookieInput('');
+      setShowTokenModal(false);
+      setTokenInput('');
       loadData();
     } finally {
-      setSavingCookies(false);
+      setSavingToken(false);
+    }
+  };
+
+  // Save Booksy resource ID for a mapping
+  const saveResourceId = async (mapping: BooksyStylistMapping) => {
+    setSavingResourceId(true);
+    try {
+      const resId = editingResourceId ? parseInt(editingResourceId, 10) : null;
+      const { error } = await supabase
+        .from('booksy_stylist_mapping')
+        .update({ booksy_resource_id: resId })
+        .eq('id', mapping.id);
+
+      if (error) {
+        console.error('Error saving resource ID:', error);
+        return;
+      }
+
+      setEditingResourceMappingId(null);
+      setEditingResourceId('');
+      loadData();
+    } finally {
+      setSavingResourceId(false);
     }
   };
 
@@ -242,7 +268,7 @@ export const AdminBooksy: React.FC = () => {
         bookingId: log.booking_id,
         startTime: log.start_time,
         endTime: log.end_time,
-        stylistName: log.stylist_name,
+        stylistName: log.stylist_name || undefined,
         secret,
       }),
     }).catch(() => {});
@@ -556,6 +582,9 @@ export const AdminBooksy: React.FC = () => {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {ab.linkedStylist || 'Linked Stylist'}
                   </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Booksy Resource ID
+                  </th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {/* Actions */}
                   </th>
@@ -587,6 +616,46 @@ export const AdminBooksy: React.FC = () => {
                         <span className="text-yellow-600 italic">
                           {ab.notMapped || 'Not mapped'}
                         </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {editingResourceMappingId === mapping.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={editingResourceId}
+                            onChange={(e) => setEditingResourceId(e.target.value)}
+                            placeholder="np. 326252"
+                            className="w-28 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                          />
+                          <button
+                            onClick={() => saveResourceId(mapping)}
+                            disabled={savingResourceId}
+                            className="px-2 py-1 text-xs font-medium text-white bg-amber-500 rounded hover:bg-amber-600 disabled:opacity-50"
+                          >
+                            OK
+                          </button>
+                          <button
+                            onClick={() => { setEditingResourceMappingId(null); setEditingResourceId(''); }}
+                            className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setEditingResourceMappingId(mapping.id);
+                            setEditingResourceId(mapping.booksy_resource_id?.toString() || '');
+                          }}
+                          className="text-sm font-mono text-gray-600 hover:text-amber-600"
+                        >
+                          {mapping.booksy_resource_id || (
+                            <span className="text-yellow-600 italic text-xs">
+                              {language === 'pl' ? 'ustaw' : 'set'}
+                            </span>
+                          )}
+                        </button>
                       )}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right">
@@ -754,31 +823,30 @@ export const AdminBooksy: React.FC = () => {
         )}
       </div>
 
-      {/* ====== Booksy Session Management ====== */}
+      {/* ====== Booksy API Session ====== */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-amber-500">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
           </svg>
-          {language === 'pl' ? 'Sesja Booksy' : language === 'ru' ? 'Сессия Booksy' : 'Booksy Session'}
+          {language === 'pl' ? 'Sesja Booksy API' : language === 'ru' ? 'Сессия Booksy API' : 'Booksy API Session'}
         </h3>
 
         <div className="flex items-center gap-4 mb-4">
-          {/* Session status indicator */}
           <div className="flex items-center gap-2">
             <span className={`inline-block h-3 w-3 rounded-full ${
-              booksySession?.is_valid
+              booksySession?.is_valid && booksySession?.access_token
                 ? 'bg-green-500'
                 : booksySession
                   ? 'bg-red-500'
                   : 'bg-gray-400'
             }`} />
             <span className="text-sm font-medium text-gray-700">
-              {booksySession?.is_valid
-                ? (language === 'pl' ? 'Sesja aktywna' : language === 'ru' ? 'Сессия активна' : 'Session active')
-                : booksySession
-                  ? (language === 'pl' ? 'Sesja wygasła' : language === 'ru' ? 'Сессия истекла' : 'Session expired')
-                  : (language === 'pl' ? 'Brak sesji' : language === 'ru' ? 'Нет сессии' : 'No session')}
+              {booksySession?.is_valid && booksySession?.access_token
+                ? (language === 'pl' ? 'Token aktywny' : language === 'ru' ? 'Токен активен' : 'Token active')
+                : booksySession?.access_token
+                  ? (language === 'pl' ? 'Token wygasł' : language === 'ru' ? 'Токен истёк' : 'Token expired')
+                  : (language === 'pl' ? 'Brak tokenu' : language === 'ru' ? 'Нет токена' : 'No token')}
             </span>
           </div>
 
@@ -788,52 +856,64 @@ export const AdminBooksy: React.FC = () => {
               {format(new Date(booksySession.last_used_at), 'dd.MM.yyyy HH:mm', { locale })}
             </span>
           )}
+
+          {booksySession?.access_token && (
+            <span className="text-xs text-gray-400 font-mono">
+              {booksySession.access_token.substring(0, 8)}...
+            </span>
+          )}
         </div>
 
         <div className="flex gap-3">
           <button
-            onClick={() => setShowCookieModal(true)}
+            onClick={() => setShowTokenModal(true)}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600"
           >
-            {language === 'pl' ? 'Wklej cookies' : language === 'ru' ? 'Вставить cookies' : 'Paste cookies'}
+            {language === 'pl' ? 'Wklej token' : language === 'ru' ? 'Вставить токен' : 'Paste token'}
           </button>
         </div>
 
         <p className="mt-3 text-xs text-gray-500">
           {language === 'pl'
-            ? 'Otwórz Booksy Pro w Chrome → F12 → Application → Cookies → booksy.com → skopiuj wszystkie jako JSON (użyj rozszerzenia EditThisCookie)'
+            ? 'Booksy Pro → F12 → Network → Fetch/XHR → dowolny request API → Headers → x-access-token → skopiuj wartość'
             : language === 'ru'
-              ? 'Откройте Booksy Pro в Chrome → F12 → Application → Cookies → booksy.com → скопируйте все как JSON (используйте расширение EditThisCookie)'
-              : 'Open Booksy Pro in Chrome → F12 → Application → Cookies → booksy.com → copy all as JSON (use EditThisCookie extension)'}
+              ? 'Booksy Pro → F12 → Network → Fetch/XHR → любой API запрос → Headers → x-access-token → скопируйте значение'
+              : 'Booksy Pro → F12 → Network → Fetch/XHR → any API request → Headers → x-access-token → copy value'}
         </p>
       </div>
 
-      {/* Cookie Paste Modal */}
-      {showCookieModal && (
+      {/* Token Paste Modal */}
+      {showTokenModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              {language === 'pl' ? 'Wklej cookies z Booksy Pro' : 'Paste Booksy Pro cookies'}
+              {language === 'pl' ? 'Wklej x-access-token z Booksy Pro' : 'Paste x-access-token from Booksy Pro'}
             </h4>
-            <textarea
-              value={cookieInput}
-              onChange={(e) => setCookieInput(e.target.value)}
-              placeholder='[{"name":"session_id","value":"...","domain":".booksy.com"}, ...]'
-              className="w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-xs font-mono"
+            <p className="text-sm text-gray-500 mb-3">
+              {language === 'pl'
+                ? 'W Chrome na stronie Booksy Pro: F12 → Network → kliknij na dowolny request do pl.booksy.com → Headers → skopiuj wartość x-access-token'
+                : 'In Chrome on Booksy Pro: F12 → Network → click any request to pl.booksy.com → Headers → copy x-access-token value'}
+            </p>
+            <input
+              type="text"
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              placeholder="np. FducqLl8VD7Xemsl7Wp97dpZtd0JvwUt"
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm font-mono"
             />
             <div className="flex justify-end gap-3 mt-4">
               <button
-                onClick={() => { setShowCookieModal(false); setCookieInput(''); }}
+                onClick={() => { setShowTokenModal(false); setTokenInput(''); }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
               >
                 {language === 'pl' ? 'Anuluj' : 'Cancel'}
               </button>
               <button
-                onClick={saveCookies}
-                disabled={savingCookies || !cookieInput.trim()}
+                onClick={saveToken}
+                disabled={savingToken || !tokenInput.trim()}
                 className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 disabled:opacity-50"
               >
-                {savingCookies
+                {savingToken
                   ? (language === 'pl' ? 'Zapisywanie...' : 'Saving...')
                   : (language === 'pl' ? 'Zapisz' : 'Save')}
               </button>

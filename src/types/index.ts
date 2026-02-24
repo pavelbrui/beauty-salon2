@@ -198,6 +198,7 @@ export interface BooksyStylistMapping {
   id: string;
   booksy_name: string;
   stylist_id?: string;
+  booksy_resource_id?: number;
   created_at: string;
   updated_at: string;
   // Joined data
@@ -215,6 +216,7 @@ export interface BooksySyncLog {
   stylist_name?: string;
   error_message?: string;
   screenshot_url?: string;
+  booksy_reservation_id?: number;
   attempts: number;
   created_at: string;
   processed_at?: string;
@@ -223,6 +225,9 @@ export interface BooksySyncLog {
 export interface BooksySession {
   id: string;
   cookies: unknown[];
+  access_token?: string;
+  api_key?: string;
+  fingerprint?: string;
   user_agent?: string;
   last_used_at: string;
   expires_at?: string;
