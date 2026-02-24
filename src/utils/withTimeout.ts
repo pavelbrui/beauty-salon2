@@ -9,7 +9,7 @@ export class TimeoutError extends Error {
 }
 
 export async function withTimeout<T>(
-  promise: Promise<T>,
+  promise: PromiseLike<T>,
   timeoutMs: number,
   message = 'Operation timed out'
 ): Promise<T> {
