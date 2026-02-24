@@ -8,7 +8,7 @@ const resendApiKey = process.env.RESEND_API_KEY || '';
 const notificationSecret = process.env.NOTIFICATION_SECRET || '';
 
 const ADMIN_EMAIL = 'bpl_as2@mail.ru';
-const FROM_EMAIL = 'Katarzyna Brui Studio <onboarding@resend.dev>';
+const FROM_EMAIL = 'Katarzyna Brui Studio <studio@katarzynabrui.pl>';
 const SALON_PHONE = '+48 733 407 981';
 const SALON_ADDRESS = 'ul. Pogodna 2, Białystok';
 
