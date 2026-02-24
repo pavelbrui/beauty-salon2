@@ -10,3 +10,7 @@
 /robots.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=3600
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://katarzynabrui.pl; style-src 'self' 'unsafe-inline' https://katarzynabrui.pl; img-src 'self' data: https://katarzynabrui.pl https://d375139ucebi94.cloudfront.net https://twifcurnuhlmhhrnwpib.supabase.co https://images.unsplash.com; font-src 'self' https://katarzynabrui.pl; connect-src 'self' https://katarzynabrui.pl; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
