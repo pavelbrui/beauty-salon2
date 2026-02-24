@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock } from '../../types';
-import { supabase } from '../../lib/supabase';
 import { CropSelector, parseCropPosition } from './CropSelector';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
 
 interface BlockEditorProps {
   block: ContentBlock;
@@ -55,28 +55,14 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `training-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-      const filePath = `trainings/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
-
-      if (urlData) {
-        onUpdate(index, { ...block, url: urlData.publicUrl } as ImageBlock);
-      }
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'trainings', timeoutMs: 20000 });
+      onUpdate(index, { ...block, url: publicUrl } as ImageBlock);
     } catch (err) {
       console.error('Error uploading image:', err);
       alert('Błąd podczas przesyłania zdjęcia');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 

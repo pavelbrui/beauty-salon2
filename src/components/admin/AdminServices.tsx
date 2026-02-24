@@ -3,6 +3,8 @@ import { Service } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { translateFromPolish } from '../../utils/translateService';
 import { StylistFilter } from '../StylistFilter';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { withTimeout } from '../../utils/withTimeout';
 
 
 interface Stylist {
@@ -121,27 +123,17 @@ export const AdminServices = () => {
     setImageUploadError(null);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${serviceId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-      const filePath = `service-images/${fileName}`;
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'service-images', timeoutMs: 20000 });
 
-      const { error: uploadErr } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-
-      if (uploadErr) throw uploadErr;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
-
-      const { error: dbError } = await supabase
-        .from('service_images')
-        .insert({
+      const { error: dbError } = await withTimeout(
+        supabase.from('service_images').insert({
           service_id: serviceId,
           url: publicUrl,
-          alt_text: file.name
-        });
+          alt_text: file.name,
+        }),
+        20000,
+        'Zapis zdjęcia w bazie trwa zbyt długo'
+      );
 
       if (dbError) throw dbError;
 

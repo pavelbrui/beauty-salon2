@@ -20,7 +20,9 @@ function getSavedViewMode(): ViewMode {
   try {
     const fromStorage = localStorage.getItem(STORAGE_KEY);
     if (fromStorage === 'list' || fromStorage === 'calendar') return fromStorage;
-  } catch {}
+  } catch {
+    // Ignore storage access errors (private mode / blocked storage).
+  }
 
   const fromCookie = getCookie(COOKIE_NAME);
   if (fromCookie === 'list' || fromCookie === 'calendar') return fromCookie;
@@ -35,7 +37,9 @@ export function useViewMode(): [ViewMode, (mode: ViewMode) => void] {
     setViewModeState(mode);
     try {
       localStorage.setItem(STORAGE_KEY, mode);
-    } catch {}
+    } catch {
+      // Ignore storage access errors (private mode / blocked storage).
+    }
     setCookie(COOKIE_NAME, mode, COOKIE_DAYS);
   }, []);
 

@@ -4,6 +4,7 @@ import { Training, ContentBlock } from '../../types';
 import { BlockEditor } from './BlockEditor';
 import { trainingTemplates, generateSlug } from './trainingTemplates';
 import { CropSelector, parseCropPosition, cropPositionToStyle } from './CropSelector';
+import { uploadPublicImage } from '../../utils/uploadPublicImage';
 
 type View = 'list' | 'editor';
 type Lang = 'pl' | 'en' | 'ru';
@@ -215,24 +216,14 @@ export const AdminTrainings: React.FC = () => {
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `training-cover-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-      const filePath = `trainings/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('service-images')
-        .upload(filePath, file);
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('service-images')
-        .getPublicUrl(filePath);
-      if (urlData) setUrl(urlData.publicUrl);
+      const { publicUrl } = await uploadPublicImage({ file, folder: 'trainings', timeoutMs: 20000 });
+      setUrl(publicUrl);
     } catch (err) {
       console.error('Error uploading cover:', err);
       alert('Błąd podczas przesyłania zdjęcia');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
