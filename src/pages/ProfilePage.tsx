@@ -83,16 +83,16 @@ export const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <main className="pt-16 min-h-screen bg-white">
+      <main className="pt-20 min-h-screen bg-[#FAF9F7]">
         <div className="flex justify-center py-32">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-rose-200 border-t-rose-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-gray-900" />
         </div>
       </main>
     );
   }
 
   return (
-    <main className="pt-16 min-h-screen bg-white">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7]">
       <SEO
         title={t.profile_page?.title || 'Mój Profil'}
         description={t.profile_page?.seoDescription || 'Zarządzaj swoimi rezerwacjami.'}

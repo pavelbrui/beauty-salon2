@@ -46,11 +46,12 @@ export const Navbar: React.FC = () => {
 
   const showSolid = scrolled || !isHome;
   const bgClass = showSolid
-    ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-rose-100/50'
-    : 'bg-black/10 backdrop-blur-sm';
-  const textClass = showSolid ? 'text-gray-800' : 'text-white';
-  const activeTextClass = showSolid ? 'text-rose-600' : 'text-rose-300';
-  const hoverTextClass = showSolid ? 'hover:text-rose-600' : 'hover:text-rose-200';
+    ? 'bg-white/80 backdrop-blur-xl shadow-[0_1px_0_0_rgba(0,0,0,0.04)]'
+    : 'bg-transparent';
+  const textClass = showSolid ? 'text-gray-900' : 'text-white';
+  const activeTextClass = showSolid ? 'text-rose-600' : 'text-white';
+  const hoverTextClass = showSolid ? 'hover:text-rose-500' : 'hover:text-white/70';
+  const mutedClass = showSolid ? 'text-gray-500' : 'text-white/60';
 
   const isActive = (path: string) => {
     return barePath === path ||
@@ -83,82 +84,84 @@ export const Navbar: React.FC = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed w-full z-50 transition-all duration-500 ${bgClass}`}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className={`fixed w-full z-50 transition-all duration-700 ${bgClass}`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex items-center h-16">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+        <div className="flex items-center justify-between h-20">
+          {/* Left: hamburger on mobile */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`sm:hidden p-2 rounded-lg ${textClass} hover:bg-rose-500/10 mr-4`}
+            className={`lg:hidden p-2 -ml-2 ${textClass}`}
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
           >
-            {isOpen ? (
-              <XMarkIcon className="h-6 w-6" />
-            ) : (
-              <Bars3Icon className="h-6 w-6" />
-            )}
+            {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
           </button>
-          <div className="flex items-center">
-            <LocalizedLink to="/" className="flex items-center gap-2">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="h-10 w-10 rounded-full bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-md"
+
+          {/* Left nav items (desktop) */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navItems.slice(0, 3).map(({ path, label }) => (
+              <LocalizedLink
+                key={path}
+                to={path}
+                className={`text-[13px] uppercase tracking-[0.15em] font-medium transition-colors duration-300
+                  ${isActive(path) ? activeTextClass : `${mutedClass} ${hoverTextClass}`}`}
               >
-                <span className="text-white font-serif text-sm font-bold tracking-tight">AN</span>
-              </motion.div>
-              <motion.span
-                whileHover={{ scale: 1.02 }}
-                className={`text-lg font-serif font-semibold tracking-wide ${showSolid ? 'text-gray-900' : 'text-white'}`}
-              >
-                Anna Nowak
-              </motion.span>
-            </LocalizedLink>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
-              {navItems.map(({ path, label }) => (
-                <LocalizedLink
-                  key={path}
-                  to={path}
-                  className={`relative inline-flex items-center px-1 pt-1 text-sm font-medium tracking-wide transition-colors
-                    ${isActive(path) ? activeTextClass : `${textClass} ${hoverTextClass}`}`}
-                >
-                  {label}
-                  {isActive(path) && (
-                    <motion.div
-                      layoutId="navbar-underline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-400 to-rose-600 rounded-full"
-                    />
-                  )}
-                </LocalizedLink>
-              ))}
-            </div>
+                {label}
+              </LocalizedLink>
+            ))}
           </div>
 
-          <div className="ml-auto flex items-center gap-3">
-            <div className={`${showSolid ? 'bg-rose-50' : 'bg-white/10'} rounded-full p-0.5 flex space-x-0.5`}>
+          {/* Center: brand */}
+          <LocalizedLink to="/" className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+            <span className={`text-2xl font-serif font-bold tracking-wider ${textClass} transition-colors duration-700`}>
+              ANNA NOWAK
+            </span>
+            <span className={`text-[10px] uppercase tracking-[0.4em] ${mutedClass} transition-colors duration-700 mt-0.5`}>
+              beauty studio
+            </span>
+          </LocalizedLink>
+
+          {/* Right nav items (desktop) */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navItems.slice(3).map(({ path, label }) => (
+              <LocalizedLink
+                key={path}
+                to={path}
+                className={`text-[13px] uppercase tracking-[0.15em] font-medium transition-colors duration-300
+                  ${isActive(path) ? activeTextClass : `${mutedClass} ${hoverTextClass}`}`}
+              >
+                {label}
+              </LocalizedLink>
+            ))}
+          </div>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-2">
+            {/* Language pills */}
+            <div className="hidden sm:flex items-center gap-1 mr-2">
               {(['pl', 'en', 'ru'] as const).map((lang) => (
-                <motion.button
+                <button
                   key={lang}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => switchLanguage(lang)}
                   aria-label={langLabels[lang]}
-                  className={`w-8 h-8 rounded-full text-xs font-medium uppercase flex items-center justify-center transition-all ${
+                  className={`text-[11px] uppercase tracking-wider px-2 py-1 rounded transition-all duration-300 ${
                     language === lang
-                      ? 'bg-rose-500 text-white shadow-sm'
-                      : showSolid ? 'text-gray-500 hover:bg-rose-100' : 'text-white/80 hover:bg-white/10'
+                      ? `font-bold ${showSolid ? 'text-rose-600' : 'text-white'}`
+                      : `${mutedClass} ${hoverTextClass}`
                   }`}
                 >
                   {lang}
-                </motion.button>
+                </button>
               ))}
             </div>
 
             {isAdmin && (
               <Link
                 to="/admin"
-                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-rose-50 text-gray-600' : 'hover:bg-white/10 text-white'}`}
+                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-500' : 'hover:bg-white/10 text-white/60'}`}
                 aria-label="Admin"
               >
                 <Cog6ToothIcon className="h-5 w-5" />
@@ -168,7 +171,7 @@ export const Navbar: React.FC = () => {
             {user ? (
               <button
                 onClick={() => navigate(localizedPath('/profile', language))}
-                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-rose-50 text-gray-600' : 'hover:bg-white/10 text-white'}`}
+                className={`p-2 rounded-full transition-colors ${showSolid ? 'hover:bg-gray-100 text-gray-500' : 'hover:bg-white/10 text-white/60'}`}
                 aria-label="Profile"
               >
                 <UserIcon className="h-5 w-5" />
@@ -176,69 +179,72 @@ export const Navbar: React.FC = () => {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="hidden sm:block bg-rose-500 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-rose-600 transition-all hover:shadow-lg hover:shadow-rose-500/25"
+                className={`hidden sm:block text-[13px] uppercase tracking-[0.1em] font-medium px-5 py-2.5 rounded-none border transition-all duration-300 ${
+                  showSolid
+                    ? 'border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white'
+                    : 'border-white text-white hover:bg-white hover:text-gray-900'
+                }`}
               >
                 {t.auth.signIn}
               </button>
             )}
           </div>
         </div>
-
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              id="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="sm:hidden"
-            >
-              <div className={`px-2 pt-2 pb-3 space-y-1 ${showSolid ? 'bg-white border border-rose-100' : 'bg-black/30 backdrop-blur-sm'} rounded-xl mt-2 shadow-lg`}>
-                {navItems.map(({ path, label }) => (
-                  <LocalizedLink
-                    key={path}
-                    to={path}
-                    className={`block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${
-                      isActive(path)
-                        ? 'bg-rose-500 text-white'
-                        : `${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`
-                    }`}
-                  >
-                    {label}
-                  </LocalizedLink>
-                ))}
-                {!user && (
-                  <button
-                    onClick={() => { setIsOpen(false); setShowAuthModal(true); }}
-                    className={`block w-full text-left px-3 py-2.5 rounded-lg text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
-                  >
-                    {t.auth.signIn}
-                  </button>
-                )}
-                {user && (
-                  <LocalizedLink
-                    to="/profile"
-                    className={`block px-3 py-2.5 rounded-lg text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
-                  >
-                    {language === 'pl' ? 'Profil' : language === 'ru' ? 'Профиль' : 'Profile'}
-                  </LocalizedLink>
-                )}
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-base font-medium ${textClass} ${showSolid ? 'hover:bg-rose-50' : 'hover:bg-white/10'}`}
-                  >
-                    <Cog6ToothIcon className="h-5 w-5" />
-                    {language === 'pl' ? 'Panel admina' : language === 'ru' ? 'Админ панель' : 'Admin panel'}
-                  </Link>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            id="mobile-menu"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden overflow-hidden"
+          >
+            <div className={`px-6 pt-4 pb-8 space-y-1 ${showSolid ? 'bg-white' : 'bg-gray-900/95 backdrop-blur-xl'}`}>
+              {navItems.map(({ path, label }) => (
+                <LocalizedLink
+                  key={path}
+                  to={path}
+                  className={`block py-3 text-[13px] uppercase tracking-[0.15em] font-medium border-b transition-colors ${
+                    isActive(path)
+                      ? `${showSolid ? 'text-rose-600 border-rose-200' : 'text-white border-white/20'}`
+                      : `${showSolid ? 'text-gray-400 border-gray-100 hover:text-gray-900' : 'text-white/40 border-white/5 hover:text-white'}`
+                  }`}
+                >
+                  {label}
+                </LocalizedLink>
+              ))}
+              <div className="pt-4 flex items-center gap-4">
+                {(['pl', 'en', 'ru'] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => switchLanguage(lang)}
+                    className={`text-[11px] uppercase tracking-wider ${
+                      language === lang
+                        ? (showSolid ? 'text-rose-600 font-bold' : 'text-white font-bold')
+                        : (showSolid ? 'text-gray-400' : 'text-white/40')
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+              {!user && (
+                <button
+                  onClick={() => { setIsOpen(false); setShowAuthModal(true); }}
+                  className={`mt-4 w-full py-3 text-[13px] uppercase tracking-[0.15em] font-medium border ${
+                    showSolid ? 'border-gray-900 text-gray-900' : 'border-white text-white'
+                  }`}
+                >
+                  {t.auth.signIn}
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
 
     <AuthModal

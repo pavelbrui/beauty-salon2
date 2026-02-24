@@ -266,7 +266,7 @@ export const ServicesPage: React.FC = () => {
     : serviceImages.permanentMakeup;
 
   return (
-    <main className="pt-16 min-h-screen bg-white">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7]">
       <SEO
         title={seo.title}
         description={seo.description}
@@ -274,39 +274,37 @@ export const ServicesPage: React.FC = () => {
         image={categoryImage}
         keywords={seo.keywords}
       />
-      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <p className="text-rose-500 text-sm uppercase tracking-[0.2em] mb-3 font-medium">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+        <div className="mb-14">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">
             {language === 'pl' ? 'Nasze usługi' : language === 'ru' ? 'Наши услуги' : 'Our services'}
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">{t.services}</h1>
-          <div className="w-16 h-0.5 bg-rose-300 mx-auto" />
-        </div>
-        
-        <div className="flex flex-wrap gap-2 justify-center mb-10">
-          <button
-            onClick={() => navigate('/services')}
-            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-              !category
-                ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300 hover:text-rose-600'
-            }`}
-          >
-            {t.all}
-          </button>
-          {categories.map(cat => (
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3 mb-8">{t.services}</h1>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-                category === cat
-                  ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-rose-300 hover:text-rose-600'
+              onClick={() => navigate('/services')}
+              className={`px-5 py-2.5 text-[12px] uppercase tracking-[0.1em] font-medium border transition-all duration-300 ${
+                !category
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-transparent text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
               }`}
             >
-              {getCategoryName(cat, language, (t as any).categories)}
+              {t.all}
             </button>
-          ))}
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`px-5 py-2.5 text-[12px] uppercase tracking-[0.1em] font-medium border transition-all duration-300 ${
+                  category === cat
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-transparent text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
+                }`}
+              >
+                {getCategoryName(cat, language, (t as any).categories)}
+              </button>
+            ))}
+          </div>
         </div>
         
         <div className="space-y-16">

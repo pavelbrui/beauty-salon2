@@ -22,14 +22,10 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage').then(m => ({ defaul
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 const PageLoader = () => (
-  <div className="flex flex-col justify-center items-center min-h-screen bg-white">
-    <div className="mb-6">
-      <div className="h-16 w-16 rounded-full bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/20 animate-pulse">
-        <span className="text-white font-serif text-xl font-bold">AN</span>
-      </div>
-    </div>
-    <div className="w-20 h-0.5 bg-rose-100 rounded-full overflow-hidden">
-      <div className="h-full bg-gradient-to-r from-rose-400 to-rose-600 animate-slideRight" />
+  <div className="flex flex-col justify-center items-center min-h-screen bg-[#FAF9F7]">
+    <p className="text-2xl font-serif font-bold text-gray-900 tracking-wider mb-6 animate-pulse">ANNA NOWAK</p>
+    <div className="w-24 h-px bg-gray-200 overflow-hidden">
+      <div className="h-full bg-gray-900 animate-slideRight" />
     </div>
   </div>
 );

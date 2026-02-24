@@ -147,19 +147,19 @@ export const AppointmentsPage: React.FC = () => {
   const categories = [...new Set(services.map(s => s.category))];
 
   return (
-    <main className="pt-16 min-h-screen bg-white overflow-x-hidden">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7] overflow-x-hidden">
       <SEO
         title="Rezerwacja Online - Umów Wizytę"
         description="Zarezerwuj wizytę online w studio urody Anna Nowak w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
         canonical="/appointments"
         noindex
       />
-      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+        <div className="mb-12">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">{language === 'pl' ? 'Rezerwacja' : language === 'ru' ? 'Бронирование' : 'Booking'}</span>
+          <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3">
             {t.appointments}
           </h1>
-          <div className="w-16 h-0.5 bg-rose-300 mx-auto" />
         </div>
 
         {/* Show user's bookings if logged in */}
