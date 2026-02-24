@@ -5,9 +5,18 @@ test.describe('Admin Panel', () => {
     await page.goto('/admin');
   });
 
+  const isAdminView = async (page: any) => {
+    const adminTab = page.getByRole('button', { name: 'Usługi' });
+    try {
+      await adminTab.waitFor({ state: 'visible', timeout: 8000 });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   test('displays admin panel heading', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       await expect(page.locator('h1')).toContainText('Panel Administracyjny');
     } else {
       // If not authenticated/authorized, app redirects to home.
@@ -16,8 +25,7 @@ test.describe('Admin Panel', () => {
   });
 
   test('displays all admin tabs', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       await expect(page.getByRole('button', { name: 'Usługi' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Rezerwacje' })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Styliści' })).toBeVisible();
@@ -28,8 +36,7 @@ test.describe('Admin Panel', () => {
   });
 
   test('services tab is active by default', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       const servicesTab = page.getByRole('button', { name: 'Usługi' });
       await expect(servicesTab).toHaveClass(/amber/);
     } else {
@@ -38,8 +45,7 @@ test.describe('Admin Panel', () => {
   });
 
   test('clicking bookings tab switches content', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       await page.getByRole('button', { name: 'Rezerwacje' }).click();
       // Bookings tab should now be active
       const bookingsTab = page.getByRole('button', { name: 'Rezerwacje' });
@@ -50,8 +56,7 @@ test.describe('Admin Panel', () => {
   });
 
   test('all tabs are clickable and switch views', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       const tabs = ['Usługi', 'Rezerwacje'];
       for (const tabName of tabs) {
         await page.getByRole('button', { name: tabName }).click();
@@ -64,8 +69,7 @@ test.describe('Admin Panel', () => {
   });
 
   test('navbar is not visible on admin page', async ({ page }) => {
-    const pathname = new URL(page.url()).pathname;
-    if (pathname === '/admin') {
+    if (await isAdminView(page)) {
       const navbar = page.locator('nav');
       await expect(navbar).toHaveCount(0);
     } else {
