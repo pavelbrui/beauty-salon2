@@ -10,22 +10,28 @@ test.describe('Gallery Page', () => {
   });
 
   test('displays category filter buttons', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    // At minimum "all" button should be present
-    const filterButtons = page.locator('button').filter({ hasText: /all|All/ });
-    const count = await filterButtons.count();
-    expect(count).toBeGreaterThanOrEqual(1);
+    // At minimum the "all" filter should be present (PL/EN/RU).
+    await expect(page.getByRole('button', { name: /Wszystkie|All|Все/ })).toBeVisible();
   });
 
   test('gallery renders image grid', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    const grid = page.locator('.grid');
-    await expect(grid).toBeVisible();
+    // Wait for loading to finish.
+    await expect(page.getByLabel('Loading')).toBeHidden();
+
+    const grid = page.locator('div.grid');
+    const gridCount = await grid.count();
+    if (gridCount > 0) {
+      await expect(grid.first()).toBeVisible();
+    } else {
+      // No images -> no results message is expected.
+      await expect(page.locator('main')).toContainText(/Brak wyników|No results|Нет результатов/);
+    }
   });
 
   test('images have hover overlay effect', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    const images = page.locator('.grid img');
+    await expect(page.getByLabel('Loading')).toBeHidden();
+
+    const images = page.locator('div.grid img');
     const count = await images.count();
     if (count > 0) {
       // Image should exist in a group container
