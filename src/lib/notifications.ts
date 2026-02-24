@@ -37,3 +37,31 @@ export const notifyClient = async (
     console.error('Error creating client notification:', error);
   }
 };
+
+/**
+ * Fire-and-forget: sends a real email via Netlify Function + Resend.
+ * Follows the same pattern as syncBookingToBooksy.
+ */
+export const sendBookingEmail = (
+  bookingId: string,
+  type: 'confirmation' | 'cancellation' | 'reschedule' | 'deleted',
+  extraMessage?: string,
+) => {
+  try {
+    const secret = import.meta.env.VITE_NOTIFICATION_SECRET;
+    if (!secret) {
+      console.warn('VITE_NOTIFICATION_SECRET not set — email notifications disabled');
+      return;
+    }
+
+    fetch('/.netlify/functions/send-booking-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId, type, secret, extraMessage }),
+    }).catch(() => {
+      // fire-and-forget: don't block the user flow
+    });
+  } catch (err) {
+    console.error('Email notification error:', err);
+  }
+};

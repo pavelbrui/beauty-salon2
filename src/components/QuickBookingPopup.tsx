@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { format, addDays } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
-import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { notifyAdmin, notifyClient, sendBookingEmail } from '../lib/notifications';
 import { syncBookingToBooksy } from '../lib/booksySync';
 import { saveProfile } from '../lib/profile';
 import { generateAvailableTimeSlots } from '../utils/timeSlots';
@@ -207,6 +207,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
           const dateStr = new Date(selectedSlot.startTime).toLocaleString('pl-PL');
           await notifyClient(data[0].id, 'confirmation');
           await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+          sendBookingEmail(data[0].id, 'confirmation');
           syncBookingToBooksy({
             action: 'create_block',
             bookingId: data[0].id,

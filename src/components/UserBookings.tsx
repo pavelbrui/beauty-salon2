@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
-import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { notifyAdmin, notifyClient, sendBookingEmail } from '../lib/notifications';
 import { syncBookingToBooksy } from '../lib/booksySync';
 import { Booking, Service, TimeSlot } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
@@ -107,6 +107,7 @@ export const UserBookings: React.FC = () => {
       `Klient anulował rezerwację: ${booking?.services?.name || '—'} na ${dateStr}`
     );
     await notifyClient(bookingId, 'status_update');
+    sendBookingEmail(bookingId, 'cancellation');
 
     const bookingStartTime = booking?.time_slots?.start_time || booking?.start_time;
     const bookingEndTime = booking?.time_slots?.end_time || booking?.end_time;
@@ -135,6 +136,7 @@ export const UserBookings: React.FC = () => {
       `Klient usunął rezerwację: ${booking?.services?.name || '—'}`
     );
     await notifyClient(bookingId, 'status_update');
+    sendBookingEmail(bookingId, 'deleted');
 
     const { error } = await supabase
       .from('bookings')
@@ -234,6 +236,7 @@ export const UserBookings: React.FC = () => {
           `Klient zmienił termin rezerwacji: ${rescheduleBooking.services?.name || '—'} → nowy termin: ${newDateStr}`
         );
         await notifyClient(rescheduleBooking.id, 'status_update');
+        sendBookingEmail(rescheduleBooking.id, 'reschedule', `Nowy termin: ${newDateStr}`);
         const oldStart = rescheduleBooking.time_slots?.start_time || rescheduleBooking.start_time;
         const oldEnd = rescheduleBooking.time_slots?.end_time || rescheduleBooking.end_time;
         syncBookingToBooksy({
