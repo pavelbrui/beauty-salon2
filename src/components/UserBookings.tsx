@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { syncBookingToBooksy } from '../lib/booksySync';
 import { Booking, Service, TimeSlot } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { useViewMode } from '../hooks/useViewMode';
@@ -106,6 +107,18 @@ export const UserBookings: React.FC = () => {
       `Klient anulował rezerwację: ${booking?.services?.name || '—'} na ${dateStr}`
     );
     await notifyClient(bookingId, 'status_update');
+
+    const bookingStartTime = booking?.time_slots?.start_time || booking?.start_time;
+    const bookingEndTime = booking?.time_slots?.end_time || booking?.end_time;
+    if (bookingStartTime && bookingEndTime) {
+      syncBookingToBooksy({
+        action: 'remove_block',
+        bookingId,
+        startTime: bookingStartTime,
+        endTime: bookingEndTime,
+        stylistId: booking?.stylist_id,
+      });
+    }
 
     loadBookings();
   };
@@ -221,6 +234,17 @@ export const UserBookings: React.FC = () => {
           `Klient zmienił termin rezerwacji: ${rescheduleBooking.services?.name || '—'} → nowy termin: ${newDateStr}`
         );
         await notifyClient(rescheduleBooking.id, 'status_update');
+        const oldStart = rescheduleBooking.time_slots?.start_time || rescheduleBooking.start_time;
+        const oldEnd = rescheduleBooking.time_slots?.end_time || rescheduleBooking.end_time;
+        syncBookingToBooksy({
+          action: 'update_block',
+          bookingId: rescheduleBooking.id,
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+          stylistId: slot.stylistId,
+          oldStartTime: oldStart,
+          oldEndTime: oldEnd,
+        });
       } catch (notifyError) {
         console.error('Reschedule completed, but notifications failed:', notifyError);
       }

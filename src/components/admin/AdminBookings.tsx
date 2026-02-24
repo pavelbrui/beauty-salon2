@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
+import { syncBookingToBooksy } from '../../lib/booksySync';
 import { Booking, Service, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useViewMode } from '../../hooks/useViewMode';
@@ -541,6 +542,29 @@ export const AdminBookings: React.FC = () => {
           });
       }
 
+      // Sync to Booksy: update or remove block depending on status change
+      if (editForm.status === 'cancelled' && editingBooking.status !== 'cancelled') {
+        syncBookingToBooksy({
+          action: 'remove_block',
+          bookingId: editingBooking.id,
+          startTime: parsed.startIso,
+          endTime: parsed.endIso,
+          stylistId: editForm.stylistId,
+        });
+      } else if (editForm.status !== 'cancelled') {
+        const oldStart = editingBooking.start_time || editingBooking.time_slots?.start_time;
+        const oldEnd = editingBooking.end_time || editingBooking.time_slots?.end_time;
+        syncBookingToBooksy({
+          action: 'update_block',
+          bookingId: editingBooking.id,
+          startTime: parsed.startIso,
+          endTime: parsed.endIso,
+          stylistId: editForm.stylistId,
+          oldStartTime: oldStart,
+          oldEndTime: oldEnd,
+        });
+      }
+
       setEditingBooking(null);
       setEditForm(null);
       await loadData();
@@ -616,6 +640,14 @@ export const AdminBookings: React.FC = () => {
       if (linkSlotError) {
         console.error('Error linking created time slot to booking:', linkSlotError);
       }
+
+      syncBookingToBooksy({
+        action: 'create_block',
+        bookingId: newBooking.id,
+        startTime: parsed.startIso,
+        endTime: parsed.endIso,
+        stylistId: createForm.stylistId,
+      });
 
       setShowCreateModal(false);
       setCreateForm(emptyBookingForm);

@@ -203,3 +203,28 @@ export interface BooksyStylistMapping {
   // Joined data
   stylists?: { name: string; image_url?: string };
 }
+
+// Booksy outbound sync types
+export interface BooksySyncLog {
+  id: string;
+  booking_id?: string;
+  action: 'create_block' | 'update_block' | 'remove_block';
+  status: 'pending' | 'processing' | 'success' | 'failed';
+  start_time: string;
+  end_time: string;
+  stylist_name?: string;
+  error_message?: string;
+  screenshot_url?: string;
+  attempts: number;
+  created_at: string;
+  processed_at?: string;
+}
+
+export interface BooksySession {
+  id: string;
+  cookies: unknown[];
+  user_agent?: string;
+  last_used_at: string;
+  expires_at?: string;
+  is_valid: boolean;
+}

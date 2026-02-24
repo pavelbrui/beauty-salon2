@@ -8,6 +8,7 @@ import { BookingForm } from '../components/BookingForm';
 import { SuccessPopup } from '../components/SuccessPopup';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { syncBookingToBooksy } from '../lib/booksySync';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
 import { saveProfile } from '../lib/profile';
@@ -185,6 +186,13 @@ export const BookingPage: React.FC = () => {
           const dateStr = selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—';
           await notifyClient(data[0].id, 'confirmation');
           await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
+          syncBookingToBooksy({
+            action: 'create_block',
+            bookingId: data[0].id,
+            startTime: selectedSlot.startTime,
+            endTime: selectedSlot.endTime,
+            stylistId: selectedSlot.stylistId,
+          });
         } catch (notifyError) {
           console.error('Booking created, but notifications failed:', notifyError);
         }

@@ -3,6 +3,7 @@ import { format, addDays } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { syncBookingToBooksy } from '../lib/booksySync';
 import { saveProfile } from '../lib/profile';
 import { generateAvailableTimeSlots } from '../utils/timeSlots';
 import { getServiceName } from '../utils/serviceTranslation';
@@ -206,6 +207,13 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
           const dateStr = new Date(selectedSlot.startTime).toLocaleString('pl-PL');
           await notifyClient(data[0].id, 'confirmation');
           await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+          syncBookingToBooksy({
+            action: 'create_block',
+            bookingId: data[0].id,
+            startTime: selectedSlot.startTime,
+            endTime: selectedSlot.endTime,
+            stylistId: selectedSlot.stylistId,
+          });
         } catch (notifyError) {
           console.error('Quick booking created, but notifications failed:', notifyError);
         }

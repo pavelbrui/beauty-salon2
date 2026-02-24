@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { BooksyBooking, BooksyStylistMapping, Stylist } from '../../types';
+import { BooksyBooking, BooksyStylistMapping, BooksySyncLog, BooksySession, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
 import { translations } from '../../i18n/translations';
 import { format } from 'date-fns';
@@ -60,6 +60,14 @@ export const AdminBooksy: React.FC = () => {
   const [editingStylistId, setEditingStylistId] = useState<string>('');
   const [savingMapping, setSavingMapping] = useState(false);
 
+  // Booksy sync state
+  const [syncLogs, setSyncLogs] = useState<BooksySyncLog[]>([]);
+  const [booksySession, setBooksySession] = useState<BooksySession | null>(null);
+  const [showCookieModal, setShowCookieModal] = useState(false);
+  const [cookieInput, setCookieInput] = useState('');
+  const [savingCookies, setSavingCookies] = useState(false);
+  const [syncFilterStatus, setSyncFilterStatus] = useState<string>('all');
+
   useEffect(() => {
     loadData();
   }, []);
@@ -67,7 +75,7 @@ export const AdminBooksy: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [mappingsRes, stylistsRes, bookingsRes, logsRes] = await Promise.all([
+      const [mappingsRes, stylistsRes, bookingsRes, logsRes, syncLogsRes, sessionRes] = await Promise.all([
         supabase
           .from('booksy_stylist_mapping')
           .select('*, stylists(name, image_url)')
@@ -83,17 +91,30 @@ export const AdminBooksy: React.FC = () => {
           .select('id, received_at, from_address, subject, processing_status, rejection_reason, parsed_email_type, parsed_client_name, parsed_service_name, error_message, message_id, body_length, raw_html')
           .order('received_at', { ascending: false })
           .limit(50),
+        supabase
+          .from('booksy_sync_log')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(100),
+        supabase
+          .from('booksy_session')
+          .select('*')
+          .eq('id', 'default')
+          .maybeSingle(),
       ]);
 
       if (mappingsRes.error) console.error('Error loading mappings:', mappingsRes.error);
       if (stylistsRes.error) console.error('Error loading stylists:', stylistsRes.error);
       if (bookingsRes.error) console.error('Error loading booksy bookings:', bookingsRes.error);
       if (logsRes.error) console.error('Error loading email logs:', logsRes.error);
+      if (syncLogsRes.error) console.error('Error loading sync logs:', syncLogsRes.error);
 
       if (mappingsRes.data) setMappings(mappingsRes.data);
       if (stylistsRes.data) setStylists(stylistsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data);
       if (logsRes.data) setEmailLogs(logsRes.data);
+      if (syncLogsRes.data) setSyncLogs(syncLogsRes.data);
+      setBooksySession(sessionRes.data as BooksySession | null);
     } finally {
       setLoading(false);
     }
@@ -161,6 +182,79 @@ export const AdminBooksy: React.FC = () => {
       setSavingMapping(false);
     }
   };
+
+  // Save cookies from admin input
+  const saveCookies = async () => {
+    setSavingCookies(true);
+    try {
+      let parsed: unknown[];
+      try {
+        parsed = JSON.parse(cookieInput);
+        if (!Array.isArray(parsed)) throw new Error('Not an array');
+      } catch {
+        alert(language === 'pl' ? 'Nieprawidłowy format JSON. Wklej tablicę cookies.' : 'Invalid JSON format. Paste a cookies array.');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('booksy_session')
+        .upsert({
+          id: 'default',
+          cookies: parsed,
+          last_used_at: new Date().toISOString(),
+          is_valid: true,
+        });
+
+      if (error) {
+        console.error('Error saving cookies:', error);
+        alert(language === 'pl' ? 'Błąd zapisu cookies' : 'Error saving cookies');
+        return;
+      }
+
+      setShowCookieModal(false);
+      setCookieInput('');
+      loadData();
+    } finally {
+      setSavingCookies(false);
+    }
+  };
+
+  // Retry a failed sync
+  const retrySyncItem = async (log: BooksySyncLog) => {
+    const secret = import.meta.env.VITE_BOOKSY_SYNC_SECRET;
+    if (!secret) {
+      alert('VITE_BOOKSY_SYNC_SECRET not configured');
+      return;
+    }
+
+    // Reset status to pending
+    await supabase
+      .from('booksy_sync_log')
+      .update({ status: 'pending', error_message: null })
+      .eq('id', log.id);
+
+    // Fire background function
+    fetch('/.netlify/functions/booksy-sync-background', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: log.action,
+        bookingId: log.booking_id,
+        startTime: log.start_time,
+        endTime: log.end_time,
+        stylistName: log.stylist_name,
+        secret,
+      }),
+    }).catch(() => {});
+
+    loadData();
+  };
+
+  // Filtered sync logs
+  const filteredSyncLogs = syncLogs.filter((s) => {
+    if (syncFilterStatus !== 'all' && s.status !== syncFilterStatus) return false;
+    return true;
+  });
 
   // Filtered bookings
   const filteredBookings = bookings.filter((b) => {
@@ -652,6 +746,227 @@ export const AdminBooksy: React.FC = () => {
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">{getStatusBadge(booking.status)}</td>
                     <td className="px-3 py-3 whitespace-nowrap">{getSyncBadge(booking.sync_status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ====== Booksy Session Management ====== */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-amber-500">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+          {language === 'pl' ? 'Sesja Booksy' : language === 'ru' ? 'Сессия Booksy' : 'Booksy Session'}
+        </h3>
+
+        <div className="flex items-center gap-4 mb-4">
+          {/* Session status indicator */}
+          <div className="flex items-center gap-2">
+            <span className={`inline-block h-3 w-3 rounded-full ${
+              booksySession?.is_valid
+                ? 'bg-green-500'
+                : booksySession
+                  ? 'bg-red-500'
+                  : 'bg-gray-400'
+            }`} />
+            <span className="text-sm font-medium text-gray-700">
+              {booksySession?.is_valid
+                ? (language === 'pl' ? 'Sesja aktywna' : language === 'ru' ? 'Сессия активна' : 'Session active')
+                : booksySession
+                  ? (language === 'pl' ? 'Sesja wygasła' : language === 'ru' ? 'Сессия истекла' : 'Session expired')
+                  : (language === 'pl' ? 'Brak sesji' : language === 'ru' ? 'Нет сессии' : 'No session')}
+            </span>
+          </div>
+
+          {booksySession?.last_used_at && (
+            <span className="text-xs text-gray-500">
+              {language === 'pl' ? 'Ostatnio użyta' : 'Last used'}:{' '}
+              {format(new Date(booksySession.last_used_at), 'dd.MM.yyyy HH:mm', { locale })}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowCookieModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600"
+          >
+            {language === 'pl' ? 'Wklej cookies' : language === 'ru' ? 'Вставить cookies' : 'Paste cookies'}
+          </button>
+        </div>
+
+        <p className="mt-3 text-xs text-gray-500">
+          {language === 'pl'
+            ? 'Otwórz Booksy Pro w Chrome → F12 → Application → Cookies → booksy.com → skopiuj wszystkie jako JSON (użyj rozszerzenia EditThisCookie)'
+            : language === 'ru'
+              ? 'Откройте Booksy Pro в Chrome → F12 → Application → Cookies → booksy.com → скопируйте все как JSON (используйте расширение EditThisCookie)'
+              : 'Open Booksy Pro in Chrome → F12 → Application → Cookies → booksy.com → copy all as JSON (use EditThisCookie extension)'}
+        </p>
+      </div>
+
+      {/* Cookie Paste Modal */}
+      {showCookieModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              {language === 'pl' ? 'Wklej cookies z Booksy Pro' : 'Paste Booksy Pro cookies'}
+            </h4>
+            <textarea
+              value={cookieInput}
+              onChange={(e) => setCookieInput(e.target.value)}
+              placeholder='[{"name":"session_id","value":"...","domain":".booksy.com"}, ...]'
+              className="w-full h-48 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-xs font-mono"
+            />
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => { setShowCookieModal(false); setCookieInput(''); }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+              >
+                {language === 'pl' ? 'Anuluj' : 'Cancel'}
+              </button>
+              <button
+                onClick={saveCookies}
+                disabled={savingCookies || !cookieInput.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 disabled:opacity-50"
+              >
+                {savingCookies
+                  ? (language === 'pl' ? 'Zapisywanie...' : 'Saving...')
+                  : (language === 'pl' ? 'Zapisz' : 'Save')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====== Sync to Booksy Log ====== */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <ArrowPathIcon className="h-5 w-5 text-amber-500" />
+            {language === 'pl' ? 'Sync do Booksy' : language === 'ru' ? 'Синхронизация с Booksy' : 'Sync to Booksy'}
+            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+              {syncLogs.length}
+            </span>
+          </h3>
+
+          <select
+            value={syncFilterStatus}
+            onChange={(e) => setSyncFilterStatus(e.target.value)}
+            className="rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+          >
+            <option value="all">{language === 'pl' ? 'Wszystkie' : 'All'}</option>
+            <option value="pending">{language === 'pl' ? 'Oczekujące' : 'Pending'}</option>
+            <option value="processing">{language === 'pl' ? 'W trakcie' : 'Processing'}</option>
+            <option value="success">{language === 'pl' ? 'Sukces' : 'Success'}</option>
+            <option value="failed">{language === 'pl' ? 'Błąd' : 'Failed'}</option>
+          </select>
+        </div>
+
+        {filteredSyncLogs.length === 0 ? (
+          <p className="text-center text-gray-400 py-8 text-sm">
+            {language === 'pl' ? 'Brak logów synchronizacji' : 'No sync logs'}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    {language === 'pl' ? 'Czas' : 'Time'}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    {language === 'pl' ? 'Akcja' : 'Action'}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    {language === 'pl' ? 'Termin' : 'Slot'}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    {language === 'pl' ? 'Stylistka' : 'Stylist'}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Status
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    {language === 'pl' ? 'Błąd' : 'Error'}
+                  </th>
+                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                    {/* Actions */}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredSyncLogs.map((log) => (
+                  <tr
+                    key={log.id}
+                    className={
+                      log.status === 'failed' ? 'bg-red-50'
+                        : log.status === 'success' ? 'bg-green-50'
+                          : log.status === 'processing' ? 'bg-blue-50'
+                            : ''
+                    }
+                  >
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">
+                      {format(new Date(log.created_at), 'dd.MM HH:mm', { locale })}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                        log.action === 'create_block' ? 'bg-green-100 text-green-800'
+                          : log.action === 'update_block' ? 'bg-amber-100 text-amber-800'
+                            : 'bg-red-100 text-red-800'
+                      }`}>
+                        {log.action === 'create_block'
+                          ? (language === 'pl' ? 'Blokada' : 'Block')
+                          : log.action === 'update_block'
+                            ? (language === 'pl' ? 'Zmiana' : 'Update')
+                            : (language === 'pl' ? 'Usunięcie' : 'Remove')}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      {format(new Date(log.start_time), 'dd MMM HH:mm', { locale })} –{' '}
+                      {format(new Date(log.end_time), 'HH:mm')}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">
+                      {log.stylist_name || '—'}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                        log.status === 'success' ? 'bg-green-100 text-green-800'
+                          : log.status === 'failed' ? 'bg-red-100 text-red-800'
+                            : log.status === 'processing' ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {log.status === 'success' && <CheckCircleIcon className="h-3 w-3" />}
+                        {log.status === 'failed' && <XCircleIcon className="h-3 w-3" />}
+                        {log.status}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-red-600 max-w-[200px] truncate" title={log.error_message || ''}>
+                      {log.error_message || '—'}
+                      {log.screenshot_url && (
+                        <a
+                          href={log.screenshot_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-amber-600 underline hover:text-amber-700"
+                        >
+                          screenshot
+                        </a>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      {log.status === 'failed' && (
+                        <button
+                          onClick={() => retrySyncItem(log)}
+                          className="px-2 py-1 text-xs font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded"
+                        >
+                          {language === 'pl' ? 'Ponów' : 'Retry'}
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
