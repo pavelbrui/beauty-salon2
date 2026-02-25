@@ -20,9 +20,7 @@ export const BlogTeaser: React.FC = () => {
 
   const [posts, setPosts] = useState<BlogPost[]>([]);
 
-  useEffect(() => {
-    loadRecentPosts();
-  }, []);
+  useEffect(() => { loadRecentPosts(); }, []);
 
   const loadRecentPosts = async () => {
     const { data, error } = await supabase
@@ -31,7 +29,6 @@ export const BlogTeaser: React.FC = () => {
       .eq('is_published', true)
       .order('published_at', { ascending: false })
       .limit(3);
-
     if (error) console.error('Error loading blog posts:', error);
     if (data) setPosts(data as BlogPost[]);
   };
@@ -45,80 +42,53 @@ export const BlogTeaser: React.FC = () => {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    return date.toLocaleDateString(language === 'pl' ? 'pl-PL' : language === 'ru' ? 'ru-RU' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return date.toLocaleDateString(language === 'pl' ? 'pl-PL' : language === 'ru' ? 'ru-RU' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   if (posts.length === 0) return null;
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
-          {(bp?.recentBlog as string) || 'Najnowsze z naszego bloga'}
-        </h2>
+    <section className="py-24 bg-white">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-16 gap-6">
+          <div>
+            <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">Blog</span>
+            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3">
+              {(bp?.recentBlog as string) || 'Najnowsze z naszego bloga'}
+            </h2>
+          </div>
+          <LocalizedLink
+            to="/blog"
+            className="text-[13px] uppercase tracking-[0.15em] font-medium text-gray-900 border-b border-gray-900 pb-1 hover:text-rose-500 hover:border-rose-500 transition-colors self-start lg:self-auto"
+          >
+            {(bp?.viewAll as string) || 'Zobacz wszystkie artykuły'}
+          </LocalizedLink>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {posts.map(p => {
             const pTitle = getLocalizedField(p, 'title', language);
             const pExcerpt = getLocalizedField(p, 'excerpt', language);
-
             return (
               <LocalizedLink
                 key={p.id}
                 to={`/blog/${p.slug}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                className="group"
               >
-                <div className="relative overflow-hidden h-48">
+                <div className="relative overflow-hidden aspect-[4/3] mb-5">
                   {p.cover_image_url ? (
-                    <img
-                      src={p.cover_image_url}
-                      alt={pTitle}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
+                    <img src={p.cover_image_url} alt={pTitle} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms]" loading="lazy" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />
+                    <div className="w-full h-full bg-gray-100" />
                   )}
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm text-amber-700 rounded-full text-xs font-semibold">
-                      {getCategoryLabel(p.category)}
-                    </span>
-                  </div>
                 </div>
-
-                <div className="p-5">
-                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
-                    {pTitle}
-                  </h3>
-                  {pExcerpt && (
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">{pExcerpt}</p>
-                  )}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{formatDate(p.published_at)}</span>
-                    <span className="text-amber-600 font-medium">
-                      {(bp?.readMore as string) || 'Czytaj więcej'} &rarr;
-                    </span>
-                  </div>
-                </div>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-rose-500 font-medium">{getCategoryLabel(p.category)}</span>
+                <h3 className="text-xl font-serif font-bold text-gray-900 mt-2 mb-2 group-hover:text-rose-500 transition-colors line-clamp-2">{pTitle}</h3>
+                {pExcerpt && <p className="text-gray-400 text-sm line-clamp-2 mb-3">{pExcerpt}</p>}
+                <span className="text-xs text-gray-400">{formatDate(p.published_at)}</span>
               </LocalizedLink>
             );
           })}
-        </div>
-
-        <div className="text-center">
-          <LocalizedLink
-            to="/blog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-full font-medium hover:bg-amber-600 transition-colors"
-          >
-            {(bp?.viewAll as string) || 'Zobacz wszystkie artykuły'}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </LocalizedLink>
         </div>
       </div>
     </section>

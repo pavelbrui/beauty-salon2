@@ -62,7 +62,7 @@ export const AdminUsers: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-rose-500" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export const AdminUsers: React.FC = () => {
                   <span
                     className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                       p.role === 'admin'
-                        ? 'bg-amber-100 text-amber-800'
+                        ? 'bg-rose-100 text-rose-800'
                         : p.role === 'moderator'
                         ? 'bg-blue-100 text-blue-800'
                         : p.role === 'stylist'
@@ -116,7 +116,7 @@ export const AdminUsers: React.FC = () => {
                     value={p.role}
                     onChange={(e) => updateRole(p.id, e.target.value)}
                     disabled={savingId === p.id}
-                    className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-amber-500 focus:border-amber-500"
+                    className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-rose-500 focus:border-rose-500"
                   >
                     {ROLES.map((r) => (
                       <option key={r} value={r}>

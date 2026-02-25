@@ -147,17 +147,20 @@ export const AppointmentsPage: React.FC = () => {
   const categories = [...new Set(services.map(s => s.category))];
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7] overflow-x-hidden">
       <SEO
         title="Rezerwacja Online - Umów Wizytę"
-        description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
+        description="Zarezerwuj wizytę online w studio urody Anna Nowak w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
         canonical="/appointments"
         noindex
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {t.appointments}
-        </h1>
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+        <div className="mb-12">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">{language === 'pl' ? 'Rezerwacja' : language === 'ru' ? 'Бронирование' : 'Booking'}</span>
+          <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3">
+            {t.appointments}
+          </h1>
+        </div>
 
         {/* Show user's bookings if logged in */}
         {isLoggedIn && (
@@ -170,7 +173,7 @@ export const AppointmentsPage: React.FC = () => {
           <div className="lg:col-span-3">
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow p-6">
@@ -203,7 +206,7 @@ export const AppointmentsPage: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-4">{t.categoryLabel}</h3>
               <div>
                 <select
-                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >

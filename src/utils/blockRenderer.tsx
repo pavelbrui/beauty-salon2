@@ -21,7 +21,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
       const text = getLocalizedText(block, language);
       if (block.level === 2) {
         return (
-          <h2 key={block.id || index} className="text-2xl font-bold text-gray-900 mt-10 mb-4 pb-2 border-b border-amber-200">
+          <h2 key={block.id || index} className="text-2xl font-bold text-gray-900 mt-10 mb-4 pb-2 border-b border-rose-200">
             {text}
           </h2>
         );
@@ -47,7 +47,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
         <figure key={block.id || index} className="my-8">
           <img
             src={block.url}
-            alt={caption || 'Zabieg kosmetyczny – salon Katarzyna Brui Białystok'}
+            alt={caption || 'Zabieg kosmetyczny – studio Anna Nowak Białystok'}
             className="w-full max-h-[600px] rounded-xl shadow-lg"
             style={cropPositionToStyle(block.position)}
             loading="lazy"

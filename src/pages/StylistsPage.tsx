@@ -50,66 +50,54 @@ export const StylistsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="pt-16 min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+      <div className="pt-16 min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
       </div>
     );
   }
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7]">
       <SEO
         title="Nasi Specjaliści - Kosmetyczki i Stylistki"
-        description="Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs i pielęgnacji brwi."
+        description="Poznaj zespół doświadczonych kosmetyczek i stylistek studia Anna Nowak w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs i pielęgnacji brwi."
         canonical="/stylists"
-        keywords={[
-          'kosmetyczka Białystok',
-          'stylistka rzęs Białystok',
-          'linergistka Białystok',
-          'specjalistka makijażu permanentnego',
-          'specjalistka brwi Białystok',
-          'najlepsza kosmetyczka Białystok'
-        ]}
+        keywords={['kosmetyczka Białystok','stylistka rzęs Białystok','linergistka Białystok','specjalistka makijażu permanentnego']}
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.stylists}</h1>
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+        <div className="mb-14">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">
+            {language === 'pl' ? 'Nasz zespół' : language === 'ru' ? 'Наша команда' : 'Our team'}
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3">{t.stylists}</h1>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {stylists.map((stylist) => (
-            <div
-              key={stylist.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300"
-            >
-              <div className="relative h-80 bg-gray-200">
+            <div key={stylist.id} className="group bg-white border border-gray-100 hover:border-gray-200 transition-all duration-500 overflow-hidden">
+              <div className="relative h-96 bg-gray-100">
                 <img
                   src={stylist.image_url}
-                  alt={`${stylist.name} – ${getStylistRole(stylist, language)}, salon Katarzyna Brui Białystok`}
+                  alt={`${stylist.name} – ${getStylistRole(stylist, language)}, studio Anna Nowak Białystok`}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[800ms]"
                   onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d4d4d4"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'; }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-semibold">{stylist.name}</h3>
-                  <p className="text-amber-300">{getStylistRole(stylist, language)}</p>
-                </div>
               </div>
               <div className="p-6">
+                <h3 className="text-xl font-serif font-bold text-gray-900">{stylist.name}</h3>
+                <p className="text-rose-500 text-xs uppercase tracking-wider mt-1 mb-4">{getStylistRole(stylist, language)}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {getStylistSpecialties(stylist, language).map((specialty) => (
-                    <span
-                      key={specialty}
-                      className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
-                    >
+                    <span key={specialty} className="text-[10px] uppercase tracking-wider text-gray-400 border border-gray-200 px-2.5 py-1">
                       {specialty}
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-600">{getStylistDescription(stylist, language)}</p>
+                <p className="text-gray-400 text-sm leading-relaxed mb-5">{getStylistDescription(stylist, language)}</p>
                 <button
                   onClick={() => navigate(`/appointments?stylist=${stylist.id}`)}
-                  className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium 
-                           hover:bg-amber-600 transition-colors shadow-sm"
+                  className="w-full text-[12px] uppercase tracking-[0.15em] font-semibold py-3.5 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-all duration-300"
                 >
                   {t.bookNow}
                 </button>

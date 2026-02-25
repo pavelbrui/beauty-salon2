@@ -228,8 +228,8 @@ export const BookingPage: React.FC = () => {
 
   if (!service && !error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-rose-200 border-t-rose-500"></div>
       </div>
     );
   }
@@ -255,7 +255,7 @@ export const BookingPage: React.FC = () => {
     <main className="max-w-4xl mx-auto px-4 py-8">
       <SEO
         title={service ? `Rezerwacja - ${getServiceName(service, language)}` : 'Rezerwacja'}
-        description={service ? `Zarezerwuj wizytę: ${getServiceName(service, language)} w salonie Katarzyna Brui, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w salonie kosmetycznym Katarzyna Brui w Białymstoku.'}
+        description={service ? `Zarezerwuj wizytę: ${getServiceName(service, language)} w studio Anna Nowak, Białystok. Szybka rezerwacja online!` : 'Zarezerwuj wizytę w studio urody Anna Nowak w Białymstoku.'}
         canonical={`/booking/${serviceId}`}
         noindex
       />

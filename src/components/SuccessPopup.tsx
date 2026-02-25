@@ -27,13 +27,13 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1, transition: { duration: 0.3 } }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
     >
-      <div className="bg-white rounded-lg p-6 max-w-md w-full">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-rose-100/50">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+          <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-emerald-50 mb-5">
             <svg
-              className="h-6 w-6 text-green-600"
+              className="h-7 w-7 text-emerald-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -46,11 +46,11 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-xl font-serif font-bold text-gray-900 mb-2">
             {t.booking.success.title}
           </h3>
-          <div className="mt-4 text-sm text-gray-600">
-            <p className="font-medium">{getServiceName(service, language)}</p>
+          <div className="mt-4 text-sm text-gray-500">
+            <p className="font-medium text-gray-700">{getServiceName(service, language)}</p>
             <p className="mt-1">
               {format(parseISO(timeSlot.startTime), 'EEEE, d MMMM', { locale })}
             </p>
@@ -61,7 +61,7 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({
           <div className="mt-6">
             <button
               onClick={onClose}
-              className="w-full bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transform hover:scale-105 transition-all duration-200"
+              className="w-full bg-rose-500 text-white px-4 py-3 rounded-xl hover:bg-rose-600 transition-all font-medium hover:shadow-lg hover:shadow-rose-500/20"
             >
               {t.booking.success.close}
             </button>

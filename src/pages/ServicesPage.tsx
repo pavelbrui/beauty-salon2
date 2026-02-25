@@ -20,7 +20,7 @@ interface CategorySEO {
 const categorySEOData: Record<string, CategorySEO> = {
   'makijaż permanentny': {
     title: 'Makijaż Permanentny Białystok - Brwi, Usta, Oczy',
-    description: 'Profesjonalny makijaż permanentny brwi, ust i oczu w Białymstoku. Microblading, metoda pudrowa, ombre. Bezpłatna konsultacja. Umów wizytę - Salon Katarzyna Brui.',
+    description: 'Profesjonalny makijaż permanentny brwi, ust i oczu w Białymstoku. Microblading, metoda pudrowa, ombre. Bezpłatna konsultacja. Umów wizytę - Studio Anna Nowak.',
     keywords: [
       'makijaż permanentny Białystok',
       'makijaż permanentny brwi Białystok',
@@ -40,7 +40,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'stylizacja rzęs': {
     title: 'Przedłużanie i Laminacja Rzęs Białystok',
-    description: 'Profesjonalne przedłużanie rzęs 1:1, 2-3D, Russian Volume oraz laminacja i lifting rzęs w Białymstoku. Naturalne efekty. Umów wizytę - Salon Katarzyna Brui.',
+    description: 'Profesjonalne przedłużanie rzęs 1:1, 2-3D, Russian Volume oraz laminacja i lifting rzęs w Białymstoku. Naturalne efekty. Umów wizytę - Studio Anna Nowak.',
     keywords: [
       'przedłużanie rzęs Białystok',
       'stylizacja rzęs Białystok',
@@ -58,7 +58,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'rzęsy': {
     title: 'Lifting i Botox Rzęs Białystok',
-    description: 'Lifting rzęs, botox rzęs i henna rzęs w Białymstoku. Naturalnie podkręcone i odżywione rzęsy. Efekty do 8 tygodni. Umów wizytę - Salon Katarzyna Brui.',
+    description: 'Lifting rzęs, botox rzęs i henna rzęs w Białymstoku. Naturalnie podkręcone i odżywione rzęsy. Efekty do 8 tygodni. Umów wizytę - Studio Anna Nowak.',
     keywords: [
       'lifting rzęs Białystok',
       'laminacja rzęs Białystok',
@@ -90,7 +90,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'peeling węglowy': {
     title: 'Peeling Węglowy Białystok - Carbon Peel',
-    description: 'Laserowy peeling węglowy Black Doll w Białymstoku. Oczyszczanie porów, redukcja trądziku i przebarwień. Efekty po pierwszym zabiegu. Umów wizytę - Salon Katarzyna Brui.',
+    description: 'Laserowy peeling węglowy Black Doll w Białymstoku. Oczyszczanie porów, redukcja trądziku i przebarwień. Efekty po pierwszym zabiegu. Umów wizytę - Studio Anna Nowak.',
     keywords: [
       'peeling węglowy Białystok',
       'laserowy peeling węglowy Białystok',
@@ -106,7 +106,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'laserowe usuwanie': {
     title: 'Laserowe Usuwanie Tatuażu Białystok',
-    description: 'Laserowe usuwanie tatuaży i makijażu permanentnego w Białymstoku. Skuteczne zabiegi laserem. Konsultacja gratis. Umów wizytę - Salon Katarzyna Brui.',
+    description: 'Laserowe usuwanie tatuaży i makijażu permanentnego w Białymstoku. Skuteczne zabiegi laserem. Konsultacja gratis. Umów wizytę - Studio Anna Nowak.',
     keywords: [
       'usuwanie tatuażu Białystok',
       'laserowe usuwanie tatuażu Białystok',
@@ -122,7 +122,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'manicure': {
     title: 'Manicure Hybrydowy i Żelowy Białystok',
-    description: 'Manicure hybrydowy, żelowy i klasyczny w Białymstoku. Profesjonalna stylizacja paznokci, trwałe zdobienia. Umów wizytę online - Salon Katarzyna Brui.',
+    description: 'Manicure hybrydowy, żelowy i klasyczny w Białymstoku. Profesjonalna stylizacja paznokci, trwałe zdobienia. Umów wizytę online - Studio Anna Nowak.',
     keywords: [
       'manicure Białystok',
       'manicure hybrydowy Białystok',
@@ -139,7 +139,7 @@ const categorySEOData: Record<string, CategorySEO> = {
   },
   'pakiety': {
     title: 'Pakiety Zabiegów Kosmetycznych Białystok',
-    description: 'Pakiety zabiegów kosmetycznych w atrakcyjnych cenach. Makijaż permanentny, rzęsy, brwi, peeling węglowy. Oszczędź z pakietem - Salon Katarzyna Brui Białystok.',
+    description: 'Pakiety zabiegów kosmetycznych w atrakcyjnych cenach. Makijaż permanentny, rzęsy, brwi, peeling węglowy. Oszczędź z pakietem - Studio Anna Nowak Białystok.',
     keywords: [
       'pakiety zabiegów kosmetycznych Białystok',
       'pakiet makijaż permanentny',
@@ -266,7 +266,7 @@ export const ServicesPage: React.FC = () => {
     : serviceImages.permanentMakeup;
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-20 min-h-screen bg-[#FAF9F7]">
       <SEO
         title={seo.title}
         description={seo.description}
@@ -274,33 +274,37 @@ export const ServicesPage: React.FC = () => {
         image={categoryImage}
         keywords={seo.keywords}
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
-        
-        <div className="flex flex-wrap gap-2 justify-center mb-10">
-          <button
-            onClick={() => navigate('/services')}
-            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-              !category
-                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
-            }`}
-          >
-            {t.all}
-          </button>
-          {categories.map(cat => (
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+        <div className="mb-14">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-rose-500 font-medium">
+            {language === 'pl' ? 'Nasze usługi' : language === 'ru' ? 'Наши услуги' : 'Our services'}
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mt-3 mb-8">{t.services}</h1>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-                category === cat
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+              onClick={() => navigate('/services')}
+              className={`px-5 py-2.5 text-[12px] uppercase tracking-[0.1em] font-medium border transition-all duration-300 ${
+                !category
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-transparent text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
               }`}
             >
-              {getCategoryName(cat, language, (t as any).categories)}
+              {t.all}
             </button>
-          ))}
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`px-5 py-2.5 text-[12px] uppercase tracking-[0.1em] font-medium border transition-all duration-300 ${
+                  category === cat
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-transparent text-gray-500 border-gray-200 hover:border-gray-900 hover:text-gray-900'
+                }`}
+              >
+                {getCategoryName(cat, language, (t as any).categories)}
+              </button>
+            ))}
+          </div>
         </div>
         
         <div className="space-y-16">

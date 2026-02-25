@@ -4,7 +4,7 @@ export const translations = {
     appointments: 'Rezerwacje',
     stylists: 'Styliści',
     gallery: 'Galeria',
-    welcomeTitle: 'Salon Kosmetyczny Katarzyna Brui',
+    welcomeTitle: 'Studio Urody Anna Nowak',
     welcomeSubtitle: 'ul. Młynowa 46, Lok U11, 15-404, Białystok',
     bookNow: 'Zarezerwuj wizytę',
     reviewsLabel: 'opinii',
@@ -125,7 +125,7 @@ export const translations = {
     profile: 'Profil',
     profile_page: {
       title: 'Mój Profil',
-      seoDescription: 'Zarządzaj swoimi rezerwacjami w salonie Katarzyna Brui.',
+      seoDescription: 'Zarządzaj swoimi rezerwacjami w studio Anna Nowak.',
       myBookings: 'Moje Rezerwacje',
       noBookings: 'Nie masz jeszcze żadnych rezerwacji',
       noBookingsHint: 'Zarezerwuj swoją pierwszą wizytę i śledź ją tutaj',
@@ -191,7 +191,7 @@ export const translations = {
     blog_page: {
       heroTitle: 'Blog Beauty',
       heroSubtitle: 'Porady, trendy i wiedza o zabiegach kosmetycznych',
-      seoDescription: 'Blog kosmetyczny salonu Katarzyna Brui w Białymstoku. Porady o makijażu permanentnym, pielęgnacji brwi i rzęs, manicure. Sprawdź najnowsze trendy beauty.',
+      seoDescription: 'Blog kosmetyczny studia Anna Nowak w Białymstoku. Porady o makijażu permanentnym, pielęgnacji brwi i rzęs, manicure. Sprawdź najnowsze trendy beauty.',
       allPosts: 'Wszystkie',
       readMore: 'Czytaj więcej',
       backToBlog: 'Wróć do bloga',
@@ -299,7 +299,7 @@ export const translations = {
     appointments: 'Appointments',
     stylists: 'Stylists',
     gallery: 'Gallery',
-    welcomeTitle: 'Katarzyna Brui Beauty Salon',
+    welcomeTitle: 'Anna Nowak Beauty Studio',
     welcomeSubtitle: 'ul. Młynowa 46, Lok U11, 15-404, Białystok',
     bookNow: 'Book Now',
     reviewsLabel: 'reviews',
@@ -420,7 +420,7 @@ export const translations = {
     profile: 'Profile',
     profile_page: {
       title: 'My Profile',
-      seoDescription: 'Manage your bookings at Katarzyna Brui salon.',
+      seoDescription: 'Manage your bookings at Anna Nowak salon.',
       myBookings: 'My Bookings',
       noBookings: 'You have no bookings yet',
       noBookingsHint: 'Book your first appointment and track it here',
@@ -486,7 +486,7 @@ export const translations = {
     blog_page: {
       heroTitle: 'Beauty Blog',
       heroSubtitle: 'Tips, trends and knowledge about beauty treatments',
-      seoDescription: 'Beauty blog of Katarzyna Brui salon in Bialystok. Tips on permanent makeup, brow and lash care, manicure. Check out the latest beauty trends.',
+      seoDescription: 'Beauty blog of Anna Nowak salon in Bialystok. Tips on permanent makeup, brow and lash care, manicure. Check out the latest beauty trends.',
       allPosts: 'All',
       readMore: 'Read more',
       backToBlog: 'Back to blog',
