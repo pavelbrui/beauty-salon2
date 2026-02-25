@@ -289,7 +289,7 @@ export const AdminBookings: React.FC = () => {
       case 'cancelled':
         return { bg: 'bg-red-100', text: 'text-red-700', label: ab.statusCancelled || 'Anulowana' };
       default:
-        return { bg: 'bg-amber-100', text: 'text-amber-700', label: ab.statusPending || 'Oczekuje' };
+        return { bg: 'bg-brand-100', text: 'text-brand-600', label: ab.statusPending || 'Oczekuje' };
     }
   };
 
@@ -693,7 +693,7 @@ export const AdminBookings: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -717,7 +717,7 @@ export const AdminBookings: React.FC = () => {
             <button
               onClick={openCreate}
               disabled={services.length === 0}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
             >
               <PlusIcon className="h-4 w-4" />
               {ab.newBooking || 'Nowa rezerwacja'}
@@ -725,7 +725,7 @@ export const AdminBookings: React.FC = () => {
             <button
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'list' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
+                viewMode === 'list' ? 'bg-brand-100 text-brand-600' : 'text-gray-400 hover:text-gray-600'
               }`}
               title={ab.listView || 'Lista'}
             >
@@ -734,7 +734,7 @@ export const AdminBookings: React.FC = () => {
             <button
               onClick={() => setViewMode('calendar')}
               className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'calendar' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
+                viewMode === 'calendar' ? 'bg-brand-100 text-brand-600' : 'text-gray-400 hover:text-gray-600'
               }`}
               title={ab.calendarView || 'Kalendarz'}
             >
@@ -763,7 +763,7 @@ export const AdminBookings: React.FC = () => {
           <select
             value={filterService}
             onChange={e => setFilterService(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-brand focus:border-brand"
           >
             <option value="all">{ab.allServices || 'Wszystkie zabiegi'}</option>
             {services.map(s => (
@@ -775,7 +775,7 @@ export const AdminBookings: React.FC = () => {
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-brand focus:border-brand"
           >
             <option value="all">{ab.allStatuses || 'Wszystkie statusy'}</option>
             <option value="pending">{ab.statusPending || 'Oczekuje'}</option>
@@ -786,7 +786,7 @@ export const AdminBookings: React.FC = () => {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-sm text-amber-600 hover:text-amber-700 flex items-center gap-1"
+              className="text-sm text-brand-600 hover:text-brand-600 flex items-center gap-1"
             >
               <XMarkIcon className="h-4 w-4" />
               {ab.clearFilters || 'Wyczyść filtry'}
@@ -822,7 +822,7 @@ export const AdminBookings: React.FC = () => {
                       ? 'border-l-red-400 opacity-70'
                       : booking.status === 'confirmed'
                       ? 'border-l-green-400'
-                      : 'border-l-amber-400'
+                      : 'border-l-brand-400'
                   }`}
                 >
                   <div className="p-4">
@@ -846,14 +846,14 @@ export const AdminBookings: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm text-gray-600">
                           {dateInfo && (
                             <div className="flex items-center gap-1.5">
-                              <CalendarDaysIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                              <CalendarDaysIcon className="h-4 w-4 text-brand flex-shrink-0" />
                               <span className="capitalize truncate">{dateInfo.dayOfWeek}, {dateInfo.date}</span>
                             </div>
                           )}
 
                           {dateInfo && (
                             <div className="flex items-center gap-1.5">
-                              <ClockIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                              <ClockIcon className="h-4 w-4 text-brand flex-shrink-0" />
                               <span>
                                 {dateInfo.time}
                                 {endInfo ? ` – ${endInfo.time}` : ''}
@@ -863,7 +863,7 @@ export const AdminBookings: React.FC = () => {
                           )}
 
                           <div className="flex items-center gap-1.5">
-                            <UserIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                            <UserIcon className="h-4 w-4 text-brand flex-shrink-0" />
                             <span className="truncate">
                               {booking.stylists?.name || (ab.noStylist || 'Brak stylistki')}
                             </span>
@@ -871,7 +871,7 @@ export const AdminBookings: React.FC = () => {
 
                           {price != null && (
                             <div className="flex items-center gap-1.5">
-                              <CurrencyDollarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                              <CurrencyDollarIcon className="h-4 w-4 text-brand flex-shrink-0" />
                               <span className="font-medium">
                                 {(price / 100).toFixed(0)} PLN
                                 {hasCustomPrice ? ` (${ab.customPrice || 'indywidualna'})` : ''}
@@ -896,7 +896,7 @@ export const AdminBookings: React.FC = () => {
                       <div className="flex-shrink-0">
                         <button
                           onClick={() => openEdit(booking)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
                         >
                           <PencilIcon className="h-4 w-4" />
                           {ab.edit || 'Edytuj'}
@@ -959,7 +959,7 @@ export const AdminBookings: React.FC = () => {
                 >
                   <div className={`text-xs font-medium mb-1 px-1 ${
                     isToday
-                      ? 'bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                      ? 'bg-brand text-white rounded-full w-6 h-6 flex items-center justify-center'
                       : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'
                   }`}>
                     {format(day, 'd')}
@@ -1039,7 +1039,7 @@ export const AdminBookings: React.FC = () => {
                   <select
                     value={editForm.serviceId}
                     onChange={e => handleEditServiceChange(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   >
                     <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
                     {services.map(service => (
@@ -1057,7 +1057,7 @@ export const AdminBookings: React.FC = () => {
                   <select
                     value={editForm.stylistId}
                     onChange={e => setEditForm({ ...editForm, stylistId: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   >
                     <option value="">{ab.noStylist || 'Brak stylistki'}</option>
                     {editAvailableStylists.map(stylist => (
@@ -1078,7 +1078,7 @@ export const AdminBookings: React.FC = () => {
                     type="datetime-local"
                     value={editForm.startAt}
                     onChange={e => setEditForm({ ...editForm, startAt: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
 
@@ -1111,7 +1111,7 @@ export const AdminBookings: React.FC = () => {
                     step="1"
                     value={editForm.pricePln}
                     onChange={e => setEditForm({ ...editForm, pricePln: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                     placeholder="0"
                   />
                   <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
@@ -1122,7 +1122,7 @@ export const AdminBookings: React.FC = () => {
                       if (!service) return;
                       setEditForm({ ...editForm, pricePln: formatPricePlnFromCents(service.price) });
                     }}
-                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                    className="text-xs text-brand-600 bg-brand-50 hover:bg-brand-100 px-2 py-1 rounded-md whitespace-nowrap"
                   >
                     {ab.useServicePrice || 'Cena z usługi'}
                   </button>
@@ -1162,7 +1162,7 @@ export const AdminBookings: React.FC = () => {
                     type="text"
                     value={editForm.contactName}
                     onChange={e => setEditForm({ ...editForm, contactName: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
                 <div>
@@ -1173,7 +1173,7 @@ export const AdminBookings: React.FC = () => {
                     type="text"
                     value={editForm.contactPhone}
                     onChange={e => setEditForm({ ...editForm, contactPhone: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
                 <div>
@@ -1184,7 +1184,7 @@ export const AdminBookings: React.FC = () => {
                     type="email"
                     value={editForm.contactEmail}
                     onChange={e => setEditForm({ ...editForm, contactEmail: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
               </div>
@@ -1197,7 +1197,7 @@ export const AdminBookings: React.FC = () => {
                   rows={3}
                   value={editForm.notes}
                   onChange={e => setEditForm({ ...editForm, notes: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                 />
               </div>
             </div>
@@ -1216,7 +1216,7 @@ export const AdminBookings: React.FC = () => {
               <button
                 onClick={saveEdit}
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
               >
                 {saving ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -1266,7 +1266,7 @@ export const AdminBookings: React.FC = () => {
                   <select
                     value={createForm.serviceId}
                     onChange={e => handleCreateServiceChange(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   >
                     <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
                     {services.map(service => (
@@ -1284,7 +1284,7 @@ export const AdminBookings: React.FC = () => {
                   <select
                     value={createForm.stylistId}
                     onChange={e => setCreateForm({ ...createForm, stylistId: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   >
                     <option value="">{ab.noStylist || 'Brak stylistki'}</option>
                     {createAvailableStylists.map(stylist => (
@@ -1305,7 +1305,7 @@ export const AdminBookings: React.FC = () => {
                     type="datetime-local"
                     value={createForm.startAt}
                     onChange={e => setCreateForm({ ...createForm, startAt: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
 
@@ -1338,7 +1338,7 @@ export const AdminBookings: React.FC = () => {
                     step="1"
                     value={createForm.pricePln}
                     onChange={e => setCreateForm({ ...createForm, pricePln: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                     placeholder="0"
                   />
                   <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
@@ -1349,7 +1349,7 @@ export const AdminBookings: React.FC = () => {
                       if (!service) return;
                       setCreateForm({ ...createForm, pricePln: formatPricePlnFromCents(service.price) });
                     }}
-                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                    className="text-xs text-brand-600 bg-brand-50 hover:bg-brand-100 px-2 py-1 rounded-md whitespace-nowrap"
                   >
                     {ab.useServicePrice || 'Cena z usługi'}
                   </button>
@@ -1389,7 +1389,7 @@ export const AdminBookings: React.FC = () => {
                     type="text"
                     value={createForm.contactName}
                     onChange={e => setCreateForm({ ...createForm, contactName: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
                 <div>
@@ -1400,7 +1400,7 @@ export const AdminBookings: React.FC = () => {
                     type="text"
                     value={createForm.contactPhone}
                     onChange={e => setCreateForm({ ...createForm, contactPhone: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
                 <div>
@@ -1411,7 +1411,7 @@ export const AdminBookings: React.FC = () => {
                     type="email"
                     value={createForm.contactEmail}
                     onChange={e => setCreateForm({ ...createForm, contactEmail: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                   />
                 </div>
               </div>
@@ -1424,7 +1424,7 @@ export const AdminBookings: React.FC = () => {
                   rows={3}
                   value={createForm.notes}
                   onChange={e => setCreateForm({ ...createForm, notes: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand focus:border-brand"
                 />
               </div>
             </div>
@@ -1442,7 +1442,7 @@ export const AdminBookings: React.FC = () => {
               <button
                 onClick={createBooking}
                 disabled={creating}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
               >
                 {creating ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

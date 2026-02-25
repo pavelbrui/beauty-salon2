@@ -224,7 +224,7 @@ export const AdminStylists: React.FC = () => {
             setSaveError(null);
             setIsModalOpen(true);
           }}
-          className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"
+          className="bg-brand text-white px-4 py-2 rounded-md hover:bg-brand-600"
         >
           Dodaj stylistę
         </button>
@@ -253,12 +253,12 @@ export const AdminStylists: React.FC = () => {
             </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold">{stylist.name}</h3>
-              <p className="text-amber-600">{stylist.role}</p>
+              <p className="text-brand-600">{stylist.role}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {stylist.specialties.map((specialty) => (
                   <span
                     key={specialty}
-                    className="px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
+                    className="px-2 py-1 bg-brand-100 text-brand-800 rounded-full text-sm"
                   >
                     {specialty}
                   </span>
@@ -267,7 +267,7 @@ export const AdminStylists: React.FC = () => {
               <p className="mt-2 text-gray-600">{stylist.description}</p>
               <button
                 onClick={() => handleEdit(stylist)}
-                className="mt-4 text-amber-600 hover:text-amber-700"
+                className="mt-4 text-brand-600 hover:text-brand-600"
               >
                 Edytuj
               </button>
@@ -318,7 +318,7 @@ export const AdminStylists: React.FC = () => {
                   type="text"
                   name="name"
                   defaultValue={editingStylist?.name}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
@@ -333,34 +333,34 @@ export const AdminStylists: React.FC = () => {
                   name="role"
                   defaultValue={editingStylist?.role}
                   onBlur={(e) => handleAutoTranslateRole(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Stanowisko (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={roleEn}
                   onChange={(e) => setRoleEn(e.target.value)}
                   placeholder="English role (auto-translated)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Stanowisko (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={roleRu}
                   onChange={(e) => setRoleRu(e.target.value)}
                   placeholder="Должность (авто-перевод)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
 
@@ -376,7 +376,7 @@ export const AdminStylists: React.FC = () => {
                     <img
                       src={getCurrentImageUrl()}
                       alt="Podgląd"
-                      className="w-24 h-24 rounded-full object-cover border-2 border-amber-300"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-brand-400"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none';
                       }}
@@ -391,7 +391,7 @@ export const AdminStylists: React.FC = () => {
                     onClick={() => setImageMode('upload')}
                     className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                       imageMode === 'upload'
-                        ? 'bg-amber-500 text-white'
+                        ? 'bg-brand text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -402,7 +402,7 @@ export const AdminStylists: React.FC = () => {
                     onClick={() => setImageMode('url')}
                     className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                       imageMode === 'url'
-                        ? 'bg-amber-500 text-white'
+                        ? 'bg-brand text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -421,11 +421,11 @@ export const AdminStylists: React.FC = () => {
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-md file:border-0
                         file:text-sm file:font-semibold
-                        file:bg-amber-50 file:text-amber-700
-                        hover:file:bg-amber-100"
+                        file:bg-brand-50 file:text-brand-600
+                        hover:file:bg-brand-100"
                     />
                     {uploading && (
-                      <div className="mt-2 flex items-center gap-2 text-sm text-amber-600">
+                      <div className="mt-2 flex items-center gap-2 text-sm text-brand-600">
                         <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -444,7 +444,7 @@ export const AdminStylists: React.FC = () => {
                     value={imageUrlInput}
                     onChange={(e) => setImageUrlInput(e.target.value)}
                     placeholder="https://example.com/photo.jpg"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   />
                 )}
 
@@ -463,34 +463,34 @@ export const AdminStylists: React.FC = () => {
                   name="specialties"
                   defaultValue={editingStylist?.specialties.join(', ')}
                   onBlur={(e) => handleAutoTranslateSpec(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Specjalizacje (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={specEn}
                   onChange={(e) => setSpecEn(e.target.value)}
                   placeholder="English specialties, comma-separated"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Specjalizacje (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={specRu}
                   onChange={(e) => setSpecRu(e.target.value)}
                   placeholder="Специализации (авто-перевод)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
 
@@ -503,7 +503,7 @@ export const AdminStylists: React.FC = () => {
                   name="description"
                   defaultValue={editingStylist?.description}
                   onBlur={(e) => handleAutoTranslateDesc(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={3}
                   required
                 />
@@ -511,26 +511,26 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
                   placeholder="English description (auto-translated)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={2}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descRu}
                   onChange={(e) => setDescRu(e.target.value)}
                   placeholder="Описание на русском (авто-перевод)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={2}
                 />
               </div>
@@ -547,7 +547,7 @@ export const AdminStylists: React.FC = () => {
                 <button
                   type="submit"
                   disabled={saving || uploading}
-                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {saving && (
                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">

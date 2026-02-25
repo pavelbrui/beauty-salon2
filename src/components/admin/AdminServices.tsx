@@ -316,7 +316,7 @@ export const AdminServices = () => {
             setImageUploadError(null);
             setIsModalOpen(true);
           }}
-          className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"
+          className="bg-brand text-white px-4 py-2 rounded-md hover:bg-brand-600"
         >
           Dodaj usługę
         </button>
@@ -340,7 +340,7 @@ export const AdminServices = () => {
           <select
             value={filterCategory}
             onChange={e => setFilterCategory(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-brand focus:border-brand"
           >
             <option value="all">Wszystkie kategorie</option>
             {categories.map(cat => (
@@ -355,7 +355,7 @@ export const AdminServices = () => {
           {hasActiveFilters && (
             <button
               onClick={() => { setFilterStylist('all'); setFilterCategory('all'); }}
-              className="text-sm text-amber-600 hover:text-amber-700 flex items-center gap-1"
+              className="text-sm text-brand-600 hover:text-brand-600 flex items-center gap-1"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -398,7 +398,7 @@ export const AdminServices = () => {
                   <div className="mt-2 flex items-center gap-3 justify-end">
                     <button
                       onClick={() => handleEdit(service)}
-                      className="text-amber-600 hover:text-amber-700"
+                      className="text-brand-600 hover:text-brand-600"
                     >
                       Edytuj
                     </button>
@@ -465,7 +465,7 @@ export const AdminServices = () => {
                             );
                           }
                         }}
-                        className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-brand-600 focus:ring-brand border-gray-300 rounded"
                       />
                       <span className="ml-2 text-sm text-gray-600">
                         {stylist.name}
@@ -483,34 +483,34 @@ export const AdminServices = () => {
                   name="name"
                   defaultValue={editingService?.name}
                   onBlur={(e) => handleAutoTranslateName(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nazwa (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={nameEn}
                   onChange={(e) => setNameEn(e.target.value)}
                   placeholder="English name (auto-translated)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nazwa (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
                   value={nameRu}
                   onChange={(e) => setNameRu(e.target.value)}
                   placeholder="Русское название (авто-перевод)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
               <div>
@@ -521,7 +521,7 @@ export const AdminServices = () => {
                   type="text"
                   name="category"
                   defaultValue={editingService?.category}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
@@ -534,7 +534,7 @@ export const AdminServices = () => {
                   name="price"
                   step="0.01"
                   defaultValue={editingService ? (editingService.price / 100).toFixed(2) : ''}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
@@ -546,7 +546,7 @@ export const AdminServices = () => {
                   type="number"
                   name="duration"
                   defaultValue={editingService?.duration}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   required
                 />
               </div>
@@ -558,33 +558,33 @@ export const AdminServices = () => {
                   name="description"
                   defaultValue={editingService?.description}
                   onBlur={(e) => handleAutoTranslateDesc(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={3}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
                   placeholder="English description (auto-translated)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={2}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translating && <span className="ml-2 text-xs text-brand animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descRu}
                   onChange={(e) => setDescRu(e.target.value)}
                   placeholder="Описание на русском (авто-перевод)"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={2}
                 />
               </div>
@@ -624,11 +624,11 @@ export const AdminServices = () => {
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
                       file:text-sm file:font-semibold
-                      file:bg-amber-50 file:text-amber-700
-                      hover:file:bg-amber-100"
+                      file:bg-brand-50 file:text-brand-600
+                      hover:file:bg-brand-100"
                   />
                   {uploadingImage && (
-                    <div className="mt-2 flex items-center gap-2 text-sm text-amber-600">
+                    <div className="mt-2 flex items-center gap-2 text-sm text-brand-600">
                       <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -660,7 +660,7 @@ export const AdminServices = () => {
                 <button
                   type="submit"
                   disabled={saving || uploadingImage}
-                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {saving && (
                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">

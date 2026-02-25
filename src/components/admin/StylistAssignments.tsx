@@ -131,7 +131,7 @@ export const StylistAssignments: React.FC = () => {
                             a => a.stylist_id === stylist.id && a.service_id === service.id
                           )}
                           onChange={() => toggleAssignment(stylist.id, service.id)}
-                          className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-brand-600 focus:ring-brand border-gray-300 rounded"
                         />
                       </td>
                     ))}

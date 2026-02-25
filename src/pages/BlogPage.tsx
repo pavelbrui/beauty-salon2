@@ -99,9 +99,9 @@ export const BlogPage: React.FC = () => {
   if (slug) {
     if (loading) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-dark">
           <div className="flex justify-center items-center py-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
           </div>
         </main>
       );
@@ -109,12 +109,12 @@ export const BlogPage: React.FC = () => {
 
     if (!post) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-dark">
           <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-cream mb-4">
               {language === 'pl' ? 'Artykuł nie znaleziony' : language === 'ru' ? 'Статья не найдена' : 'Article not found'}
             </h1>
-            <LocalizedLink to="/blog" className="text-amber-600 hover:text-amber-700 font-medium">
+            <LocalizedLink to="/blog" className="text-brand-600 hover:text-brand-600 font-medium">
               {(bp?.backToBlog as string) || 'Wróć do bloga'}
             </LocalizedLink>
           </div>
@@ -143,7 +143,7 @@ export const BlogPage: React.FC = () => {
     };
 
     return (
-      <main className="pt-16 min-h-screen bg-neutral-50">
+      <main className="pt-16 min-h-screen bg-dark">
         <SEO
           title={postTitle}
           description={postExcerpt}
@@ -159,20 +159,20 @@ export const BlogPage: React.FC = () => {
           {post.cover_image_url ? (
             <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" loading="lazy" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
+            <div className="w-full h-full bg-gradient-to-br from-brand-400 via-brand to-brand-600" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
             <div className="max-w-4xl mx-auto">
-              <span className="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-medium mb-3">
+              <span className="inline-block px-3 py-1 bg-brand text-white rounded-full text-sm font-medium mb-3">
                 {getCategoryLabel(post.category)}
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{postTitle}</h1>
               <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
                 <span>{post.author}</span>
-                <span className="w-1 h-1 rounded-full bg-white/50" />
+                <span className="w-1 h-1 rounded-full bg-dark-50/50" />
                 <span>{formatDate(post.published_at)}</span>
-                <span className="w-1 h-1 rounded-full bg-white/50" />
+                <span className="w-1 h-1 rounded-full bg-dark-50/50" />
                 <span>{post.reading_time_minutes} {(bp?.readingTime as string) || 'min czytania'}</span>
               </div>
             </div>
@@ -181,7 +181,7 @@ export const BlogPage: React.FC = () => {
 
         {/* Back link */}
         <div className="max-w-4xl mx-auto px-4 pt-6">
-          <LocalizedLink to="/blog" className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 font-medium">
+          <LocalizedLink to="/blog" className="inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-600 font-medium">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -192,7 +192,7 @@ export const BlogPage: React.FC = () => {
         {/* Article content */}
         <article className="max-w-4xl mx-auto px-4 py-8">
           {postExcerpt && (
-            <p className="text-lg text-gray-600 leading-relaxed mb-8 pb-8 border-b border-gray-200 italic">
+            <p className="text-lg text-cream-300 leading-relaxed mb-8 pb-8 border-b border-brand/20 italic">
               {postExcerpt}
             </p>
           )}
@@ -203,13 +203,13 @@ export const BlogPage: React.FC = () => {
 
         {/* CTA */}
         <div className="max-w-4xl mx-auto px-4 pb-8">
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          <div className="bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl p-8 md:p-10 text-center">
+            <h2 className="text-2xl font-bold text-cream mb-3">
               {(bp?.bookCta as string) || 'Chcesz wypróbować? Umów wizytę!'}
             </h2>
             <LocalizedLink
               to="/services"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-xl font-medium hover:bg-brand-600 transition-colors shadow-lg shadow-brand-200"
             >
               {(bp?.bookButton as string) || 'Zarezerwuj wizytę'}
             </LocalizedLink>
@@ -219,7 +219,7 @@ export const BlogPage: React.FC = () => {
         {/* Related posts */}
         {related.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 pb-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            <h2 className="text-2xl font-bold text-cream mb-8">
               {(bp?.relatedPosts as string) || 'Podobne artykuły'}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -227,18 +227,18 @@ export const BlogPage: React.FC = () => {
                 <LocalizedLink
                   key={r.id}
                   to={`/blog/${r.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="group bg-dark-50 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative overflow-hidden h-48">
                     {r.cover_image_url ? (
                       <img src={r.cover_image_url} alt={getLocalizedField(r, 'title', language)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600" />
+                      <div className="w-full h-full bg-gradient-to-br from-brand-400 to-brand-600" />
                     )}
                   </div>
                   <div className="p-5">
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{getLocalizedField(r, 'title', language)}</h3>
-                    <p className="text-sm text-gray-500">{formatDate(r.published_at)}</p>
+                    <h3 className="font-bold text-cream mb-2 line-clamp-2">{getLocalizedField(r, 'title', language)}</h3>
+                    <p className="text-sm text-cream-300">{formatDate(r.published_at)}</p>
                   </div>
                 </LocalizedLink>
               ))}
@@ -254,7 +254,7 @@ export const BlogPage: React.FC = () => {
   const pageDesc = (bp?.seoDescription as string) || '';
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-dark">
       <SEO
         title={pageTitle}
         description={pageDesc}
@@ -291,8 +291,8 @@ export const BlogPage: React.FC = () => {
             onClick={() => setActiveCategory('all')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               activeCategory === 'all'
-                ? 'bg-amber-500 text-white'
-                : 'bg-white text-gray-600 hover:bg-amber-50 border border-gray-200'
+                ? 'bg-brand text-white'
+                : 'bg-dark-50 text-cream-300 hover:bg-brand-50 border border-brand/20'
             }`}
           >
             {(bp?.allPosts as string) || 'Wszystkie'}
@@ -303,8 +303,8 @@ export const BlogPage: React.FC = () => {
               onClick={() => setActiveCategory(key)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 activeCategory === key
-                  ? 'bg-amber-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-amber-50 border border-gray-200'
+                  ? 'bg-brand text-white'
+                  : 'bg-dark-50 text-cream-300 hover:bg-brand-50 border border-brand/20'
               }`}
             >
               {cats?.[key] || getCategoryLabel(key)}
@@ -317,11 +317,11 @@ export const BlogPage: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
           </div>
         ) : filteredPosts.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">{(bp?.noPosts as string) || 'Brak artykułów'}</p>
+            <p className="text-cream-300 text-lg">{(bp?.noPosts as string) || 'Brak artykułów'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -333,7 +333,7 @@ export const BlogPage: React.FC = () => {
                 <LocalizedLink
                   key={p.id}
                   to={`/blog/${p.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="group bg-dark-50 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative overflow-hidden h-56">
                     {p.cover_image_url ? (
@@ -344,30 +344,30 @@ export const BlogPage: React.FC = () => {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />
+                      <div className="w-full h-full bg-gradient-to-br from-brand-400 to-brand-600 group-hover:from-brand group-hover:to-brand-600 transition-all duration-500" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-amber-700 rounded-full text-xs font-semibold">
+                      <span className="px-3 py-1 bg-dark-50/90 backdrop-blur-sm text-brand-600 rounded-full text-xs font-semibold">
                         {getCategoryLabel(p.category)}
                       </span>
                     </div>
                   </div>
 
                   <div className="p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                    <h2 className="text-lg font-bold text-cream mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors">
                       {pTitle}
                     </h2>
                     {pExcerpt && (
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">{pExcerpt}</p>
+                      <p className="text-cream-300 text-sm leading-relaxed mb-4 line-clamp-2">{pExcerpt}</p>
                     )}
                     <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-gray-500">
+                      <div className="flex items-center gap-2 text-cream-300">
                         <span>{formatDate(p.published_at)}</span>
                         <span className="w-1 h-1 rounded-full bg-gray-300" />
                         <span>{p.reading_time_minutes} {(bp?.readingTime as string) || 'min'}</span>
                       </div>
-                      <span className="text-amber-600 font-medium group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-1">
+                      <span className="text-brand-600 font-medium group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-1">
                         {(bp?.readMore as string) || 'Czytaj więcej'}
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

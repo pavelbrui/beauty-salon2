@@ -147,7 +147,7 @@ export const AppointmentsPage: React.FC = () => {
   const categories = [...new Set(services.map(s => s.category))];
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
+    <main className="pt-16 min-h-screen bg-dark overflow-x-hidden">
       <SEO
         title="Rezerwacja Online - Umów Wizytę"
         description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
@@ -155,7 +155,7 @@ export const AppointmentsPage: React.FC = () => {
         noindex
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        <h1 className="text-3xl font-bold text-cream mb-8">
           {t.appointments}
         </h1>
 
@@ -170,11 +170,11 @@ export const AppointmentsPage: React.FC = () => {
           <div className="lg:col-span-3">
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600 mb-6">{t.pleaseSelectService}</p>
+              <div className="bg-dark-50 rounded-lg shadow p-6">
+                <p className="text-cream-300 mb-6">{t.pleaseSelectService}</p>
                 <ServiceList
                   services={filteredServices}
                   onServiceSelect={handleServiceSelect}
@@ -186,8 +186,8 @@ export const AppointmentsPage: React.FC = () => {
 
           <div className="lg:col-span-1 space-y-6">
             {/* Stylist filter */}
-            <div className="bg-white rounded-lg shadow p-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">{t.stylistLabel}</h3>
+            <div className="bg-dark-50 rounded-lg shadow p-4">
+              <h3 className="text-lg font-medium text-cream mb-4">{t.stylistLabel}</h3>
               <StylistFilter
                 stylists={stylists}
                 selectedId={selectedStylistId}
@@ -199,11 +199,11 @@ export const AppointmentsPage: React.FC = () => {
             </div>
 
             {/* Category filter */}
-            <div className="bg-white rounded-lg shadow p-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">{t.categoryLabel}</h3>
+            <div className="bg-dark-50 rounded-lg shadow p-4">
+              <h3 className="text-lg font-medium text-cream mb-4">{t.categoryLabel}</h3>
               <div>
                 <select
-                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >

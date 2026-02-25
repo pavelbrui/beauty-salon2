@@ -27,7 +27,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
+    <div className="bg-dark-50 border border-brand/20 overflow-hidden transform hover:scale-[1.02] hover:border-brand/40 transition-all duration-300">
       {service.imageUrl && (
         <div className="relative h-48 overflow-hidden">
           <img
@@ -36,25 +36,25 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent" />
         </div>
       )}
       <div className="p-8">
-        <h3 className="text-xl font-semibold text-gray-900">{getServiceName(service, language)}</h3>
+        <h3 className="font-display text-xl font-semibold text-cream">{getServiceName(service, language)}</h3>
         <div className="mt-2 flex justify-between items-center">
-          <span className="text-2xl font-bold text-amber-600">
+          <span className="text-2xl font-bold text-brand">
             {formatPrice(service.price)}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-cream-300">
             {formatDuration(service.duration)}
           </span>
         </div>
         {service.description && (
-          <p className="mt-4 text-gray-600">{getServiceDescription(service, language)}</p>
+          <p className="mt-4 text-cream-300">{getServiceDescription(service, language)}</p>
         )}
         <button
           onClick={() => navigate(`/booking/${service.id}`)}
-          className="mt-6 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+          className="mt-6 w-full bg-brand text-dark py-3 px-6 font-semibold hover:bg-brand-400 transition-colors"
         >
           {t.bookNow}
         </button>

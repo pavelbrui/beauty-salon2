@@ -120,10 +120,10 @@ export const AdminGallery: React.FC = () => {
           />
           <label
             htmlFor="image-upload"
-            className={`inline-block bg-amber-500 text-white px-4 py-2 rounded-md transition-colors ${
+            className={`inline-block bg-brand text-white px-4 py-2 rounded-md transition-colors ${
               uploading 
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'hover:bg-amber-600 cursor-pointer'
+                : 'hover:bg-brand-600 cursor-pointer'
             }`}
           >
             {uploading ? 'Dodawanie...' : 'Dodaj zdjęcie'}
@@ -200,7 +200,7 @@ export const AdminGallery: React.FC = () => {
                 <textarea
                   name="description"
                   defaultValue={selectedImage.description}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                   rows={3}
                 />
               </div>
@@ -212,7 +212,7 @@ export const AdminGallery: React.FC = () => {
                   type="text"
                   name="category"
                   defaultValue={selectedImage.category}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand"
                 />
               </div>
               <div className="flex justify-end space-x-3">
@@ -225,7 +225,7 @@ export const AdminGallery: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600"
+                  className="px-4 py-2 bg-brand text-white rounded-md hover:bg-brand-600"
                 >
                   Zapisz
                 </button>

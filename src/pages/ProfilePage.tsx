@@ -83,16 +83,16 @@ export const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <main className="pt-16 min-h-screen bg-neutral-50">
+      <main className="pt-16 min-h-screen bg-dark">
         <div className="flex justify-center py-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand" />
         </div>
       </main>
     );
   }
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-dark">
       <SEO
         title={t.profile_page?.title || 'Mój Profil'}
         description={t.profile_page?.seoDescription || 'Zarządzaj swoimi rezerwacjami.'}
@@ -102,22 +102,22 @@ export const ProfilePage: React.FC = () => {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
-          <div className="h-24 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500" />
+        <div className="bg-dark-50 rounded-2xl shadow-sm overflow-hidden mb-8">
+          <div className="h-24 bg-gradient-to-r from-brand-400 via-brand to-yellow-500" />
           <div className="px-6 pb-6 -mt-10">
             <div className="flex flex-col sm:flex-row sm:items-end gap-4">
               {/* Avatar */}
-              <div className="h-20 w-20 rounded-full bg-white shadow-lg flex items-center justify-center ring-4 ring-white">
-                <span className="text-2xl font-bold text-amber-600">
+              <div className="h-20 w-20 rounded-full bg-dark-50 shadow-lg flex items-center justify-center ring-4 ring-white">
+                <span className="text-2xl font-bold text-brand-600">
                   {(profile?.full_name || userEmail || '?')[0].toUpperCase()}
                 </span>
               </div>
 
               <div className="flex-1 min-w-0 sm:pb-1">
-                <h1 className="text-xl font-bold text-gray-900 truncate">
+                <h1 className="text-xl font-bold text-cream truncate">
                   {profile?.full_name || userEmail}
                 </h1>
-                <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5">
+                <p className="text-sm text-cream-300 flex items-center gap-1.5 mt-0.5">
                   <EnvelopeIcon className="h-3.5 w-3.5" />
                   {userEmail}
                 </p>
@@ -131,13 +131,13 @@ export const ProfilePage: React.FC = () => {
               <div className="flex gap-2 sm:pb-1">
                 <button
                   onClick={() => setEditingProfile(!editingProfile)}
-                  className="px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
                 >
                   {t.profile_page?.editProfile || 'Edytuj profil'}
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 text-sm font-medium text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 text-sm font-medium text-cream-300 bg-dark-100 rounded-lg hover:bg-dark-100 transition-colors flex items-center gap-1.5"
                 >
                   <ArrowRightOnRectangleIcon className="h-4 w-4" />
                   {t.profile_page?.signOut || 'Wyloguj'}
@@ -147,13 +147,13 @@ export const ProfilePage: React.FC = () => {
 
             {/* Editable Profile Form */}
             {editingProfile && (
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <div className="mt-6 pt-6 border-t border-brand/10">
+                <h3 className="text-sm font-semibold text-cream mb-4">
                   {t.profile_page?.personalInfo || 'Dane osobowe'}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                    <label className="block text-xs font-medium text-cream-300 mb-1">
                       {t.profile_page?.fullName || 'Imię i nazwisko'}
                     </label>
                     <div className="relative">
@@ -162,12 +162,12 @@ export const ProfilePage: React.FC = () => {
                         type="text"
                         value={profileForm.full_name}
                         onChange={e => setProfileForm(prev => ({ ...prev, full_name: e.target.value }))}
-                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-brand/20 text-sm focus:border-brand focus:ring-brand focus:outline-none"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                    <label className="block text-xs font-medium text-cream-300 mb-1">
                       {t.profile_page?.phone || 'Telefon'}
                     </label>
                     <div className="relative">
@@ -176,7 +176,7 @@ export const ProfilePage: React.FC = () => {
                         type="tel"
                         value={profileForm.phone}
                         onChange={e => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-amber-500 focus:ring-amber-500 focus:outline-none"
+                        className="w-full pl-9 pr-3 py-2 rounded-lg border border-brand/20 text-sm focus:border-brand focus:ring-brand focus:outline-none"
                       />
                     </div>
                   </div>
@@ -185,7 +185,7 @@ export const ProfilePage: React.FC = () => {
                   <button
                     onClick={handleSaveProfile}
                     disabled={saving}
-                    className="px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {saving ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
@@ -196,7 +196,7 @@ export const ProfilePage: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setEditingProfile(false)}
-                    className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                    className="px-4 py-2 text-sm text-cream-300 hover:text-cream transition-colors"
                   >
                     {t.profile_page?.cancel || 'Anuluj'}
                   </button>
@@ -206,7 +206,7 @@ export const ProfilePage: React.FC = () => {
 
             {/* Quick Info (when not editing) */}
             {!editingProfile && (profile?.full_name || profile?.phone) && (
-              <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+              <div className="mt-4 flex flex-wrap gap-4 text-sm text-cream-300">
                 {profile?.phone && (
                   <span className="flex items-center gap-1.5">
                     <PhoneIcon className="h-4 w-4 text-gray-400" />

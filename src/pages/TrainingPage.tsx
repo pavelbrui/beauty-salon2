@@ -80,9 +80,9 @@ export const TrainingPage: React.FC = () => {
   if (slug) {
     if (loading) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-dark">
           <div className="flex justify-center items-center py-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
           </div>
         </main>
       );
@@ -90,12 +90,12 @@ export const TrainingPage: React.FC = () => {
 
     if (!training) {
       return (
-        <main className="pt-16 min-h-screen bg-neutral-50">
+        <main className="pt-16 min-h-screen bg-dark">
           <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-cream mb-4">
               {language === 'pl' ? 'Szkolenie nie znalezione' : language === 'ru' ? 'Обучение не найдено' : 'Training not found'}
             </h1>
-            <LocalizedLink to="/training" className="text-amber-600 hover:text-amber-700 font-medium">
+            <LocalizedLink to="/training" className="text-brand-600 hover:text-brand-600 font-medium">
               {tp?.backToList || 'Wróć do listy szkoleń'}
             </LocalizedLink>
           </div>
@@ -109,7 +109,7 @@ export const TrainingPage: React.FC = () => {
     const trainingDuration = getLocalizedField(training, 'duration', language);
 
     return (
-      <main className="pt-16 min-h-screen bg-neutral-50">
+      <main className="pt-16 min-h-screen bg-dark">
         <SEO
           title={trainingTitle}
           description={trainingDesc}
@@ -132,12 +132,12 @@ export const TrainingPage: React.FC = () => {
               style={cropPositionToStyle(training.cover_crop_detail || training.cover_image_position)}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
+            <div className="w-full h-full bg-gradient-to-br from-brand-400 via-brand to-brand-600" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
             <div className="max-w-4xl mx-auto">
-              <span className="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-medium mb-3">
+              <span className="inline-block px-3 py-1 bg-brand text-white rounded-full text-sm font-medium mb-3">
                 {getCategoryLabel(training.category)}
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
@@ -145,7 +145,7 @@ export const TrainingPage: React.FC = () => {
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
                 {trainingPrice && (
-                  <span className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <span className="flex items-center gap-1.5 bg-dark-50/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -153,7 +153,7 @@ export const TrainingPage: React.FC = () => {
                   </span>
                 )}
                 {trainingDuration && (
-                  <span className="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <span className="flex items-center gap-1.5 bg-dark-50/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -169,7 +169,7 @@ export const TrainingPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 pt-6">
           <LocalizedLink
             to="/training"
-            className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-700 font-medium"
+            className="inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-600 font-medium"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -181,7 +181,7 @@ export const TrainingPage: React.FC = () => {
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 py-8">
           {trainingDesc && (
-            <p className="text-lg text-gray-600 leading-relaxed mb-8 pb-8 border-b border-gray-200">
+            <p className="text-lg text-cream-300 leading-relaxed mb-8 pb-8 border-b border-brand/20">
               {trainingDesc}
             </p>
           )}
@@ -194,11 +194,11 @@ export const TrainingPage: React.FC = () => {
 
         {/* CTA Section */}
         <div className="max-w-4xl mx-auto px-4 pb-16">
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          <div className="bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl p-8 md:p-10 text-center">
+            <h2 className="text-2xl font-bold text-cream mb-3">
               {tp?.contactCta || 'Zainteresowany? Skontaktuj się z nami!'}
             </h2>
-            <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+            <p className="text-cream-300 mb-6 max-w-lg mx-auto">
               {language === 'pl'
                 ? 'Zadzwoń lub napisz, aby dowiedzieć się więcej o terminach i zapisać się na szkolenie.'
                 : language === 'ru'
@@ -207,7 +207,7 @@ export const TrainingPage: React.FC = () => {
             </p>
             <a
               href="tel:+48123456789"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-xl font-medium hover:bg-brand-600 transition-colors shadow-lg shadow-brand-200"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -225,7 +225,7 @@ export const TrainingPage: React.FC = () => {
   const pageDesc = tp?.seoDescription || '';
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-dark">
       <SEO
         title={pageTitle}
         description={pageDesc}
@@ -264,11 +264,11 @@ export const TrainingPage: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
           </div>
         ) : trainings.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">{tp?.noCourses || 'Brak dostępnych szkoleń'}</p>
+            <p className="text-cream-300 text-lg">{tp?.noCourses || 'Brak dostępnych szkoleń'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -282,7 +282,7 @@ export const TrainingPage: React.FC = () => {
                 <LocalizedLink
                   key={t.id}
                   to={`/training/${t.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  className="group bg-dark-50 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   {/* Cover */}
                   <div className="relative overflow-hidden" style={{ height: `${t.cover_height_card ?? 224}px` }}>
@@ -295,11 +295,11 @@ export const TrainingPage: React.FC = () => {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />
+                      <div className="w-full h-full bg-gradient-to-br from-brand-400 to-brand-600 group-hover:from-brand group-hover:to-brand-600 transition-all duration-500" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-amber-700 rounded-full text-xs font-semibold">
+                      <span className="px-3 py-1 bg-dark-50/90 backdrop-blur-sm text-brand-600 rounded-full text-xs font-semibold">
                         {getCategoryLabel(t.category)}
                       </span>
                     </div>
@@ -313,30 +313,30 @@ export const TrainingPage: React.FC = () => {
                   {/* Body */}
                   <div className="p-6">
                     {tDesc && (
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                      <p className="text-cream-300 text-sm leading-relaxed mb-4 line-clamp-2">
                         {tDesc}
                       </p>
                     )}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 text-sm">
                         {tPrice && (
-                          <span className="flex items-center gap-1.5 text-gray-700 font-medium">
-                            <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="flex items-center gap-1.5 text-cream font-medium">
+                            <svg className="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             {tPrice}
                           </span>
                         )}
                         {tDuration && (
-                          <span className="flex items-center gap-1.5 text-gray-500">
-                            <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="flex items-center gap-1.5 text-cream-300">
+                            <svg className="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             {tDuration}
                           </span>
                         )}
                       </div>
-                      <span className="text-amber-600 font-medium text-sm group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-1">
+                      <span className="text-brand-600 font-medium text-sm group-hover:translate-x-1 transition-transform duration-300 flex items-center gap-1">
                         {tp?.viewDetails || 'Zobacz szczegóły'}
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -353,11 +353,11 @@ export const TrainingPage: React.FC = () => {
 
       {/* Bottom CTA */}
       <div className="max-w-4xl mx-auto px-4 pb-16">
-        <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+        <div className="bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl p-8 md:p-10 text-center">
+          <h2 className="text-2xl font-bold text-cream mb-3">
             {tp?.contactCta || 'Zainteresowany? Skontaktuj się z nami!'}
           </h2>
-          <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+          <p className="text-cream-300 mb-6 max-w-lg mx-auto">
             {language === 'pl'
               ? 'Nie wiesz, które szkolenie wybrać? Pomożemy dobrać najlepszy kurs do Twoich potrzeb.'
               : language === 'ru'
@@ -366,7 +366,7 @@ export const TrainingPage: React.FC = () => {
           </p>
           <a
             href="tel:+48123456789"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-xl font-medium hover:bg-brand-600 transition-colors shadow-lg shadow-brand-200"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />

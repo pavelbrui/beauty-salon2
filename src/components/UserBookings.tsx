@@ -282,7 +282,7 @@ export const UserBookings: React.FC = () => {
       case 'cancelled':
         return { bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500', label: t.profile_page?.statusCancelled || 'Anulowana' };
       default:
-        return { bg: 'bg-amber-100', text: 'text-amber-700', dot: 'bg-amber-500', label: t.profile_page?.statusPending || 'Oczekuje' };
+        return { bg: 'bg-brand-100', text: 'text-brand-600', dot: 'bg-brand', label: t.profile_page?.statusPending || 'Oczekuje' };
     }
   };
 
@@ -370,14 +370,14 @@ export const UserBookings: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
                 {dateInfo && (
                   <div className="flex items-center gap-2">
-                    <CalendarDaysIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <CalendarDaysIcon className="h-4 w-4 text-brand flex-shrink-0" />
                     <span className="capitalize">{dateInfo.dayOfWeek}, {dateInfo.date}</span>
                   </div>
                 )}
 
                 {dateInfo && (
                   <div className="flex items-center gap-2">
-                    <ClockIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <ClockIcon className="h-4 w-4 text-brand flex-shrink-0" />
                     <span>
                       {dateInfo.time}
                       {endInfo ? ` – ${endInfo.time}` : ''}
@@ -388,14 +388,14 @@ export const UserBookings: React.FC = () => {
 
                 {booking.stylists?.name && (
                   <div className="flex items-center gap-2">
-                    <UserIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <UserIcon className="h-4 w-4 text-brand flex-shrink-0" />
                     <span>{booking.stylists.name}</span>
                   </div>
                 )}
 
                 {price != null && (
                   <div className="flex items-center gap-2">
-                    <CurrencyDollarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                    <CurrencyDollarIcon className="h-4 w-4 text-brand flex-shrink-0" />
                     <span className="font-medium">{(price / 100).toFixed(0)} PLN</span>
                   </div>
                 )}
@@ -413,7 +413,7 @@ export const UserBookings: React.FC = () => {
                 <>
                   <button
                     onClick={() => openReschedule(booking)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 transition-colors"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                     {t.profile_page?.reschedule || 'Zmień termin'}
@@ -454,7 +454,7 @@ export const UserBookings: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand" />
       </div>
     );
   }
@@ -466,7 +466,7 @@ export const UserBookings: React.FC = () => {
           <h2 className="text-lg font-bold text-gray-900">
             {t.profile_page?.myBookings || 'Moje Rezerwacje'}
             {activeCount > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium bg-brand-100 text-brand-600 rounded-full">
                 {activeCount}
               </span>
             )}
@@ -478,7 +478,7 @@ export const UserBookings: React.FC = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
+                  viewMode === 'list' ? 'bg-brand-100 text-brand-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
                 title={t.profile_page?.listView || 'Lista'}
               >
@@ -487,7 +487,7 @@ export const UserBookings: React.FC = () => {
               <button
                 onClick={() => setViewMode('calendar')}
                 className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'calendar' ? 'bg-amber-100 text-amber-700' : 'text-gray-400 hover:text-gray-600'
+                  viewMode === 'calendar' ? 'bg-brand-100 text-brand-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
                 title={t.profile_page?.calendarView || 'Kalendarz'}
               >
@@ -519,8 +519,8 @@ export const UserBookings: React.FC = () => {
 
         {filteredBookings.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-            <div className="mx-auto h-16 w-16 rounded-full bg-amber-50 flex items-center justify-center mb-4">
-              <SparklesIcon className="h-8 w-8 text-amber-400" />
+            <div className="mx-auto h-16 w-16 rounded-full bg-brand-50 flex items-center justify-center mb-4">
+              <SparklesIcon className="h-8 w-8 text-brand-400" />
             </div>
             <p className="text-gray-700 font-medium text-lg mb-1">
               {t.profile_page?.noBookings || 'Nie masz jeszcze żadnych rezerwacji'}
@@ -530,7 +530,7 @@ export const UserBookings: React.FC = () => {
             </p>
             <button
               onClick={() => navigate('/services')}
-              className="px-5 py-2.5 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors text-sm"
+              className="px-5 py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand-600 transition-colors text-sm"
             >
               {t.profile_page?.bookFirst || 'Zarezerwuj wizytę'}
             </button>
@@ -596,13 +596,13 @@ export const UserBookings: React.FC = () => {
                         }}
                         className={`relative group min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 p-1 transition-colors ${
                           !isCurrentMonth ? 'bg-gray-50' : ''
-                        } ${isSelected ? 'bg-amber-50 ring-2 ring-amber-300 ring-inset' : ''} ${
-                          dayBookings.length > 0 ? 'cursor-pointer hover:bg-amber-50/50' : ''
+                        } ${isSelected ? 'bg-brand-50 ring-2 ring-brand-400 ring-inset' : ''} ${
+                          dayBookings.length > 0 ? 'cursor-pointer hover:bg-brand-50/50' : ''
                         }`}
                       >
                         <div className={`text-xs font-medium mb-1 px-1 ${
                           isToday
-                            ? 'bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                            ? 'bg-brand text-white rounded-full w-6 h-6 flex items-center justify-center'
                             : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'
                         }`}>
                           {format(day, 'd')}
@@ -615,7 +615,7 @@ export const UserBookings: React.FC = () => {
                               e.stopPropagation();
                               setQuickBookDate(day);
                             }}
-                            className="absolute inset-0 m-auto w-fit h-fit flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 hover:scale-105 transition-all shadow-md opacity-0 sm:group-hover:opacity-100 active:opacity-100 text-[11px] font-semibold whitespace-nowrap z-10"
+                            className="absolute inset-0 m-auto w-fit h-fit flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-600 hover:scale-105 transition-all shadow-md opacity-0 sm:group-hover:opacity-100 active:opacity-100 text-[11px] font-semibold whitespace-nowrap z-10"
                             title={t.quick_booking?.addBooking || 'Zarezerwuj wizytę'}
                           >
                             <PlusIcon className="h-4 w-4 flex-shrink-0" />

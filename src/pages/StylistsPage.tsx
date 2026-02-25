@@ -50,14 +50,14 @@ export const StylistsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="pt-16 min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+      <div className="pt-16 min-h-screen bg-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
       </div>
     );
   }
 
   return (
-    <main className="pt-16 min-h-screen bg-neutral-50">
+    <main className="pt-16 min-h-screen bg-dark">
       <SEO
         title="Nasi Specjaliści - Kosmetyczki i Stylistki"
         description="Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs i pielęgnacji brwi."
@@ -72,15 +72,15 @@ export const StylistsPage: React.FC = () => {
         ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.stylists}</h1>
+        <h1 className="font-display text-3xl font-bold text-cream mb-8">{t.stylists}</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {stylists.map((stylist) => (
             <div
               key={stylist.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300"
+              className="bg-dark-50 border border-brand/20 overflow-hidden transform hover:scale-[1.02] hover:border-brand/40 transition-all duration-300"
             >
-              <div className="relative h-80 bg-gray-200">
+              <div className="relative h-80 bg-dark-100">
                 <img
                   src={stylist.image_url}
                   alt={`${stylist.name} – ${getStylistRole(stylist, language)}, salon Katarzyna Brui Białystok`}
@@ -89,9 +89,9 @@ export const StylistsPage: React.FC = () => {
                   onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d4d4d4"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'; }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-semibold">{stylist.name}</h3>
-                  <p className="text-amber-300">{getStylistRole(stylist, language)}</p>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-cream">
+                  <h3 className="font-display text-xl font-semibold">{stylist.name}</h3>
+                  <p className="text-brand-400">{getStylistRole(stylist, language)}</p>
                 </div>
               </div>
               <div className="p-6">
@@ -99,17 +99,16 @@ export const StylistsPage: React.FC = () => {
                   {getStylistSpecialties(stylist, language).map((specialty) => (
                     <span
                       key={specialty}
-                      className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
+                      className="px-3 py-1 bg-brand-100 text-brand-800 rounded-full text-sm"
                     >
                       {specialty}
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-600">{getStylistDescription(stylist, language)}</p>
+                <p className="text-cream-300">{getStylistDescription(stylist, language)}</p>
                 <button
                   onClick={() => navigate(`/appointments?stylist=${stylist.id}`)}
-                  className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium 
-                           hover:bg-amber-600 transition-colors shadow-sm"
+                  className="mt-4 w-full bg-brand text-dark py-3 px-6 font-semibold hover:bg-brand-400 transition-colors"
                 >
                   {t.bookNow}
                 </button>

@@ -304,7 +304,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
                 {step === 'slots' && (t.quick_booking?.selectTime || 'Wybierz godzinę')}
                 {step === 'form' && (t.booking?.contactDetails || 'Dane kontaktowe')}
               </h2>
-              <p className="text-sm text-amber-600 capitalize">{dateLabel}</p>
+              <p className="text-sm text-brand-600 capitalize">{dateLabel}</p>
             </div>
             <button
               onClick={onClose}
@@ -327,7 +327,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={t.quick_booking?.searchPlaceholder || 'Szukaj usługi...'}
-                    className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-300 focus:border-amber-400 outline-none"
+                    className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none"
                   />
                 </div>
 
@@ -342,13 +342,13 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
                         <button
                           key={s.id}
                           onClick={() => handleServiceSelect(s)}
-                          className="w-full text-left p-3 rounded-xl border border-gray-100 hover:border-amber-300 hover:bg-amber-50/50 transition-all group"
+                          className="w-full text-left p-3 rounded-xl border border-gray-100 hover:border-brand-400 hover:bg-brand-50/50 transition-all group"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-900 text-sm group-hover:text-amber-700 transition-colors">
+                            <span className="font-medium text-gray-900 text-sm group-hover:text-brand-600 transition-colors">
                               {getServiceName(s, language)}
                             </span>
-                            <span className="text-amber-600 font-semibold text-sm">
+                            <span className="text-brand-600 font-semibold text-sm">
                               {(s.price / 100).toFixed(0)} PLN
                             </span>
                           </div>
@@ -376,7 +376,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
             {step === 'slots' && selectedService && (
               <div className="space-y-4">
                 {/* Selected service summary */}
-                <div className="flex items-center justify-between bg-amber-50 rounded-xl p-3">
+                <div className="flex items-center justify-between bg-brand-50 rounded-xl p-3">
                   <div>
                     <p className="font-medium text-gray-900 text-sm">
                       {getServiceName(selectedService, language)}

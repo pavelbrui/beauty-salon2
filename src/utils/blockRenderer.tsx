@@ -21,13 +21,13 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
       const text = getLocalizedText(block, language);
       if (block.level === 2) {
         return (
-          <h2 key={block.id || index} className="text-2xl font-bold text-gray-900 mt-10 mb-4 pb-2 border-b border-amber-200">
+          <h2 key={block.id || index} className="font-display text-2xl font-bold text-cream mt-10 mb-4 pb-2 border-b border-brand/30">
             {text}
           </h2>
         );
       }
       return (
-        <h3 key={block.id || index} className="text-xl font-semibold text-gray-800 mt-8 mb-3">
+        <h3 key={block.id || index} className="font-display text-xl font-semibold text-cream mt-8 mb-3">
           {text}
         </h3>
       );
@@ -35,7 +35,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
     case 'text': {
       const text = getLocalizedText(block, language);
       return (
-        <p key={block.id || index} className="text-gray-700 leading-relaxed mb-4">
+        <p key={block.id || index} className="text-cream-300 leading-relaxed mb-4">
           {text}
         </p>
       );
@@ -53,7 +53,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
             loading="lazy"
           />
           {caption && (
-            <figcaption className="text-sm text-gray-500 mt-3 text-center italic">
+            <figcaption className="text-sm text-cream-300 mt-3 text-center italic">
               {caption}
             </figcaption>
           )}
@@ -75,7 +75,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </span>
-                <span className="text-gray-700">{item}</span>
+                <span className="text-cream-300">{item}</span>
               </li>
             ))}
           </ul>
@@ -85,7 +85,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
       return (
         <ul key={block.id || index} className="my-4 space-y-2 list-disc pl-6">
           {items.map((item, i) => (
-            <li key={i} className="text-gray-700">{item}</li>
+            <li key={i} className="text-cream-300">{item}</li>
           ))}
         </ul>
       );
@@ -108,7 +108,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
               />
             </div>
             {caption && (
-              <figcaption className="text-sm text-gray-500 mt-3 text-center italic">{caption}</figcaption>
+              <figcaption className="text-sm text-cream-300 mt-3 text-center italic">{caption}</figcaption>
             )}
           </figure>
         );
@@ -132,7 +132,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
               />
             </div>
             {caption && (
-              <figcaption className="text-sm text-gray-500 mt-3 text-center italic">{caption}</figcaption>
+              <figcaption className="text-sm text-cream-300 mt-3 text-center italic">{caption}</figcaption>
             )}
           </figure>
         );
