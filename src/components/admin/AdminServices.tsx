@@ -37,14 +37,18 @@ export const AdminServices = () => {
   const [nameRu, setNameRu] = useState('');
   const [descEn, setDescEn] = useState('');
   const [descRu, setDescRu] = useState('');
-  const [translating, setTranslating] = useState(false);
+  const [translatingCount, setTranslatingCount] = useState(0);
 
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const [editImages, setEditImages] = useState<ServiceImage[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+
+  // Original stylists at modal open — for diff-based save
+  const [originalStylists, setOriginalStylists] = useState<string[]>([]);
 
   // Filters
   const [filterStylist, setFilterStylist] = useState<string>('all');
@@ -83,9 +87,9 @@ export const AdminServices = () => {
       .select('stylist_id')
       .eq('service_id', serviceId);
 
-    if (data) {
-      setSelectedStylists(data.map(assignment => assignment.stylist_id));
-    }
+    const ids = data ? data.map(assignment => assignment.stylist_id) : [];
+    setSelectedStylists(ids);
+    setOriginalStylists(ids);
   };
   const loadServices = async () => {
     const { data, error } = await supabase
@@ -163,26 +167,26 @@ export const AdminServices = () => {
   const handleAutoTranslateName = async (polishName: string) => {
     if (!polishName.trim()) return;
     if (nameEn && nameRu) return;
-    setTranslating(true);
+    setTranslatingCount(c => c + 1);
     try {
       const { en, ru } = await translateFromPolish(polishName);
       setNameEn(prev => prev || en);
       setNameRu(prev => prev || ru);
     } finally {
-      setTranslating(false);
+      setTranslatingCount(c => c - 1);
     }
   };
 
   const handleAutoTranslateDesc = async (polishDesc: string) => {
     if (!polishDesc.trim()) return;
     if (descEn && descRu) return;
-    setTranslating(true);
+    setTranslatingCount(c => c + 1);
     try {
       const { en, ru } = await translateFromPolish(polishDesc);
       setDescEn(prev => prev || en);
       setDescRu(prev => prev || ru);
     } finally {
-      setTranslating(false);
+      setTranslatingCount(c => c - 1);
     }
   };
 
@@ -213,28 +217,32 @@ export const AdminServices = () => {
 
       const serviceId = service.id;
 
-      const { error: deleteError } = await supabase
-        .from('stylist_service_assignments')
-        .delete()
-        .eq('service_id', serviceId);
+      // Diff-based assignment update — safer than delete-all + insert
+      const toAdd = selectedStylists.filter(id => !originalStylists.includes(id));
+      const toRemove = originalStylists.filter(id => !selectedStylists.includes(id));
 
-      if (deleteError) {
-        setSaveError(`Błąd aktualizacji przypisań: ${deleteError.message}`);
-        return;
-      }
-
-      if (selectedStylists.length > 0) {
-        const newAssignments = selectedStylists.map(stylistId => ({
-          service_id: serviceId,
-          stylist_id: stylistId
-        }));
-
+      // Insert new assignments first (safer — duplicates are better than lost data)
+      if (toAdd.length > 0) {
         const { error: insertError } = await supabase
           .from('stylist_service_assignments')
-          .insert(newAssignments);
+          .insert(toAdd.map(stylistId => ({ service_id: serviceId, stylist_id: stylistId })));
 
         if (insertError) {
-          setSaveError(`Błąd przypisań stylistek: ${insertError.message}`);
+          setSaveError(`Błąd dodawania przypisań: ${insertError.message}`);
+          return;
+        }
+      }
+
+      // Then remove old ones
+      if (toRemove.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('stylist_service_assignments')
+          .delete()
+          .eq('service_id', serviceId)
+          .in('stylist_id', toRemove);
+
+        if (deleteError) {
+          setSaveError(`Błąd usuwania przypisań: ${deleteError.message}`);
           return;
         }
       }
@@ -244,6 +252,7 @@ export const AdminServices = () => {
       setIsModalOpen(false);
       setEditingService(null);
       setSelectedStylists([]);
+      setOriginalStylists([]);
       setNameEn(''); setNameRu('');
       setDescEn(''); setDescRu('');
       setEditImages([]);
@@ -255,7 +264,7 @@ export const AdminServices = () => {
     }
   };
 
-  const handleEdit = (service: Service) => {
+  const handleEdit = async (service: Service) => {
     setEditingService(service);
     setNameEn(service.name_en || '');
     setNameRu(service.name_ru || '');
@@ -263,9 +272,19 @@ export const AdminServices = () => {
     setDescRu(service.description_ru || '');
     setSaveError(null);
     setImageUploadError(null);
-    loadSelectedStylists(service.id);
-    loadEditImages(service.id);
+    setSelectedStylists([]);
+    setOriginalStylists([]);
+    setEditImages([]);
     setIsModalOpen(true);
+    setModalLoading(true);
+    try {
+      await Promise.all([
+        loadSelectedStylists(service.id),
+        loadEditImages(service.id),
+      ]);
+    } finally {
+      setModalLoading(false);
+    }
   };
 
   const handleDelete = async (service: Service) => {
@@ -279,7 +298,7 @@ export const AdminServices = () => {
       return;
     }
 
-    loadServices();
+    await loadServices();
     setDeletingService(null);
   };
 
@@ -309,11 +328,13 @@ export const AdminServices = () => {
           onClick={() => {
             setEditingService(null);
             setSelectedStylists([]);
+            setOriginalStylists([]);
             setNameEn(''); setNameRu('');
             setDescEn(''); setDescRu('');
             setSaveError(null);
             setEditImages([]);
             setImageUploadError(null);
+            setModalLoading(false);
             setIsModalOpen(true);
           }}
           className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600"
@@ -490,7 +511,7 @@ export const AdminServices = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nazwa (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -503,7 +524,7 @@ export const AdminServices = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Nazwa (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -565,7 +586,7 @@ export const AdminServices = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descEn}
@@ -578,7 +599,7 @@ export const AdminServices = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descRu}
@@ -659,16 +680,16 @@ export const AdminServices = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving || uploadingImage}
+                  disabled={saving || uploadingImage || modalLoading}
                   className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  {saving && (
+                  {(saving || modalLoading) && (
                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   )}
-                  {saving ? 'Zapisywanie...' : 'Zapisz'}
+                  {modalLoading ? 'Ładowanie...' : saving ? 'Zapisywanie...' : 'Zapisz'}
                 </button>
               </div>
             </form>

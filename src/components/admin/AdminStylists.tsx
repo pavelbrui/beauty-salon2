@@ -39,7 +39,7 @@ export const AdminStylists: React.FC = () => {
   const [specRu, setSpecRu] = useState('');
   const [descEn, setDescEn] = useState('');
   const [descRu, setDescRu] = useState('');
-  const [translating, setTranslating] = useState(false);
+  const [translatingCount, setTranslatingCount] = useState(0);
 
   // Save state
   const [saving, setSaving] = useState(false);
@@ -112,37 +112,37 @@ export const AdminStylists: React.FC = () => {
 
   const handleAutoTranslateRole = async (polishRole: string) => {
     if (!polishRole.trim() || (roleEn && roleRu)) return;
-    setTranslating(true);
+    setTranslatingCount(c => c + 1);
     try {
       const { en, ru } = await translateFromPolish(polishRole);
       setRoleEn(prev => prev || en);
       setRoleRu(prev => prev || ru);
     } finally {
-      setTranslating(false);
+      setTranslatingCount(c => c - 1);
     }
   };
 
   const handleAutoTranslateSpec = async (polishSpec: string) => {
     if (!polishSpec.trim() || (specEn && specRu)) return;
-    setTranslating(true);
+    setTranslatingCount(c => c + 1);
     try {
       const { en, ru } = await translateFromPolish(polishSpec);
       setSpecEn(prev => prev || en);
       setSpecRu(prev => prev || ru);
     } finally {
-      setTranslating(false);
+      setTranslatingCount(c => c - 1);
     }
   };
 
   const handleAutoTranslateDesc = async (polishDesc: string) => {
     if (!polishDesc.trim() || (descEn && descRu)) return;
-    setTranslating(true);
+    setTranslatingCount(c => c + 1);
     try {
       const { en, ru } = await translateFromPolish(polishDesc);
       setDescEn(prev => prev || en);
       setDescRu(prev => prev || ru);
     } finally {
-      setTranslating(false);
+      setTranslatingCount(c => c - 1);
     }
   };
 
@@ -340,7 +340,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Stanowisko (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -353,7 +353,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Stanowisko (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -470,7 +470,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Specjalizacje (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -483,7 +483,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Specjalizacje (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <input
                   type="text"
@@ -511,7 +511,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (angielski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descEn}
@@ -524,7 +524,7 @@ export const AdminStylists: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Opis (rosyjski)
-                  {translating && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
                 </label>
                 <textarea
                   value={descRu}
