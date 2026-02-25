@@ -13,7 +13,7 @@ interface BookingFormProps {
     phone: string;
     email: string;
     notes?: string;
-  }) => void;
+  }) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -22,6 +22,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
   const t = translations[language];
   const userData = getUserData();
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formData, setFormData] = React.useState({
     name: userData.name || '',
     phone: userData.phone || '',
@@ -49,9 +50,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
     });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -143,9 +150,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) 
           </button>
           <button
             type="submit"
-            className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+            disabled={isSubmitting}
+            className="px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:scale-100"
           >
-            {t.booking.confirm}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                {t.booking.confirm}...
+              </span>
+            ) : (
+              t.booking.confirm
+            )}
           </button>
         </div>
       </form>

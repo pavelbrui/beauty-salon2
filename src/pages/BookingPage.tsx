@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { AdvancedBookingCalendar } from '../components/Calendar/AdvancedBookingCalendar';
@@ -27,6 +27,7 @@ export const BookingPage: React.FC = () => {
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isSubmittingRef = useRef(false);
 
   // Restore selected slot after Google OAuth redirect
   useEffect(() => {
@@ -123,6 +124,8 @@ export const BookingPage: React.FC = () => {
     email: string;
     notes?: string;
   }) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setError(null);
     let createdTimeSlotId: string | null = null;
     let createdBookingId: string | null = null;
@@ -223,6 +226,8 @@ export const BookingPage: React.FC = () => {
       console.error('Error creating booking:', error);
       setError('Could not complete booking. Please try again.');
       setShowBookingForm(false);
+    } finally {
+      isSubmittingRef.current = false;
     }
   };
 

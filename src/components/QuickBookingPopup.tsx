@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { format, addDays } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
@@ -48,6 +48,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   // Load all services
   useEffect(() => {
@@ -148,9 +149,11 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
     notes?: string;
   }) => {
     if (!selectedSlot || !selectedService) return;
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    if (!session) { isSubmittingRef.current = false; return; }
 
     let createdTimeSlotId: string | null = null;
     let createdBookingId: string | null = null;
@@ -241,6 +244,8 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
           .eq('id', createdTimeSlotId);
       }
       console.error('Quick booking error:', err);
+    } finally {
+      isSubmittingRef.current = false;
     }
   };
 
