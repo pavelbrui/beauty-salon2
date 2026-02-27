@@ -69,18 +69,31 @@ const renderAlternateLinks = (barePath) =>
     `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localizedUrl(barePath, 'pl'))}"/>`,
   ].join('\n');
 
-const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod }) => {
+/** Render <image:image> tags. images = [{ url, title?, caption? }] */
+const renderImageTags = (images) => {
+  if (!images || images.length === 0) return '';
+  return images
+    .map((img) => {
+      const titleTag = img.title ? `\n      <image:title>${xmlEscape(img.title)}</image:title>` : '';
+      const captionTag = img.caption ? `\n      <image:caption>${xmlEscape(img.caption)}</image:caption>` : '';
+      return `    <image:image>\n      <image:loc>${xmlEscape(img.url)}</image:loc>${titleTag}${captionTag}\n    </image:image>`;
+    })
+    .join('\n');
+};
+
+const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod, images }) => {
   const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
+  const imageTags = images?.length ? `\n${renderImageTags(images)}` : '';
 
   return `  <url>
     <loc>${xmlEscape(localizedUrl(barePath, locale))}</loc>
-${renderAlternateLinks(barePath)}${lastmodTag}
+${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
 };
 
-const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod }) =>
+const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images }) =>
   LOCALES.map((locale) =>
     renderUrlEntry({
       barePath,
@@ -88,6 +101,7 @@ const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod }) =>
       changefreq,
       priority,
       lastmod,
+      images,
     })
   ).join('\n');
 
@@ -99,11 +113,13 @@ const fetchSupabaseRows = async (table) => {
     return [];
   }
 
-  // blog_posts has published_at; trainings only has created_at/updated_at
+  // blog_posts has published_at + title; trainings has created_at + title
   const hasPublishedAt = table === 'blog_posts';
 
   const params = new URLSearchParams({
-    select: hasPublishedAt ? 'slug,updated_at,published_at' : 'slug,updated_at,created_at',
+    select: hasPublishedAt
+      ? 'slug,title,cover_image_url,updated_at,published_at'
+      : 'slug,title,cover_image_url,updated_at,created_at',
     is_published: 'eq.true',
     slug: 'not.is.null',
     order: hasPublishedAt ? 'published_at.desc.nullslast' : 'updated_at.desc.nullslast',
@@ -133,6 +149,8 @@ const fetchSupabaseRows = async (table) => {
       .filter((row) => typeof row?.slug === 'string' && row.slug.trim().length > 0)
       .map((row) => ({
         slug: row.slug.trim(),
+        title: row.title || '',
+        coverImage: row.cover_image_url || null,
         lastmod: formatLastmod(row.updated_at || row.published_at || row.created_at),
       }));
   } catch (error) {
@@ -142,37 +160,80 @@ const fetchSupabaseRows = async (table) => {
   }
 };
 
-/** Fetch distinct service categories from the services table. */
-const fetchServiceCategories = async () => {
+/** Helper to call Supabase REST API. */
+const supabaseFetch = async (path) => {
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) return null;
 
-  if (!supabaseUrl || !supabaseKey) return [];
-
-  const params = new URLSearchParams({
-    select: 'category',
+  const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+    },
   });
 
-  const endpoint = `${supabaseUrl}/rest/v1/services?${params.toString()}`;
+  if (!response.ok) return null;
+  return response.json();
+};
 
+/** Hardcoded fallback images per category (from src/assets/images.ts / Booksy CDN). */
+const CATEGORY_FALLBACK_IMAGES = {
+  'Makijaż permanentny': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg',
+    title: 'Makijaż permanentny brwi – salon Katarzyna Brui Białystok',
+  },
+  'Stylizacja rzęs': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg',
+    title: 'Stylizacja rzęs – salon Katarzyna Brui Białystok',
+  },
+  'Laserowe usuwanie': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/1c4f01a9291a45a1aeea8def0189905a.jpeg',
+    title: 'Laserowe usuwanie tatuażu – salon Katarzyna Brui Białystok',
+  },
+  'Manicure i pedicure': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/5d5b6ace0dbd48d29c5eb4f0161e7f34.jpeg',
+    title: 'Manicure hybrydowy – salon Katarzyna Brui Białystok',
+  },
+  'Peeling węglowy': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg',
+    title: 'Peeling węglowy – salon Katarzyna Brui Białystok',
+  },
+};
+
+/** Fetch service categories with images (from service_categories table + fallbacks). */
+const fetchServiceCategories = async () => {
   try {
-    const response = await fetch(endpoint, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      },
-    });
+    // Fetch from service_categories (has image_url) and also the distinct categories from services table
+    const [catRows, serviceRows] = await Promise.all([
+      supabaseFetch('service_categories?select=name,image_url'),
+      supabaseFetch('services?select=category'),
+    ]);
 
-    if (!response.ok) {
-      console.warn(`[sitemap] service categories fetch failed: ${response.status}`);
-      return [];
+    // Merge: use service_categories image_url if available, otherwise use fallback
+    const catImageMap = new Map();
+    if (Array.isArray(catRows)) {
+      for (const row of catRows) {
+        if (row.name && row.image_url) {
+          catImageMap.set(row.name, {
+            url: row.image_url,
+            title: `${row.name} – salon Katarzyna Brui Białystok`,
+          });
+        }
+      }
     }
 
-    const rows = await response.json();
-    if (!Array.isArray(rows)) return [];
+    // Get distinct category names from services
+    const allCategories = Array.isArray(serviceRows)
+      ? [...new Set(serviceRows.map((r) => r.category).filter(Boolean))].sort()
+      : [];
 
-    const unique = [...new Set(rows.map((r) => r.category).filter(Boolean))];
-    return unique.sort();
+    return allCategories.map((cat) => {
+      const dbImage = catImageMap.get(cat);
+      const fallback = CATEGORY_FALLBACK_IMAGES[cat];
+      const images = dbImage ? [dbImage] : fallback ? [fallback] : [];
+      return { name: cat, images };
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[sitemap] service categories fetch failed: ${message}`);
@@ -199,13 +260,14 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
   if (categories.length > 0) {
     lines.push('  <!-- Dynamic service category URLs -->');
     for (const cat of categories) {
-      const barePath = `/services/${encodeURIComponent(cat)}`;
+      const barePath = `/services/${encodeURIComponent(cat.name)}`;
       lines.push(
         renderLocalizedEntries({
           barePath,
           changefreq: 'weekly',
           priority: '0.8',
           lastmod: null,
+          images: cat.images,
         })
       );
       count++;
@@ -216,12 +278,16 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
     lines.push('  <!-- Dynamic blog post URLs -->');
     for (const row of blogRows) {
       const barePath = `/blog/${encodeURIComponent(row.slug)}`;
+      const images = row.coverImage
+        ? [{ url: row.coverImage, title: `${row.title} – blog Katarzyna Brui` }]
+        : [];
       lines.push(
         renderLocalizedEntries({
           barePath,
           changefreq: 'weekly',
           priority: '0.7',
           lastmod: row.lastmod,
+          images,
         })
       );
       count++;
@@ -232,12 +298,16 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
     lines.push('  <!-- Dynamic training URLs -->');
     for (const row of trainingRows) {
       const barePath = `/training/${encodeURIComponent(row.slug)}`;
+      const images = row.coverImage
+        ? [{ url: row.coverImage, title: `${row.title} – szkolenia Katarzyna Brui` }]
+        : [];
       lines.push(
         renderLocalizedEntries({
           barePath,
           changefreq: 'monthly',
           priority: '0.7',
           lastmod: row.lastmod,
+          images,
         })
       );
       count++;

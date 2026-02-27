@@ -1,0 +1,353 @@
+import type { Handler } from '@netlify/functions';
+
+// --- Config ---
+const BASE_URL = 'https://katarzynabrui.pl';
+const LOCALES = ['pl', 'en', 'ru'] as const;
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+
+// --- Helpers ---
+const xmlEscape = (value: string): string =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+const localizedUrl = (barePath: string, locale: string): string => {
+  if (locale === 'pl') return `${BASE_URL}${barePath}`;
+  return `${BASE_URL}/${locale}${barePath}`;
+};
+
+const formatLastmod = (value: string | null): string | null => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString().slice(0, 10);
+};
+
+// --- Image type ---
+interface SitemapImage {
+  url: string;
+  title?: string;
+  caption?: string;
+}
+
+// --- Render helpers ---
+const renderAlternateLinks = (barePath: string): string =>
+  [
+    ...LOCALES.map(
+      (locale) =>
+        `    <xhtml:link rel="alternate" hreflang="${locale}" href="${xmlEscape(localizedUrl(barePath, locale))}"/>`
+    ),
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(localizedUrl(barePath, 'pl'))}"/>`,
+  ].join('\n');
+
+const renderImageTags = (images: SitemapImage[]): string => {
+  if (!images || images.length === 0) return '';
+  return images
+    .map((img) => {
+      const titleTag = img.title ? `\n      <image:title>${xmlEscape(img.title)}</image:title>` : '';
+      const captionTag = img.caption ? `\n      <image:caption>${xmlEscape(img.caption)}</image:caption>` : '';
+      return `    <image:image>\n      <image:loc>${xmlEscape(img.url)}</image:loc>${titleTag}${captionTag}\n    </image:image>`;
+    })
+    .join('\n');
+};
+
+interface UrlEntry {
+  barePath: string;
+  changefreq: string;
+  priority: string;
+  lastmod?: string | null;
+  images?: SitemapImage[];
+}
+
+const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images }: UrlEntry): string =>
+  LOCALES.map((locale) => {
+    const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
+    const imageTags = images?.length ? `\n${renderImageTags(images)}` : '';
+    return `  <url>
+    <loc>${xmlEscape(localizedUrl(barePath, locale))}</loc>
+${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+  }).join('\n');
+
+// --- Supabase fetch helper ---
+const supabaseFetch = async (path: string): Promise<unknown[] | null> => {
+  if (!supabaseUrl || !supabaseKey) return null;
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      },
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  }
+};
+
+// --- Fallback category images ---
+const CATEGORY_FALLBACK_IMAGES: Record<string, SitemapImage> = {
+  'Makijaż permanentny': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg',
+    title: 'Makijaż permanentny brwi – salon Katarzyna Brui Białystok',
+  },
+  'Stylizacja rzęs': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg',
+    title: 'Stylizacja rzęs – salon Katarzyna Brui Białystok',
+  },
+  'Laserowe usuwanie': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/1c4f01a9291a45a1aeea8def0189905a.jpeg',
+    title: 'Laserowe usuwanie tatuażu – salon Katarzyna Brui Białystok',
+  },
+  'Manicure i pedicure': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/5d5b6ace0dbd48d29c5eb4f0161e7f34.jpeg',
+    title: 'Manicure hybrydowy – salon Katarzyna Brui Białystok',
+  },
+  'Peeling węglowy': {
+    url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg',
+    title: 'Peeling węglowy – salon Katarzyna Brui Białystok',
+  },
+};
+
+// --- Data fetchers ---
+
+interface CategoryData {
+  name: string;
+  images: SitemapImage[];
+}
+
+const fetchServiceCategories = async (): Promise<CategoryData[]> => {
+  try {
+    const [catRows, serviceRows] = await Promise.all([
+      supabaseFetch('service_categories?select=name,image_url') as Promise<{ name: string; image_url: string | null }[] | null>,
+      supabaseFetch('services?select=category') as Promise<{ category: string }[] | null>,
+    ]);
+
+    const catImageMap = new Map<string, SitemapImage>();
+    if (Array.isArray(catRows)) {
+      for (const row of catRows) {
+        if (row.name && row.image_url) {
+          catImageMap.set(row.name, {
+            url: row.image_url,
+            title: `${row.name} – salon Katarzyna Brui Białystok`,
+          });
+        }
+      }
+    }
+
+    const allCategories = Array.isArray(serviceRows)
+      ? [...new Set(serviceRows.map((r) => r.category).filter(Boolean))].sort()
+      : [];
+
+    return allCategories.map((cat) => {
+      const dbImage = catImageMap.get(cat);
+      const fallback = CATEGORY_FALLBACK_IMAGES[cat];
+      const images = dbImage ? [dbImage] : fallback ? [fallback] : [];
+      return { name: cat, images };
+    });
+  } catch {
+    return [];
+  }
+};
+
+interface ContentRow {
+  slug: string;
+  title: string;
+  coverImage: string | null;
+  lastmod: string | null;
+}
+
+const fetchContentRows = async (table: string): Promise<ContentRow[]> => {
+  if (!supabaseUrl || !supabaseKey) return [];
+
+  const hasPublishedAt = table === 'blog_posts';
+  const params = new URLSearchParams({
+    select: hasPublishedAt
+      ? 'slug,title,cover_image_url,updated_at,published_at'
+      : 'slug,title,cover_image_url,updated_at,created_at',
+    is_published: 'eq.true',
+    slug: 'not.is.null',
+    order: hasPublishedAt ? 'published_at.desc.nullslast' : 'updated_at.desc.nullslast',
+  });
+
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${params.toString()}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      },
+    });
+
+    if (!response.ok) return [];
+    const rows = await response.json();
+    if (!Array.isArray(rows)) return [];
+
+    const seen = new Set<string>();
+    return rows
+      .filter((row: { slug?: string }) => {
+        if (typeof row?.slug !== 'string' || !row.slug.trim()) return false;
+        if (seen.has(row.slug)) return false;
+        seen.add(row.slug);
+        return true;
+      })
+      .map((row: { slug: string; title?: string; cover_image_url?: string; updated_at?: string; published_at?: string; created_at?: string }) => ({
+        slug: row.slug.trim(),
+        title: row.title || '',
+        coverImage: row.cover_image_url || null,
+        lastmod: formatLastmod(row.updated_at || row.published_at || row.created_at || null),
+      }));
+  } catch {
+    return [];
+  }
+};
+
+// --- Static pages (always present) ---
+interface StaticPage {
+  barePath: string;
+  changefreq: string;
+  priority: string;
+  images?: SitemapImage[];
+}
+
+const STATIC_PAGES: StaticPage[] = [
+  {
+    barePath: '/',
+    changefreq: 'weekly',
+    priority: '1.0',
+    images: [
+      {
+        url: `${BASE_URL}/og-image.jpg`,
+        title: 'Salon kosmetyczny Katarzyna Brui Białystok',
+        caption: 'Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi w Białymstoku',
+      },
+      {
+        url: `${BASE_URL}/og-image2.jpg`,
+        title: 'Makijaż permanentny brwi Białystok – Katarzyna Brui',
+        caption: 'Profesjonalny makijaż permanentny brwi i ust, salon kosmetyczny Białystok',
+      },
+    ],
+  },
+  {
+    barePath: '/services',
+    changefreq: 'weekly',
+    priority: '0.9',
+    images: [
+      {
+        url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg',
+        title: 'Makijaż permanentny brwi – salon Katarzyna Brui Białystok',
+        caption: 'Makijaż permanentny brwi, metoda pudrowa – efekty zabiegu, salon kosmetyczny Białystok',
+      },
+      {
+        url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg',
+        title: 'Stylizacja rzęs – salon Katarzyna Brui Białystok',
+        caption: 'Przedłużanie i stylizacja rzęs – efekty zabiegu, salon kosmetyczny Białystok',
+      },
+    ],
+  },
+  { barePath: '/stylists', changefreq: 'monthly', priority: '0.7' },
+  {
+    barePath: '/gallery',
+    changefreq: 'weekly',
+    priority: '0.7',
+    images: [
+      {
+        url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg',
+        title: 'Galeria prac – makijaż permanentny brwi Białystok',
+        caption: 'Efekty makijażu permanentnego brwi – salon Katarzyna Brui Białystok',
+      },
+      {
+        url: 'https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg',
+        title: 'Galeria prac – stylizacja rzęs Białystok',
+        caption: 'Efekty stylizacji rzęs – salon Katarzyna Brui Białystok',
+      },
+    ],
+  },
+  { barePath: '/training', changefreq: 'monthly', priority: '0.8' },
+  { barePath: '/blog', changefreq: 'weekly', priority: '0.8' },
+];
+
+// --- Main handler ---
+const handler: Handler = async () => {
+  const [categories, blogRows, trainingRows] = await Promise.all([
+    fetchServiceCategories(),
+    fetchContentRows('blog_posts'),
+    fetchContentRows('trainings'),
+  ]);
+
+  const entries: string[] = [];
+
+  // Static pages
+  for (const page of STATIC_PAGES) {
+    entries.push(renderLocalizedEntries(page));
+  }
+
+  // Service categories (dynamic from DB)
+  for (const cat of categories) {
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/services/${encodeURIComponent(cat.name)}`,
+        changefreq: 'weekly',
+        priority: '0.8',
+        images: cat.images,
+      })
+    );
+  }
+
+  // Blog posts (dynamic from DB)
+  for (const row of blogRows) {
+    const images: SitemapImage[] = row.coverImage
+      ? [{ url: row.coverImage, title: `${row.title} – blog Katarzyna Brui` }]
+      : [];
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/blog/${encodeURIComponent(row.slug)}`,
+        changefreq: 'weekly',
+        priority: '0.7',
+        lastmod: row.lastmod,
+        images,
+      })
+    );
+  }
+
+  // Trainings (dynamic from DB)
+  for (const row of trainingRows) {
+    const images: SitemapImage[] = row.coverImage
+      ? [{ url: row.coverImage, title: `${row.title} – szkolenia Katarzyna Brui` }]
+      : [];
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/training/${encodeURIComponent(row.slug)}`,
+        changefreq: 'monthly',
+        priority: '0.7',
+        lastmod: row.lastmod,
+        images,
+      })
+    );
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${entries.join('\n')}
+</urlset>`;
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+    },
+    body: xml,
+  };
+};
+
+export { handler };

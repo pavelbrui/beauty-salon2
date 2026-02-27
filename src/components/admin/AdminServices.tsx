@@ -391,32 +391,34 @@ export const AdminServices = () => {
         {filteredServices.map((service) => {
           const images = (service as any).service_images as ServiceImage[] | undefined;
           return (
-            <li key={service.id} className="px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <li key={service.id} className="px-4 sm:px-6 py-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   {images && images.length > 0 && (
                     <img
                       src={images[0].url}
                       alt={service.name}
-                      className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover flex-shrink-0"
                     />
                   )}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900">
                       {service.name}
                     </h3>
                     <p className="text-sm text-gray-500">{service.category}</p>
-                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{service.description}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-semibold text-gray-900">
-                    {(service.price / 100).toFixed(2)} zł
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {service.duration} min
-                  </p>
-                  <div className="mt-2 flex items-center gap-3 justify-end">
+                <div className="flex items-center justify-between sm:block sm:text-right flex-shrink-0">
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {(service.price / 100).toFixed(2)} zł
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {service.duration} min
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 sm:mt-2 sm:justify-end">
                     <button
                       onClick={() => handleEdit(service)}
                       className="text-amber-600 hover:text-amber-700"

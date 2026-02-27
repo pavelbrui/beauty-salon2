@@ -282,6 +282,43 @@ export const ServicesPage: React.FC = () => {
     ? (categoryImageMap.get(category) || getStaticImageForCategory(category))
     : serviceImages.permanentMakeup;
 
+  // Build JSON-LD structured data for services
+  const visibleServices = category
+    ? services.filter(s => s.category === category)
+    : services;
+
+  const servicesSchema = visibleServices.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    'name': category
+      ? `${getCategoryName(category, language, (t as any).categories)} – Salon Katarzyna Brui`
+      : 'Usługi kosmetyczne – Salon Katarzyna Brui Białystok',
+    'url': `https://katarzynabrui.pl${category ? `/services/${encodeURIComponent(category)}` : '/services'}`,
+    'itemListElement': visibleServices.map(service => ({
+      '@type': 'Offer',
+      'itemOffered': {
+        '@type': 'Service',
+        'name': service.name,
+        'description': service.description || undefined,
+        'image': service.imageUrl || undefined,
+        'provider': {
+          '@type': 'BeautySalon',
+          'name': 'Salon Kosmetyczny Katarzyna Brui',
+          'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': 'ul. Młynowa 46, Lok U11',
+            'addressLocality': 'Białystok',
+            'postalCode': '15-404',
+            'addressCountry': 'PL',
+          },
+        },
+      },
+      'price': (service.price / 100).toFixed(0),
+      'priceCurrency': 'PLN',
+      'availability': 'https://schema.org/InStock',
+    })),
+  } : undefined;
+
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
@@ -290,6 +327,7 @@ export const ServicesPage: React.FC = () => {
         canonical={category ? `/services/${encodeURIComponent(category)}` : '/services'}
         image={categoryImage}
         keywords={seo.keywords}
+        structuredData={servicesSchema}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>

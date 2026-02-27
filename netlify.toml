@@ -10,6 +10,11 @@
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,BOOKSY_BUSINESS_ID,BOOKSY_SYNC_SECRET,VITE_BOOKSY_SYNC_SECRET,VITE_NOTIFICATION_SECRET,NOTIFICATION_SECRET"
 
 [[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

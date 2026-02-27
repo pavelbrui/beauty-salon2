@@ -19,7 +19,7 @@ export const Admin: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <LocalizedLink
             to="/"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
@@ -27,11 +27,11 @@ export const Admin: React.FC = () => {
             <ArrowLeftIcon className="h-4 w-4" />
             Strona główna
           </LocalizedLink>
-          <h1 className="text-3xl font-bold text-gray-900">Panel Administracyjny</h1>
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Panel Administracyjny</h1>
         </div>
         
-        <div className="mt-4 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
+        <div className="mt-4 border-b border-gray-200 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <nav className="-mb-px flex space-x-2 sm:space-x-4 lg:space-x-8 min-w-max">
             <button
               onClick={() => setActiveTab('services')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
