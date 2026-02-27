@@ -10,6 +10,7 @@ export interface Service {
   description_en?: string;
   description_ru?: string;
   imageUrl?: string;
+  is_hidden?: boolean;
 }
 
 export interface TimeSlot {
