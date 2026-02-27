@@ -152,6 +152,11 @@ export const BlogPage: React.FC = () => {
           image={post.cover_image_url || undefined}
           keywords={post.seo_keywords || []}
           structuredData={articleSchema}
+          breadcrumbs={[
+            { name: 'Strona główna', url: '/' },
+            { name: 'Blog', url: '/blog' },
+            { name: postTitle, url: `/blog/${post.slug}` },
+          ]}
         />
 
         {/* Hero */}
@@ -265,6 +270,10 @@ export const BlogPage: React.FC = () => {
           'salon kosmetyczny blog',
           'pielęgnacja brwi rzęs',
           'trendy beauty 2026',
+        ]}
+        breadcrumbs={[
+          { name: 'Strona główna', url: '/' },
+          { name: 'Blog', url: '/blog' },
         ]}
       />
 

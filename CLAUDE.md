@@ -17,17 +17,20 @@ React 18 + TypeScript + Vite + Tailwind CSS + Supabase (PostgreSQL) + Zustand + 
 ## Project Structure
 ```
 src/
-├── pages/           # Route-level components (Home, BookingPage, Admin, ServicesPage, TrainingPage, etc.)
-├── components/      # Reusable UI (Navbar, ServiceCard, AuthModal, BookingForm, etc.)
-│   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments, AdminTrainings)
+├── pages/           # Route-level components (Home, BookingPage, Admin, ServicesPage, TrainingPage, BlogPage, etc.)
+├── components/      # Reusable UI (Navbar, ServiceCard, AuthModal, BookingForm, SEO, LocalizedLink, etc.)
+│   ├── admin/       # Admin panel tabs (AdminServices, AdminStylists, AdminTimeSlots, AdminGallery, StylistAssignments, AdminTrainings, AdminBlog, AdminBooksy, AdminCategories, AdminUsers)
 │   └── Calendar/    # Booking calendar (AdvancedBookingCalendar, MonthCalendar, TimeGrid)
 ├── lib/             # Supabase client (supabase.ts), auth (auth.ts), email (email.ts)
 ├── hooks/           # useLanguage.ts (Zustand store), useLocalizedPath.ts (i18n routing helpers)
 ├── i18n/            # translations.ts (pl/en/ru)
 ├── types/           # index.ts (TypeScript interfaces)
-├── utils/           # timeSlots.ts, dateUtils.ts
+├── utils/           # timeSlots.ts, dateUtils.ts, compressImage.ts
 └── assets/          # images.ts (URLs)
-supabase/migrations/ # 20 SQL migration files (0001–0020)
+scripts/             # generate-sitemap.mjs (build-time sitemap generation)
+netlify/functions/   # sitemap.ts, send-booking-email.ts, booksy-webhook.ts, booksy-sync-background.ts
+public/              # robots.txt, _headers, sitemap.xml (fallback), og-image.jpg
+supabase/migrations/ # SQL migration files
 ```
 
 ## Key Architectural Rules
@@ -40,7 +43,7 @@ supabase/migrations/ # 20 SQL migration files (0001–0020)
 - **Prices**: Stored in cents in DB. Display: `(price / 100).toFixed(0) + ' PLN'`
 
 ## Database Tables
-`services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `email_templates` | `notifications` | `trainings` (title, slug, category, content_blocks JSONB, is_published)
+`services` (name, category, price in cents, duration in min) | `stylists` (name, role, specialties[]) | `bookings` (service_id, user_id, time_slot_id, stylist_id, status) | `time_slots` (stylist_id, start_time, end_time, is_available) | `stylist_service_assignments` | `stylist_working_hours` (day_of_week 0-6) | `service_images` | `service_categories` | `email_templates` | `notifications` | `trainings` (title, slug, category, content_blocks JSONB, is_published) | `blog_posts` (title, slug, content, cover_image, is_published, published_at)
 
 ## Routes
 All public routes support language prefixes: `/en/...` (English), `/ru/...` (Russian), no prefix = Polish (default).
@@ -97,6 +100,44 @@ The site uses URL-based language routing so each language version has a unique, 
 ### Language Switcher
 In `Navbar.tsx`, the `switchLanguage()` function strips the current prefix, then navigates to the new prefixed path. Query params and hash are preserved.
 
+## SEO System
+The site has a comprehensive SEO setup with multilingual support.
+
+### SEO Component (`src/components/SEO.tsx`)
+- React Helmet-based component used on all public pages
+- Props: `title`, `description`, `canonical`, `keywords`, `noindex`, `structuredData`, `ogImage`
+- Auto-generates: hreflang tags (pl, en, ru + x-default), canonical URLs, OG tags, Twitter cards
+- `noindex` pages (booking, profile, appointments) skip hreflang generation
+- Canonical prop should be a bare path — SEO.tsx handles language prefixing
+
+### Structured Data (JSON-LD)
+- **index.html**: Static `BeautySalon` schema (address, hours, rating, service catalog)
+- **Home.tsx**: Dynamic `BeautySalon` with aggregateRating
+- **ServicesPage.tsx**: `OfferCatalog` with services and prices
+- **GalleryPage.tsx**: `ImageGallery` with `ImageObject` entries
+- **BlogPage.tsx**: `Article` schema with author, dates, publisher
+
+### Sitemap
+- **Build-time**: `scripts/generate-sitemap.mjs` generates `public/sitemap.xml` during `npm run build`
+- **Runtime**: `netlify/functions/sitemap.ts` serves dynamic sitemap (fetches blog_posts, trainings, categories from Supabase)
+- Netlify redirects `/sitemap.xml` → Netlify function (see `netlify.toml`)
+- Includes hreflang alternates, image tags, priority/changefreq per URL type
+
+### HTTP Headers & Security (`public/_headers`)
+- `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`
+- Sitemap and robots.txt have correct Content-Type and cache headers
+
+### robots.txt (`public/robots.txt`)
+- Disallows: `/admin`, `/profile`, `/booking/`, `/appointments` (+ language prefixes)
+- Allows all public content, references sitemap.xml
+
+### SEO Rules for New Pages
+1. Add `<SEO title={...} description={...} canonical="/path" />` to every public page
+2. Use `noindex` for private/transactional pages (booking, profile)
+3. Add structured data via `structuredData` prop where relevant
+4. Ensure translations include SEO descriptions for all 3 languages
+5. Add new public URLs to sitemap generation (`scripts/generate-sitemap.mjs` + `netlify/functions/sitemap.ts`)
+
 ## Common Searches for Subagents
 When exploring this codebase, use these patterns:
 - Find all DB queries: `Grep: supabase.from`
@@ -112,6 +153,11 @@ When exploring this codebase, use these patterns:
 - Find time slot logic: `Read: src/utils/timeSlots.ts`
 - Find training system: `Glob: src/components/admin/AdminTrainings.tsx` or `Read: src/components/admin/BlockEditor.tsx`
 - Find migrations: `Glob: supabase/migrations/*.sql`
+- Find SEO component: `Read: src/components/SEO.tsx`
+- Find structured data: `Grep: application/ld\+json` or `Grep: schema.org`
+- Find sitemap generation: `Read: scripts/generate-sitemap.mjs` or `Read: netlify/functions/sitemap.ts`
+- Find HTTP headers: `Read: public/_headers`
+- Find blog system: `Glob: src/components/admin/AdminBlog.tsx` or `Read: src/pages/BlogPage.tsx`
 
 ## Adding New Features Checklist
 1. Types → `src/types/index.ts`
@@ -119,8 +165,10 @@ When exploring this codebase, use these patterns:
 3. Page + route → `src/pages/` + add to `publicRoutes` in `src/App.tsx` (automatically available under `/`, `/en/`, `/ru/`)
 4. Translations → `src/i18n/translations.ts` (all 3 langs!)
 5. Navigation → use `<LocalizedLink>` and `useLocalizedNavigate()`, NOT plain `<Link>` / `useNavigate()`
-6. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
-7. DB table → new file in `supabase/migrations/`
+6. **SEO** → add `<SEO>` component with title, description, canonical. Add structured data if relevant. Use `noindex` for private pages.
+7. **Sitemap** → add new public URLs to `scripts/generate-sitemap.mjs` and `netlify/functions/sitemap.ts`
+8. Admin tab → edit `src/pages/Admin.tsx` (button + conditional render)
+9. DB table → new file in `supabase/migrations/`
 
 ## Google OAuth Setup
 Google login uses Supabase Auth with the Google provider. The flow: App → Google → Supabase callback → App redirect.
@@ -165,6 +213,7 @@ e2e/
 ├── booking.spec.ts     # Booking flow, appointments page
 ├── stylists.spec.ts    # Stylist cards, specialties, book button
 ├── gallery.spec.ts     # Gallery grid, category filter, image hover
+├── blog.spec.ts        # Blog list, blog post detail, related posts
 ├── seo.spec.ts         # SEO meta tags, structured data
 └── admin.spec.ts       # Admin panel, tab switching, content visibility
 ```

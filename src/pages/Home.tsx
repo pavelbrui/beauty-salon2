@@ -184,6 +184,7 @@ export const Home: React.FC = () => {
           src="/og-image2.jpg"
           alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
           className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">

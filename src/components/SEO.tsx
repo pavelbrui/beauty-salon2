@@ -4,6 +4,11 @@ import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { stripLangPrefix } from '../hooks/useLocalizedPath';
 
+export interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
 interface SEOProps {
   title?: string;
   description?: string;
@@ -13,6 +18,7 @@ interface SEOProps {
   noindex?: boolean;
   keywords?: string[];
   structuredData?: Record<string, unknown>;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
@@ -43,6 +49,7 @@ export const SEO: React.FC<SEOProps> = ({
   noindex = false,
   keywords,
   structuredData,
+  breadcrumbs,
 }) => {
   const { language } = useLanguage();
   const location = useLocation();
@@ -74,6 +81,9 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:url" content={url} />
       <meta property="og:image" content={image} />
       <meta property="og:locale" content={OG_LOCALES[language]} />
+      {!noindex && LANGUAGES.filter(l => l !== language).map(lang => (
+        <meta key={`og-alt-${lang}`} property="og:locale:alternate" content={OG_LOCALES[lang]} />
+      ))}
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
@@ -83,6 +93,20 @@ export const SEO: React.FC<SEOProps> = ({
       {structuredData && (
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
+        </script>
+      )}
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': breadcrumbs.map((item, i) => ({
+              '@type': 'ListItem',
+              'position': i + 1,
+              'name': item.name,
+              'item': getLocalizedUrl(item.url, language),
+            })),
+          })}
         </script>
       )}
     </Helmet>

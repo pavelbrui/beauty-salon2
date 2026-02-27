@@ -120,6 +120,29 @@ export const TrainingPage: React.FC = () => {
             `kurs ${training.title.toLowerCase()}`,
             'szkolenia beauty Białystok',
           ]}
+          breadcrumbs={[
+            { name: 'Strona główna', url: '/' },
+            { name: tp?.header || t.training || 'Szkolenia', url: '/training' },
+            { name: trainingTitle, url: `/training/${training.slug}` },
+          ]}
+          structuredData={{
+            '@context': 'https://schema.org',
+            '@type': 'Course',
+            'name': trainingTitle,
+            'description': trainingDesc,
+            'provider': {
+              '@type': 'Organization',
+              'name': 'Salon Kosmetyczny Katarzyna Brui',
+              'url': 'https://katarzynabrui.pl',
+            },
+            ...(training.cover_image_url && { 'image': training.cover_image_url }),
+            ...(trainingPrice && { 'offers': {
+              '@type': 'Offer',
+              'price': trainingPrice.replace(/[^\d]/g, ''),
+              'priceCurrency': 'PLN',
+              'availability': 'https://schema.org/InStock',
+            }}),
+          }}
         />
 
         {/* Hero section */}
@@ -239,6 +262,10 @@ export const TrainingPage: React.FC = () => {
           'kurs stylizacji rzęs',
           'permanent makeup course Poland',
           'szkolenia kosmetyczne Białystok',
+        ]}
+        breadcrumbs={[
+          { name: 'Strona główna', url: '/' },
+          { name: tp?.header || t.training || 'Szkolenia', url: '/training' },
         ]}
       />
 

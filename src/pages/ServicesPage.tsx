@@ -328,6 +328,17 @@ export const ServicesPage: React.FC = () => {
         image={categoryImage}
         keywords={seo.keywords}
         structuredData={servicesSchema}
+        breadcrumbs={category
+          ? [
+              { name: 'Strona główna', url: '/' },
+              { name: t.services || 'Usługi', url: '/services' },
+              { name: getCategoryName(category, language, (t as any).categories), url: `/services/${encodeURIComponent(category)}` },
+            ]
+          : [
+              { name: 'Strona główna', url: '/' },
+              { name: t.services || 'Usługi', url: '/services' },
+            ]
+        }
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>

@@ -2,6 +2,7 @@ import React from 'react';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { SEO } from '../components/SEO';
 
 export const NotFoundPage: React.FC = () => {
   const { language } = useLanguage();
@@ -9,6 +10,11 @@ export const NotFoundPage: React.FC = () => {
 
   return (
     <div className="pt-16 min-h-screen bg-neutral-50 flex items-center justify-center px-4">
+      <SEO
+        title={`404 - ${t.notFound.title}`}
+        description={t.notFound.description}
+        noindex
+      />
       <div className="text-center">
         <h1 className="text-8xl font-bold text-amber-500 mb-4">404</h1>
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t.notFound.title}</h2>

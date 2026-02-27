@@ -70,6 +70,29 @@ export const StylistsPage: React.FC = () => {
           'specjalistka brwi Białystok',
           'najlepsza kosmetyczka Białystok'
         ]}
+        breadcrumbs={[
+          { name: 'Strona główna', url: '/' },
+          { name: t.stylists || 'Specjaliści', url: '/stylists' },
+        ]}
+        structuredData={stylists.length > 0 ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          'itemListElement': stylists.map((stylist, i) => ({
+            '@type': 'ListItem',
+            'position': i + 1,
+            'item': {
+              '@type': 'Person',
+              'name': stylist.name,
+              'jobTitle': getStylistRole(stylist, language),
+              ...(stylist.image_url && { 'image': stylist.image_url }),
+              'worksFor': {
+                '@type': 'BeautySalon',
+                'name': 'Salon Kosmetyczny Katarzyna Brui',
+              },
+              'knowsAbout': getStylistSpecialties(stylist, language),
+            },
+          })),
+        } : undefined}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.stylists}</h1>
