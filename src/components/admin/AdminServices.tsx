@@ -5,6 +5,7 @@ import { translateFromPolish } from '../../utils/translateService';
 import { StylistFilter } from '../StylistFilter';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { withTimeout } from '../../utils/withTimeout';
+import { serviceImages } from '../../assets/images';
 
 
 interface Stylist {
@@ -91,6 +92,27 @@ export const AdminServices = () => {
     setSelectedStylists(ids);
     setOriginalStylists(ids);
   };
+
+  const getStaticImageForCategory = (category: string) => {
+    switch ((category || '').toLowerCase()) {
+      case 'pielęgnacja brwi':
+        return serviceImages.browCare;
+      case 'makijaż permanentny':
+        return serviceImages.permanentMakeup;
+      case 'rzęsy':
+      case 'stylizacja rzęs':
+        return serviceImages.lashes;
+      case 'laserowe usuwanie':
+        return serviceImages.tattooRemoval;
+      case 'manicure':
+        return serviceImages.manicure;
+      case 'peeling węglowy':
+        return serviceImages.carbonPeeling;
+      default:
+        return serviceImages.browCare;
+    }
+  };
+
   const loadServices = async () => {
     const { data, error } = await supabase
       .from('services')
@@ -101,8 +123,13 @@ export const AdminServices = () => {
       console.error('Error loading services:', error);
       return;
     }
-    
-    setServices(data);
+
+    const servicesWithImages = (data || []).map((service: any) => ({
+      ...service,
+      imageUrl: service.service_images?.[0]?.url || getStaticImageForCategory(service.category),
+    }));
+
+    setServices(servicesWithImages);
   };
 
   const loadEditImages = async (serviceId: string) => {
@@ -302,6 +329,21 @@ export const AdminServices = () => {
     setDeletingService(null);
   };
 
+  const handleToggleHidden = async (service: Service) => {
+    const nextHidden = !service.is_hidden;
+    setServices(prev => prev.map(s => (s.id === service.id ? { ...s, is_hidden: nextHidden } : s)));
+
+    const { error } = await supabase
+      .from('services')
+      .update({ is_hidden: nextHidden })
+      .eq('id', service.id);
+
+    if (error) {
+      console.error('Error toggling service visibility:', error);
+      await loadServices();
+    }
+  };
+
   const categories = useMemo(() => [...new Set(services.map(s => s.category))], [services]);
 
   const filteredServices = useMemo(() => {
@@ -387,57 +429,87 @@ export const AdminServices = () => {
         </div>
       </div>
 
-      <ul className="divide-y divide-gray-200">
-        {filteredServices.map((service) => {
-          const images = (service as any).service_images as ServiceImage[] | undefined;
-          return (
-            <li key={service.id} className="px-4 sm:px-6 py-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  {images && images.length > 0 && (
+      <div className="p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredServices.map((service) => {
+            const hidden = !!service.is_hidden;
+            return (
+              <div
+                key={service.id}
+                className={`bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-[1.01] ${
+                  hidden ? 'opacity-75 grayscale' : ''
+                }`}
+              >
+                {service.imageUrl && (
+                  <div className="relative h-44 overflow-hidden">
                     <img
-                      src={images[0].url}
+                      src={service.imageUrl}
                       alt={service.name}
-                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover flex-shrink-0"
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                    {hidden && (
+                      <div className="absolute top-3 left-3">
+                        <span className="text-xs font-semibold bg-black/60 text-white px-2 py-1 rounded-full">
+                          Ukryta
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">{service.name}</h3>
+                      <p className="text-sm text-gray-500">{service.category}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-lg font-bold text-amber-600">
+                        {(service.price / 100).toFixed(0)} PLN
+                      </p>
+                      <p className="text-sm text-gray-500">{service.duration} min</p>
+                    </div>
+                  </div>
+
+                  {service.description && (
+                    <p className="mt-4 text-gray-600 line-clamp-3">{service.description}</p>
                   )}
-                  <div className="min-w-0">
-                    <h3 className="text-base sm:text-lg font-medium text-gray-900">
-                      {service.name}
-                    </h3>
-                    <p className="text-sm text-gray-500">{service.category}</p>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{service.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between sm:block sm:text-right flex-shrink-0">
-                  <div>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {(service.price / 100).toFixed(2)} zł
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {service.duration} min
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 sm:mt-2 sm:justify-end">
+
+                  <div className="mt-6 flex flex-wrap gap-2">
                     <button
+                      type="button"
+                      onClick={() => handleToggleHidden(service)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        hidden
+                          ? 'bg-white text-gray-700 border-gray-200 hover:border-amber-300 hover:text-amber-700'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:text-gray-900'
+                      }`}
+                    >
+                      {hidden ? 'Pokaż' : 'Ukryj'}
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => handleEdit(service)}
-                      className="text-amber-600 hover:text-amber-700"
+                      className="px-3 py-2 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors"
                     >
                       Edytuj
                     </button>
                     <button
+                      type="button"
                       onClick={() => setDeletingService(service)}
-                      className="text-red-600 hover:text-red-700"
+                      className="px-3 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
                     >
                       Usuń
                     </button>
                   </div>
                 </div>
               </div>
-            </li>
-          );
-        })}
-      </ul>
+            );
+          })}
+        </div>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
