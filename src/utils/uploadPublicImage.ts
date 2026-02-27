@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { withTimeout } from './withTimeout';
+import { compressImage } from './compressImage';
 
 const DEFAULT_BUCKET = 'service-images';
 const DEFAULT_TIMEOUT_MS = 20000;
@@ -19,17 +20,25 @@ export async function uploadPublicImage(params: {
   folder: string;
   bucket?: string;
   timeoutMs?: number;
+  maxDimension?: number;
+  quality?: number;
 }): Promise<{ publicUrl: string; path: string }> {
   const bucket = params.bucket ?? DEFAULT_BUCKET;
   const timeoutMs = params.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
-  const ext = inferExtension(params.file);
+  // Compress/resize before upload
+  const compressed = await compressImage(params.file, {
+    maxDimension: params.maxDimension,
+    quality: params.quality,
+  });
+
+  const ext = inferExtension(compressed);
   const fileName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
   const path = `${params.folder}/${fileName}`;
 
   const { error: uploadError } = await withTimeout(
-    supabase.storage.from(bucket).upload(path, params.file, {
-      contentType: params.file.type || undefined,
+    supabase.storage.from(bucket).upload(path, compressed, {
+      contentType: compressed.type || undefined,
       cacheControl: '3600',
       upsert: false,
     }),

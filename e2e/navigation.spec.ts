@@ -25,6 +25,11 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL('/appointments');
   });
 
+  test('navigate to training page', async ({ page }) => {
+    await page.locator('nav a[href="/training"]').click();
+    await expect(page).toHaveURL('/training');
+  });
+
   test('navigate to stylists page', async ({ page }) => {
     await page.locator('nav a[href="/stylists"]').click();
     await expect(page).toHaveURL('/stylists');

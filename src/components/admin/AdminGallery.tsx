@@ -46,9 +46,9 @@ export const AdminGallery: React.FC = () => {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const maxSize = 15 * 1024 * 1024;
       if (file.size > maxSize) {
-        alert('Plik musi być mniejszy niż 5MB');
+        alert('Plik musi być mniejszy niż 15MB');
         return;
       }
 

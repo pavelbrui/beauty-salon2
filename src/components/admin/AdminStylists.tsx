@@ -84,9 +84,9 @@ export const AdminStylists: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 15 * 1024 * 1024;
     if (file.size > maxSize) {
-      setUploadError('Plik musi być mniejszy niż 5MB');
+      setUploadError('Plik musi być mniejszy niż 15MB');
       return;
     }
 
@@ -436,7 +436,7 @@ export const AdminStylists: React.FC = () => {
                     {uploadedImageUrl && !uploading && (
                       <p className="mt-1 text-xs text-green-600">Zdjęcie wgrane pomyślnie</p>
                     )}
-                    <p className="mt-1 text-xs text-gray-400">Maks. 5MB, JPG/PNG/WebP</p>
+                    <p className="mt-1 text-xs text-gray-400">Maks. 15MB — duże zdjęcia zostaną automatycznie skompresowane</p>
                   </div>
                 ) : (
                   <input

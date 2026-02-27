@@ -25,7 +25,7 @@ async function checkIsAdmin(userId: string, appMetadataRole?: string): Promise<b
 
   if (error) {
     console.error('Error checking admin role:', error);
-    return false;
+    throw new Error(error.message || 'Nie udało się sprawdzić roli admina');
   }
 
   return data?.role === 'admin';

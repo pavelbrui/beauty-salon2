@@ -6,6 +6,11 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const syncSecret = process.env.BOOKSY_SYNC_SECRET || '';
 const businessId = process.env.BOOKSY_BUSINESS_ID || '162206';
+const resendApiKey = process.env.RESEND_API_KEY || '';
+
+const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
+const ADMIN_EMAIL = 'brui.katya@icloud.com';
+const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -30,11 +35,44 @@ interface BooksySessionData {
   user_agent?: string;
 }
 
+// --- Custom error for 409 conflict ---
+class BooksyConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BooksyConflictError';
+  }
+}
+
+// --- Email alert helper (via Resend) ---
+async function sendAlertEmail(to: string, subject: string, html: string) {
+  if (!resendApiKey) {
+    console.error('[SYNC] RESEND_API_KEY not configured — cannot send alert email');
+    return;
+  }
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: FROM_EMAIL, to: [to], subject, html }),
+    });
+    if (!res.ok) {
+      console.error(`[SYNC] Resend error for ${to}:`, await res.text());
+    } else {
+      console.log(`[SYNC] Alert email sent to ${to}: ${subject}`);
+    }
+  } catch (err) {
+    console.error(`[SYNC] Failed to send alert email to ${to}:`, err);
+  }
+}
+
 // --- Helpers ---
 
 async function updateSyncLog(
   bookingId: string,
-  status: 'processing' | 'success' | 'failed',
+  status: 'pending' | 'processing' | 'success' | 'failed',
   extra?: { errorMessage?: string; booksyReservationId?: number }
 ) {
   const update: Record<string, unknown> = { status };
@@ -207,6 +245,12 @@ async function createReservation(
     throw new Error(`Sesja Booksy wygasła (${response.status}). Zaktualizuj token w panelu admina.`);
   }
 
+  if (response.status === 409) {
+    const text = await response.text();
+    console.log(`[SYNC] Conflict (409) — time slot unavailable on Booksy`);
+    throw new BooksyConflictError(`Booksy API error 409: ${text}`);
+  }
+
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`Booksy API error ${response.status}: ${text}`);
@@ -283,10 +327,10 @@ async function performSync(payload: SyncPayload): Promise<void> {
     if (action === 'create_block') {
       const result = await createReservation(session, startTime, endTime, resourceId);
       if (result) {
-        // Save the Booksy reservation ID on the booking for future delete/update
+        // Save the Booksy reservation ID on the booking + set status confirmed
         await supabase
           .from('bookings')
-          .update({ booksy_reservation_id: result.id })
+          .update({ booksy_reservation_id: result.id, status: 'confirmed' })
           .eq('id', bookingId);
 
         await updateSyncLog(bookingId, 'success', { booksyReservationId: result.id });
@@ -336,7 +380,7 @@ async function performSync(payload: SyncPayload): Promise<void> {
       if (result) {
         await supabase
           .from('bookings')
-          .update({ booksy_reservation_id: result.id })
+          .update({ booksy_reservation_id: result.id, status: 'confirmed' })
           .eq('id', bookingId);
 
         await updateSyncLog(bookingId, 'success', { booksyReservationId: result.id });
@@ -353,7 +397,76 @@ async function performSync(payload: SyncPayload): Promise<void> {
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error(`[SYNC] Error during ${action}:`, errorMsg);
-    await updateSyncLog(bookingId, 'failed', { errorMessage: errorMsg });
+
+    if (err instanceof BooksyConflictError) {
+      // 409 conflict — time slot taken on Booksy. CRITICAL: keep booking pending, notify admin
+      console.log(`[SYNC] 409 Conflict — resetting booking ${bookingId} to pending, notifying admin`);
+
+      await supabase
+        .from('bookings')
+        .update({ status: 'pending' })
+        .eq('id', bookingId);
+
+      await updateSyncLog(bookingId, 'pending', { errorMessage: errorMsg });
+
+      // Load booking details for the alert email
+      const { data: bk } = await supabase
+        .from('bookings')
+        .select('contact_name, contact_phone, start_time, end_time, notes, stylists ( name ), services ( name )')
+        .eq('id', bookingId)
+        .single();
+
+      const clientName = (bk as any)?.contact_name || '—';
+      const clientPhone = (bk as any)?.contact_phone || '—';
+      const serviceName = (bk as any)?.services?.name || '—';
+      const stylistNameDisplay = (bk as any)?.stylists?.name || stylistName || '—';
+      const dateStr = startTime ? new Date(startTime).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' }) : '—';
+
+      const alertHtml = `
+<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:16px;">
+  <h2 style="color:#dc2626;">KRYTYCZNE: Konflikt terminu w Booksy (409)</h2>
+  <p style="color:#374151;">Rezerwacja ze strony <strong>NIE została dodana</strong> do kalendarza Booksy, bo ten termin jest już zajęty.</p>
+  <p style="color:#dc2626;font-weight:600;">Rezerwacja została ustawiona na status PENDING — wymaga ręcznej interwencji!</p>
+  <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+    <tr><td style="padding:6px 0;color:#666;width:110px;">Klient:</td><td>${clientName}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Telefon:</td><td>${clientPhone}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Usługa:</td><td>${serviceName}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Termin:</td><td>${dateStr}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Stylistka:</td><td>${stylistNameDisplay}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Booking ID:</td><td style="font-family:monospace;font-size:12px;">${bookingId}</td></tr>
+    <tr><td style="padding:6px 0;color:#666;">Błąd:</td><td style="color:#dc2626;">${errorMsg}</td></tr>
+  </table>
+  <p><a href="https://katarzynabrui.pl/admin" style="color:#f59e0b;font-weight:600;">Otwórz panel admina</a></p>
+</div>`;
+
+      await sendAlertEmail(
+        ADMIN_EMAIL,
+        `KRYTYCZNE: Konflikt Booksy — ${clientName}, ${dateStr}`,
+        alertHtml,
+      );
+
+    } else {
+      // Any other error (not 409) — notify developer
+      await updateSyncLog(bookingId, 'failed', { errorMessage: errorMsg });
+
+      const devHtml = `
+<div style="font-family:monospace;max-width:600px;margin:0 auto;padding:16px;">
+  <h2 style="color:#dc2626;">Booksy Sync Error</h2>
+  <p><strong>Action:</strong> ${action}</p>
+  <p><strong>Booking ID:</strong> ${bookingId}</p>
+  <p><strong>Time:</strong> ${startTime} — ${endTime}</p>
+  <p><strong>Stylist:</strong> ${stylistName || 'N/A'}</p>
+  <p><strong>Error:</strong></p>
+  <pre style="background:#f3f4f6;padding:12px;border-radius:6px;overflow-x:auto;">${errorMsg}</pre>
+  <p><a href="https://katarzynabrui.pl/admin" style="color:#f59e0b;">Admin panel</a></p>
+</div>`;
+
+      await sendAlertEmail(
+        DEVELOPER_EMAIL,
+        `Booksy Sync Error: ${action} — booking ${bookingId.substring(0, 8)}`,
+        devHtml,
+      );
+    }
   }
 }
 

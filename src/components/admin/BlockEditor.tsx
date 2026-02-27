@@ -48,8 +48,8 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Maksymalny rozmiar pliku to 5MB');
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Maksymalny rozmiar pliku to 15MB');
       return;
     }
 

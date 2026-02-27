@@ -33,6 +33,14 @@ test.describe('Home Page', () => {
     await expect(page.getByText('Młynowa 46')).toBeVisible();
   });
 
+  test('has training section with link', async ({ page }) => {
+    const trainingHeader = page.locator('section', { hasText: /szkoleni/i });
+    await expect(trainingHeader).toBeVisible();
+    const btn = page.locator('button', { hasText: /szkoleni/i });
+    await btn.click();
+    await expect(page).toHaveURL('/training');
+  });
+
   test('displays footer with copyright', async ({ page }) => {
     const footer = page.locator('footer');
     await expect(footer).toContainText('Katarzyna Brui');

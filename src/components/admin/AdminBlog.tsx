@@ -159,7 +159,7 @@ export const AdminBlog: React.FC = () => {
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('Max 5MB'); return; }
+    if (file.size > 15 * 1024 * 1024) { alert('Max 15MB'); return; }
 
     setUploadingCover(true);
     try {

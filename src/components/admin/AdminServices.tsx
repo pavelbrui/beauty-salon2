@@ -117,9 +117,9 @@ export const AdminServices = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 15 * 1024 * 1024;
     if (file.size > maxSize) {
-      setImageUploadError('Plik musi być mniejszy niż 5MB');
+      setImageUploadError('Plik musi być mniejszy niż 15MB');
       return;
     }
 
@@ -660,7 +660,7 @@ export const AdminServices = () => {
                   {imageUploadError && (
                     <p className="mt-1 text-sm text-red-600">{imageUploadError}</p>
                   )}
-                  <p className="mt-1 text-xs text-gray-400">Maks. 5MB, JPG/PNG/WebP</p>
+                  <p className="mt-1 text-xs text-gray-400">Maks. 15MB — duże zdjęcia zostaną automatycznie skompresowane</p>
                 </div>
               )}
 

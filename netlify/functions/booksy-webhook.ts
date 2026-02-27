@@ -59,8 +59,6 @@ interface ParsedBooking {
   oldEndTime?: string;
 }
 
-type MirrorStatus = 'confirmed' | 'cancelled';
-
 function normalizeSearchText(value: string): string {
   return value
     .toLowerCase()

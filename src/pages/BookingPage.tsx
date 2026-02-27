@@ -29,20 +29,34 @@ export const BookingPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const isSubmittingRef = useRef(false);
 
-  // Restore selected slot after Google OAuth redirect
+  // Restore selected slot after Google OAuth redirect.
+  // Session may not be ready immediately (Supabase is still processing
+  // hash tokens), so we also listen for onAuthStateChange.
   useEffect(() => {
     const saved = sessionStorage.getItem('pendingBookingSlot');
     if (!saved) return;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        try {
-          const slot = JSON.parse(saved) as TimeSlot;
-          setSelectedSlot(slot);
-          setShowBookingForm(true);
-        } catch { /* ignore parse errors */ }
-        sessionStorage.removeItem('pendingBookingSlot');
-      }
+
+    let restored = false;
+    const tryRestore = (session: unknown) => {
+      if (restored || !session) return;
+      restored = true;
+      try {
+        const slot = JSON.parse(saved) as TimeSlot;
+        setSelectedSlot(slot);
+        setShowBookingForm(true);
+      } catch { /* ignore parse errors */ }
+      sessionStorage.removeItem('pendingBookingSlot');
+    };
+
+    // Try immediately (session may already exist in localStorage)
+    supabase.auth.getSession().then(({ data: { session } }) => tryRestore(session));
+
+    // Fallback: wait for session from OAuth hash processing
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      tryRestore(session);
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
