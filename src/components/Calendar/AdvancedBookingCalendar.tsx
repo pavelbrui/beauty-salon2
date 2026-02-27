@@ -6,6 +6,7 @@ import { TimeGrid } from './TimeGrid';
 import { TimeSlot, Service } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { generateAvailableTimeSlots } from '../../utils/timeSlots';
+import { BookingRestrictions, DEFAULT_RESTRICTIONS, isSlotBookable } from '../../utils/bookingRestrictions';
 import { useLanguage } from '../../hooks/useLanguage';
 import { translations } from '../../i18n/translations';
 
@@ -31,6 +32,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [qualifiedStylistIds, setQualifiedStylistIds] = useState<string[]>([]);
+  const [stylistRestrictions, setStylistRestrictions] = useState<Record<string, BookingRestrictions>>({});
   const [currentMonth, setCurrentMonth] = useState<Date>(() => startOfMonth(new Date()));
 
   // Step 1: Load stylists who can perform this service
@@ -143,6 +145,27 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         ids = ids.filter(id => id === stylistId);
       }
 
+      // Load booking restrictions for qualified stylists
+      if (ids.length > 0) {
+        const { data: stylistData } = await supabase
+          .from('stylists')
+          .select('id, min_advance_hours, night_start_hour, night_end_hour, night_min_slot_hour')
+          .in('id', ids);
+
+        if (stylistData) {
+          const restrictions: Record<string, BookingRestrictions> = {};
+          for (const s of stylistData) {
+            restrictions[s.id] = {
+              minAdvanceHours: s.min_advance_hours ?? DEFAULT_RESTRICTIONS.minAdvanceHours,
+              nightStartHour: s.night_start_hour ?? DEFAULT_RESTRICTIONS.nightStartHour,
+              nightEndHour: s.night_end_hour ?? DEFAULT_RESTRICTIONS.nightEndHour,
+              nightMinSlotHour: s.night_min_slot_hour ?? DEFAULT_RESTRICTIONS.nightMinSlotHour,
+            };
+          }
+          setStylistRestrictions(restrictions);
+        }
+      }
+
       setQualifiedStylistIds(ids);
     } catch (error) {
       console.error('Error loading qualified stylists:', error);
@@ -229,14 +252,27 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         service.duration
       );
 
-      setTimeSlots(availableSlots);
+      // Apply booking restrictions per stylist
+      const now = new Date();
+      const filteredSlots = availableSlots.map(slot => {
+        if (!slot.isAvailable) return slot;
+        const restrictions = (slot.stylistId && stylistRestrictions[slot.stylistId])
+          ? stylistRestrictions[slot.stylistId]
+          : DEFAULT_RESTRICTIONS;
+        if (!isSlotBookable(new Date(slot.startTime), restrictions, now)) {
+          return { ...slot, isAvailable: false };
+        }
+        return slot;
+      });
+
+      setTimeSlots(filteredSlots);
     } catch (err) {
       console.error('Error loading time slots:', err);
       setTimeSlots([]);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedDate, qualifiedStylistIds, service.duration]);
+  }, [selectedDate, qualifiedStylistIds, service.duration, stylistRestrictions]);
 
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlot(slot);

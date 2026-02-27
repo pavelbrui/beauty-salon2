@@ -6,6 +6,7 @@ import { notifyAdmin, notifyClient, sendBookingEmail } from '../lib/notification
 import { syncBookingToBooksy } from '../lib/booksySync';
 import { saveProfile } from '../lib/profile';
 import { generateAvailableTimeSlots } from '../utils/timeSlots';
+import { BookingRestrictions, DEFAULT_RESTRICTIONS, isSlotBookable } from '../utils/bookingRestrictions';
 import { getServiceName } from '../utils/serviceTranslation';
 import { Service, TimeSlot } from '../types';
 import { TimeGrid } from './Calendar/TimeGrid';
@@ -108,7 +109,25 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         .gte('start_time', format(date, 'yyyy-MM-dd'))
         .lt('start_time', format(addDays(date, 1), 'yyyy-MM-dd'));
 
-      // 4. Generate available slots
+      // 4. Load booking restrictions for stylists
+      const { data: stylistData } = await supabase
+        .from('stylists')
+        .select('id, min_advance_hours, night_start_hour, night_end_hour, night_min_slot_hour')
+        .in('id', stylistIds);
+
+      const restrictions: Record<string, BookingRestrictions> = {};
+      if (stylistData) {
+        for (const s of stylistData) {
+          restrictions[s.id] = {
+            minAdvanceHours: s.min_advance_hours ?? DEFAULT_RESTRICTIONS.minAdvanceHours,
+            nightStartHour: s.night_start_hour ?? DEFAULT_RESTRICTIONS.nightStartHour,
+            nightEndHour: s.night_end_hour ?? DEFAULT_RESTRICTIONS.nightEndHour,
+            nightMinSlotHour: s.night_min_slot_hour ?? DEFAULT_RESTRICTIONS.nightMinSlotHour,
+          };
+        }
+      }
+
+      // 5. Generate available slots
       const slots = generateAvailableTimeSlots(
         date,
         workingHours,
@@ -116,7 +135,20 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         service.duration
       );
 
-      setTimeSlots(slots);
+      // 6. Apply booking restrictions per stylist
+      const now = new Date();
+      const filteredSlots = slots.map(slot => {
+        if (!slot.isAvailable) return slot;
+        const r = (slot.stylistId && restrictions[slot.stylistId])
+          ? restrictions[slot.stylistId]
+          : DEFAULT_RESTRICTIONS;
+        if (!isSlotBookable(new Date(slot.startTime), r, now)) {
+          return { ...slot, isAvailable: false };
+        }
+        return slot;
+      });
+
+      setTimeSlots(filteredSlots);
     } catch (err) {
       console.error('Error loading time slots:', err);
       setTimeSlots([]);

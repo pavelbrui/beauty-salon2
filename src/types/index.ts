@@ -57,6 +57,10 @@ export interface Stylist {
   description?: string;
   description_en?: string;
   description_ru?: string;
+  min_advance_hours?: number;
+  night_start_hour?: number;
+  night_end_hour?: number;
+  night_min_slot_hour?: number;
 }
 
 export interface User {

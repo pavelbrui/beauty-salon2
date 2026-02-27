@@ -17,6 +17,10 @@ interface Stylist {
   description: string;
   description_en?: string;
   description_ru?: string;
+  min_advance_hours?: number;
+  night_start_hour?: number;
+  night_end_hour?: number;
+  night_min_slot_hour?: number;
 }
 
 export const AdminStylists: React.FC = () => {
@@ -40,6 +44,12 @@ export const AdminStylists: React.FC = () => {
   const [descEn, setDescEn] = useState('');
   const [descRu, setDescRu] = useState('');
   const [translatingCount, setTranslatingCount] = useState(0);
+
+  // Booking restrictions state
+  const [minAdvanceHours, setMinAdvanceHours] = useState(3);
+  const [nightStartHour, setNightStartHour] = useState(22);
+  const [nightEndHour, setNightEndHour] = useState(6);
+  const [nightMinSlotHour, setNightMinSlotHour] = useState(10);
 
   // Save state
   const [saving, setSaving] = useState(false);
@@ -169,6 +179,10 @@ export const AdminStylists: React.FC = () => {
           description: stylist.description,
           description_en: descEn || null,
           description_ru: descRu || null,
+          min_advance_hours: minAdvanceHours,
+          night_start_hour: nightStartHour,
+          night_end_hour: nightEndHour,
+          night_min_slot_hour: nightMinSlotHour,
         }),
         20000,
         'Zapis trwa zbyt długo'
@@ -196,6 +210,13 @@ export const AdminStylists: React.FC = () => {
     }
   };
 
+  const resetRestrictions = () => {
+    setMinAdvanceHours(3);
+    setNightStartHour(22);
+    setNightEndHour(6);
+    setNightMinSlotHour(10);
+  };
+
   const handleEdit = (stylist: Stylist) => {
     setEditingStylist(stylist);
     setRoleEn(stylist.role_en || '');
@@ -204,6 +225,10 @@ export const AdminStylists: React.FC = () => {
     setSpecRu(stylist.specialties_ru?.join(', ') || '');
     setDescEn(stylist.description_en || '');
     setDescRu(stylist.description_ru || '');
+    setMinAdvanceHours(stylist.min_advance_hours ?? 3);
+    setNightStartHour(stylist.night_start_hour ?? 22);
+    setNightEndHour(stylist.night_end_hour ?? 6);
+    setNightMinSlotHour(stylist.night_min_slot_hour ?? 10);
     setImageMode('upload');
     setUploadedImageUrl('');
     setImageUrlInput(stylist.image_url || '');
@@ -221,6 +246,7 @@ export const AdminStylists: React.FC = () => {
             setEditingStylist(null);
             resetTranslationState();
             resetImageState();
+            resetRestrictions();
             setSaveError(null);
             setIsModalOpen(true);
           }}
@@ -533,6 +559,69 @@ export const AdminStylists: React.FC = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   rows={2}
                 />
+              </div>
+
+              {/* Booking restrictions */}
+              <div className="border-t pt-4 mt-4">
+                <h3 className="text-sm font-semibold text-gray-800 mb-3">Ograniczenia rezerwacji</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600">
+                      Min. wyprzedzenie (godz.)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={72}
+                      value={minAdvanceHours}
+                      onChange={(e) => setMinAdvanceHours(Number(e.target.value))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600">
+                      Min. godzina w nocy
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={23}
+                      value={nightMinSlotHour}
+                      onChange={(e) => setNightMinSlotHour(Number(e.target.value))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600">
+                      Noc od godz.
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={23}
+                      value={nightStartHour}
+                      onChange={(e) => setNightStartHour(Number(e.target.value))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600">
+                      Noc do godz.
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={23}
+                      value={nightEndHour}
+                      onChange={(e) => setNightEndHour(Number(e.target.value))}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-gray-400">
+                  W nocy ({nightStartHour}:00–{nightEndHour}:00) rezerwacje na terminy przed {nightMinSlotHour}:00 nie będą dostępne.
+                  Rezerwacje mniej niż {minAdvanceHours}h przed terminem nie będą dostępne.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-3">
