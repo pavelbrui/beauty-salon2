@@ -16,25 +16,34 @@ export const ServicesPage: React.FC = () => {
   }, []);
 
   const loadServices = async () => {
-    const { data, error } = await supabase
-      .from('services')
-      .select('*, service_images(url)')
-      .order('category');
-    
-    if (error) {
-      console.error('Error loading services:', error);
+    const [servicesRes, catRes] = await Promise.all([
+      supabase.from('services').select('*, service_images(url)').order('category'),
+      supabase.from('service_categories').select('name, image_url'),
+    ]);
+
+    if (servicesRes.error) {
+      console.error('Error loading services:', servicesRes.error);
       return;
     }
-    
-    const servicesWithImages = data.map(service => ({
+
+    const catImgMap = new Map<string, string>();
+    if (catRes.data) {
+      catRes.data.forEach((c: { name: string; image_url: string | null }) => {
+        if (c.image_url) catImgMap.set(c.name, c.image_url);
+      });
+    }
+
+    const servicesWithImages = servicesRes.data.map(service => ({
       ...service,
-      imageUrl: service.service_images?.[0]?.url || getDefaultImageForCategory(service.category)
+      imageUrl: service.service_images?.[0]?.url
+        || catImgMap.get(service.category)
+        || getStaticImageForCategory(service.category)
     }));
-    
+
     setServices(servicesWithImages);
   };
 
-  const getDefaultImageForCategory = (category: string) => {
+  const getStaticImageForCategory = (category: string) => {
     switch (category.toLowerCase()) {
       case 'pielęgnacja brwi':
         return serviceImages.browCare;

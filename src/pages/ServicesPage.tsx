@@ -179,6 +179,8 @@ export const ServicesPage: React.FC = () => {
   const t = translations[language];
   const navigate = useLocalizedNavigate();
 
+  const [categoryImageMap, setCategoryImageMap] = useState<Map<string, string>>(new Map());
+
   useEffect(() => {
     loadServices();
   }, []);
@@ -192,11 +194,16 @@ export const ServicesPage: React.FC = () => {
   const sortCategoriesByOrder = async (cats: string[]) => {
     const { data } = await supabase
       .from('service_categories')
-      .select('name, sort_order')
+      .select('name, sort_order, image_url')
       .order('sort_order');
 
     if (data && data.length > 0) {
       const orderMap = new Map(data.map((c: { name: string; sort_order: number }) => [c.name, c.sort_order]));
+      const imgMap = new Map<string, string>();
+      data.forEach((c: { name: string; image_url: string | null }) => {
+        if (c.image_url) imgMap.set(c.name, c.image_url);
+      });
+      setCategoryImageMap(imgMap);
       const sorted = [...cats].sort((a, b) => {
         const oa = orderMap.get(a) ?? 999;
         const ob = orderMap.get(b) ?? 999;
@@ -210,26 +217,36 @@ export const ServicesPage: React.FC = () => {
 
   const loadServices = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('services')
-      .select('*, service_images(url)')
-      .order('category');
-    
-    if (error) {
-      console.error('Error loading services:', error);
+    const [servicesRes, catRes] = await Promise.all([
+      supabase.from('services').select('*, service_images(url)').order('category'),
+      supabase.from('service_categories').select('name, image_url'),
+    ]);
+
+    if (servicesRes.error) {
+      console.error('Error loading services:', servicesRes.error);
       return;
     }
-    
-    const servicesWithImages = data.map(service => ({
+
+    const catImgMap = new Map<string, string>();
+    if (catRes.data) {
+      catRes.data.forEach((c: { name: string; image_url: string | null }) => {
+        if (c.image_url) catImgMap.set(c.name, c.image_url);
+      });
+      setCategoryImageMap(catImgMap);
+    }
+
+    const servicesWithImages = servicesRes.data.map(service => ({
       ...service,
-      imageUrl: service.service_images?.[0]?.url || getDefaultImageForCategory(service.category)
+      imageUrl: service.service_images?.[0]?.url
+        || catImgMap.get(service.category)
+        || getStaticImageForCategory(service.category)
     }));
-    
+
     setServices(servicesWithImages);
     setIsLoading(false);
   };
 
-  const getDefaultImageForCategory = (category: string) => {
+  const getStaticImageForCategory = (category: string) => {
     switch (category.toLowerCase()) {
       case 'pielęgnacja brwi':
         return serviceImages.browCare;
@@ -262,7 +279,7 @@ export const ServicesPage: React.FC = () => {
 
   // Pick a representative image for og:image based on current category
   const categoryImage = category
-    ? getDefaultImageForCategory(category)
+    ? (categoryImageMap.get(category) || getStaticImageForCategory(category))
     : serviceImages.permanentMakeup;
 
   return (

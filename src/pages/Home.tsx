@@ -35,12 +35,12 @@ export const Home: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const [servicesRes, catOrderRes] = await Promise.all([
         supabase.from('services').select('category').order('category'),
-        supabase.from('service_categories').select('name, sort_order').order('sort_order'),
+        supabase.from('service_categories').select('name, sort_order, image_url').order('sort_order'),
       ]);
-      
+
       if (servicesRes.error) {
         throw servicesRes.error;
       }
@@ -51,9 +51,11 @@ export const Home: React.FC = () => {
       });
 
       const orderMap = new Map<string, number>();
+      const imageMap = new Map<string, string>();
       if (catOrderRes.data) {
-        catOrderRes.data.forEach((c: { name: string; sort_order: number }) => {
+        catOrderRes.data.forEach((c: { name: string; sort_order: number; image_url: string | null }) => {
           orderMap.set(c.name, c.sort_order);
+          if (c.image_url) imageMap.set(c.name, c.image_url);
         });
       }
 
@@ -61,7 +63,7 @@ export const Home: React.FC = () => {
         .map(([name, count]) => ({
           name,
           count,
-          image: getDefaultImageForCategory(name),
+          image: imageMap.get(name) || getStaticImageForCategory(name),
         }))
         .sort((a, b) => (orderMap.get(a.name) ?? 999) - (orderMap.get(b.name) ?? 999));
 
@@ -75,7 +77,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const getDefaultImageForCategory = (category: string) => {
+  const getStaticImageForCategory = (category: string) => {
     switch (category.toLowerCase()) {
       case 'pielęgnacja brwi':
         return serviceImages.browCare;

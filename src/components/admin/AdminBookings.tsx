@@ -28,6 +28,8 @@ interface AdminBooking extends Booking {
   contact_email?: string;
   contact_phone?: string;
   notes?: string;
+  created_at?: string;
+  _isBooksy?: boolean;
 }
 
 interface StylistAssignment {
@@ -153,7 +155,7 @@ export const AdminBookings: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [bookingsRes, servicesRes, stylistsRes, assignmentsRes] = await Promise.all([
+      const [bookingsRes, booksyRes, servicesRes, stylistsRes, assignmentsRes] = await Promise.all([
         supabase
           .from('bookings')
           .select(`
@@ -162,6 +164,11 @@ export const AdminBookings: React.FC = () => {
             time_slots (start_time, end_time),
             stylists (name)
           `)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('booksy_bookings')
+          .select('*, stylists (name)')
+          .in('status', ['active', 'changed', 'cancelled'])
           .order('created_at', { ascending: false }),
         supabase.from('services').select('*').order('name'),
         supabase.from('stylists').select('*').order('name'),
@@ -173,7 +180,43 @@ export const AdminBookings: React.FC = () => {
       if (stylistsRes.error) throw stylistsRes.error;
       if (assignmentsRes.error) throw assignmentsRes.error;
 
-      setBookings(bookingsRes.data || []);
+      // Filter out old Booksy mirror records from bookings table
+      const regularBookings: AdminBooking[] = (bookingsRes.data || []).filter(
+        (b: AdminBooking) => !(b.notes || '').startsWith('[Booksy]')
+      );
+
+      // Convert booksy_bookings to AdminBooking format for unified display
+      const booksyBookings: AdminBooking[] = (booksyRes.data || []).map((bb: any) => ({
+        id: bb.id,
+        serviceId: '',
+        userId: '',
+        timeSlotId: '',
+        service_id: undefined,
+        user_id: undefined,
+        time_slot_id: bb.time_slot_id || undefined,
+        stylist_id: bb.stylist_id || undefined,
+        status: bb.status === 'active' ? 'confirmed' : 'cancelled',
+        createdAt: bb.created_at,
+        created_at: bb.created_at,
+        start_time: bb.start_time,
+        end_time: bb.end_time,
+        contact_name: bb.booksy_client_name || '',
+        contact_phone: bb.booksy_client_phone || '',
+        contact_email: bb.booksy_client_email || '',
+        notes: `[Booksy] ${bb.booksy_service_name || ''}`,
+        services: undefined,
+        time_slots: undefined,
+        stylists: bb.stylists || undefined,
+        price_override: undefined,
+        _isBooksy: true,
+      }));
+
+      // Merge and sort by created_at descending
+      const allBookings = [...regularBookings, ...booksyBookings].sort(
+        (a, b) => new Date(b.created_at || b.createdAt || '').getTime() - new Date(a.created_at || a.createdAt || '').getTime()
+      );
+
+      setBookings(allBookings);
       setServices(servicesRes.data || []);
       setStylists(stylistsRes.data || []);
       setAssignments(assignmentsRes.data || []);
@@ -892,15 +935,17 @@ export const AdminBookings: React.FC = () => {
                         )}
                       </div>
 
-                      {/* Edit button */}
+                      {/* Edit button (disabled for Booksy bookings — managed via Booksy tab) */}
                       <div className="flex-shrink-0">
-                        <button
-                          onClick={() => openEdit(booking)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                          {ab.edit || 'Edytuj'}
-                        </button>
+                        {!booking._isBooksy && (
+                          <button
+                            onClick={() => openEdit(booking)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                            {ab.edit || 'Edytuj'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -974,9 +1019,9 @@ export const AdminBookings: React.FC = () => {
                       return (
                         <button
                           key={b.id}
-                          onClick={() => openEdit(b)}
-                          className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate ${sc.bg} ${sc.text} hover:opacity-80 transition-opacity`}
-                          title={`${timeStr} ${b.services?.name || ''} - ${b.stylists?.name || ''}`}
+                          onClick={() => !b._isBooksy && openEdit(b)}
+                          className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate ${sc.bg} ${sc.text} ${b._isBooksy ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
+                          title={`${timeStr} ${getServiceLabel(b)} - ${b.stylists?.name || ''}${b._isBooksy ? ' (Booksy)' : ''}`}
                         >
                           <span className="font-medium">{timeStr}</span>{' '}
                           {getServiceLabel(b)}
