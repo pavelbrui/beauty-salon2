@@ -201,14 +201,24 @@ function buildHeaders(session: BooksySessionData): Record<string, string> {
 }
 
 // Format datetime for Booksy API: "2026-02-24T10:15"
+// IMPORTANT: Booksy expects Warsaw local time, but Netlify runs in UTC.
+// We must explicitly convert to Europe/Warsaw timezone.
 function formatForBooksy(isoDate: string): string {
   const d = new Date(isoDate);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
+
+  // Format in Warsaw timezone using Intl API (available in Node 18+)
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Warsaw',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(d);
+
+  const get = (type: string) => parts.find(p => p.type === type)?.value || '00';
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
 }
 
 // --- Booksy API calls ---
@@ -218,7 +228,7 @@ async function createReservation(
   startTime: string,
   endTime: string,
   resourceId: number,
-  reason: string = 'Rezerwacja ze strony'
+  reason: string = 'Rezerwacja dla stylistki z roznych powodow'
 ): Promise<{ id: number } | null> {
   const url = `${BOOKSY_API_BASE}/businesses/${businessId}/reservations/`;
   const body = {

@@ -63,7 +63,7 @@ function formatPolishDateTime(isoString: string): string {
     const p: Record<string, string> = {};
     for (const part of parts) p[part.type] = part.value;
 
-    return `${p.weekday}, ${p.day} ${months[d.getMonth()]} ${p.year}, ${p.hour}:${p.minute}`;
+    return `${p.weekday}, ${p.day} ${months[parseInt(p.month) - 1]} ${p.year}, ${p.hour}:${p.minute}`;
   } catch {
     return isoString;
   }
