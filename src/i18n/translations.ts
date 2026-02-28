@@ -292,7 +292,10 @@ export const translations = {
       emailNew: 'Nowa',
       emailChanged: 'Zmiana',
       emailCancelled: 'Odwołanie'
-    }
+    },
+    cookieText: 'Używamy plików cookies do analizy ruchu na stronie. Możesz zaakceptować lub odrzucić cookies analityczne.',
+    cookieAccept: 'Akceptuję',
+    cookieDecline: 'Odrzucam'
   },
   en: {
     services: 'Services',
@@ -587,7 +590,10 @@ export const translations = {
       emailNew: 'New',
       emailChanged: 'Change',
       emailCancelled: 'Cancellation'
-    }
+    },
+    cookieText: 'We use cookies to analyze website traffic. You can accept or decline analytics cookies.',
+    cookieAccept: 'Accept',
+    cookieDecline: 'Decline'
   },
   ru: {
     services: 'Услуги',
@@ -882,6 +888,9 @@ export const translations = {
       emailNew: 'Новая',
       emailChanged: 'Изменение',
       emailCancelled: 'Отмена'
-    }
+    },
+    cookieText: 'Мы используем файлы cookie для анализа посещаемости сайта. Вы можете принять или отклонить аналитические cookie.',
+    cookieAccept: 'Принять',
+    cookieDecline: 'Отклонить'
   }
 };

@@ -7,6 +7,7 @@ import { AdminRoute } from './components/AdminRoute';
 import { AuthRoute } from './components/AuthRoute';
 import { LanguageLayout } from './components/LanguageLayout';
 import { usePageTracking } from './hooks/usePageTracking';
+import { CookieConsent } from './components/CookieConsent';
 
 // Lazy-loaded pages for code splitting
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -98,6 +99,7 @@ const AppContent: React.FC = () => {
         </Routes>
       </Suspense>
       {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <CookieConsent />}
     </>
   );
 };
