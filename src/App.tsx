@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { AdminRoute } from './components/AdminRoute';
 import { AuthRoute } from './components/AuthRoute';
 import { LanguageLayout } from './components/LanguageLayout';
+import { usePageTracking } from './hooks/usePageTracking';
 
 // Lazy-loaded pages for code splitting
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -67,6 +68,7 @@ function App() {
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  usePageTracking();
 
   return (
     <>
