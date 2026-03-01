@@ -190,6 +190,13 @@ export const translations = {
       published: 'Opublikowane',
       draft: 'Szkic'
     },
+    landing_pages: {
+      ourTreatments: 'Nasze zabiegi',
+      whyChooseUs: 'Dlaczego warto nas wybrać',
+      faq: 'Najczęściej zadawane pytania',
+      bookAppointment: 'Zarezerwuj wizytę',
+      viewAllServices: 'Zobacz wszystkie usługi',
+    },
     blog: 'Blog',
     blog_page: {
       heroTitle: 'Blog Beauty',
@@ -507,6 +514,13 @@ export const translations = {
       published: 'Published',
       draft: 'Draft'
     },
+    landing_pages: {
+      ourTreatments: 'Our Treatments',
+      whyChooseUs: 'Why Choose Us',
+      faq: 'Frequently Asked Questions',
+      bookAppointment: 'Book an appointment',
+      viewAllServices: 'View all services',
+    },
     blog: 'Blog',
     blog_page: {
       heroTitle: 'Beauty Blog',
@@ -638,8 +652,8 @@ export const translations = {
     appointments: 'Записаться',
     stylists: 'Стилисты',
     gallery: 'Галерея',
-    welcomeTitle: 'Салон красоты Катажина Бруй',
-    welcomeSubtitle: 'ул. Млынова 46, пом. U11, 15-404, Белосток',
+    welcomeTitle: 'Салон красоты Katarzyna Brui',
+    welcomeSubtitle: 'ul. Młynowa 46, Lok U11, 15-404, Białystok',
     bookNow: 'Записаться',
     reviewsLabel: 'отзывов',
     aboutTitle: 'Добро пожаловать в мир красоты',
@@ -824,6 +838,13 @@ export const translations = {
       published: 'Опубликовано',
       draft: 'Черновик'
     },
+    landing_pages: {
+      ourTreatments: 'Наши процедуры',
+      whyChooseUs: 'Почему выбирают нас',
+      faq: 'Часто задаваемые вопросы',
+      bookAppointment: 'Записаться на приём',
+      viewAllServices: 'Все услуги',
+    },
     blog: 'Блог',
     blog_page: {
       heroTitle: 'Бьюти-блог',
@@ -850,7 +871,7 @@ export const translations = {
     },
     home_seo: {
       title: 'Салон красоты Белосток',
-      description: 'Салон красоты Катажина Бруй в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр. Запись онлайн. ул. Млынова 46. Тел: 880 435 102.',
+      description: 'Салон красоты Katarzyna Brui в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр. Запись онлайн. ул. Млынова 46. Тел: 880 435 102.',
     },
     services_seo: {
       title: 'Косметические услуги Белосток | Прайс-лист',

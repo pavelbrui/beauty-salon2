@@ -2,14 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { withTimeout } from '../../utils/withTimeout';
-
-interface GalleryImage {
-  id: string;
-  url: string;
-  description: string;
-  category: string;
-  created_at: string;
-}
+import { translateFromPolish } from '../../utils/translateService';
+import { GalleryImage } from '../../types';
 
 export const AdminGallery: React.FC = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -17,6 +11,13 @@ export const AdminGallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Controlled form state for editing
+  const [editDesc, setEditDesc] = useState('');
+  const [editDescEn, setEditDescEn] = useState('');
+  const [editDescRu, setEditDescRu] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [translatingCount, setTranslatingCount] = useState(0);
 
   useEffect(() => {
     loadImages();
@@ -78,14 +79,41 @@ export const AdminGallery: React.FC = () => {
     }
   };
 
-  const handleSave = async (image: GalleryImage) => {
+  const handleEdit = (image: GalleryImage) => {
+    setSelectedImage(image);
+    setEditDesc(image.description || '');
+    setEditDescEn(image.description_en || '');
+    setEditDescRu(image.description_ru || '');
+    setEditCategory(image.category || 'general');
+    setTranslatingCount(0);
+    setIsModalOpen(true);
+  };
+
+  const handleAutoTranslateDesc = async (polishDesc: string) => {
+    if (!polishDesc.trim()) return;
+    if (editDescEn && editDescRu) return;
+    setTranslatingCount(c => c + 1);
+    try {
+      const { en, ru } = await translateFromPolish(polishDesc);
+      setEditDescEn(prev => prev || en);
+      setEditDescRu(prev => prev || ru);
+    } finally {
+      setTranslatingCount(c => c - 1);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!selectedImage) return;
+
     const { error } = await supabase
       .from('service_images')
       .update({
-        description: image.description,
-        category: image.category
+        description: editDesc,
+        description_en: editDescEn || null,
+        description_ru: editDescRu || null,
+        category: editCategory,
       })
-      .eq('id', image.id);
+      .eq('id', selectedImage.id);
 
     if (!error) {
       loadImages();
@@ -121,7 +149,7 @@ export const AdminGallery: React.FC = () => {
           <label
             htmlFor="image-upload"
             className={`inline-block bg-amber-500 text-white px-4 py-2 rounded-md transition-colors ${
-              uploading 
+              uploading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'hover:bg-amber-600 cursor-pointer'
             }`}
@@ -138,7 +166,7 @@ export const AdminGallery: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       {images.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           Brak zdjęć w galerii. Dodaj pierwsze zdjęcie klikając przycisk powyżej.
@@ -154,10 +182,7 @@ export const AdminGallery: React.FC = () => {
               />
               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center space-x-4">
                 <button
-                  onClick={() => {
-                    setSelectedImage(image);
-                    setIsModalOpen(true);
-                  }}
+                  onClick={() => handleEdit(image)}
                   className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
                 >
                   Edytuj
@@ -178,59 +203,89 @@ export const AdminGallery: React.FC = () => {
       )}
 
       {isModalOpen && selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">Edytuj zdjęcie</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                handleSave({
-                  ...selectedImage,
-                  description: formData.get('description') as string,
-                  category: formData.get('category') as string
-                });
-              }}
-              className="space-y-4"
-            >
+            <div className="space-y-4">
+              {/* Description - Polish (primary) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Opis
+                  Opis (polski)
                 </label>
                 <textarea
-                  name="description"
-                  defaultValue={selectedImage.description}
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  onBlur={(e) => handleAutoTranslateDesc(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  rows={3}
+                  placeholder="Opis zdjęcia po polsku"
+                />
+              </div>
+
+              {/* Description - English */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Opis (angielski)
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <textarea
+                  value={editDescEn}
+                  onChange={(e) => setEditDescEn(e.target.value)}
+                  placeholder="English description (auto-translated)"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   rows={3}
                 />
               </div>
+
+              {/* Description - Russian */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Opis (rosyjski)
+                  {translatingCount > 0 && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+                </label>
+                <textarea
+                  value={editDescRu}
+                  onChange={(e) => setEditDescRu(e.target.value)}
+                  placeholder="Описание на русском (авто-перевод)"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                  rows={3}
+                />
+              </div>
+
+              {/* Category */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Kategoria
                 </label>
                 <input
                   type="text"
-                  name="category"
-                  defaultValue={selectedImage.category}
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                 />
               </div>
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setSelectedImage(null);
+                  }}
                   className="px-4 py-2 text-gray-700 hover:text-gray-900"
                 >
                   Anuluj
                 </button>
                 <button
-                  type="submit"
-                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600"
+                  type="button"
+                  onClick={handleSave}
+                  disabled={translatingCount > 0}
+                  className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  Zapisz
+                  {translatingCount > 0 ? 'Tłumaczenie...' : 'Zapisz'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

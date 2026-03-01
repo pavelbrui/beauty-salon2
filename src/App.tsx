@@ -22,6 +22,7 @@ const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage').then(m =>
 const StylistsPage = lazy(() => import('./pages/StylistsPage').then(m => ({ default: m.StylistsPage })));
 const GalleryPage = lazy(() => import('./pages/GalleryPage').then(m => ({ default: m.GalleryPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const ServiceLandingPage = lazy(() => import('./pages/ServiceLandingPage').then(m => ({ default: m.ServiceLandingPage })));
 
 const PageLoader = () => (
   <div className="flex flex-col justify-center items-center min-h-screen bg-white">
@@ -55,6 +56,8 @@ const publicRoutes = (
     <Route path="training/:slug" element={<TrainingPage />} />
     <Route path="blog" element={<BlogPage />} />
     <Route path="blog/:slug" element={<BlogPage />} />
+    {/* SEO landing pages — must be last (catch-all for root-level slugs) */}
+    <Route path=":landingSlug" element={<ServiceLandingPage />} />
   </>
 );
 
