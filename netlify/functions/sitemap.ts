@@ -274,6 +274,17 @@ const STATIC_PAGES: StaticPage[] = [
   { barePath: '/blog', changefreq: 'weekly', priority: '0.8' },
 ];
 
+/** SEO landing page slugs (must match src/data/landingPages.ts) */
+const LANDING_PAGE_SLUGS = [
+  'makijaz-permanentny-bialystok',
+  'stylizacja-rzes-bialystok',
+  'laminacja-brwi-bialystok',
+  'peeling-weglowy-bialystok',
+  'usuwanie-tatuazu-bialystok',
+  'manicure-bialystok',
+  'szkolenia-kosmetyczne-bialystok',
+];
+
 // --- Main handler ---
 const handler: Handler = async () => {
   const [categories, blogRows, trainingRows] = await Promise.all([
@@ -287,6 +298,17 @@ const handler: Handler = async () => {
   // Static pages
   for (const page of STATIC_PAGES) {
     entries.push(renderLocalizedEntries(page));
+  }
+
+  // SEO landing pages
+  for (const slug of LANDING_PAGE_SLUGS) {
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/${slug}`,
+        changefreq: 'monthly',
+        priority: '0.9',
+      })
+    );
   }
 
   // Service categories (dynamic from DB)

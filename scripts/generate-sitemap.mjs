@@ -253,9 +253,37 @@ const dedupeBySlug = (rows) => {
   return Array.from(map.values()).sort((a, b) => a.slug.localeCompare(b.slug));
 };
 
+/** SEO landing page slugs (must match src/data/landingPages.ts) */
+const LANDING_PAGE_SLUGS = [
+  'makijaz-permanentny-bialystok',
+  'stylizacja-rzes-bialystok',
+  'laminacja-brwi-bialystok',
+  'peeling-weglowy-bialystok',
+  'usuwanie-tatuazu-bialystok',
+  'manicure-bialystok',
+  'szkolenia-kosmetyczne-bialystok',
+];
+
 const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
   const lines = [`  ${DYNAMIC_START}`];
   let count = 0;
+
+  // SEO landing pages
+  if (LANDING_PAGE_SLUGS.length > 0) {
+    lines.push('  <!-- SEO landing page URLs -->');
+    for (const slug of LANDING_PAGE_SLUGS) {
+      lines.push(
+        renderLocalizedEntries({
+          barePath: `/${slug}`,
+          changefreq: 'monthly',
+          priority: '0.9',
+          lastmod: null,
+          images: [],
+        })
+      );
+      count++;
+    }
+  }
 
   if (categories.length > 0) {
     lines.push('  <!-- Dynamic service category URLs -->');

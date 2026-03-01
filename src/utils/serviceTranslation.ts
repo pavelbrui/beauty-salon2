@@ -70,6 +70,23 @@ export function getStylistDescription(
   return stylist.description;
 }
 
+// --- Gallery image translations ---
+
+interface TranslatableGalleryImage {
+  description?: string;
+  description_en?: string;
+  description_ru?: string;
+}
+
+export function getGalleryDescription(
+  image: TranslatableGalleryImage,
+  language: Language
+): string | undefined {
+  if (language === 'en' && image.description_en) return image.description_en;
+  if (language === 'ru' && image.description_ru) return image.description_ru;
+  return image.description;
+}
+
 // --- Category translations ---
 
 export function getCategoryName(

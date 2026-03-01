@@ -3,13 +3,8 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
-
-interface GalleryImage {
-  id: string;
-  url: string;
-  category: string;
-  description?: string;
-}
+import { GalleryImage } from '../types';
+import { getGalleryDescription } from '../utils/serviceTranslation';
 
 export const GalleryPage: React.FC = () => {
   const { language } = useLanguage();
@@ -57,6 +52,10 @@ export const GalleryPage: React.FC = () => {
     return translated || category.charAt(0).toUpperCase() + category.slice(1);
   };
 
+  const getDescription = (image: GalleryImage) => {
+    return getGalleryDescription(image, language);
+  };
+
   const filteredImages = selectedCategory === 'all'
     ? images
     : images.filter(img => img.category === selectedCategory);
@@ -70,8 +69,8 @@ export const GalleryPage: React.FC = () => {
     'image': images.slice(0, 20).map(img => ({
       '@type': 'ImageObject',
       'url': img.url,
-      'name': img.description || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
-      'description': img.description || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
+      'name': getDescription(img) || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
+      'description': getDescription(img) || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
     })),
     'author': {
       '@type': 'BeautySalon',
@@ -127,28 +126,31 @@ export const GalleryPage: React.FC = () => {
           <p className="text-center text-gray-500 py-20">{t.noResults}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image) => (
-              <button
-                key={image.id}
-                onClick={() => setLightboxImage(image)}
-                className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer"
-              >
-                <img
-                  src={image.url}
-                  alt={image.description || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
-                  title={image.description || `${getCategoryLabel(image.category)} – efekty zabiegów`}
-                  loading="lazy"
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                  width={600}
-                  height={600}
-                />
-                {image.description && (
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <p className="text-white p-4">{image.description}</p>
-                  </div>
-                )}
-              </button>
-            ))}
+            {filteredImages.map((image) => {
+              const desc = getDescription(image);
+              return (
+                <button
+                  key={image.id}
+                  onClick={() => setLightboxImage(image)}
+                  className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer"
+                >
+                  <img
+                    src={image.url}
+                    alt={desc || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
+                    title={desc || `${getCategoryLabel(image.category)} – efekty zabiegów`}
+                    loading="lazy"
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    width={600}
+                    height={600}
+                  />
+                  {desc && (
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                      <p className="text-white p-4">{desc}</p>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -168,7 +170,7 @@ export const GalleryPage: React.FC = () => {
           </button>
           <img
             src={lightboxImage.url}
-            alt={lightboxImage.description || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
+            alt={getDescription(lightboxImage) || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />

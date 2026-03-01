@@ -1,3 +1,13 @@
+export interface GalleryImage {
+  id: string;
+  url: string;
+  description: string;
+  description_en?: string;
+  description_ru?: string;
+  category: string;
+  created_at: string;
+}
+
 export interface Service {
   id: string;
   name: string;
