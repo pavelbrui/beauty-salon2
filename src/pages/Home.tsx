@@ -97,13 +97,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  const scrollToReviews = () => {
-    document.getElementById('reviews')?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    });
-  };
-
   return (
     <div className="min-h-screen bg-neutral-50">
       <SEO
@@ -168,13 +161,15 @@ export const Home: React.FC = () => {
           'aggregateRating': {
             '@type': 'AggregateRating',
             'ratingValue': '5.0',
-            'reviewCount': '380',
+            'reviewCount': '384',
             'bestRating': '5',
-            'worstRating': '1'
+            'worstRating': '1',
+            'url': 'https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok'
           },
           'sameAs': [
             'https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/',
-            'https://www.instagram.com/katarzyna.brui_'
+            'https://www.instagram.com/katarzyna.brui_',
+            'https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok'
           ]
         }}
       />
@@ -198,17 +193,19 @@ export const Home: React.FC = () => {
           </p>
           <div className="mt-12 flex flex-col items-center gap-4">
             <div className="flex items-center space-x-4 justify-center">
-              <button
-                onClick={scrollToReviews}
-                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer"
+              <a
+                href="https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer inline-block"
               >
                 <span className="text-amber-500 text-2xl font-semibold">5.0</span>
                 <span className="text-gray-800 ml-2">/ 5.0</span>
                 <div className="text-sm text-gray-600">
-                  <span>380 </span>
+                  <span>384 </span>
                   <span>{t.reviewsLabel}</span>
                 </div>
-              </button>
+              </a>
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"

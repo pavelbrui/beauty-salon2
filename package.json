@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port 3000",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
-    "build": "npm run generate:sitemap && tsc && vite build",
+    "generate:prerender-routes": "node scripts/generate-prerender-routes.mjs",
+    "build": "npm run generate:sitemap && npm run generate:prerender-routes && tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "playwright test",
@@ -16,6 +17,8 @@
   "devDependencies": {
     "@netlify/functions": "^5.1.2",
     "@playwright/test": "^1.58.2",
+    "@prerenderer/renderer-puppeteer": "^1.2.4",
+    "@prerenderer/rollup-plugin": "^0.3.12",
     "@types/leaflet": "^1.9.8",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.48",

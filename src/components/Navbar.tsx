@@ -103,7 +103,7 @@ export const Navbar: React.FC = () => {
               <motion.img
                 whileHover={{ scale: 1.05 }}
                 src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
-                alt="Katarzyna Brui"
+                alt="Salon Kosmetyczny Katarzyna Brui – makijaż permanentny Białystok"
                 className="h-12 w-16 rounded-full object-cover gray-300/50 shadow-sm"
               />
               <motion.span
