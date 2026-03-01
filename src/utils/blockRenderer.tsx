@@ -51,6 +51,8 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
             className="w-full max-h-[600px] rounded-xl shadow-lg"
             style={cropPositionToStyle(block.position)}
             loading="lazy"
+            width={1200}
+            height={600}
           />
           {caption && (
             <figcaption className="text-sm text-gray-500 mt-3 text-center italic">

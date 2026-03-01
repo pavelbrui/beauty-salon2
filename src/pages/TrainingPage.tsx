@@ -153,6 +153,8 @@ export const TrainingPage: React.FC = () => {
               alt={`${trainingTitle} – szkolenie w Białymstoku, salon Katarzyna Brui`}
               className="w-full h-full"
               style={cropPositionToStyle(training.cover_crop_detail || training.cover_image_position)}
+              width={1200}
+              height={600}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
@@ -267,6 +269,26 @@ export const TrainingPage: React.FC = () => {
           { name: 'Strona główna', url: '/' },
           { name: tp?.header || t.training || 'Szkolenia', url: '/training' },
         ]}
+        structuredData={trainings.length > 0 ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          'name': pageTitle,
+          'itemListElement': trainings.map((tr, i) => ({
+            '@type': 'ListItem',
+            'position': i + 1,
+            'item': {
+              '@type': 'Course',
+              'name': getLocalizedField(tr, 'title', language),
+              'url': `https://katarzynabrui.pl/training/${tr.slug}`,
+              'description': getLocalizedField(tr, 'description', language),
+              ...(tr.cover_image_url && { 'image': tr.cover_image_url }),
+              'provider': {
+                '@type': 'Organization',
+                'name': 'Salon Kosmetyczny Katarzyna Brui',
+              },
+            },
+          })),
+        } : undefined}
       />
 
       {/* Hero Section */}
@@ -320,6 +342,8 @@ export const TrainingPage: React.FC = () => {
                         className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                         style={cropPositionToStyle(t.cover_crop_card || t.cover_image_position)}
                         loading="lazy"
+                        width={600}
+                        height={300}
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />

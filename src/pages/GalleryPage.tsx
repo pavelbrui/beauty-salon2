@@ -135,6 +135,8 @@ export const GalleryPage: React.FC = () => {
                   title={image.description || `${getCategoryLabel(image.category)} – efekty zabiegów`}
                   loading="lazy"
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  width={600}
+                  height={600}
                 />
                 {image.description && (
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">

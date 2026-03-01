@@ -1,5 +1,6 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
+import { isRateLimited, getClientIp } from './utils/rateLimit';
 
 // --- Supabase client with service_role (bypasses RLS) ---
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -7,6 +8,16 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const webhookSecret = process.env.BOOKSY_WEBHOOK_SECRET;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+/** Constant-time string comparison to prevent timing attacks */
+function timingSafeCompare(a: string, b: string): boolean {
+  const maxLen = Math.max(a.length, b.length);
+  let result = a.length ^ b.length;
+  for (let i = 0; i < maxLen; i++) {
+    result |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return result === 0;
+}
 
 // --- Polish month name → JS month index (0-based) ---
 const POLISH_MONTHS: Record<string, number> = {
@@ -804,13 +815,20 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
-  // Validate webhook secret (query param or header)
-  if (webhookSecret) {
-    const providedSecret =
-      event.queryStringParameters?.secret || event.headers['x-webhook-secret'];
-    if (providedSecret !== webhookSecret) {
-      return { statusCode: 401, body: 'Unauthorized' };
-    }
+  // Rate limit: 20 webhook calls per minute per IP
+  const ip = getClientIp(event.headers);
+  if (isRateLimited(ip, 20, 60_000)) {
+    return { statusCode: 429, body: 'Too many requests' };
+  }
+
+  // Validate webhook secret (query param or header) — timing-safe comparison
+  if (!webhookSecret) {
+    return { statusCode: 500, body: 'Webhook secret not configured' };
+  }
+  const providedSecret =
+    event.queryStringParameters?.secret || event.headers['x-webhook-secret'] || '';
+  if (!timingSafeCompare(providedSecret, webhookSecret)) {
+    return { statusCode: 401, body: 'Unauthorized' };
   }
 
   // Log ID for tracking through the pipeline

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { ImageCropper } from './ImageCropper';
 
 interface ServiceCategory {
   id: string;
@@ -15,6 +16,11 @@ export const AdminCategories = () => {
   const [syncing, setSyncing] = useState(false);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // Image cropping state
+  const [cropperImage, setCropperImage] = useState<string | null>(null);
+  const [cropperFileName, setCropperFileName] = useState('');
+  const [cropperCatId, setCropperCatId] = useState('');
 
   useEffect(() => {
     loadCategories();
@@ -99,12 +105,23 @@ export const AdminCategories = () => {
     });
   };
 
-  const handleImageUpload = async (catId: string, file: File) => {
+  const handleFileSelect = (catId: string, file: File) => {
     if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    setCropperImage(objectUrl);
+    setCropperFileName(file.name);
+    setCropperCatId(catId);
+  };
+
+  const handleCroppedUpload = async (croppedFile: File) => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
+
+    const catId = cropperCatId;
     setUploadingId(catId);
     try {
       const { publicUrl } = await uploadPublicImage({
-        file,
+        file: croppedFile,
         folder: 'categories',
       });
 
@@ -126,6 +143,11 @@ export const AdminCategories = () => {
     } finally {
       setUploadingId(null);
     }
+  };
+
+  const handleCropCancel = () => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
   };
 
   const removeImage = async (catId: string) => {
@@ -216,7 +238,7 @@ export const AdminCategories = () => {
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) handleImageUpload(cat.id, file);
+                      if (file) handleFileSelect(cat.id, file);
                       e.target.value = '';
                     }}
                   />
@@ -275,6 +297,17 @@ export const AdminCategories = () => {
           </p>
         )}
       </div>
+
+      {/* Image Cropper Modal */}
+      {cropperImage && (
+        <ImageCropper
+          imageSrc={cropperImage}
+          fileName={cropperFileName}
+          aspectRatio={1}
+          onCropComplete={handleCroppedUpload}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 };

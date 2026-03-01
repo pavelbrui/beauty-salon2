@@ -35,6 +35,8 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             alt={`${getServiceName(service, language)} – salon kosmetyczny Białystok`}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
+            width={400}
+            height={192}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>

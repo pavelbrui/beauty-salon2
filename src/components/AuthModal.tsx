@@ -54,9 +54,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
+  const validatePassword = (pwd: string): string | null => {
+    if (pwd.length < 8) return t.auth.passwordMinLength;
+    if (!/[0-9]/.test(pwd)) return t.auth.passwordRequiresNumber;
+    if (!/[A-Z]/.test(pwd)) return t.auth.passwordRequiresUpper;
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (mode === 'signup') {
+      const passwordError = validatePassword(password);
+      if (passwordError) {
+        setError(passwordError);
+        return;
+      }
+    }
+
     setLoading(true);
 
     const { error: authError } = await (mode === 'signin'
@@ -68,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (authError) {
       const langErrors = errorMessages[language] || errorMessages.en;
       const matchedKey = Object.keys(langErrors).find(key => authError.message.includes(key));
-      setError(matchedKey ? langErrors[matchedKey] : authError.message);
+      setError(matchedKey ? langErrors[matchedKey] : (langErrors['Invalid login credentials'] || authError.message));
     } else {
       saveUserData({ email });
       if (onSuccess) onSuccess();

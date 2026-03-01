@@ -4,6 +4,7 @@ import { BlogPost, ContentBlock } from '../../types';
 import { BlockEditor } from './BlockEditor';
 import { blogTemplates, generateSlug } from './blogTemplates';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { ImageCropper } from './ImageCropper';
 
 type View = 'list' | 'editor';
 type Lang = 'pl' | 'en' | 'ru';
@@ -41,6 +42,8 @@ export const AdminBlog: React.FC = () => {
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [metaLang, setMetaLang] = useState<Lang>('pl');
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [cropperImage, setCropperImage] = useState<string | null>(null);
+  const [cropperFileName, setCropperFileName] = useState('');
 
   useEffect(() => { loadPosts(); }, []);
 
@@ -156,22 +159,36 @@ export const AdminBlog: React.FC = () => {
     else await loadPosts();
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 15 * 1024 * 1024) { alert('Max 15MB'); return; }
 
+    const objectUrl = URL.createObjectURL(file);
+    setCropperImage(objectUrl);
+    setCropperFileName(file.name);
+    e.target.value = '';
+  };
+
+  const handleCoverCropped = async (croppedFile: File) => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
+
     setUploadingCover(true);
     try {
-      const { publicUrl } = await uploadPublicImage({ file, folder: 'blog', timeoutMs: 20000 });
+      const { publicUrl } = await uploadPublicImage({ file: croppedFile, folder: 'blog', timeoutMs: 20000 });
       setCoverImageUrl(publicUrl);
     } catch (err) {
       console.error('Upload error:', err);
       alert('Błąd uploadu');
     } finally {
       setUploadingCover(false);
-      e.target.value = '';
     }
+  };
+
+  const handleCoverCropCancel = () => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
   };
 
   const handleBlockUpdate = (index: number, block: ContentBlock) => {
@@ -400,7 +417,7 @@ export const AdminBlog: React.FC = () => {
             )}
             <label className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
               {uploadingCover ? 'Wysyłanie...' : 'Wybierz plik'}
-              <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+              <input type="file" accept="image/*" onChange={handleCoverFileSelect} className="hidden" />
             </label>
             {coverImageUrl && (
               <button onClick={() => setCoverImageUrl('')} className="text-xs text-red-500 hover:text-red-700">Usuń</button>
@@ -438,6 +455,17 @@ export const AdminBlog: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Image Cropper Modal */}
+      {cropperImage && (
+        <ImageCropper
+          imageSrc={cropperImage}
+          fileName={cropperFileName}
+          aspectRatio={16 / 9}
+          onCropComplete={handleCoverCropped}
+          onCancel={handleCoverCropCancel}
+        />
+      )}
     </div>
   );
 };

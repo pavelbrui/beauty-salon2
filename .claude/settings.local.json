@@ -24,7 +24,10 @@
       "Bash(unzip:*)",
       "Bash(openssl rand:*)",
       "Bash(npx --yes netlify-cli:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm audit)",
+      "Bash(npm audit fix)",
+      "WebFetch(domain:dev.to)"
     ]
   }
 }

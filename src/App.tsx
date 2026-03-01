@@ -30,6 +30,8 @@ const PageLoader = () => (
         src="https://d375139ucebi94.cloudfront.net/region2/pl/162206/logo/163448f26b6c40adb662c97da37033-katarzyna-brui-logo-20152422ca364bf1a5efce379aec29-booksy.jpeg"
         alt="Loading..."
         className="w-full h-full object-contain animate-pulse"
+        width={128}
+        height={128}
       />
     </div>
     <div className="w-16 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 rounded-full overflow-hidden">

@@ -40,9 +40,10 @@ export async function syncBookingToBooksy(params: {
     }
 
     // 2. Fire background function (returns 202 immediately)
-    const secret = import.meta.env.VITE_BOOKSY_SYNC_SECRET;
-    if (!secret) {
-      console.warn('VITE_BOOKSY_SYNC_SECRET not set — Booksy sync disabled');
+    // Authenticate via Supabase JWT — no shared secret in frontend
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      console.warn('No auth session — Booksy sync skipped');
       return;
     }
 
@@ -57,7 +58,7 @@ export async function syncBookingToBooksy(params: {
         stylistName,
         oldStartTime: params.oldStartTime,
         oldEndTime: params.oldEndTime,
-        secret,
+        authToken: session.access_token,
       }),
     }).catch(() => {
       // fire-and-forget: don't block the user flow

@@ -162,7 +162,7 @@ export const BlogPage: React.FC = () => {
         {/* Hero */}
         <div className="relative overflow-hidden h-72 md:h-96">
           {post.cover_image_url ? (
-            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" loading="lazy" />
+            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" loading="lazy" width={1200} height={600} />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
           )}
@@ -236,7 +236,7 @@ export const BlogPage: React.FC = () => {
                 >
                   <div className="relative overflow-hidden h-48">
                     {r.cover_image_url ? (
-                      <img src={r.cover_image_url} alt={getLocalizedField(r, 'title', language)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                      <img src={r.cover_image_url} alt={getLocalizedField(r, 'title', language)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width={400} height={192} />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600" />
                     )}
@@ -275,6 +275,23 @@ export const BlogPage: React.FC = () => {
           { name: 'Strona główna', url: '/' },
           { name: 'Blog', url: '/blog' },
         ]}
+        structuredData={filteredPosts.length > 0 ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          'name': pageTitle,
+          'itemListElement': filteredPosts.slice(0, 20).map((p, i) => ({
+            '@type': 'ListItem',
+            'position': i + 1,
+            'item': {
+              '@type': 'Article',
+              'headline': getLocalizedField(p, 'title', language),
+              'url': `${BASE_URL}/blog/${p.slug}`,
+              ...(p.cover_image_url && { 'image': p.cover_image_url }),
+              'datePublished': p.published_at,
+              'author': { '@type': 'Person', 'name': p.author || 'Katarzyna Brui' },
+            },
+          })),
+        } : undefined}
       />
 
       {/* Hero */}
@@ -351,6 +368,8 @@ export const BlogPage: React.FC = () => {
                         alt={pTitle}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
+                        width={400}
+                        height={224}
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />

@@ -185,6 +185,8 @@ export const Home: React.FC = () => {
           alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
           className="absolute inset-0 w-full h-full object-cover"
           fetchPriority="high"
+          width={1920}
+          height={1080}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
@@ -254,6 +256,8 @@ export const Home: React.FC = () => {
                   alt={getCategoryName(cat.name, language, (t as any).categories)}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  width={600}
+                  height={400}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-300 group-hover:from-black/80" />
                 <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">

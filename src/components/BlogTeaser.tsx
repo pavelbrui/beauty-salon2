@@ -79,6 +79,8 @@ export const BlogTeaser: React.FC = () => {
                       alt={pTitle}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
+                      width={400}
+                      height={192}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 group-hover:from-amber-500 group-hover:to-amber-700 transition-all duration-500" />

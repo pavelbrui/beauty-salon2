@@ -1,12 +1,36 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
+import { isRateLimited, getClientIp } from './utils/rateLimit';
 
 // --- Supabase client with service_role (bypasses RLS) ---
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 const syncSecret = process.env.BOOKSY_SYNC_SECRET || '';
 const businessId = process.env.BOOKSY_BUSINESS_ID || '162206';
 const resendApiKey = process.env.RESEND_API_KEY || '';
+
+/** Constant-time string comparison to prevent timing attacks */
+function timingSafeCompare(a: string, b: string): boolean {
+  const maxLen = Math.max(a.length, b.length);
+  let result = a.length ^ b.length;
+  for (let i = 0; i < maxLen; i++) {
+    result |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return result === 0;
+}
+
+/** Verify user is authenticated via Supabase JWT */
+async function verifyAuthToken(token: string): Promise<boolean> {
+  if (!token || !supabaseUrl || !supabaseAnonKey) return false;
+  try {
+    const client = createClient(supabaseUrl, supabaseAnonKey);
+    const { data, error } = await client.auth.getUser(token);
+    return !error && !!data.user;
+  } catch {
+    return false;
+  }
+}
 
 const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
 const ADMIN_EMAIL = 'brui.katya@icloud.com';
@@ -25,7 +49,8 @@ interface SyncPayload {
   stylistName?: string;
   oldStartTime?: string;
   oldEndTime?: string;
-  secret: string;
+  secret?: string;
+  authToken?: string;
 }
 
 interface BooksySessionData {
@@ -486,6 +511,12 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
+  // Rate limit: 10 sync calls per minute per IP
+  const ip = getClientIp(event.headers);
+  if (isRateLimited(ip, 10, 60_000)) {
+    return { statusCode: 429, body: 'Too many requests' };
+  }
+
   let payload: SyncPayload;
   try {
     payload = JSON.parse(event.body || '{}');
@@ -493,7 +524,15 @@ const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  if (!syncSecret || payload.secret !== syncSecret) {
+  // Authenticate: accept either a valid Supabase JWT or the server-side secret
+  let isAuthorized = false;
+  if (payload.authToken) {
+    isAuthorized = await verifyAuthToken(payload.authToken);
+  }
+  if (!isAuthorized && payload.secret && syncSecret) {
+    isAuthorized = timingSafeCompare(payload.secret, syncSecret);
+  }
+  if (!isAuthorized) {
     return { statusCode: 401, body: 'Unauthorized' };
   }
 

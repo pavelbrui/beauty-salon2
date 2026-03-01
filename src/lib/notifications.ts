@@ -40,24 +40,24 @@ export const notifyClient = async (
 
 /**
  * Fire-and-forget: sends a real email via Netlify Function + Resend.
- * Follows the same pattern as syncBookingToBooksy.
+ * Authenticates via the user's Supabase JWT — no shared secret in frontend.
  */
-export const sendBookingEmail = (
+export const sendBookingEmail = async (
   bookingId: string,
   type: 'confirmation' | 'cancellation' | 'reschedule' | 'deleted',
   extraMessage?: string,
 ) => {
   try {
-    const secret = import.meta.env.VITE_NOTIFICATION_SECRET;
-    if (!secret) {
-      console.warn('VITE_NOTIFICATION_SECRET not set — email notifications disabled');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      console.warn('No auth session — email notifications skipped');
       return;
     }
 
     fetch('/.netlify/functions/send-booking-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bookingId, type, secret, extraMessage }),
+      body: JSON.stringify({ bookingId, type, authToken: session.access_token, extraMessage }),
     }).catch(() => {
       // fire-and-forget: don't block the user flow
     });

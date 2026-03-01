@@ -27,11 +27,13 @@ export const supabase = createClient(
 
 export const isSupabaseConfigured = hasSupabaseConfig;
 
-// Helper function to handle Supabase errors
+// Helper function to handle Supabase errors (sanitized — never leak DB details to client)
 export const handleSupabaseError = (error: any) => {
-  console.error('Supabase error:', error);
+  if (import.meta.env.DEV) {
+    console.error('Supabase error:', error);
+  }
   return {
-    error: error?.message || 'An unexpected error occurred',
-    details: error?.details || ''
+    error: 'An unexpected error occurred. Please try again.',
+    details: ''
   };
 };

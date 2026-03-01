@@ -1,33 +1,43 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { readFileSync, existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-const isNetlify = !!process.env.NETLIFY;
-
-// Prerendering requires Chrome/Puppeteer — only available locally, not on Netlify CI
 async function getPrerenderPlugin() {
-  if (isNetlify) return null;
-
   try {
     const { default: prerender } = await import('@prerenderer/rollup-plugin');
-    const publicPages = [
-      '/',
-      '/services',
-      '/stylists',
-      '/gallery',
-      '/training',
-      '/blog',
-    ];
-    const prerenderRoutes = [
-      ...publicPages,
-      ...publicPages.map(p => `/en${p === '/' ? '/' : p}`),
-      ...publicPages.map(p => `/ru${p === '/' ? '/' : p}`),
-    ];
+
+    // Try to load dynamic routes from build-time generated file
+    const routesFile = resolve(process.cwd(), 'prerender-routes.json');
+    let prerenderRoutes: string[];
+
+    if (existsSync(routesFile)) {
+      prerenderRoutes = JSON.parse(readFileSync(routesFile, 'utf8'));
+      console.log(`[prerender] Loaded ${prerenderRoutes.length} routes from prerender-routes.json`);
+    } else {
+      // Fallback to static routes only
+      const publicPages = [
+        '/',
+        '/services',
+        '/stylists',
+        '/gallery',
+        '/training',
+        '/blog',
+      ];
+      prerenderRoutes = [
+        ...publicPages,
+        ...publicPages.map(p => `/en${p === '/' ? '/' : p}`),
+        ...publicPages.map(p => `/ru${p === '/' ? '/' : p}`),
+      ];
+      console.log(`[prerender] Using ${prerenderRoutes.length} static fallback routes`);
+    }
+
     return prerender({
       routes: prerenderRoutes,
       renderer: '@prerenderer/renderer-puppeteer',
       rendererOptions: {
-        maxConcurrentRoutes: 1,
-        renderAfterTime: 3000,
+        maxConcurrentRoutes: 2,
+        renderAfterTime: 4000,
       },
       postProcess(renderedRoute) {
         renderedRoute.html = renderedRoute.html

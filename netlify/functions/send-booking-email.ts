@@ -4,8 +4,31 @@ import { createClient } from '@supabase/supabase-js';
 // --- Config ---
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 const resendApiKey = process.env.RESEND_API_KEY || '';
 const notificationSecret = process.env.NOTIFICATION_SECRET || '';
+
+/** Constant-time string comparison to prevent timing attacks */
+function timingSafeCompare(a: string, b: string): boolean {
+  const maxLen = Math.max(a.length, b.length);
+  let result = a.length ^ b.length;
+  for (let i = 0; i < maxLen; i++) {
+    result |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return result === 0;
+}
+
+/** Verify user is authenticated via Supabase JWT */
+async function verifyAuthToken(token: string): Promise<boolean> {
+  if (!token || !supabaseUrl || !supabaseAnonKey) return false;
+  try {
+    const client = createClient(supabaseUrl, supabaseAnonKey);
+    const { data, error } = await client.auth.getUser(token);
+    return !error && !!data.user;
+  } catch {
+    return false;
+  }
+}
 
 const ADMIN_EMAIL = 'brui.katya@icloud.com';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
@@ -20,7 +43,8 @@ type NotificationType = 'confirmation' | 'cancellation' | 'reschedule' | 'delete
 interface NotificationPayload {
   bookingId: string;
   type: NotificationType;
-  secret: string;
+  secret?: string;
+  authToken?: string;
   extraMessage?: string;
 }
 
@@ -195,10 +219,19 @@ function buildEmails(
   return emails;
 }
 
+// --- Rate limiting ---
+import { isRateLimited, getClientIp } from './utils/rateLimit';
+
 // --- Handler ---
 export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
+  }
+
+  // Rate limit: 10 emails per minute per IP
+  const ip = getClientIp(event.headers);
+  if (isRateLimited(ip, 10, 60_000)) {
+    return { statusCode: 429, body: 'Too many requests' };
   }
 
   // Parse payload
@@ -209,9 +242,17 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // Validate secret
-  if (!notificationSecret || payload.secret !== notificationSecret) {
-    console.error('Invalid or missing notification secret');
+  // Authenticate: accept either a valid Supabase JWT or the server-side secret
+  const authToken = payload.authToken as string | undefined;
+  const payloadSecret = payload.secret as string | undefined;
+  let isAuthorized = false;
+  if (authToken) {
+    isAuthorized = await verifyAuthToken(authToken);
+  }
+  if (!isAuthorized && payloadSecret && notificationSecret) {
+    isAuthorized = timingSafeCompare(payloadSecret, notificationSecret);
+  }
+  if (!isAuthorized) {
     return { statusCode: 401, body: 'Unauthorized' };
   }
 

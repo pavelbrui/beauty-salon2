@@ -43,6 +43,8 @@ const StylistAvatar: React.FC<{
           alt={name}
           className="w-full h-full object-cover"
           onError={() => setImgError(true)}
+          width={40}
+          height={40}
         />
       ) : (
         <PersonIcon className={`${iconSize} text-gray-400 m-auto ${iconOffset}`} />

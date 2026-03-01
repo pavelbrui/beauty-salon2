@@ -6,6 +6,7 @@ import { StylistFilter } from '../StylistFilter';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { withTimeout } from '../../utils/withTimeout';
 import { serviceImages } from '../../assets/images';
+import { ImageCropper } from './ImageCropper';
 
 
 interface Stylist {
@@ -47,6 +48,11 @@ export const AdminServices = () => {
   const [editImages, setEditImages] = useState<ServiceImage[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+
+  // Image cropping state
+  const [cropperImage, setCropperImage] = useState<string | null>(null);
+  const [cropperFileName, setCropperFileName] = useState('');
+  const [cropperServiceId, setCropperServiceId] = useState('');
 
   // Original stylists at modal open — for diff-based save
   const [originalStylists, setOriginalStylists] = useState<string[]>([]);
@@ -140,7 +146,8 @@ export const AdminServices = () => {
     setEditImages(data || []);
   };
 
-  const handleImageUploadInModal = async (event: React.ChangeEvent<HTMLInputElement>, serviceId: string) => {
+  // Phase 1: File selection -> open cropper
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>, serviceId: string) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -150,17 +157,30 @@ export const AdminServices = () => {
       return;
     }
 
+    const objectUrl = URL.createObjectURL(file);
+    setCropperImage(objectUrl);
+    setCropperFileName(file.name);
+    setCropperServiceId(serviceId);
+    event.target.value = '';
+  };
+
+  // Phase 2: Cropped file -> compress + upload
+  const handleCroppedUpload = async (croppedFile: File) => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
+
+    const serviceId = cropperServiceId;
     setUploadingImage(true);
     setImageUploadError(null);
 
     try {
-      const { publicUrl } = await uploadPublicImage({ file, folder: 'service-images', timeoutMs: 20000 });
+      const { publicUrl } = await uploadPublicImage({ file: croppedFile, folder: 'service-images', timeoutMs: 20000 });
 
       const { error: dbError } = await withTimeout(
         supabase.from('service_images').insert({
           service_id: serviceId,
           url: publicUrl,
-          alt_text: file.name,
+          alt_text: croppedFile.name,
         }),
         20000,
         'Zapis zdjęcia w bazie trwa zbyt długo'
@@ -173,8 +193,12 @@ export const AdminServices = () => {
       setImageUploadError(err instanceof Error ? err.message : 'Błąd podczas wgrywania zdjęcia');
     } finally {
       setUploadingImage(false);
-      event.target.value = '';
     }
+  };
+
+  const handleCropCancel = () => {
+    if (cropperImage) URL.revokeObjectURL(cropperImage);
+    setCropperImage(null);
   };
 
   const handleDeleteImage = async (imageId: string, serviceId: string) => {
@@ -713,7 +737,7 @@ export const AdminServices = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleImageUploadInModal(e, editingService.id)}
+                    onChange={(e) => handleFileSelect(e, editingService.id)}
                     disabled={uploadingImage}
                     className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
@@ -746,6 +770,8 @@ export const AdminServices = () => {
                     setSaveError(null);
                     setEditImages([]);
                     setImageUploadError(null);
+                    if (cropperImage) URL.revokeObjectURL(cropperImage);
+                    setCropperImage(null);
                   }}
                   className="px-4 py-2 text-gray-700 hover:text-gray-900"
                   disabled={saving}
@@ -771,6 +797,17 @@ export const AdminServices = () => {
         </div>
       )}
       
+      {/* Image Cropper Modal */}
+      {cropperImage && (
+        <ImageCropper
+          imageSrc={cropperImage}
+          fileName={cropperFileName}
+          aspectRatio={16 / 10}
+          onCropComplete={handleCroppedUpload}
+          onCancel={handleCropCancel}
+        />
+      )}
+
       {/* Delete Confirmation Modal */}
       {deletingService && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

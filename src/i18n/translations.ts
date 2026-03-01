@@ -109,7 +109,10 @@ export const translations = {
       noAccount: 'Nie masz konta? Zarejestruj się',
       hasAccount: 'Masz już konto? Zaloguj się',
       orContinueWith: 'lub kontynuuj przez',
-      continueWithGoogle: 'Kontynuuj z Google'
+      continueWithGoogle: 'Kontynuuj z Google',
+      passwordMinLength: 'Hasło musi mieć co najmniej 8 znaków',
+      passwordRequiresNumber: 'Hasło musi zawierać cyfrę',
+      passwordRequiresUpper: 'Hasło musi zawierać wielką literę'
     },
     footer: {
       rights: 'Wszelkie prawa zastrzeżone.'
@@ -407,7 +410,10 @@ export const translations = {
       noAccount: "Don't have an account? Sign up",
       hasAccount: 'Already have an account? Sign in',
       orContinueWith: 'or continue with',
-      continueWithGoogle: 'Continue with Google'
+      continueWithGoogle: 'Continue with Google',
+      passwordMinLength: 'Password must be at least 8 characters',
+      passwordRequiresNumber: 'Password must contain a number',
+      passwordRequiresUpper: 'Password must contain an uppercase letter'
     },
     footer: {
       rights: 'All rights reserved.'
@@ -705,7 +711,10 @@ export const translations = {
       noAccount: 'Нет аккаунта? Зарегистрируйтесь',
       hasAccount: 'Уже есть аккаунт? Войдите',
       orContinueWith: 'или продолжить через',
-      continueWithGoogle: 'Продолжить с Google'
+      continueWithGoogle: 'Продолжить с Google',
+      passwordMinLength: 'Пароль должен содержать не менее 8 символов',
+      passwordRequiresNumber: 'Пароль должен содержать цифру',
+      passwordRequiresUpper: 'Пароль должен содержать заглавную букву'
     },
     footer: {
       rights: 'Все права защищены.'

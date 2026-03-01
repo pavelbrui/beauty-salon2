@@ -28,5 +28,8 @@ test-results/
 playwright-report/
 playwright/.cache/
 
+# Build-time generated
+prerender-routes.json
+
 # Local Netlify folder
 .netlify
