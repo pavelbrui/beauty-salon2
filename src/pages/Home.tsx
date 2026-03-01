@@ -228,11 +228,26 @@ export const Home: React.FC = () => {
       {/* About Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">{t.aboutTitle}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {t.aboutText}
-            </p>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 text-center lg:text-left">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8">{t.aboutTitle}</h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {t.aboutText}
+              </p>
+            </div>
+            <div className="flex-1 w-full max-w-md">
+              <div className="rounded-2xl overflow-hidden shadow-lg">
+                <iframe
+                  src="https://www.instagram.com/p/DQ4Pd7ODP7-/embed/"
+                  className="w-full border-0"
+                  style={{ minHeight: '480px' }}
+                  allowTransparency
+                  allow="encrypted-media"
+                  title="Instagram video"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
