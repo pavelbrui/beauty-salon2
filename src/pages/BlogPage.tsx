@@ -7,6 +7,37 @@ import { SEO } from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import { BlogPost } from '../types';
 import { getLocalizedField, renderBlock } from '../utils/blockRenderer';
+import { ContentBlock } from '../types';
+
+/**
+ * Extract FAQ structured data (schema.org/FAQPage) from blog post content blocks.
+ * FAQ blocks follow the convention: heading id "*-faq-h" + list id "*-faq" with style "check".
+ * Each list item uses "Question? — Answer" format.
+ */
+const extractFaqItems = (blocks: ContentBlock[], language: string): { question: string; answer: string }[] => {
+  const faqItems: { question: string; answer: string }[] = [];
+
+  for (const block of blocks) {
+    if (block.type !== 'list' || !block.id?.includes('-faq')) continue;
+    // Skip the heading blocks (their id ends with -faq-h)
+    if (block.id.endsWith('-faq-h')) continue;
+
+    const items = language === 'en' && block.items_en?.length ? block.items_en
+      : language === 'ru' && block.items_ru?.length ? block.items_ru
+      : block.items;
+
+    for (const item of items) {
+      const separatorIdx = item.indexOf(' — ');
+      if (separatorIdx === -1) continue;
+      faqItems.push({
+        question: item.slice(0, separatorIdx).trim(),
+        answer: item.slice(separatorIdx + 3).trim(),
+      });
+    }
+  }
+
+  return faqItems;
+};
 
 const BLOG_CATEGORY_LABELS: Record<string, { pl: string; en: string; ru: string }> = {
   permanent_makeup: { pl: 'Makijaż permanentny', en: 'Permanent Makeup', ru: 'Перманентный макияж' },
@@ -125,8 +156,7 @@ export const BlogPage: React.FC = () => {
     const postTitle = getLocalizedField(post, 'title', language);
     const postExcerpt = getLocalizedField(post, 'excerpt', language);
 
-    const articleSchema = {
-      '@context': 'https://schema.org',
+    const articleSchema: Record<string, unknown> = {
       '@type': 'Article',
       headline: postTitle,
       description: postExcerpt,
@@ -142,6 +172,24 @@ export const BlogPage: React.FC = () => {
       mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.slug}` },
     };
 
+    const faqItems = extractFaqItems(post.content_blocks, language);
+    const faqSchema: Record<string, unknown> | null = faqItems.length > 0 ? {
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: answer,
+        },
+      })),
+    } : null;
+
+    const structuredData: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@graph': [articleSchema, ...(faqSchema ? [faqSchema] : [])],
+    };
+
     return (
       <main className="pt-16 min-h-screen bg-neutral-50">
         <SEO
@@ -151,7 +199,7 @@ export const BlogPage: React.FC = () => {
           type="article"
           image={post.cover_image_url || undefined}
           keywords={post.seo_keywords || []}
-          structuredData={articleSchema}
+          structuredData={structuredData}
           breadcrumbs={[
             { name: 'Strona główna', url: '/' },
             { name: 'Blog', url: '/blog' },
