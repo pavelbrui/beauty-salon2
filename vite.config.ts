@@ -38,6 +38,11 @@ async function getPrerenderPlugin() {
       rendererOptions: {
         maxConcurrentRoutes: 2,
         renderAfterTime: 4000,
+        launchOptions: {
+          // Use Chromium installed by netlify-plugin-chromium (sets CHROMIUM_PATH)
+          ...(process.env.CHROMIUM_PATH && { executablePath: process.env.CHROMIUM_PATH }),
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        },
       },
       postProcess(renderedRoute) {
         renderedRoute.html = renderedRoute.html
