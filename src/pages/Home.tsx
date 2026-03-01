@@ -237,15 +237,15 @@ export const Home: React.FC = () => {
             </div>
             <div className="flex-1 w-full max-w-md">
               <div className="rounded-2xl overflow-hidden shadow-lg">
-                <iframe
-                  src="https://www.instagram.com/p/DQ4Pd7ODP7-/embed/"
-                  className="w-full border-0"
-                  style={{ minHeight: '480px' }}
-                  allowTransparency
-                  allow="encrypted-media"
-                  title="Instagram video"
-                  loading="lazy"
-                />
+                <video
+                  className="w-full"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                >
+                  <source src="/intro-video.mp4" type="video/mp4" />
+                </video>
               </div>
             </div>
           </div>
