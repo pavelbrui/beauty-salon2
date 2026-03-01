@@ -50,6 +50,7 @@ export const ServiceLandingPage: React.FC = () => {
         supabase
           .from('services')
           .select('*, service_images(url)')
+          .eq('is_hidden', false)
           .eq('category', config.category)
           .order('name'),
         supabase.from('service_categories').select('name, image_url'),

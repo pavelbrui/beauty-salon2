@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { uploadVideo } from '../../utils/uploadVideo';
 import { ImageCropper } from './ImageCropper';
 
 interface ServiceCategory {
@@ -8,6 +9,7 @@ interface ServiceCategory {
   name: string;
   sort_order: number;
   image_url: string | null;
+  video_url: string | null;
 }
 
 export const AdminCategories = () => {
@@ -15,7 +17,9 @@ export const AdminCategories = () => {
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [uploadingVideoId, setUploadingVideoId] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const videoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // Image cropping state
   const [cropperImage, setCropperImage] = useState<string | null>(null);
@@ -166,6 +170,51 @@ export const AdminCategories = () => {
     );
   };
 
+  const handleVideoUpload = async (catId: string, file: File) => {
+    setUploadingVideoId(catId);
+    try {
+      const { publicUrl } = await uploadVideo({
+        file,
+        folder: 'categories-video',
+      });
+
+      const { error } = await supabase
+        .from('service_categories')
+        .update({ video_url: publicUrl })
+        .eq('id', catId);
+
+      if (error) {
+        console.error('Error saving category video:', error);
+        return;
+      }
+
+      setCategories(prev =>
+        prev.map(c => (c.id === catId ? { ...c, video_url: publicUrl } : c))
+      );
+    } catch (err) {
+      console.error('Video upload error:', err);
+      alert(err instanceof Error ? err.message : 'Błąd podczas wysyłania wideo');
+    } finally {
+      setUploadingVideoId(null);
+    }
+  };
+
+  const removeVideo = async (catId: string) => {
+    const { error } = await supabase
+      .from('service_categories')
+      .update({ video_url: null })
+      .eq('id', catId);
+
+    if (error) {
+      console.error('Error removing category video:', error);
+      return;
+    }
+
+    setCategories(prev =>
+      prev.map(c => (c.id === catId ? { ...c, video_url: null } : c))
+    );
+  };
+
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -239,6 +288,54 @@ export const AdminCategories = () => {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleFileSelect(cat.id, file);
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+
+                {/* Video thumbnail */}
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 group border-2 border-dashed border-gray-300">
+                  {cat.video_url ? (
+                    <>
+                      <video src={cat.video_url} muted className="w-full h-full object-cover" />
+                      <div className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded px-1 text-[10px]">MP4</div>
+                      <button
+                        onClick={() => removeVideo(cat.id)}
+                        className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        title="Usuń wideo"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => videoInputRefs.current[cat.id]?.click()}
+                      disabled={uploadingVideoId === cat.id}
+                      className="w-full h-full flex flex-col items-center justify-center text-gray-400 hover:text-amber-500 hover:bg-amber-50 transition-colors"
+                      title="Dodaj wideo kategorii (MP4)"
+                    >
+                      {uploadingVideoId === cat.id ? (
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                  <input
+                    ref={el => { videoInputRefs.current[cat.id] = el; }}
+                    type="file"
+                    accept="video/mp4"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleVideoUpload(cat.id, file);
                       e.target.value = '';
                     }}
                   />

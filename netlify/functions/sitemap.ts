@@ -282,6 +282,7 @@ const LANDING_PAGE_SLUGS = [
   'peeling-weglowy-bialystok',
   'usuwanie-tatuazu-bialystok',
   'manicure-bialystok',
+  'pedicure-bialystok',
   'szkolenia-kosmetyczne-bialystok',
 ];
 

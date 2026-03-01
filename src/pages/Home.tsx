@@ -12,11 +12,13 @@ import { SEO } from '../components/SEO';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
+import { CategoryVideoCard } from '../components/CategoryVideoCard';
 
 interface CategoryInfo {
   name: string;
   count: number;
   image: string;
+  videoUrl?: string | null;
 }
 
 export const Home: React.FC = () => {
@@ -37,8 +39,8 @@ export const Home: React.FC = () => {
       setError(null);
 
       const [servicesRes, catOrderRes] = await Promise.all([
-        supabase.from('services').select('category').order('category'),
-        supabase.from('service_categories').select('name, sort_order, image_url').order('sort_order'),
+        supabase.from('services').select('category').eq('is_hidden', false).order('category'),
+        supabase.from('service_categories').select('name, sort_order, image_url, video_url').order('sort_order'),
       ]);
 
       if (servicesRes.error) {
@@ -52,10 +54,12 @@ export const Home: React.FC = () => {
 
       const orderMap = new Map<string, number>();
       const imageMap = new Map<string, string>();
+      const videoMap = new Map<string, string>();
       if (catOrderRes.data) {
-        catOrderRes.data.forEach((c: { name: string; sort_order: number; image_url: string | null }) => {
+        catOrderRes.data.forEach((c: { name: string; sort_order: number; image_url: string | null; video_url: string | null }) => {
           orderMap.set(c.name, c.sort_order);
           if (c.image_url) imageMap.set(c.name, c.image_url);
+          if (c.video_url) videoMap.set(c.name, c.video_url);
         });
       }
 
@@ -64,6 +68,7 @@ export const Home: React.FC = () => {
           name,
           count,
           image: imageMap.get(name) || getStaticImageForCategory(name),
+          videoUrl: videoMap.get(name) || null,
         }))
         .sort((a, b) => (orderMap.get(a.name) ?? 999) - (orderMap.get(b.name) ?? 999));
 
@@ -243,37 +248,35 @@ export const Home: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map(cat => (
-              <button
+              <CategoryVideoCard
                 key={cat.name}
+                displayName={getCategoryName(cat.name, language, (t as any).categories)}
+                count={cat.count}
+                image={cat.image}
+                videoUrl={cat.videoUrl}
+                servicesCountLabel={t.servicesCount}
+                ctaLabel={t.viewCategoryServices}
                 onClick={() => navigate(`/services/${encodeURIComponent(cat.name)}`)}
-                className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
-              >
-                <img
-                  src={cat.image}
-                  alt={getCategoryName(cat.name, language, (t as any).categories)}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  width={600}
-                  height={400}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-all duration-300 group-hover:from-black/80" />
-                <div className="absolute inset-0 flex flex-col justify-end p-6 text-left">
-                  <h3 className="text-xl font-bold text-white mb-1">
-                    {getCategoryName(cat.name, language, (t as any).categories)}
-                  </h3>
-                  <p className="text-white/70 text-sm mb-3">
-                    {cat.count} {t.servicesCount}
-                  </p>
-                  <span className="inline-flex items-center text-amber-400 text-sm font-medium transition-transform duration-300 group-hover:translate-x-1">
-                    {t.viewCategoryServices}
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </button>
+              />
             ))}
           </div>
+
+          {/* VideoObject structured data for categories with videos */}
+          {categories.some(c => c.videoUrl) && (
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
+              categories
+                .filter(c => c.videoUrl)
+                .map(c => ({
+                  '@context': 'https://schema.org',
+                  '@type': 'VideoObject',
+                  name: getCategoryName(c.name, language, (t as any).categories),
+                  description: `${getCategoryName(c.name, language, (t as any).categories)} – salon kosmetyczny Katarzyna Brui, Białystok`,
+                  thumbnailUrl: c.image,
+                  contentUrl: c.videoUrl,
+                  uploadDate: '2026-03-01',
+                }))
+            )}} />
+          )}
         </div>
 
         {/* Training callout */}

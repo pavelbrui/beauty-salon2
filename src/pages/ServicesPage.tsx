@@ -218,7 +218,7 @@ export const ServicesPage: React.FC = () => {
   const loadServices = async () => {
     setIsLoading(true);
     const [servicesRes, catRes] = await Promise.all([
-      supabase.from('services').select('*, service_images(url)').order('category'),
+      supabase.from('services').select('*, service_images(url)').eq('is_hidden', false).order('category'),
       supabase.from('service_categories').select('name, image_url'),
     ]);
 

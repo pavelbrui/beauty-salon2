@@ -72,6 +72,7 @@ export const BookingPage: React.FC = () => {
         .from('services')
         .select('*')
         .eq('id', serviceId)
+        .eq('is_hidden', false)
         .single();
 
       if (error) throw error;

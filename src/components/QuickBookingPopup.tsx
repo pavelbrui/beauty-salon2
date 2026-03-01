@@ -57,6 +57,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
       const { data, error } = await supabase
         .from('services')
         .select('*')
+        .eq('is_hidden', false)
         .order('category')
         .order('name');
       if (!error && data) setServices(data);
