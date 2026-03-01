@@ -4,8 +4,22 @@ import { withTimeout } from './withTimeout';
 const DEFAULT_BUCKET = 'service-images';
 const DEFAULT_TIMEOUT_MS = 90_000; // 90s — video files are larger
 
-const ALLOWED_VIDEO_TYPES = new Set(['video/mp4']);
-const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB
+// MP4, MOV (iPhone), WebM
+const ALLOWED_VIDEO_TYPES = new Set([
+  'video/mp4',
+  'video/quicktime',      // .mov (iPhone)
+  'video/webm',
+]);
+
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB — iPhone videos can be larger
+
+function getExtension(file: File): string {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  if (ext && ['mp4', 'mov', 'webm'].includes(ext)) return ext;
+  if (file.type === 'video/quicktime') return 'mov';
+  if (file.type === 'video/webm') return 'webm';
+  return 'mp4';
+}
 
 export async function uploadVideo(params: {
   file: File;
@@ -17,19 +31,20 @@ export async function uploadVideo(params: {
   const timeoutMs = params.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   if (!ALLOWED_VIDEO_TYPES.has(params.file.type)) {
-    throw new Error('Dozwolony format: MP4 (H.264)');
+    throw new Error('Dozwolone formaty: MP4, MOV (iPhone), WebM');
   }
 
   if (params.file.size > MAX_VIDEO_SIZE) {
-    throw new Error('Plik wideo nie może przekraczać 20 MB');
+    throw new Error('Plik wideo nie może przekraczać 50 MB');
   }
 
-  const fileName = `${Date.now()}-${crypto.randomUUID()}.mp4`;
+  const ext = getExtension(params.file);
+  const fileName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
   const path = `${params.folder}/${fileName}`;
 
   const { error: uploadError } = await withTimeout(
     supabase.storage.from(bucket).upload(path, params.file, {
-      contentType: 'video/mp4',
+      contentType: params.file.type,
       cacheControl: '86400',
       upsert: false,
     }),

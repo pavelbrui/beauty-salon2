@@ -314,7 +314,7 @@ export const AdminCategories = () => {
                       onClick={() => videoInputRefs.current[cat.id]?.click()}
                       disabled={uploadingVideoId === cat.id}
                       className="w-full h-full flex flex-col items-center justify-center text-gray-400 hover:text-amber-500 hover:bg-amber-50 transition-colors"
-                      title="Dodaj wideo kategorii (MP4)"
+                      title="Dodaj wideo kategorii (MP4, MOV, WebM)"
                     >
                       {uploadingVideoId === cat.id ? (
                         <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -331,7 +331,7 @@ export const AdminCategories = () => {
                   <input
                     ref={el => { videoInputRefs.current[cat.id] = el; }}
                     type="file"
-                    accept="video/mp4"
+                    accept="video/mp4,video/quicktime,video/webm,.mov,.mp4,.webm"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];

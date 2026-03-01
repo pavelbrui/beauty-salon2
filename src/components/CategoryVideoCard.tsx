@@ -21,25 +21,42 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLButtonElement>(null);
-  const [isVideoActive, setIsVideoActive] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
+  // Listen for the video's "playing" event to know when it's actually rendering
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onPlaying = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    video.addEventListener('playing', onPlaying);
+    video.addEventListener('pause', onPause);
+    return () => {
+      video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('pause', onPause);
+    };
+  }, [videoUrl]);
+
   // Desktop hover
   const handleMouseEnter = useCallback(() => {
     if (isTouchDevice || !videoUrl || !videoRef.current) return;
+    setIsHovering(true);
     videoRef.current.play().catch(() => {});
-    setIsVideoActive(true);
   }, [isTouchDevice, videoUrl]);
 
   const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
     if (!videoRef.current) return;
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
-    setIsVideoActive(false);
   }, []);
 
   // Mobile: IntersectionObserver autoplay
@@ -51,10 +68,8 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
       ([entry]) => {
         if (entry.isIntersecting) {
           videoRef.current?.play().catch(() => {});
-          setIsVideoActive(true);
         } else {
           videoRef.current?.pause();
-          setIsVideoActive(false);
         }
       },
       { threshold: 0.5 },
@@ -64,6 +79,9 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
     return () => observer.disconnect();
   }, [isTouchDevice, videoUrl]);
 
+  // Show video only when it's actually playing
+  const showVideo = isPlaying && (isHovering || isTouchDevice);
+
   return (
     <button
       ref={cardRef}
@@ -72,30 +90,29 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
       onMouseLeave={handleMouseLeave}
       className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
     >
-      {/* Static image (base layer) */}
+      {/* Static image (base layer, always visible) */}
       <img
         src={image}
         alt={displayName}
         loading="lazy"
         className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
-          !isVideoActive ? 'group-hover:scale-110' : ''
+          !showVideo ? 'group-hover:scale-110' : ''
         }`}
         width={600}
         height={400}
       />
 
-      {/* Video overlay */}
+      {/* Video overlay — opacity controlled by actual playback state */}
       {videoUrl && (
         <video
           ref={videoRef}
           src={videoUrl}
-          poster={image}
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            isVideoActive ? 'opacity-100' : 'opacity-0'
+            showVideo ? 'opacity-100' : 'opacity-0'
           }`}
         />
       )}
