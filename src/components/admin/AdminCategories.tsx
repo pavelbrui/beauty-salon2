@@ -331,7 +331,7 @@ export const AdminCategories = () => {
                   <input
                     ref={el => { videoInputRefs.current[cat.id] = el; }}
                     type="file"
-                    accept="video/mp4,video/quicktime,video/webm,.mov,.mp4,.webm"
+                    accept="video/mp4,video/quicktime,video/webm,video/x-m4v,.mov,.mp4,.webm,.m4v"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];

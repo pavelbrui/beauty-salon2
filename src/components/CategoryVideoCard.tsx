@@ -29,28 +29,51 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
-  // Listen for the video's "playing" event to know when it's actually rendering
+  // Fix React bug: muted attribute not properly set via JSX
+  // Must set via ref, otherwise Chrome blocks autoplay
+  const setVideoRef = useCallback((el: HTMLVideoElement | null) => {
+    (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = el;
+    if (el) {
+      el.muted = true;
+    }
+  }, []);
+
+  // Listen for video events
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const onPlaying = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
+    const onError = () => {
+      console.warn('Video error:', video.error?.message, videoUrl);
+      setIsPlaying(false);
+    };
 
     video.addEventListener('playing', onPlaying);
     video.addEventListener('pause', onPause);
+    video.addEventListener('error', onError);
     return () => {
       video.removeEventListener('playing', onPlaying);
       video.removeEventListener('pause', onPause);
+      video.removeEventListener('error', onError);
     };
   }, [videoUrl]);
+
+  const tryPlay = useCallback((video: HTMLVideoElement) => {
+    // Ensure muted is set (React bug workaround)
+    video.muted = true;
+    video.play().catch((e) => {
+      console.warn('Video play blocked:', e.name, e.message);
+    });
+  }, []);
 
   // Desktop hover
   const handleMouseEnter = useCallback(() => {
     if (isTouchDevice || !videoUrl || !videoRef.current) return;
     setIsHovering(true);
-    videoRef.current.play().catch(() => {});
-  }, [isTouchDevice, videoUrl]);
+    tryPlay(videoRef.current);
+  }, [isTouchDevice, videoUrl, tryPlay]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
@@ -66,8 +89,8 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
     const el = cardRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          videoRef.current?.play().catch(() => {});
+        if (entry.isIntersecting && videoRef.current) {
+          tryPlay(videoRef.current);
         } else {
           videoRef.current?.pause();
         }
@@ -77,9 +100,8 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isTouchDevice, videoUrl]);
+  }, [isTouchDevice, videoUrl, tryPlay]);
 
-  // Show video only when it's actually playing
   const showVideo = isPlaying && (isHovering || isTouchDevice);
 
   return (
@@ -90,7 +112,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
       onMouseLeave={handleMouseLeave}
       className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
     >
-      {/* Static image (base layer, always visible) */}
+      {/* Static image (base layer) */}
       <img
         src={image}
         alt={displayName}
@@ -102,10 +124,10 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
         height={400}
       />
 
-      {/* Video overlay — opacity controlled by actual playback state */}
+      {/* Video overlay */}
       {videoUrl && (
         <video
-          ref={videoRef}
+          ref={setVideoRef}
           src={videoUrl}
           muted
           loop
