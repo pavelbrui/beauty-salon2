@@ -1,6 +1,20 @@
 const MAX_DIMENSION = 1920;
 const QUALITY = 0.82;
 
+// Formats that most browsers can't display — MUST be converted to JPEG/WebP
+const NON_WEB_TYPES = new Set([
+  'image/heic', 'image/heif',
+  'image/heic-sequence', 'image/heif-sequence',
+  'image/tiff', 'image/bmp', 'image/x-ms-bmp',
+]);
+const NON_WEB_EXTS = new Set(['heic', 'heif', 'tiff', 'tif', 'bmp']);
+
+function isNonWebFormat(file: File): boolean {
+  if (file.type && NON_WEB_TYPES.has(file.type.toLowerCase())) return true;
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  return ext ? NON_WEB_EXTS.has(ext) : false;
+}
+
 export async function compressImage(
   file: File,
   options?: {
@@ -8,15 +22,18 @@ export async function compressImage(
     quality?: number;
   }
 ): Promise<File> {
-  // Skip non-image or vector files
-  if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
-    return file;
-  }
+  // Skip SVG files
+  if (file.type === 'image/svg+xml') return file;
+
+  // Skip files that are explicitly non-image (but still process empty type —
+  // iOS Safari sometimes provides files with empty MIME type)
+  if (file.type && !file.type.startsWith('image/')) return file;
 
   const maxDim = options?.maxDimension ?? MAX_DIMENSION;
   const quality = options?.quality ?? QUALITY;
+  const mustConvert = isNonWebFormat(file);
 
-  return new Promise<File>((resolve) => {
+  return new Promise<File>((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
 
@@ -42,7 +59,11 @@ export async function compressImage(
 
       const ctx = canvas.getContext('2d');
       if (!ctx) {
-        resolve(file);
+        if (mustConvert) {
+          reject(new Error('Nie udało się przetworzyć obrazu. Spróbuj zapisać jako JPG i wgrać ponownie.'));
+        } else {
+          resolve(file);
+        }
         return;
       }
 
@@ -54,16 +75,23 @@ export async function compressImage(
           (blob) => {
             if (!blob) {
               if (format === 'image/webp') {
-                // WebP not supported — fall back to JPEG
+                // WebP not supported (e.g. older iOS Safari) — fall back to JPEG
                 tryFormat('image/jpeg', q);
                 return;
               }
-              resolve(file);
+              // JPEG also failed
+              if (mustConvert) {
+                reject(new Error('Nie udało się przekonwertować obrazu. Spróbuj zapisać jako JPG.'));
+              } else {
+                resolve(file);
+              }
               return;
             }
 
-            // Only use compressed version if it's actually smaller
-            if (blob.size >= file.size) {
+            // For non-web formats (HEIC, HEIF, TIFF, BMP) ALWAYS use converted
+            // version — even if larger — because browsers can't display originals.
+            // For web formats, only use compressed if actually smaller.
+            if (blob.size >= file.size && !mustConvert) {
               resolve(file);
               return;
             }
@@ -82,7 +110,15 @@ export async function compressImage(
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve(file);
+      if (mustConvert) {
+        const formatHint = file.type || file.name.split('.').pop()?.toUpperCase() || 'nieznany';
+        reject(new Error(
+          `Format ${formatHint} nie jest obsługiwany przez przeglądarkę. ` +
+          'Spróbuj zapisać zdjęcie jako JPG lub PNG i wgrać ponownie.'
+        ));
+      } else {
+        resolve(file);
+      }
     };
 
     img.src = url;
