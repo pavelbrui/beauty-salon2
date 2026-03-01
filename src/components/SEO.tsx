@@ -75,11 +75,14 @@ export const SEO: React.FC<SEOProps> = ({
       ))}
       {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${barePath}`} />}
 
+      <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:locale" content={OG_LOCALES[language]} />
       {!noindex && LANGUAGES.filter(l => l !== language).map(lang => (
         <meta key={`og-alt-${lang}`} property="og:locale:alternate" content={OG_LOCALES[lang]} />

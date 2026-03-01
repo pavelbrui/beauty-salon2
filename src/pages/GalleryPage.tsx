@@ -82,8 +82,8 @@ export const GalleryPage: React.FC = () => {
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
-        title="Galeria Prac - Efekty Zabiegów"
-        description="Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po."
+        title={(t as any).gallery_seo?.title || 'Galeria Prac - Efekty Zabiegów'}
+        description={(t as any).gallery_seo?.description || 'Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.'}
         canonical="/gallery"
         image={images[0]?.url}
         keywords={[
@@ -95,6 +95,10 @@ export const GalleryPage: React.FC = () => {
           'portfolio kosmetyczka Białystok'
         ]}
         structuredData={gallerySchema}
+        breadcrumbs={[
+          { name: 'Strona główna', url: '/' },
+          { name: t.gallery || 'Galeria', url: '/gallery' },
+        ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>

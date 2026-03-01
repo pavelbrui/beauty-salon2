@@ -59,8 +59,8 @@ export const StylistsPage: React.FC = () => {
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
-        title="Nasi Specjaliści - Kosmetyczki i Stylistki"
-        description="Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs i pielęgnacji brwi."
+        title={(t as any).stylists_seo?.title || 'Nasi Specjaliści - Kosmetyczki i Stylistki'}
+        description={(t as any).stylists_seo?.description || 'Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku.'}
         canonical="/stylists"
         keywords={[
           'kosmetyczka Białystok',

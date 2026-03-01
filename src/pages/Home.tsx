@@ -100,8 +100,8 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <SEO
-        title="Salon Kosmetyczny Białystok"
-        description="Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online. ul. Młynowa 46. Tel: 880 435 102."
+        title={(t as any).home_seo?.title || 'Salon Kosmetyczny Białystok'}
+        description={(t as any).home_seo?.description || 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.'}
         canonical="/"
         keywords={[
           'salon kosmetyczny Białystok',

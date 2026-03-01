@@ -275,7 +275,12 @@ export const ServicesPage: React.FC = () => {
     setShowBookingModal(true);
   };
 
-  const seo = category ? (categorySEOData[category] || defaultSEO) : defaultSEO;
+  const translatedDefaultSEO: CategorySEO = {
+    title: (t as any).services_seo?.title || defaultSEO.title,
+    description: (t as any).services_seo?.description || defaultSEO.description,
+    keywords: defaultSEO.keywords,
+  };
+  const seo = category ? (categorySEOData[category] || translatedDefaultSEO) : translatedDefaultSEO;
 
   // Pick a representative image for og:image based on current category
   const categoryImage = category

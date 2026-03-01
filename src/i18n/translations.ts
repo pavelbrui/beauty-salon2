@@ -214,6 +214,22 @@ export const translations = {
         tips: 'Porady'
       }
     },
+    home_seo: {
+      title: 'Salon Kosmetyczny Białystok',
+      description: 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online. ul. Młynowa 46. Tel: 880 435 102.',
+    },
+    services_seo: {
+      title: 'Usługi Kosmetyczne Białystok | Cennik Zabiegów',
+      description: 'Pełna oferta zabiegów kosmetycznych w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure, laserowe usuwanie tatuażu. Cennik i rezerwacja online.',
+    },
+    stylists_seo: {
+      title: 'Nasi Specjaliści - Kosmetyczki i Stylistki',
+      description: 'Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs i pielęgnacji brwi.',
+    },
+    gallery_seo: {
+      title: 'Galeria Prac - Efekty Zabiegów',
+      description: 'Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria przed i po.',
+    },
     admin_bookings: {
       title: 'Rezerwacje',
       listView: 'Lista',
@@ -515,6 +531,22 @@ export const translations = {
         tips: 'Tips'
       }
     },
+    home_seo: {
+      title: 'Beauty Salon Bialystok',
+      description: 'Katarzyna Brui beauty salon in Bialystok, Poland. Permanent makeup, lash extensions, brow lamination, carbon peeling, manicure. Book online. Mlynowa 46. Tel: 880 435 102.',
+    },
+    services_seo: {
+      title: 'Beauty Services Bialystok | Treatment Price List',
+      description: 'Full range of beauty treatments in Bialystok: permanent makeup (brows & lips), lash extensions, brow lamination, carbon peeling, manicure, laser tattoo removal. Prices and online booking.',
+    },
+    stylists_seo: {
+      title: 'Our Specialists - Beauticians & Stylists',
+      description: 'Meet the experienced beauticians and stylists at Katarzyna Brui salon in Bialystok. Specialists in permanent makeup, lash styling and brow care.',
+    },
+    gallery_seo: {
+      title: 'Gallery - Treatment Results',
+      description: 'See the results of treatments at Katarzyna Brui salon in Bialystok: permanent makeup, lash extensions, brow lamination, manicure. Before and after gallery.',
+    },
     admin_bookings: {
       title: 'Bookings',
       listView: 'List',
@@ -815,6 +847,22 @@ export const translations = {
         manicure: 'Маникюр',
         tips: 'Советы'
       }
+    },
+    home_seo: {
+      title: 'Салон красоты Белосток',
+      description: 'Салон красоты Катажина Бруй в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр. Запись онлайн. ул. Млынова 46. Тел: 880 435 102.',
+    },
+    services_seo: {
+      title: 'Косметические услуги Белосток | Прайс-лист',
+      description: 'Полный спектр косметических услуг в Белостоке: перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр, лазерное удаление тату. Цены и запись онлайн.',
+    },
+    stylists_seo: {
+      title: 'Наши специалисты - косметологи и стилисты',
+      description: 'Познакомьтесь с командой опытных косметологов и стилистов салона Катажина Бруй в Белостоке. Специалисты по перманентному макияжу, наращиванию ресниц и уходу за бровями.',
+    },
+    gallery_seo: {
+      title: 'Галерея работ - результаты процедур',
+      description: 'Смотрите результаты процедур салона Катажина Бруй в Белостоке: перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр. Галерея до и после.',
     },
     admin_bookings: {
       title: 'Записи',
