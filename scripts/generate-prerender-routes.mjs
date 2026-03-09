@@ -84,6 +84,18 @@ const fetchServiceCategories = async () => {
   }
 };
 
+/** SEO landing page slugs (must match src/data/landingPages.ts) */
+const LANDING_PAGE_SLUGS = [
+  'makijaz-permanentny-bialystok',
+  'stylizacja-rzes-bialystok',
+  'laminacja-brwi-bialystok',
+  'peeling-weglowy-bialystok',
+  'usuwanie-tatuazu-bialystok',
+  'manicure-bialystok',
+  'pedicure-bialystok',
+  'szkolenia-kosmetyczne-bialystok',
+];
+
 /* ── main ── */
 
 const main = async () => {
@@ -96,6 +108,7 @@ const main = async () => {
     '/gallery',
     '/training',
     '/blog',
+    ...LANDING_PAGE_SLUGS.map((s) => `/${s}`),
   ];
 
   const [blogSlugs, trainingSlugs, categories] = await Promise.all([
