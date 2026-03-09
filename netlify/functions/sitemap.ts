@@ -35,6 +35,14 @@ interface SitemapImage {
   caption?: string;
 }
 
+// --- Video type ---
+interface SitemapVideo {
+  contentUrl: string;
+  thumbnailUrl: string;
+  title: string;
+  description: string;
+}
+
 // --- Render helpers ---
 const renderAlternateLinks = (barePath: string): string =>
   [
