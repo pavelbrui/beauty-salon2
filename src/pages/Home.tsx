@@ -288,7 +288,8 @@ export const Home: React.FC = () => {
                   description: `${getCategoryName(c.name, language, (t as any).categories)} – salon kosmetyczny Katarzyna Brui, Białystok`,
                   thumbnailUrl: c.image,
                   contentUrl: c.videoUrl,
-                  uploadDate: '2026-03-01',
+                  uploadDate: new Date().toISOString().slice(0, 10),
+                  embedUrl: `https://katarzynabrui.pl/services/${encodeURIComponent(c.name)}`,
                 }))
             )}} />
           )}
