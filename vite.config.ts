@@ -27,8 +27,8 @@ export default defineConfig(async ({ command }) => {
           routes,
           renderer: '@prerenderer/renderer-puppeteer',
           rendererOptions: {
-            maxConcurrentRoutes: 4,
-            renderAfterTime: 5000,
+            maxConcurrentRoutes: 2,
+            renderAfterTime: 8000,
           },
         })
       )
