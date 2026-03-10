@@ -129,6 +129,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
         <video
           ref={setVideoRef}
           src={videoUrl}
+          poster={image}
           muted
           loop
           playsInline

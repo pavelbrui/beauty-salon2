@@ -32,7 +32,8 @@ const DYNAMIC_END = '<!-- DYNAMIC CONTENT END -->';
 const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 </urlset>
 `;
 
@@ -81,19 +82,34 @@ const renderImageTags = (images) => {
     .join('\n');
 };
 
-const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod, images }) => {
+/** Render <video:video> tags. videos = [{ contentUrl, thumbnailUrl, title, description }] */
+const renderVideoTags = (videos) => {
+  if (!videos || videos.length === 0) return '';
+  return videos
+    .map((v) =>
+      `    <video:video>
+      <video:content_loc>${xmlEscape(v.contentUrl)}</video:content_loc>
+      <video:thumbnail_loc>${xmlEscape(v.thumbnailUrl)}</video:thumbnail_loc>
+      <video:title>${xmlEscape(v.title)}</video:title>
+      <video:description>${xmlEscape(v.description)}</video:description>
+    </video:video>`)
+    .join('\n');
+};
+
+const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod, images, videos }) => {
   const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
   const imageTags = images?.length ? `\n${renderImageTags(images)}` : '';
+  const videoTags = videos?.length ? `\n${renderVideoTags(videos)}` : '';
 
   return `  <url>
     <loc>${xmlEscape(localizedUrl(barePath, locale))}</loc>
-${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}
+${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}${videoTags}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
 };
 
-const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images }) =>
+const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images, videos }) =>
   LOCALES.map((locale) =>
     renderUrlEntry({
       barePath,
@@ -102,6 +118,7 @@ const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, image
       priority,
       lastmod,
       images,
+      videos,
     })
   ).join('\n');
 
@@ -201,23 +218,33 @@ const CATEGORY_FALLBACK_IMAGES = {
   },
 };
 
-/** Fetch service categories with images (from service_categories table + fallbacks). */
+/** Fetch service categories with images and videos (from service_categories table + fallbacks). */
 const fetchServiceCategories = async () => {
   try {
-    // Fetch from service_categories (has image_url) and also the distinct categories from services table
+    // Fetch from service_categories (has image_url, video_url) and also the distinct categories from services table
     const [catRows, serviceRows] = await Promise.all([
-      supabaseFetch('service_categories?select=name,image_url'),
+      supabaseFetch('service_categories?select=name,image_url,video_url'),
       supabaseFetch('services?select=category'),
     ]);
 
     // Merge: use service_categories image_url if available, otherwise use fallback
     const catImageMap = new Map();
+    const catVideoMap = new Map();
     if (Array.isArray(catRows)) {
       for (const row of catRows) {
         if (row.name && row.image_url) {
           catImageMap.set(row.name, {
             url: row.image_url,
             title: `${row.name} – salon Katarzyna Brui Białystok`,
+          });
+        }
+        if (row.name && row.video_url) {
+          const thumbnailUrl = row.image_url || (CATEGORY_FALLBACK_IMAGES[row.name]?.url) || `${BASE_URL}/og-image.jpg`;
+          catVideoMap.set(row.name, {
+            contentUrl: row.video_url,
+            thumbnailUrl,
+            title: `${row.name} – salon Katarzyna Brui Białystok`,
+            description: `${row.name} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
           });
         }
       }
@@ -232,7 +259,9 @@ const fetchServiceCategories = async () => {
       const dbImage = catImageMap.get(cat);
       const fallback = CATEGORY_FALLBACK_IMAGES[cat];
       const images = dbImage ? [dbImage] : fallback ? [fallback] : [];
-      return { name: cat, images };
+      const video = catVideoMap.get(cat);
+      const videos = video ? [video] : [];
+      return { name: cat, images, videos };
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -297,6 +326,7 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
           priority: '0.8',
           lastmod: null,
           images: cat.images,
+          videos: cat.videos,
         })
       );
       count++;

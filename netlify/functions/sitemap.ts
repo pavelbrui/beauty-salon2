@@ -35,6 +35,14 @@ interface SitemapImage {
   caption?: string;
 }
 
+// --- Video type ---
+interface SitemapVideo {
+  contentUrl: string;
+  thumbnailUrl: string;
+  title: string;
+  description: string;
+}
+
 // --- Render helpers ---
 const renderAlternateLinks = (barePath: string): string =>
   [
@@ -56,21 +64,36 @@ const renderImageTags = (images: SitemapImage[]): string => {
     .join('\n');
 };
 
+const renderVideoTags = (videos: SitemapVideo[]): string => {
+  if (!videos || videos.length === 0) return '';
+  return videos
+    .map((v) =>
+      `    <video:video>
+      <video:content_loc>${xmlEscape(v.contentUrl)}</video:content_loc>
+      <video:thumbnail_loc>${xmlEscape(v.thumbnailUrl)}</video:thumbnail_loc>
+      <video:title>${xmlEscape(v.title)}</video:title>
+      <video:description>${xmlEscape(v.description)}</video:description>
+    </video:video>`)
+    .join('\n');
+};
+
 interface UrlEntry {
   barePath: string;
   changefreq: string;
   priority: string;
   lastmod?: string | null;
   images?: SitemapImage[];
+  videos?: SitemapVideo[];
 }
 
-const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images }: UrlEntry): string =>
+const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images, videos }: UrlEntry): string =>
   LOCALES.map((locale) => {
     const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
     const imageTags = images?.length ? `\n${renderImageTags(images)}` : '';
+    const videoTags = videos?.length ? `\n${renderVideoTags(videos)}` : '';
     return `  <url>
     <loc>${xmlEscape(localizedUrl(barePath, locale))}</loc>
-${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}
+${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}${videoTags}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
@@ -122,22 +145,32 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, SitemapImage> = {
 interface CategoryData {
   name: string;
   images: SitemapImage[];
+  videos: SitemapVideo[];
 }
 
 const fetchServiceCategories = async (): Promise<CategoryData[]> => {
   try {
     const [catRows, serviceRows] = await Promise.all([
-      supabaseFetch('service_categories?select=name,image_url') as Promise<{ name: string; image_url: string | null }[] | null>,
+      supabaseFetch('service_categories?select=name,image_url,video_url') as Promise<{ name: string; image_url: string | null; video_url: string | null }[] | null>,
       supabaseFetch('services?select=category') as Promise<{ category: string }[] | null>,
     ]);
 
     const catImageMap = new Map<string, SitemapImage>();
+    const catVideoMap = new Map<string, SitemapVideo>();
     if (Array.isArray(catRows)) {
       for (const row of catRows) {
         if (row.name && row.image_url) {
           catImageMap.set(row.name, {
             url: row.image_url,
             title: `${row.name} – salon Katarzyna Brui Białystok`,
+          });
+        }
+        if (row.name && row.video_url) {
+          catVideoMap.set(row.name, {
+            contentUrl: row.video_url,
+            thumbnailUrl: row.image_url || CATEGORY_FALLBACK_IMAGES[row.name]?.url || `${BASE_URL}/og-image.jpg`,
+            title: `${row.name} – salon Katarzyna Brui Białystok`,
+            description: `${row.name} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
           });
         }
       }
@@ -151,7 +184,9 @@ const fetchServiceCategories = async (): Promise<CategoryData[]> => {
       const dbImage = catImageMap.get(cat);
       const fallback = CATEGORY_FALLBACK_IMAGES[cat];
       const images = dbImage ? [dbImage] : fallback ? [fallback] : [];
-      return { name: cat, images };
+      const video = catVideoMap.get(cat);
+      const videos = video ? [video] : [];
+      return { name: cat, images, videos };
     });
   } catch {
     return [];
@@ -226,12 +261,17 @@ const STATIC_PAGES: StaticPage[] = [
       {
         url: `${BASE_URL}/og-image.jpg`,
         title: 'Salon kosmetyczny Katarzyna Brui Białystok',
-        caption: 'Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi w Białymstoku',
+        caption: 'Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi, manicure, pedicure w Białymstoku',
       },
       {
         url: `${BASE_URL}/og-image2.jpg`,
         title: 'Makijaż permanentny brwi Białystok – Katarzyna Brui',
-        caption: 'Profesjonalny makijaż permanentny brwi i ust, salon kosmetyczny Białystok',
+        caption: 'Profesjonalny makijaż permanentny brwi i ust, stylizacja rzęs, peeling węglowy – salon kosmetyczny Białystok',
+      },
+      {
+        url: `${BASE_URL}/og-image-mobile.jpg`,
+        title: 'Kosmetyczka Białystok – makijaż permanentny, manicure, stylizacja rzęs',
+        caption: 'Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, manicure hybrydowy, pedicure, laminacja brwi, peeling węglowy, usuwanie tatuażu',
       },
     ],
   },
@@ -296,9 +336,17 @@ const handler: Handler = async () => {
 
   const entries: string[] = [];
 
+  // Collect all category videos for homepage entry
+  const homepageVideos: SitemapVideo[] = categories.flatMap((cat) => cat.videos);
+
   // Static pages
   for (const page of STATIC_PAGES) {
-    entries.push(renderLocalizedEntries(page));
+    // Attach category videos to homepage
+    if (page.barePath === '/' && homepageVideos.length > 0) {
+      entries.push(renderLocalizedEntries({ ...page, videos: homepageVideos }));
+    } else {
+      entries.push(renderLocalizedEntries(page));
+    }
   }
 
   // SEO landing pages
@@ -359,7 +407,8 @@ const handler: Handler = async () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${entries.join('\n')}
 </urlset>`;
 
