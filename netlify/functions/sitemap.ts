@@ -261,12 +261,17 @@ const STATIC_PAGES: StaticPage[] = [
       {
         url: `${BASE_URL}/og-image.jpg`,
         title: 'Salon kosmetyczny Katarzyna Brui Białystok',
-        caption: 'Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi w Białymstoku',
+        caption: 'Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi, manicure, pedicure w Białymstoku',
       },
       {
         url: `${BASE_URL}/og-image2.jpg`,
         title: 'Makijaż permanentny brwi Białystok – Katarzyna Brui',
-        caption: 'Profesjonalny makijaż permanentny brwi i ust, salon kosmetyczny Białystok',
+        caption: 'Profesjonalny makijaż permanentny brwi i ust, stylizacja rzęs, peeling węglowy – salon kosmetyczny Białystok',
+      },
+      {
+        url: `${BASE_URL}/og-image-mobile.jpg`,
+        title: 'Kosmetyczka Białystok – makijaż permanentny, manicure, stylizacja rzęs',
+        caption: 'Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, manicure hybrydowy, pedicure, laminacja brwi, peeling węglowy, usuwanie tatuażu',
       },
     ],
   },

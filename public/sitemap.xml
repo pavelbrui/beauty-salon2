@@ -13,12 +13,17 @@
     <image:image>
       <image:loc>https://katarzynabrui.pl/og-image.jpg</image:loc>
       <image:title>Salon kosmetyczny Katarzyna Brui Białystok</image:title>
-      <image:caption>Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi w Białymstoku</image:caption>
+      <image:caption>Salon kosmetyczny Katarzyna Brui – makijaż permanentny, stylizacja rzęs, laminacja brwi, manicure, pedicure w Białymstoku</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://katarzynabrui.pl/og-image2.jpg</image:loc>
       <image:title>Makijaż permanentny brwi Białystok – Katarzyna Brui</image:title>
-      <image:caption>Profesjonalny makijaż permanentny brwi i ust, salon kosmetyczny Białystok</image:caption>
+      <image:caption>Profesjonalny makijaż permanentny brwi i ust, stylizacja rzęs, peeling węglowy – salon kosmetyczny Białystok</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://katarzynabrui.pl/og-image-mobile.jpg</image:loc>
+      <image:title>Kosmetyczka Białystok – makijaż permanentny, manicure, stylizacja rzęs</image:title>
+      <image:caption>Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, manicure hybrydowy, pedicure, laminacja brwi, peeling węglowy, usuwanie tatuażu</image:caption>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -32,6 +37,17 @@
     <image:image>
       <image:loc>https://katarzynabrui.pl/og-image.jpg</image:loc>
       <image:title>Beauty salon Katarzyna Brui Białystok</image:title>
+      <image:caption>Beauty salon Katarzyna Brui – permanent makeup, eyelash extensions, manicure, pedicure in Białystok</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://katarzynabrui.pl/og-image2.jpg</image:loc>
+      <image:title>Permanent makeup eyebrows Białystok – Katarzyna Brui</image:title>
+      <image:caption>Professional permanent makeup, eyelash styling, carbon peeling – beauty salon Białystok</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://katarzynabrui.pl/og-image-mobile.jpg</image:loc>
+      <image:title>Beauty salon Białystok – permanent makeup, manicure, lash extensions</image:title>
+      <image:caption>Katarzyna Brui beauty salon Białystok – permanent eyebrow makeup, hybrid manicure, pedicure, brow lamination, carbon peeling, tattoo removal</image:caption>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -45,6 +61,17 @@
     <image:image>
       <image:loc>https://katarzynabrui.pl/og-image.jpg</image:loc>
       <image:title>Салон красоты Katarzyna Brui Белосток</image:title>
+      <image:caption>Салон красоты Katarzyna Brui – перманентный макияж, наращивание ресниц, маникюр, педикюр в Белостоке</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://katarzynabrui.pl/og-image2.jpg</image:loc>
+      <image:title>Перманентный макияж бровей Белосток – Katarzyna Brui</image:title>
+      <image:caption>Профессиональный перманентный макияж бровей и губ, стилизация ресниц, карбоновый пилинг – салон красоты Белосток</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://katarzynabrui.pl/og-image-mobile.jpg</image:loc>
+      <image:title>Косметолог Белосток – перманентный макияж, маникюр, наращивание ресниц</image:title>
+      <image:caption>Салон красоты Katarzyna Brui Белосток – перманентный макияж бровей, гибридный маникюр, педикюр, ламинирование бровей, карбоновый пилинг, удаление тату</image:caption>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -455,6 +482,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494521841-1314e5b3-1e18-4f86-a5b8-cff2bf666dc0.mov</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</video:thumbnail_loc>
+      <video:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Laserowe usuwanie – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -468,6 +501,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494521841-1314e5b3-1e18-4f86-a5b8-cff2bf666dc0.mov</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</video:thumbnail_loc>
+      <video:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Laserowe usuwanie – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -481,6 +520,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494521841-1314e5b3-1e18-4f86-a5b8-cff2bf666dc0.mov</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</video:thumbnail_loc>
+      <video:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Laserowe usuwanie – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -494,6 +539,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483200981-90e21574-ef39-4a9e-8176-c09e25ad8b63.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Makijaż permanentny – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Makijaż permanentny – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -507,6 +558,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483200981-90e21574-ef39-4a9e-8176-c09e25ad8b63.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Makijaż permanentny – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Makijaż permanentny – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -520,6 +577,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483200981-90e21574-ef39-4a9e-8176-c09e25ad8b63.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Makijaż permanentny – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Makijaż permanentny – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -533,6 +596,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772482706240-b44bb9a7-a928-45cb-a99f-62cba17a6ea4.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</video:thumbnail_loc>
+      <video:title>Manicure i pedicure – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Manicure i pedicure – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -546,6 +615,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772482706240-b44bb9a7-a928-45cb-a99f-62cba17a6ea4.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</video:thumbnail_loc>
+      <video:title>Manicure i pedicure – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Manicure i pedicure – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -559,6 +634,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772482706240-b44bb9a7-a928-45cb-a99f-62cba17a6ea4.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</video:thumbnail_loc>
+      <video:title>Manicure i pedicure – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Manicure i pedicure – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -572,6 +653,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494617596-3673614b-b734-4f0b-b0d4-77e335a6f4ee.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</video:thumbnail_loc>
+      <video:title>Pakiety – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Pakiety – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -585,6 +672,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494617596-3673614b-b734-4f0b-b0d4-77e335a6f4ee.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</video:thumbnail_loc>
+      <video:title>Pakiety – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Pakiety – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -598,6 +691,12 @@
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772494617596-3673614b-b734-4f0b-b0d4-77e335a6f4ee.mp4</video:content_loc>
+      <video:thumbnail_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</video:thumbnail_loc>
+      <video:title>Pakiety – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Pakiety – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -611,6 +710,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483443106-0c586218-d357-4206-ae9b-58ee364434d8.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</video:thumbnail_loc>
+      <video:title>Peeling węglowy – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Peeling węglowy – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -624,6 +729,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483443106-0c586218-d357-4206-ae9b-58ee364434d8.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</video:thumbnail_loc>
+      <video:title>Peeling węglowy – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Peeling węglowy – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -637,6 +748,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483443106-0c586218-d357-4206-ae9b-58ee364434d8.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</video:thumbnail_loc>
+      <video:title>Peeling węglowy – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Peeling węglowy – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -677,6 +794,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483562760-513a9311-48ed-4530-96dc-7a7055ab2ce0.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Stylizacja rzęs – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -690,6 +813,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483562760-513a9311-48ed-4530-96dc-7a7055ab2ce0.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Stylizacja rzęs – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -703,6 +832,12 @@
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
     </image:image>
+    <video:video>
+      <video:content_loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories-video/1772483562760-513a9311-48ed-4530-96dc-7a7055ab2ce0.mov</video:content_loc>
+      <video:thumbnail_loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</video:thumbnail_loc>
+      <video:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</video:title>
+      <video:description>Stylizacja rzęs – usługi kosmetyczne w salonie Katarzyna Brui, Białystok</video:description>
+    </video:video>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

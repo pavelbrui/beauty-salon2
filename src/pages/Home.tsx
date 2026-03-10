@@ -132,7 +132,8 @@ export const Home: React.FC = () => {
           'name': 'Salon Kosmetyczny Katarzyna Brui',
           'image': [
             'https://katarzynabrui.pl/og-image.jpg',
-            'https://katarzynabrui.pl/og-image2.jpg'
+            'https://katarzynabrui.pl/og-image2.jpg',
+            'https://katarzynabrui.pl/og-image-mobile.jpg'
           ],
           'url': 'https://katarzynabrui.pl',
           'telephone': '+48880435102',
@@ -179,15 +180,23 @@ export const Home: React.FC = () => {
         }}
       />
       <header className="relative h-screen">
-        {/* Hero image — semantic <img> for Google Image indexing */}
-        <img
-          src="/og-image2.jpg"
-          alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
-          className="absolute inset-0 w-full h-full object-cover"
-          fetchPriority="high"
-          width={1920}
-          height={1080}
-        />
+        {/* Hero image — <picture> for responsive loading + Google Image indexing */}
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="/og-image-mobile.jpg"
+            width={640}
+            height={1168}
+          />
+          <img
+            src="/og-image2.jpg"
+            alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure hybrydowy, pedicure, peeling węglowy, usuwanie tatuażu laserowo"
+            className="absolute inset-0 w-full h-full object-cover"
+            fetchPriority="high"
+            width={1200}
+            height={630}
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
