@@ -1,6 +1,7 @@
 export interface GalleryImage {
   id: string;
   url: string;
+  video_url?: string;
   description: string;
   description_en?: string;
   description_ru?: string;
@@ -129,7 +130,16 @@ export interface EmbedBlock {
   caption_ru?: string;
 }
 
-export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock | EmbedBlock;
+export interface VideoBlock {
+  id: string;
+  type: 'video';
+  url: string;
+  caption?: string;
+  caption_en?: string;
+  caption_ru?: string;
+}
+
+export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock | EmbedBlock | VideoBlock;
 
 export interface BlogPost {
   id: string;

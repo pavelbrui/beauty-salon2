@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentBlock, Training, BlogPost, EmbedBlock } from '../types';
+import { ContentBlock, Training, BlogPost, EmbedBlock, VideoBlock } from '../types';
 import { cropPositionToStyle } from '../components/admin/CropSelector';
 
 export const getLocalizedText = (block: { text: string; text_en?: string; text_ru?: string }, language: string): string => {
@@ -141,6 +141,26 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
       }
 
       return null;
+    }
+    case 'video': {
+      const vb = block as VideoBlock;
+      if (!vb.url) return null;
+      const caption = language === 'en' ? (vb.caption_en || vb.caption) : language === 'ru' ? (vb.caption_ru || vb.caption) : vb.caption;
+      return (
+        <figure key={vb.id || index} className="my-8">
+          <video
+            src={vb.url}
+            controls
+            className="w-full rounded-xl shadow-lg"
+            preload="metadata"
+          />
+          {caption && (
+            <figcaption className="text-sm text-gray-500 mt-3 text-center italic">
+              {caption}
+            </figcaption>
+          )}
+        </figure>
+      );
     }
     default:
       return null;

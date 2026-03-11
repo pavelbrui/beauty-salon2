@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock } from '../../types';
+import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock, VideoBlock } from '../../types';
 import { CropSelector, parseCropPosition } from './CropSelector';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { uploadVideo } from '../../utils/uploadVideo';
 
 interface BlockEditorProps {
   block: ContentBlock;
@@ -19,6 +20,7 @@ const BLOCK_LABELS: Record<string, string> = {
   image: 'Obraz',
   list: 'Lista',
   embed: 'Embed',
+  video: 'Video',
 };
 
 const BLOCK_COLORS: Record<string, string> = {
@@ -27,6 +29,7 @@ const BLOCK_COLORS: Record<string, string> = {
   image: 'bg-green-100 text-green-700',
   list: 'bg-orange-100 text-orange-700',
   embed: 'bg-pink-100 text-pink-700',
+  video: 'bg-red-100 text-red-700',
 };
 
 type Lang = 'pl' | 'en' | 'ru';
@@ -42,6 +45,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
 }) => {
   const [langTab, setLangTab] = useState<Lang>('pl');
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +77,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'image': return block.caption || (block.url ? 'Zdjęcie' : '(brak zdjęcia)');
       case 'list': return `${block.items.length} pozycji (${block.style === 'check' ? 'check' : 'bullet'})`;
       case 'embed': return `${block.embed_type} — ${block.url ? block.url.slice(0, 40) + '...' : '(brak URL)'}`;
+      case 'video': return block.caption || (block.url ? 'Video' : '(brak pliku)');
     }
   };
 
@@ -275,6 +280,72 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
     );
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>, b: VideoBlock) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingVideo(true);
+    try {
+      const { publicUrl } = await uploadVideo({ file, folder: 'blog-videos' });
+      onUpdate(index, { ...b, url: publicUrl } as VideoBlock);
+    } catch (err) {
+      console.error('Error uploading video:', err);
+      alert(err instanceof Error ? err.message : 'Błąd podczas przesyłania video');
+    } finally {
+      setUploadingVideo(false);
+      e.target.value = '';
+    }
+  };
+
+  const renderVideoEditor = (b: VideoBlock) => (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <label className={`cursor-pointer px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          uploadingVideo ? 'bg-gray-300 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+        }`}>
+          {uploadingVideo ? 'Przesyłanie...' : (b.url ? 'Zmień video' : 'Wgraj video (MP4/WebM)')}
+          <input
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm,video/x-m4v"
+            onChange={(e) => handleVideoUpload(e, b)}
+            disabled={uploadingVideo}
+            className="hidden"
+          />
+        </label>
+        {b.url && (
+          <button
+            type="button"
+            onClick={() => onUpdate(index, { ...b, url: '' })}
+            className="text-sm text-red-500 hover:text-red-700"
+          >
+            Usuń video
+          </button>
+        )}
+      </div>
+      {b.url && (
+        <video
+          src={b.url}
+          controls
+          className="w-full max-h-48 rounded-lg bg-gray-900"
+          preload="metadata"
+        />
+      )}
+      {renderLangTabs()}
+      <input
+        type="text"
+        value={langTab === 'pl' ? (b.caption || '') : langTab === 'en' ? (b.caption_en || '') : (b.caption_ru || '')}
+        onChange={e => {
+          const val = e.target.value;
+          if (langTab === 'pl') onUpdate(index, { ...b, caption: val });
+          else if (langTab === 'en') onUpdate(index, { ...b, caption_en: val });
+          else onUpdate(index, { ...b, caption_ru: val });
+        }}
+        placeholder={langTab === 'pl' ? 'Podpis (opcjonalnie)' : langTab === 'en' ? 'Caption (optional)' : 'Подпись (необязательно)'}
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+      />
+    </div>
+  );
+
   const renderEmbedEditor = (b: EmbedBlock) => (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
@@ -323,6 +394,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'image': return renderImageEditor(block);
       case 'list': return renderListEditor(block);
       case 'embed': return renderEmbedEditor(block);
+      case 'video': return renderVideoEditor(block);
     }
   };
 

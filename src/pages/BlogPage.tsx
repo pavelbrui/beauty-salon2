@@ -156,6 +156,9 @@ export const BlogPage: React.FC = () => {
     const postTitle = getLocalizedField(post, 'title', language);
     const postExcerpt = getLocalizedField(post, 'excerpt', language);
 
+    const videoBlocks = post.content_blocks.filter(b => b.type === 'video' && (b as { url?: string }).url);
+    const firstVideo = videoBlocks[0] as { type: 'video'; url: string; caption?: string } | undefined;
+
     const articleSchema: Record<string, unknown> = {
       '@type': 'Article',
       headline: postTitle,
@@ -170,6 +173,17 @@ export const BlogPage: React.FC = () => {
       datePublished: post.published_at,
       dateModified: post.updated_at,
       mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.slug}` },
+      ...(firstVideo ? {
+        video: {
+          '@type': 'VideoObject',
+          name: postTitle,
+          description: postExcerpt || postTitle,
+          contentUrl: firstVideo.url,
+          thumbnailUrl: post.cover_image_url || `${BASE_URL}/og-image.jpg`,
+          uploadDate: post.published_at,
+          publisher: { '@type': 'Organization', name: 'Salon Kosmetyczny Katarzyna Brui' },
+        },
+      } : {}),
     };
 
     const faqItems = extractFaqItems(post.content_blocks, language);
