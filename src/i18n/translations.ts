@@ -320,10 +320,10 @@ export const translations = {
       emailCancelled: 'Odwołanie'
     },
     prices_page: {
-      title: 'Cennik Zabiegów Kosmetycznych Białystok | Salon Katarzyna Brui',
-      description: 'Aktualny cennik zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku. Ceny makijażu permanentnego, stylizacji rzęs, laminacji brwi, manicure, peelingu węglowego i innych zabiegów.',
-      heading: 'Cennik',
-      subtitle: 'Sprawdź aktualne ceny naszych zabiegów kosmetycznych',
+      title: 'Cennik Salon Kosmetyczny Białystok – Ile Kosztują Zabiegi | Katarzyna Brui',
+      description: 'Cennik zabiegów kosmetycznych Białystok 2026. Ile kosztuje makijaż permanentny brwi, przedłużanie rzęs, laminacja brwi, manicure hybrydowy, peeling węglowy? Aktualne ceny – salon Katarzyna Brui, ul. Młynowa 46.',
+      heading: 'Cennik zabiegów',
+      subtitle: 'Aktualne ceny wszystkich zabiegów kosmetycznych w naszym salonie w Białymstoku',
       service: 'Zabieg',
       duration: 'Czas',
       price: 'Cena',
@@ -655,10 +655,10 @@ export const translations = {
       emailCancelled: 'Cancellation'
     },
     prices_page: {
-      title: 'Beauty Treatment Prices Bialystok | Katarzyna Brui Salon',
-      description: 'Current price list for beauty treatments at Katarzyna Brui salon in Bialystok. Prices for permanent makeup, lash extensions, brow lamination, manicure, carbon peeling and more.',
-      heading: 'Prices',
-      subtitle: 'Check current prices for our beauty treatments',
+      title: 'Beauty Treatment Prices Bialystok – How Much Do Treatments Cost | Katarzyna Brui',
+      description: 'Beauty treatment price list Bialystok 2026. How much does permanent makeup, lash extensions, brow lamination, manicure, carbon peeling cost? Current prices – Katarzyna Brui salon, Mlynowa 46.',
+      heading: 'Treatment prices',
+      subtitle: 'Current prices for all beauty treatments at our salon in Bialystok',
       service: 'Treatment',
       duration: 'Duration',
       price: 'Price',
@@ -990,10 +990,10 @@ export const translations = {
       emailCancelled: 'Отмена'
     },
     prices_page: {
-      title: 'Цены на косметические услуги Белосток | Салон Катажина Бруй',
-      description: 'Актуальный прайс-лист косметических процедур в салоне Катажина Бруй в Белостоке. Цены на перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр, карбоновый пилинг.',
-      heading: 'Цены',
-      subtitle: 'Ознакомьтесь с актуальными ценами на наши косметические процедуры',
+      title: 'Цены на косметические услуги Белосток – Сколько стоят процедуры | Катажина Бруй',
+      description: 'Прайс-лист косметических процедур Белосток 2026. Сколько стоит перманентный макияж бровей, наращивание ресниц, ламинирование бровей, маникюр, карбоновый пилинг? Актуальные цены – салон Катажина Бруй, ул. Млынова 46.',
+      heading: 'Цены на услуги',
+      subtitle: 'Актуальные цены на все косметические процедуры в нашем салоне в Белостоке',
       service: 'Процедура',
       duration: 'Время',
       price: 'Цена',

@@ -99,16 +99,36 @@ export const PricesPage: React.FC = () => {
         title={pt?.title || 'Cennik Zabiegów Kosmetycznych'}
         description={pt?.description || 'Pełny cennik zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku.'}
         canonical={language === 'pl' ? '/cennik' : '/prices'}
-        keywords={[
+        keywords={language === 'pl' ? [
           'cennik salon kosmetyczny Białystok',
-          'cennik zabiegów kosmetycznych',
-          'ceny makijaż permanentny Białystok',
-          'cennik stylizacja rzęs Białystok',
-          'cennik laminacja brwi Białystok',
-          'cennik manicure Białystok',
-          'cennik peeling węglowy',
-          'ile kosztuje makijaż permanentny',
+          'cennik zabiegów kosmetycznych Białystok',
+          'ile kosztuje makijaż permanentny brwi',
+          'ile kosztuje przedłużanie rzęs',
+          'ile kosztuje laminacja brwi',
+          'makijaż permanentny brwi cena Białystok',
+          'przedłużanie rzęs cena Białystok',
+          'laminacja brwi cena Białystok',
+          'cennik manicure hybrydowy Białystok',
+          'cennik peeling węglowy Białystok',
+          'usuwanie tatuażu cena Białystok',
+          'kosmetyczka Białystok cennik',
           'ceny usług kosmetycznych Białystok',
+          'cennik stylizacja rzęs Białystok',
+          'lifting rzęs cena',
+          'henna brwi cena Białystok',
+        ] : language === 'en' ? [
+          'beauty salon prices Bialystok',
+          'permanent makeup price Bialystok',
+          'lash extensions price',
+          'brow lamination cost',
+          'manicure prices Bialystok',
+          'beauty treatment price list Poland',
+        ] : [
+          'цены салон красоты Белосток',
+          'перманентный макияж цена Белосток',
+          'наращивание ресниц цена',
+          'ламинирование бровей стоимость',
+          'прайс лист косметические услуги',
         ]}
         structuredData={structuredData}
         breadcrumbs={[
