@@ -47,6 +47,7 @@ const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc, onClic
       <video
         ref={videoRef}
         src={image.video_url!}
+        poster={image.url !== image.video_url ? image.url : undefined}
         className="w-full h-full object-cover"
         muted
         loop

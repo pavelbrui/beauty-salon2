@@ -153,6 +153,7 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
             controls
             className="w-full rounded-xl shadow-lg"
             preload="metadata"
+            title={caption || 'Wideo – salon Katarzyna Brui Białystok'}
           />
           {caption && (
             <figcaption className="text-sm text-gray-500 mt-3 text-center italic">
