@@ -10,6 +10,7 @@ import { BookingModal } from '../components/BookingModal';
 import { serviceImages } from '../assets/images';
 import { SEO } from '../components/SEO';
 import { getCategoryName } from '../utils/serviceTranslation';
+import { prerenderReady } from '../utils/prerenderReady';
 
 interface CategorySEO {
   title: string;
@@ -244,6 +245,7 @@ export const ServicesPage: React.FC = () => {
 
     setServices(servicesWithImages);
     setIsLoading(false);
+    prerenderReady();
   };
 
   const getStaticImageForCategory = (category: string) => {

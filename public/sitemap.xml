@@ -225,6 +225,34 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Prices / Cennik -->
+  <url>
+    <loc>https://katarzynabrui.pl/cennik</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/prices</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/prices</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- DYNAMIC CONTENT START: auto-generated. Do not edit manually. -->
   <!-- SEO landing page URLs -->
   <url>
@@ -529,8 +557,8 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
     <image:image>
-      <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/5d5b6ace0dbd48d29c5eb4f0161e7f34.jpeg</image:loc>
-      <image:title>Manicure hybrydowy – salon Katarzyna Brui Białystok</image:title>
+      <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
+      <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -542,8 +570,8 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
     <image:image>
-      <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/5d5b6ace0dbd48d29c5eb4f0161e7f34.jpeg</image:loc>
-      <image:title>Manicure hybrydowy – salon Katarzyna Brui Białystok</image:title>
+      <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
+      <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -555,8 +583,8 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
     <image:image>
-      <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/5d5b6ace0dbd48d29c5eb4f0161e7f34.jpeg</image:loc>
-      <image:title>Manicure hybrydowy – salon Katarzyna Brui Białystok</image:title>
+      <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
+      <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
     </image:image>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

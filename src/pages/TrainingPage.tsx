@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { Training } from '../types';
 import { cropPositionToStyle } from '../components/admin/CropSelector';
 import { getLocalizedField, renderBlock } from '../utils/blockRenderer';
+import { prerenderReady } from '../utils/prerenderReady';
 
 const CATEGORY_LABELS: Record<string, { pl: string; en: string; ru: string }> = {
   permanent_makeup: { pl: 'Makijaż permanentny', en: 'Permanent Makeup', ru: 'Перманентный макияж' },
@@ -50,6 +51,7 @@ export const TrainingPage: React.FC = () => {
       setTrainings(data);
     }
     setLoading(false);
+    prerenderReady();
   };
 
   const loadTraining = async (trainingSlug: string) => {
@@ -68,6 +70,7 @@ export const TrainingPage: React.FC = () => {
       setTraining(data);
     }
     setLoading(false);
+    prerenderReady();
   };
 
   const getCategoryLabel = (cat: string) => {

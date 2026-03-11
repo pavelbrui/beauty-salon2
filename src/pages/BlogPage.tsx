@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { BlogPost } from '../types';
 import { getLocalizedField, renderBlock } from '../utils/blockRenderer';
 import { ContentBlock } from '../types';
+import { prerenderReady } from '../utils/prerenderReady';
 
 /**
  * Extract FAQ structured data (schema.org/FAQPage) from blog post content blocks.
@@ -80,6 +81,7 @@ export const BlogPage: React.FC = () => {
     if (error) console.error('Error loading blog posts:', error);
     if (data) setPosts(data);
     setLoading(false);
+    prerenderReady();
   };
 
   const loadPost = async (postSlug: string) => {
@@ -106,6 +108,7 @@ export const BlogPage: React.FC = () => {
       if (relatedData) setRelated(relatedData as BlogPost[]);
     }
     setLoading(false);
+    prerenderReady();
   };
 
   const getCategoryLabel = (cat: string) => {

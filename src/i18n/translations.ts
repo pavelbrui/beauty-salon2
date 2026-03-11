@@ -319,6 +319,17 @@ export const translations = {
       emailChanged: 'Zmiana',
       emailCancelled: 'Odwołanie'
     },
+    prices_page: {
+      title: 'Cennik Zabiegów Kosmetycznych Białystok | Salon Katarzyna Brui',
+      description: 'Aktualny cennik zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku. Ceny makijażu permanentnego, stylizacji rzęs, laminacji brwi, manicure, peelingu węglowego i innych zabiegów.',
+      heading: 'Cennik',
+      subtitle: 'Sprawdź aktualne ceny naszych zabiegów kosmetycznych',
+      service: 'Zabieg',
+      duration: 'Czas',
+      price: 'Cena',
+      ctaText: 'Chcesz zarezerwować wizytę?',
+      ctaButton: 'Zobacz zabiegi i zarezerwuj',
+    },
     cookieText: 'Używamy plików cookies do analizy ruchu na stronie. Możesz zaakceptować lub odrzucić cookies analityczne.',
     cookieAccept: 'Akceptuję',
     cookieDecline: 'Odrzucam'
@@ -643,6 +654,17 @@ export const translations = {
       emailChanged: 'Change',
       emailCancelled: 'Cancellation'
     },
+    prices_page: {
+      title: 'Beauty Treatment Prices Bialystok | Katarzyna Brui Salon',
+      description: 'Current price list for beauty treatments at Katarzyna Brui salon in Bialystok. Prices for permanent makeup, lash extensions, brow lamination, manicure, carbon peeling and more.',
+      heading: 'Prices',
+      subtitle: 'Check current prices for our beauty treatments',
+      service: 'Treatment',
+      duration: 'Duration',
+      price: 'Price',
+      ctaText: 'Want to book an appointment?',
+      ctaButton: 'View treatments and book',
+    },
     cookieText: 'We use cookies to analyze website traffic. You can accept or decline analytics cookies.',
     cookieAccept: 'Accept',
     cookieDecline: 'Decline'
@@ -966,6 +988,17 @@ export const translations = {
       emailNew: 'Новая',
       emailChanged: 'Изменение',
       emailCancelled: 'Отмена'
+    },
+    prices_page: {
+      title: 'Цены на косметические услуги Белосток | Салон Катажина Бруй',
+      description: 'Актуальный прайс-лист косметических процедур в салоне Катажина Бруй в Белостоке. Цены на перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр, карбоновый пилинг.',
+      heading: 'Цены',
+      subtitle: 'Ознакомьтесь с актуальными ценами на наши косметические процедуры',
+      service: 'Процедура',
+      duration: 'Время',
+      price: 'Цена',
+      ctaText: 'Хотите записаться на приём?',
+      ctaButton: 'Смотреть процедуры и записаться',
     },
     cookieText: 'Мы используем файлы cookie для анализа посещаемости сайта. Вы можете принять или отклонить аналитические cookie.',
     cookieAccept: 'Принять',

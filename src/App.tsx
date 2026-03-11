@@ -15,6 +15,7 @@ const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin }
 const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const TrainingPage = lazy(() => import('./pages/TrainingPage').then(m => ({ default: m.TrainingPage })));
 const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
+const PricesPage = lazy(() => import('./pages/PricesPage').then(m => ({ default: m.PricesPage })));
 
 const BookingPage = lazy(() => import('./pages/BookingPage').then(m => ({ default: m.BookingPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
@@ -47,6 +48,8 @@ const publicRoutes = (
     <Route index element={<Home />} />
     <Route path="services" element={<ServicesPage />} />
     <Route path="services/:category" element={<ServicesPage />} />
+    <Route path="prices" element={<PricesPage />} />
+    <Route path="cennik" element={<PricesPage />} />
     <Route path="booking/:serviceId" element={<BookingPage />} />
     <Route path="profile" element={<AuthRoute><ProfilePage /></AuthRoute>} />
     <Route path="appointments" element={<AppointmentsPage />} />
