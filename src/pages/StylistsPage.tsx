@@ -5,6 +5,7 @@ import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
 import { getStylistRole, getStylistSpecialties, getStylistDescription } from '../utils/serviceTranslation';
+import { prerenderReady } from '../utils/prerenderReady';
 
 interface Stylist {
   id: string;
@@ -45,6 +46,7 @@ export const StylistsPage: React.FC = () => {
       console.error('Error loading stylists:', err);
     } finally {
       setLoading(false);
+      prerenderReady();
     }
   };
 

@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
 import { GalleryImage } from '../types';
 import { getGalleryDescription } from '../utils/serviceTranslation';
+import { prerenderReady } from '../utils/prerenderReady';
 
 interface GalleryVideoCardProps {
   image: GalleryImage;
@@ -110,6 +111,7 @@ export const GalleryPage: React.FC = () => {
       setImages(serviceImages);
     }
     setLoading(false);
+    prerenderReady();
   };
 
   const categories = ['all', ...new Set(images.map(img => img.category))];

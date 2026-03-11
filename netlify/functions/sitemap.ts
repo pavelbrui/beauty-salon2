@@ -386,6 +386,22 @@ const handler: Handler = async () => {
     }
   }
 
+  // Prices page — Polish uses /cennik slug, EN/RU use /prices
+  const pricesAlternates = [
+    `    <xhtml:link rel="alternate" hreflang="pl" href="${xmlEscape(`${BASE_URL}/cennik`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(`${BASE_URL}/en/prices`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="ru" href="${xmlEscape(`${BASE_URL}/ru/prices`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(`${BASE_URL}/cennik`)}"/>`,
+  ].join('\n');
+  for (const loc of [`${BASE_URL}/cennik`, `${BASE_URL}/en/prices`, `${BASE_URL}/ru/prices`]) {
+    entries.push(`  <url>
+    <loc>${xmlEscape(loc)}</loc>
+${pricesAlternates}
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+  }
+
   // SEO landing pages
   for (const slug of LANDING_PAGE_SLUGS) {
     entries.push(

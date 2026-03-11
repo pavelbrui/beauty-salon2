@@ -13,6 +13,7 @@ import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { CategoryVideoCard } from '../components/CategoryVideoCard';
+import { prerenderReady } from '../utils/prerenderReady';
 
 interface CategoryInfo {
   name: string;
@@ -205,6 +206,8 @@ export const Home: React.FC = () => {
       console.error('Error loading services:', err);
     } finally {
       setLoading(false);
+      // Delay to let sub-components (BlogTeaser, Reviews) mount and fetch their data
+      setTimeout(prerenderReady, 1000);
     }
   };
 

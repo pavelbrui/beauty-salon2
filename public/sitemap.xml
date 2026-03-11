@@ -253,6 +253,34 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Prices / Cennik -->
+  <url>
+    <loc>https://katarzynabrui.pl/cennik</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/prices</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/prices</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/cennik"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/prices"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/prices"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/cennik"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <!-- DYNAMIC CONTENT START: auto-generated. Do not edit manually. -->
   <!-- SEO landing page URLs -->
   <url>
