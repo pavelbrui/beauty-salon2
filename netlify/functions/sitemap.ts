@@ -143,8 +143,8 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, SitemapImage> = {
 // --- Keyword-rich video SEO data per category ---
 const CATEGORY_VIDEO_SEO: Record<string, { title: string; description: string }> = {
   'Makijaż permanentny': {
-    title: 'Makijaż permanentny Białystok – microblading, metoda pudrowa, ombre brwi',
-    description: 'Makijaż permanentny brwi i ust w Białymstoku. Microblading, metoda pudrowa, ombre brwi – efekty zabiegów w salonie Katarzyna Brui. Najlepsza linergistka Białystok.',
+    title: 'Makijaż permanentny brwi Białystok – brwi pudrowe, ombre brows, microblading, nanopigmentacja',
+    description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
   },
   'Stylizacja rzęs': {
     title: 'Przedłużanie rzęs Białystok – rzęsy objętościowe 2D 3D, laminacja rzęs',

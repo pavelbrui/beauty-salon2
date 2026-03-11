@@ -25,16 +25,16 @@ interface CategoryInfo {
 const VIDEO_SEO_DATA: Record<string, { pl: { title: string; description: string }; en: { title: string; description: string }; ru: { title: string; description: string } }> = {
   'Makijaż permanentny': {
     pl: {
-      title: 'Makijaż permanentny Białystok – microblading, metoda pudrowa, ombre brwi',
-      description: 'Makijaż permanentny brwi i ust w Białymstoku. Microblading, metoda pudrowa, ombre brwi – efekty zabiegów w salonie Katarzyna Brui. Najlepsza linergistka Białystok.',
+      title: 'Makijaż permanentny brwi Białystok – brwi pudrowe, ombre brows, microblading, nanopigmentacja',
+      description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
     },
     en: {
-      title: 'Permanent Makeup Białystok – Microblading, Powder Brows, Ombre Brows',
-      description: 'Permanent makeup for brows and lips in Białystok. Microblading, powder brows, ombre brows – treatment results at Katarzyna Brui beauty salon.',
+      title: 'Permanent Makeup Białystok – Powder Brows, Ombre Brows, Microblading, Nano Brows',
+      description: 'Permanent makeup brows and lips in Białystok. Powder brows, ombre brows, microblading, nano brows, combo brows – treatment results. Katarzyna Brui beauty salon, best permanent makeup artist.',
     },
     ru: {
-      title: 'Перманентный макияж Белосток – микроблейдинг, пудровые брови, омбре',
-      description: 'Перманентный макияж бровей и губ в Белостоке. Микроблейдинг, пудровые брови, омбре – результаты процедур в салоне Katarzyna Brui.',
+      title: 'Перманентный макияж Белосток – пудровые брови, омбре, микроблейдинг, нанопигментация',
+      description: 'Перманентный макияж бровей и губ Белосток – результаты процедур. Пудровые брови, омбре, микроблейдинг, нано брови, комбо брови. Лучший мастер перманента – салон Katarzyna Brui.',
     },
   },
   'Stylizacja rzęs': {
@@ -397,7 +397,7 @@ export const Home: React.FC = () => {
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map(cat => (
+            {categories.map((cat, idx) => (
               <CategoryVideoCard
                 key={cat.name}
                 displayName={getCategoryName(cat.name, language, (t as any).categories)}
@@ -407,6 +407,7 @@ export const Home: React.FC = () => {
                 servicesCountLabel={t.servicesCount}
                 ctaLabel={t.viewCategoryServices}
                 onClick={() => navigate(`/services/${encodeURIComponent(cat.name)}`)}
+                imgLoading={idx < 3 ? 'eager' : 'lazy'}
               />
             ))}
           </div>

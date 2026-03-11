@@ -206,7 +206,7 @@ export const GalleryPage: React.FC = () => {
           <p className="text-center text-gray-500 py-20">{t.noResults}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image) => {
+            {filteredImages.map((image, idx) => {
               const desc = getDescription(image);
               if (image.video_url) {
                 return (
@@ -228,7 +228,7 @@ export const GalleryPage: React.FC = () => {
                     src={image.url}
                     alt={desc || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
                     title={desc || `${getCategoryLabel(image.category)} – efekty zabiegów`}
-                    loading="lazy"
+                    loading={idx < 6 ? 'eager' : 'lazy'}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     width={600}
                     height={600}
