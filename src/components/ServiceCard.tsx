@@ -7,9 +7,10 @@ import { getServiceName, getServiceDescription } from '../utils/serviceTranslati
 
 interface ServiceCardProps {
   service: Service;
+  imgLoading?: 'eager' | 'lazy';
 }
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ service, imgLoading = 'lazy' }) => {
   const navigate = useLocalizedNavigate();
   const { language } = useLanguage();
   const t = translations[language];
@@ -33,7 +34,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           <img
             src={service.imageUrl}
             alt={`${getServiceName(service, language)} – salon kosmetyczny Białystok`}
-            loading="lazy"
+            loading={imgLoading}
             className="absolute inset-0 w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
             width={400}
             height={192}

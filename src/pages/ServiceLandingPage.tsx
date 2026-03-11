@@ -235,8 +235,8 @@ export const ServiceLandingPage: React.FC = () => {
             </div>
           ) : services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map(service => (
-                <ServiceCard key={service.id} service={service} />
+              {services.map((service, idx) => (
+                <ServiceCard key={service.id} service={service} imgLoading={idx < 3 ? 'eager' : 'lazy'} />
               ))}
             </div>
           ) : null}

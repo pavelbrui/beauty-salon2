@@ -140,6 +140,42 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, SitemapImage> = {
   },
 };
 
+// --- Keyword-rich video SEO data per category ---
+const CATEGORY_VIDEO_SEO: Record<string, { title: string; description: string }> = {
+  'Makijaż permanentny': {
+    title: 'Makijaż permanentny brwi Białystok – brwi pudrowe, ombre brows, microblading, nanopigmentacja',
+    description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
+  },
+  'Stylizacja rzęs': {
+    title: 'Przedłużanie rzęs Białystok – rzęsy objętościowe 2D 3D, laminacja rzęs',
+    description: 'Stylizacja i przedłużanie rzęs w Białymstoku. Rzęsy 1:1, objętościowe 2D 3D, laminacja rzęs, lifting rzęs – salon Katarzyna Brui.',
+  },
+  'Pielęgnacja brwi': {
+    title: 'Laminacja brwi Białystok – henna pudrowa, regulacja, botox brwi',
+    description: 'Pielęgnacja brwi w Białymstoku. Laminacja brwi, henna pudrowa, regulacja, botox brwi, styling brwi – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Peeling węglowy': {
+    title: 'Peeling węglowy Białystok – carbon peeling, laserowe oczyszczanie skóry',
+    description: 'Peeling węglowy (carbon peeling) w Białymstoku. Laserowe oczyszczanie skóry, peeling laserowy, oczyszczanie twarzy – salon Katarzyna Brui.',
+  },
+  'Laserowe usuwanie': {
+    title: 'Usuwanie tatuażu Białystok – laser Nd:YAG, usuwanie makijażu permanentnego',
+    description: 'Laserowe usuwanie tatuażu i makijażu permanentnego w Białymstoku. Laser Nd:YAG, bezpieczne usuwanie – salon Katarzyna Brui.',
+  },
+  'Manicure i pedicure': {
+    title: 'Manicure hybrydowy Białystok – manicure żelowy, japoński, pedicure',
+    description: 'Manicure i pedicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, pedicure – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Manicure': {
+    title: 'Manicure hybrydowy Białystok – żelowy, klasyczny, japoński',
+    description: 'Manicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, paznokcie – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Rzęsy': {
+    title: 'Przedłużanie rzęs Białystok – rzęsy 1:1, objętościowe, laminacja',
+    description: 'Rzęsy w Białymstoku. Przedłużanie rzęs 1:1, objętościowe 2D 3D, laminacja, lifting rzęs – salon Katarzyna Brui.',
+  },
+};
+
 // --- Data fetchers ---
 
 interface CategoryData {
@@ -166,11 +202,12 @@ const fetchServiceCategories = async (): Promise<CategoryData[]> => {
           });
         }
         if (row.name && row.video_url) {
+          const seo = CATEGORY_VIDEO_SEO[row.name];
           catVideoMap.set(row.name, {
             contentUrl: row.video_url,
             thumbnailUrl: row.image_url || CATEGORY_FALLBACK_IMAGES[row.name]?.url || `${BASE_URL}/og-image.jpg`,
-            title: `${row.name} – salon Katarzyna Brui Białystok`,
-            description: `${row.name} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
+            title: seo?.title || `${row.name} – salon Katarzyna Brui Białystok`,
+            description: seo?.description || `${row.name} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
           });
         }
       }

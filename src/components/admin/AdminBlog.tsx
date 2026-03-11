@@ -228,6 +228,9 @@ export const AdminBlog: React.FC = () => {
       case 'embed':
         newBlock = { id, type: 'embed', url: '', embed_type: 'instagram' };
         break;
+      case 'video':
+        newBlock = { id, type: 'video', url: '', caption: '' };
+        break;
       default:
         return;
     }
@@ -443,14 +446,18 @@ export const AdminBlog: React.FC = () => {
           />
         ))}
 
-        <div className="flex gap-2 mt-4">
-          {(['heading', 'text', 'image', 'list', 'embed'] as const).map(type => (
+        <div className="flex flex-wrap gap-2 mt-4">
+          {(['heading', 'text', 'image', 'list', 'embed', 'video'] as const).map(type => (
             <button
               key={type}
               onClick={() => addBlock(type)}
-              className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium"
+              className={`px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors ${
+                type === 'video'
+                  ? 'border-red-200 text-red-600 hover:bg-red-50'
+                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
             >
-              + {type === 'heading' ? 'Nagłówek' : type === 'text' ? 'Tekst' : type === 'image' ? 'Obraz' : type === 'list' ? 'Lista' : 'Embed'}
+              + {type === 'heading' ? 'Nagłówek' : type === 'text' ? 'Tekst' : type === 'image' ? 'Obraz' : type === 'list' ? 'Lista' : type === 'embed' ? 'Embed' : 'Video'}
             </button>
           ))}
         </div>
