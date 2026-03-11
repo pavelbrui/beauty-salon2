@@ -32,7 +32,8 @@ const DYNAMIC_END = '<!-- DYNAMIC CONTENT END -->';
 const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 </urlset>
 `;
 
@@ -81,19 +82,34 @@ const renderImageTags = (images) => {
     .join('\n');
 };
 
-const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod, images }) => {
+/** Render <video:video> tags. videos = [{ contentUrl, thumbnailUrl, title, description }] */
+const renderVideoTags = (videos) => {
+  if (!videos || videos.length === 0) return '';
+  return videos
+    .map((v) =>
+      `    <video:video>
+      <video:content_loc>${xmlEscape(v.contentUrl)}</video:content_loc>
+      <video:thumbnail_loc>${xmlEscape(v.thumbnailUrl)}</video:thumbnail_loc>
+      <video:title>${xmlEscape(v.title)}</video:title>
+      <video:description>${xmlEscape(v.description)}</video:description>
+    </video:video>`)
+    .join('\n');
+};
+
+const renderUrlEntry = ({ barePath, locale, changefreq, priority, lastmod, images, videos }) => {
   const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
   const imageTags = images?.length ? `\n${renderImageTags(images)}` : '';
+  const videoTags = videos?.length ? `\n${renderVideoTags(videos)}` : '';
 
   return `  <url>
     <loc>${xmlEscape(localizedUrl(barePath, locale))}</loc>
-${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}
+${renderAlternateLinks(barePath)}${lastmodTag}${imageTags}${videoTags}
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
 };
 
-const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images }) =>
+const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, images, videos }) =>
   LOCALES.map((locale) =>
     renderUrlEntry({
       barePath,
@@ -102,6 +118,7 @@ const renderLocalizedEntries = ({ barePath, changefreq, priority, lastmod, image
       priority,
       lastmod,
       images,
+      videos,
     })
   ).join('\n');
 
@@ -201,23 +218,70 @@ const CATEGORY_FALLBACK_IMAGES = {
   },
 };
 
-/** Fetch service categories with images (from service_categories table + fallbacks). */
+/** Keyword-rich video SEO data per category (popular search queries for Białystok). */
+const CATEGORY_VIDEO_SEO = {
+  'Makijaż permanentny': {
+    title: 'Makijaż permanentny brwi Białystok – brwi pudrowe, ombre brows, microblading, nanopigmentacja',
+    description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
+  },
+  'Stylizacja rzęs': {
+    title: 'Przedłużanie rzęs Białystok – rzęsy objętościowe 2D 3D, laminacja rzęs',
+    description: 'Stylizacja i przedłużanie rzęs w Białymstoku. Rzęsy 1:1, objętościowe 2D 3D, laminacja rzęs, lifting rzęs – salon Katarzyna Brui.',
+  },
+  'Pielęgnacja brwi': {
+    title: 'Laminacja brwi Białystok – henna pudrowa, regulacja, botox brwi',
+    description: 'Pielęgnacja brwi w Białymstoku. Laminacja brwi, henna pudrowa, regulacja, botox brwi, styling brwi – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Peeling węglowy': {
+    title: 'Peeling węglowy Białystok – carbon peeling, laserowe oczyszczanie skóry',
+    description: 'Peeling węglowy (carbon peeling) w Białymstoku. Laserowe oczyszczanie skóry, peeling laserowy, oczyszczanie twarzy – salon Katarzyna Brui.',
+  },
+  'Laserowe usuwanie': {
+    title: 'Usuwanie tatuażu Białystok – laser Nd:YAG, usuwanie makijażu permanentnego',
+    description: 'Laserowe usuwanie tatuażu i makijażu permanentnego w Białymstoku. Laser Nd:YAG, bezpieczne usuwanie – salon Katarzyna Brui.',
+  },
+  'Manicure i pedicure': {
+    title: 'Manicure hybrydowy Białystok – manicure żelowy, japoński, pedicure',
+    description: 'Manicure i pedicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, pedicure – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Manicure': {
+    title: 'Manicure hybrydowy Białystok – żelowy, klasyczny, japoński',
+    description: 'Manicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, paznokcie – salon kosmetyczny Katarzyna Brui.',
+  },
+  'Rzęsy': {
+    title: 'Przedłużanie rzęs Białystok – rzęsy 1:1, objętościowe, laminacja',
+    description: 'Rzęsy w Białymstoku. Przedłużanie rzęs 1:1, objętościowe 2D 3D, laminacja, lifting rzęs – salon Katarzyna Brui.',
+  },
+};
+
+/** Fetch service categories with images and videos (from service_categories table + fallbacks). */
 const fetchServiceCategories = async () => {
   try {
-    // Fetch from service_categories (has image_url) and also the distinct categories from services table
+    // Fetch from service_categories (has image_url, video_url) and also the distinct categories from services table
     const [catRows, serviceRows] = await Promise.all([
-      supabaseFetch('service_categories?select=name,image_url'),
+      supabaseFetch('service_categories?select=name,image_url,video_url'),
       supabaseFetch('services?select=category'),
     ]);
 
     // Merge: use service_categories image_url if available, otherwise use fallback
     const catImageMap = new Map();
+    const catVideoMap = new Map();
     if (Array.isArray(catRows)) {
       for (const row of catRows) {
         if (row.name && row.image_url) {
           catImageMap.set(row.name, {
             url: row.image_url,
             title: `${row.name} – salon Katarzyna Brui Białystok`,
+          });
+        }
+        if (row.name && row.video_url) {
+          const thumbnailUrl = row.image_url || (CATEGORY_FALLBACK_IMAGES[row.name]?.url) || `${BASE_URL}/og-image.jpg`;
+          const seo = CATEGORY_VIDEO_SEO[row.name];
+          catVideoMap.set(row.name, {
+            contentUrl: row.video_url,
+            thumbnailUrl,
+            title: seo?.title || `${row.name} – salon Katarzyna Brui Białystok`,
+            description: seo?.description || `${row.name} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
           });
         }
       }
@@ -232,7 +296,9 @@ const fetchServiceCategories = async () => {
       const dbImage = catImageMap.get(cat);
       const fallback = CATEGORY_FALLBACK_IMAGES[cat];
       const images = dbImage ? [dbImage] : fallback ? [fallback] : [];
-      return { name: cat, images };
+      const video = catVideoMap.get(cat);
+      const videos = video ? [video] : [];
+      return { name: cat, images, videos };
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -297,6 +363,7 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
           priority: '0.8',
           lastmod: null,
           images: cat.images,
+          videos: cat.videos,
         })
       );
       count++;

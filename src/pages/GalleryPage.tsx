@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
@@ -6,6 +6,74 @@ import { SEO } from '../components/SEO';
 import { GalleryImage } from '../types';
 import { getGalleryDescription } from '../utils/serviceTranslation';
 import { prerenderReady } from '../utils/prerenderReady';
+
+interface GalleryVideoCardProps {
+  image: GalleryImage;
+  desc: string | undefined;
+  onClick: () => void;
+}
+
+const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc, onClick }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const isTouchDevice = useRef(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+
+  const playVideo = useCallback(() => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = true;
+    videoRef.current.play().catch(() => {});
+  }, []);
+
+  const pauseVideo = useCallback(() => {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+  }, []);
+
+  useEffect(() => {
+    if (!isTouchDevice.current) return;
+    const el = videoRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? playVideo() : pauseVideo(); },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [playVideo, pauseVideo]);
+
+  return (
+    <button
+      onClick={onClick}
+      className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer"
+    >
+      <video
+        ref={videoRef}
+        src={image.video_url!}
+        poster={image.url !== image.video_url ? image.url : undefined}
+        className="w-full h-full object-cover"
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        onMouseEnter={isTouchDevice.current ? undefined : playVideo}
+        onMouseLeave={isTouchDevice.current ? undefined : pauseVideo}
+      />
+      {/* Play icon overlay (shown when paused via CSS) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity duration-300">
+        <div className="w-12 h-12 rounded-full bg-black/40 flex items-center justify-center">
+          <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+      {/* Description overlay on hover */}
+      {desc && (
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end pointer-events-none">
+          <p className="text-white p-4">{desc}</p>
+        </div>
+      )}
+    </button>
+  );
+};
 
 export const GalleryPage: React.FC = () => {
   const { language } = useLanguage();
@@ -68,12 +136,25 @@ export const GalleryPage: React.FC = () => {
     'name': 'Galeria prac – Salon Katarzyna Brui Białystok',
     'description': 'Efekty zabiegów kosmetycznych: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.',
     'url': 'https://katarzynabrui.pl/gallery',
-    'image': images.slice(0, 20).map(img => ({
-      '@type': 'ImageObject',
-      'url': img.url,
-      'name': getDescription(img) || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
-      'description': getDescription(img) || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
-    })),
+    'image': images.slice(0, 20).map(img => {
+      if (img.video_url) {
+        return {
+          '@type': 'VideoObject',
+          'name': getDescription(img) || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
+          'description': getDescription(img) || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
+          'contentUrl': img.video_url,
+          'thumbnailUrl': img.url !== img.video_url ? img.url : img.video_url,
+          'uploadDate': img.created_at,
+          'publisher': { '@type': 'Organization', 'name': 'Salon Kosmetyczny Katarzyna Brui' },
+        };
+      }
+      return {
+        '@type': 'ImageObject',
+        'url': img.url,
+        'name': getDescription(img) || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
+        'description': getDescription(img) || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
+      };
+    }),
     'author': {
       '@type': 'BeautySalon',
       'name': 'Salon Kosmetyczny Katarzyna Brui',
@@ -128,8 +209,18 @@ export const GalleryPage: React.FC = () => {
           <p className="text-center text-gray-500 py-20">{t.noResults}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image) => {
+            {filteredImages.map((image, idx) => {
               const desc = getDescription(image);
+              if (image.video_url) {
+                return (
+                  <GalleryVideoCard
+                    key={image.id}
+                    image={image}
+                    desc={desc}
+                    onClick={() => setLightboxImage(image)}
+                  />
+                );
+              }
               return (
                 <button
                   key={image.id}
@@ -140,7 +231,7 @@ export const GalleryPage: React.FC = () => {
                     src={image.url}
                     alt={desc || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
                     title={desc || `${getCategoryLabel(image.category)} – efekty zabiegów`}
-                    loading="lazy"
+                    loading={idx < 6 ? 'eager' : 'lazy'}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     width={600}
                     height={600}
@@ -170,12 +261,22 @@ export const GalleryPage: React.FC = () => {
           >
             &times;
           </button>
-          <img
-            src={lightboxImage.url}
-            alt={getDescription(lightboxImage) || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
-            className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {lightboxImage.video_url ? (
+            <video
+              src={lightboxImage.video_url}
+              controls
+              autoPlay
+              className="max-w-full max-h-[90vh] rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={lightboxImage.url}
+              alt={getDescription(lightboxImage) || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
         </div>
       )}
     </main>

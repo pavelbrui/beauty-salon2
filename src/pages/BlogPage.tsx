@@ -159,6 +159,9 @@ export const BlogPage: React.FC = () => {
     const postTitle = getLocalizedField(post, 'title', language);
     const postExcerpt = getLocalizedField(post, 'excerpt', language);
 
+    const videoBlocks = post.content_blocks.filter(b => b.type === 'video' && (b as { url?: string }).url);
+    const firstVideo = videoBlocks[0] as { type: 'video'; url: string; caption?: string } | undefined;
+
     const articleSchema: Record<string, unknown> = {
       '@type': 'Article',
       headline: postTitle,
@@ -173,6 +176,17 @@ export const BlogPage: React.FC = () => {
       datePublished: post.published_at,
       dateModified: post.updated_at,
       mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.slug}` },
+      ...(firstVideo ? {
+        video: {
+          '@type': 'VideoObject',
+          name: postTitle,
+          description: postExcerpt || postTitle,
+          contentUrl: firstVideo.url,
+          thumbnailUrl: post.cover_image_url || `${BASE_URL}/og-image.jpg`,
+          uploadDate: post.published_at,
+          publisher: { '@type': 'Organization', name: 'Salon Kosmetyczny Katarzyna Brui' },
+        },
+      } : {}),
     };
 
     const faqItems = extractFaqItems(post.content_blocks, language);
@@ -213,7 +227,7 @@ export const BlogPage: React.FC = () => {
         {/* Hero */}
         <div className="relative overflow-hidden h-72 md:h-96">
           {post.cover_image_url ? (
-            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" loading="lazy" width={1200} height={600} />
+            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" fetchPriority="high" width={1200} height={600} />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
           )}
@@ -402,7 +416,7 @@ export const BlogPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map(p => {
+            {filteredPosts.map((p, idx) => {
               const pTitle = getLocalizedField(p, 'title', language);
               const pExcerpt = getLocalizedField(p, 'excerpt', language);
 
@@ -418,7 +432,7 @@ export const BlogPage: React.FC = () => {
                         src={p.cover_image_url}
                         alt={pTitle}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
+                        loading={idx < 6 ? 'eager' : 'lazy'}
                         width={400}
                         height={224}
                       />
