@@ -24,6 +24,132 @@ interface CategoryInfo {
   videoUrl?: string | null;
 }
 
+/** Keyword-rich video titles & descriptions per category for Google Video rich results */
+const VIDEO_SEO_DATA: Record<string, { pl: { title: string; description: string }; en: { title: string; description: string }; ru: { title: string; description: string } }> = {
+  'Makijaż permanentny': {
+    pl: {
+      title: 'Makijaż permanentny brwi Białystok – brwi pudrowe, ombre brows, microblading, nanopigmentacja',
+      description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
+    },
+    en: {
+      title: 'Permanent Makeup Białystok – Powder Brows, Ombre Brows, Microblading, Nano Brows',
+      description: 'Permanent makeup brows and lips in Białystok. Powder brows, ombre brows, microblading, nano brows, combo brows – treatment results. Katarzyna Brui beauty salon, best permanent makeup artist.',
+    },
+    ru: {
+      title: 'Перманентный макияж Белосток – пудровые брови, омбре, микроблейдинг, нанопигментация',
+      description: 'Перманентный макияж бровей и губ Белосток – результаты процедур. Пудровые брови, омбре, микроблейдинг, нано брови, комбо брови. Лучший мастер перманента – салон Katarzyna Brui.',
+    },
+  },
+  'Stylizacja rzęs': {
+    pl: {
+      title: 'Przedłużanie rzęs Białystok – rzęsy objętościowe 2D 3D, laminacja rzęs',
+      description: 'Stylizacja i przedłużanie rzęs w Białymstoku. Rzęsy 1:1, objętościowe 2D 3D, laminacja rzęs, lifting rzęs – salon Katarzyna Brui.',
+    },
+    en: {
+      title: 'Lash Extensions Białystok – Volume Lashes 2D 3D, Lash Lamination',
+      description: 'Lash styling and extensions in Białystok. Classic 1:1, volume 2D 3D lashes, lash lamination, lash lift – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Наращивание ресниц Белосток – объёмные 2D 3D, ламинирование ресниц',
+      description: 'Стилизация и наращивание ресниц в Белостоке. Классика 1:1, объёмные 2D 3D, ламинирование, лифтинг ресниц – салон Katarzyna Brui.',
+    },
+  },
+  'Pielęgnacja brwi': {
+    pl: {
+      title: 'Laminacja brwi Białystok – henna pudrowa, regulacja, botox brwi',
+      description: 'Pielęgnacja brwi w Białymstoku. Laminacja brwi, henna pudrowa, regulacja, botox brwi, styling brwi – salon kosmetyczny Katarzyna Brui.',
+    },
+    en: {
+      title: 'Brow Lamination Białystok – Brow Henna, Shaping, Brow Botox',
+      description: 'Eyebrow care in Białystok. Brow lamination, powder henna, shaping, brow botox, brow styling – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Ламинирование бровей Белосток – хна, коррекция, ботокс бровей',
+      description: 'Уход за бровями в Белостоке. Ламинирование, хна, коррекция, ботокс бровей, стайлинг – салон Katarzyna Brui.',
+    },
+  },
+  'Peeling węglowy': {
+    pl: {
+      title: 'Peeling węglowy Białystok – carbon peeling, laserowe oczyszczanie skóry',
+      description: 'Peeling węglowy (carbon peeling) w Białymstoku. Laserowe oczyszczanie skóry, peeling laserowy, oczyszczanie twarzy – salon Katarzyna Brui.',
+    },
+    en: {
+      title: 'Carbon Peeling Białystok – Laser Skin Cleansing, Facial Treatment',
+      description: 'Carbon peeling in Białystok. Laser skin cleansing, facial treatment – deep pore cleaning at Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Карбоновый пилинг Белосток – лазерное очищение кожи',
+      description: 'Карбоновый пилинг в Белостоке. Лазерное очищение кожи, глубокая чистка пор – салон красоты Katarzyna Brui.',
+    },
+  },
+  'Laserowe usuwanie': {
+    pl: {
+      title: 'Usuwanie tatuażu Białystok – laser Nd:YAG, usuwanie makijażu permanentnego',
+      description: 'Laserowe usuwanie tatuażu i makijażu permanentnego w Białymstoku. Laser Nd:YAG, bezpieczne usuwanie – salon Katarzyna Brui.',
+    },
+    en: {
+      title: 'Tattoo Removal Białystok – Nd:YAG Laser, Permanent Makeup Removal',
+      description: 'Laser tattoo and permanent makeup removal in Białystok. Nd:YAG laser, safe removal – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Удаление тату Белосток – лазер Nd:YAG, удаление перманентного макияжа',
+      description: 'Лазерное удаление тату и перманентного макияжа в Белостоке. Лазер Nd:YAG, безопасное удаление – салон Katarzyna Brui.',
+    },
+  },
+  'Manicure i pedicure': {
+    pl: {
+      title: 'Manicure hybrydowy Białystok – manicure żelowy, japoński, pedicure',
+      description: 'Manicure i pedicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, pedicure – salon kosmetyczny Katarzyna Brui.',
+    },
+    en: {
+      title: 'Hybrid Manicure Białystok – Gel Manicure, Japanese, Pedicure',
+      description: 'Manicure and pedicure in Białystok. Hybrid, gel, classic, Japanese manicure, pedicure – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Гибридный маникюр Белосток – гелевый, японский маникюр, педикюр',
+      description: 'Маникюр и педикюр в Белостоке. Гибридный, гелевый, классический, японский маникюр, педикюр – салон Katarzyna Brui.',
+    },
+  },
+  'Manicure': {
+    pl: {
+      title: 'Manicure hybrydowy Białystok – żelowy, klasyczny, japoński',
+      description: 'Manicure w Białymstoku. Manicure hybrydowy, żelowy, klasyczny, japoński, paznokcie – salon kosmetyczny Katarzyna Brui.',
+    },
+    en: {
+      title: 'Hybrid Manicure Białystok – Gel, Classic, Japanese Manicure',
+      description: 'Manicure in Białystok. Hybrid, gel, classic, Japanese manicure, nails – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Гибридный маникюр Белосток – гелевый, классический, японский',
+      description: 'Маникюр в Белостоке. Гибридный, гелевый, классический, японский маникюр – салон Katarzyna Brui.',
+    },
+  },
+  'Rzęsy': {
+    pl: {
+      title: 'Przedłużanie rzęs Białystok – rzęsy 1:1, objętościowe, laminacja',
+      description: 'Rzęsy w Białymstoku. Przedłużanie rzęs 1:1, objętościowe 2D 3D, laminacja, lifting rzęs – salon Katarzyna Brui.',
+    },
+    en: {
+      title: 'Lash Extensions Białystok – Classic, Volume, Lamination',
+      description: 'Eyelashes in Białystok. Classic 1:1, volume 2D 3D lash extensions, lamination, lift – Katarzyna Brui beauty salon.',
+    },
+    ru: {
+      title: 'Наращивание ресниц Белосток – классика, объём, ламинирование',
+      description: 'Ресницы в Белостоке. Наращивание 1:1, объёмные 2D 3D, ламинирование, лифтинг – салон Katarzyna Brui.',
+    },
+  },
+};
+
+const getVideoSeoData = (categoryName: string, lang: string): { title: string; description: string } => {
+  const data = VIDEO_SEO_DATA[categoryName];
+  const locale = (lang === 'en' || lang === 'ru') ? lang : 'pl';
+  if (data) return data[locale as 'pl' | 'en' | 'ru'];
+  return {
+    title: `${categoryName} – salon kosmetyczny Katarzyna Brui, Białystok`,
+    description: `${categoryName} – usługi kosmetyczne w salonie Katarzyna Brui, Białystok`,
+  };
+};
+
 export const Home: React.FC = () => {
   const [categories, setCategories] = React.useState<CategoryInfo[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -163,15 +289,23 @@ export const Home: React.FC = () => {
       <LocalBusinessSchema />
       <BreadcrumbSchema items={[{ name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' }]} />
       <header className="relative h-screen">
-        {/* Hero image — semantic <img> for Google Image indexing */}
-        <img
-          src="/og-image2.jpg"
-          alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi, stylizacja rzęs, laminacja brwi"
-          className="absolute inset-0 w-full h-full object-cover"
-          fetchPriority="high"
-          width={1920}
-          height={1080}
-        />
+        {/* Hero image — <picture> for responsive loading + Google Image indexing */}
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="/og-image-mobile.jpg"
+            width={640}
+            height={1168}
+          />
+          <img
+            src="/og-image2.jpg"
+            alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure hybrydowy, pedicure, peeling węglowy, usuwanie tatuażu laserowo"
+            className="absolute inset-0 w-full h-full object-cover"
+            fetchPriority="high"
+            width={1200}
+            height={630}
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
@@ -248,7 +382,7 @@ export const Home: React.FC = () => {
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map(cat => (
+            {categories.map((cat, idx) => (
               <CategoryVideoCard
                 key={cat.name}
                 displayName={getCategoryName(cat.name, language, (t as any).categories)}
@@ -258,6 +392,7 @@ export const Home: React.FC = () => {
                 servicesCountLabel={t.servicesCount}
                 ctaLabel={t.viewCategoryServices}
                 onClick={() => navigate(`/services/${getCategorySlug(cat.name)}`)}
+                imgLoading={idx < 3 ? 'eager' : 'lazy'}
               />
             ))}
           </div>
@@ -284,23 +419,20 @@ export const Home: React.FC = () => {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
               categories
                 .filter(c => c.videoUrl)
-                .map(c => ({
-                  '@context': 'https://schema.org',
-                  '@type': 'VideoObject',
-                  name: language === 'en'
-                    ? `${getCategoryName(c.name, language, (t as any).categories)} – Katarzyna Brui Beauty Salon`
-                    : language === 'ru'
-                    ? `${getCategoryName(c.name, language, (t as any).categories)} – Салон красоты Катажина Бруй`
-                    : `${getCategoryName(c.name, language, (t as any).categories)} – Salon Katarzyna Brui Białystok`,
-                  description: language === 'en'
-                    ? `${getCategoryName(c.name, language, (t as any).categories)} services at Katarzyna Brui beauty salon in Białystok.`
-                    : language === 'ru'
-                    ? `${getCategoryName(c.name, language, (t as any).categories)} – услуги салона красоты Катажина Бруй, Белосток.`
-                    : `${getCategoryName(c.name, language, (t as any).categories)} – zabiegi w salonie kosmetycznym Katarzyna Brui, Białystok.`,
-                  thumbnailUrl: c.image,
-                  contentUrl: c.videoUrl,
-                  uploadDate: '2025-01-01',
-                }))
+                .map(c => {
+                  const videoSeo = getVideoSeoData(c.name, language);
+                  return {
+                    '@context': 'https://schema.org',
+                    '@type': 'VideoObject',
+                    name: videoSeo.title,
+                    description: videoSeo.description,
+                    thumbnailUrl: c.image,
+                    contentUrl: c.videoUrl,
+                    uploadDate: new Date().toISOString().slice(0, 10),
+                    embedUrl: `https://katarzynabrui.pl/services/${getCategorySlug(c.name)}`,
+                    inLanguage: language,
+                  };
+                })
             )}} />
           )}
         </div>

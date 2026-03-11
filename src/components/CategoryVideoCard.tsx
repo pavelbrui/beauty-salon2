@@ -9,6 +9,7 @@ interface CategoryVideoCardProps {
   ctaLabel: string;
   onClick: () => void;
   poster?: string;
+  imgLoading?: 'eager' | 'lazy';
 }
 
 export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
@@ -20,6 +21,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
   ctaLabel,
   onClick,
   poster,
+  imgLoading = 'lazy',
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLButtonElement>(null);
@@ -118,7 +120,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
       <img
         src={image}
         alt={displayName}
-        loading="lazy"
+        loading={imgLoading}
         className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${
           !showVideo ? 'group-hover:scale-110' : ''
         }`}

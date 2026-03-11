@@ -113,7 +113,7 @@ export const StylistsPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.stylists}</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {stylists.map((stylist) => (
+          {stylists.map((stylist, idx) => (
             <div
               key={stylist.id}
               className="bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300"
@@ -122,7 +122,7 @@ export const StylistsPage: React.FC = () => {
                 <img
                   src={stylist.image_url}
                   alt={`${stylist.name} – ${getStylistRole(stylist, language)}, salon Katarzyna Brui Białystok`}
-                  loading="lazy"
+                  loading={idx < 3 ? 'eager' : 'lazy'}
                   className="w-full h-full object-cover"
                   onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d4d4d4"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'; }}
                   width={400}

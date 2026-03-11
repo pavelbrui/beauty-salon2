@@ -163,6 +163,9 @@ export const BlogPage: React.FC = () => {
     const postTitle = getLocalizedField(post, 'title', language);
     const postExcerpt = getLocalizedField(post, 'excerpt', language);
 
+    const videoBlocks = post.content_blocks.filter(b => b.type === 'video' && (b as { url?: string }).url);
+    const firstVideo = videoBlocks[0] as { type: 'video'; url: string; caption?: string } | undefined;
+
     const faqItems = extractFaqItems(post.content_blocks, language);
 
     return (
@@ -184,6 +187,7 @@ export const BlogPage: React.FC = () => {
           dateModified={post.updated_at}
           slug={`/blog/${post.slug}`}
           faqItems={faqItems.length > 0 ? faqItems : undefined}
+          videoUrl={firstVideo?.url}
         />
         <BreadcrumbSchema items={[
           { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
@@ -194,7 +198,7 @@ export const BlogPage: React.FC = () => {
         {/* Hero */}
         <div className="relative overflow-hidden h-72 md:h-96">
           {post.cover_image_url ? (
-            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" loading="lazy" width={1200} height={600} />
+            <img src={post.cover_image_url} alt={postTitle} className="w-full h-full object-cover" fetchPriority="high" width={1200} height={600} />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700" />
           )}
@@ -459,7 +463,7 @@ export const BlogPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map(p => {
+            {filteredPosts.map((p, idx) => {
               const pTitle = getLocalizedField(p, 'title', language);
               const pExcerpt = getLocalizedField(p, 'excerpt', language);
 
@@ -475,7 +479,7 @@ export const BlogPage: React.FC = () => {
                         src={p.cover_image_url}
                         alt={pTitle}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
+                        loading={idx < 6 ? 'eager' : 'lazy'}
                         width={400}
                         height={224}
                       />

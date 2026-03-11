@@ -13,6 +13,8 @@ interface ArticleSchemaProps {
   slug: string;
   /** Optional FAQ items extracted from content */
   faqItems?: { question: string; answer: string }[];
+  /** Optional video URL from content blocks */
+  videoUrl?: string;
 }
 
 /**
@@ -28,6 +30,7 @@ export const ArticleSchema: React.FC<ArticleSchemaProps> = ({
   dateModified,
   slug,
   faqItems,
+  videoUrl,
 }) => {
   const articleSchema: Record<string, unknown> = {
     '@type': 'Article',
@@ -39,6 +42,17 @@ export const ArticleSchema: React.FC<ArticleSchemaProps> = ({
     datePublished,
     dateModified,
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}${slug}` },
+    ...(videoUrl ? {
+      video: {
+        '@type': 'VideoObject',
+        name: headline,
+        description: description || headline,
+        contentUrl: videoUrl,
+        thumbnailUrl: image || `${BASE_URL}/og-image.jpg`,
+        uploadDate: datePublished,
+        publisher: BUSINESS_PUBLISHER,
+      },
+    } : {}),
   };
 
   const faqSchema: Record<string, unknown> | null =

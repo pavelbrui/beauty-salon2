@@ -30,6 +30,7 @@ export default defineConfig(async ({ command }) => {
             maxConcurrentRoutes: 4,
             renderAfterDocumentEvent: 'prerender-ready',
             timeout: 20000,
+
           },
         })
       )

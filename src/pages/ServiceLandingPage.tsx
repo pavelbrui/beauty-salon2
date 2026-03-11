@@ -124,6 +124,7 @@ export const ServiceLandingPage: React.FC = () => {
   if (!config) {
     return (
       <main className="pt-16 min-h-screen bg-neutral-50 flex items-center justify-center">
+        <SEO title="404" description="Strona nie została znaleziona" noindex />
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
           <p className="text-gray-600 mb-6">{(t as any).pageNotFound || 'Strona nie została znaleziona'}</p>
@@ -284,8 +285,8 @@ export const ServiceLandingPage: React.FC = () => {
             </div>
           ) : services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map(service => (
-                <ServiceCard key={service.id} service={service} />
+              {services.map((service, idx) => (
+                <ServiceCard key={service.id} service={service} imgLoading={idx < 3 ? 'eager' : 'lazy'} />
               ))}
             </div>
           ) : null}

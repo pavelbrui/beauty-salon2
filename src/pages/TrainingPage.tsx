@@ -345,7 +345,7 @@ export const TrainingPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {trainings.map(t => {
+            {trainings.map((t, idx) => {
               const tTitle = getLocalizedField(t, 'title', language);
               const tDesc = getLocalizedField(t, 'description', language);
               const tPrice = getLocalizedField(t, 'price', language);
@@ -365,7 +365,7 @@ export const TrainingPage: React.FC = () => {
                         alt={`${tTitle} – kurs w Białymstoku, salon Katarzyna Brui`}
                         className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                         style={cropPositionToStyle(t.cover_crop_card || t.cover_image_position)}
-                        loading="lazy"
+                        loading={idx < 4 ? 'eager' : 'lazy'}
                         width={600}
                         height={300}
                       />

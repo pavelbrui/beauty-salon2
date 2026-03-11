@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { uploadVideo } from '../../utils/uploadVideo';
 import { withTimeout } from '../../utils/withTimeout';
 import { translateFromPolish } from '../../utils/translateService';
 import { GalleryImage } from '../../types';
@@ -10,6 +11,7 @@ export const AdminGallery: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Controlled form state for editing
@@ -79,6 +81,46 @@ export const AdminGallery: React.FC = () => {
     }
   };
 
+  const handleVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploadingVideo(true);
+      setError(null);
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const { publicUrl } = await uploadVideo({ file, folder: 'gallery-videos' });
+
+      const { error: dbError } = await withTimeout(
+        supabase.from('service_images').insert({
+          url: publicUrl,
+          video_url: publicUrl,
+          description: '',
+          category: 'general',
+        }),
+        20000,
+        'Zapis video w bazie trwa zbyt długo'
+      );
+
+      if (dbError) throw dbError;
+
+      loadImages();
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      setError(error instanceof Error ? error.message : 'Błąd podczas dodawania video');
+    } finally {
+      setUploadingVideo(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleRemoveVideo = async (image: GalleryImage) => {
+    const { error } = await supabase
+      .from('service_images')
+      .update({ video_url: null })
+      .eq('id', image.id);
+    if (!error) loadImages();
+  };
+
   const handleEdit = (image: GalleryImage) => {
     setSelectedImage(image);
     setEditDesc(image.description || '');
@@ -137,7 +179,7 @@ export const AdminGallery: React.FC = () => {
     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
       <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
         <h3 className="text-lg font-medium text-gray-900">Zarządzanie galerią</h3>
-        <div>
+        <div className="flex gap-2">
           <input
             type="file"
             accept="image/*"
@@ -155,6 +197,24 @@ export const AdminGallery: React.FC = () => {
             }`}
           >
             {uploading ? 'Dodawanie...' : 'Dodaj zdjęcie'}
+          </label>
+          <input
+            type="file"
+            accept="video/mp4,video/quicktime,video/webm,video/x-m4v"
+            onChange={handleVideoUpload}
+            disabled={uploadingVideo}
+            className="hidden"
+            id="video-upload"
+          />
+          <label
+            htmlFor="video-upload"
+            className={`inline-block bg-purple-600 text-white px-4 py-2 rounded-md transition-colors ${
+              uploadingVideo
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'hover:bg-purple-700 cursor-pointer'
+            }`}
+          >
+            {uploadingVideo ? 'Dodawanie...' : 'Dodaj video'}
           </label>
         </div>
       </div>
@@ -175,21 +235,44 @@ export const AdminGallery: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
           {images.map((image) => (
             <div key={image.id} className="relative group">
-              <img
-                src={image.url}
-                alt={image.description}
-                className="w-full h-64 object-cover rounded-lg shadow-md"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center space-x-4">
+              {image.video_url ? (
+                <div className="relative w-full h-64 rounded-lg shadow-md overflow-hidden bg-gray-900">
+                  <video
+                    src={image.video_url}
+                    className="w-full h-full object-cover"
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                  <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                    VIDEO
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={image.url}
+                  alt={image.description}
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                />
+              )}
+              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center space-x-2 flex-wrap gap-2 p-4">
                 <button
                   onClick={() => handleEdit(image)}
-                  className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                  className="bg-white text-gray-800 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors text-sm"
                 >
                   Edytuj
                 </button>
+                {image.video_url && (
+                  <button
+                    onClick={() => handleRemoveVideo(image)}
+                    className="bg-orange-500 text-white px-3 py-2 rounded-md hover:bg-orange-600 transition-colors text-sm"
+                  >
+                    Usuń video
+                  </button>
+                )}
                 <button
                   onClick={() => handleDelete(image.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors text-sm"
                 >
                   Usuń
                 </button>
