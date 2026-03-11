@@ -93,6 +93,21 @@ const supabaseFetch = async (path: string): Promise<unknown[] | null> => {
   }
 };
 
+// --- Category slug map (must match src/utils/categorySlugMap.ts) ---
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  'makijaż permanentny': 'makijaz-permanentny',
+  'stylizacja rzęs': 'stylizacja-rzes',
+  'rzęsy': 'rzesy',
+  'pielęgnacja brwi': 'pielegnacja-brwi',
+  'peeling węglowy': 'peeling-weglowy',
+  'laserowe usuwanie': 'laserowe-usuwanie',
+  'manicure': 'manicure',
+  'pakiety': 'pakiety',
+};
+
+const getCategorySlug = (name: string): string =>
+  CATEGORY_SLUG_MAP[name] || CATEGORY_SLUG_MAP[name.toLowerCase()] || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 // --- Fallback category images ---
 const CATEGORY_FALLBACK_IMAGES: Record<string, SitemapImage> = {
   'Makijaż permanentny': {
@@ -332,7 +347,7 @@ ${pricesAlternates}
   for (const cat of categories) {
     entries.push(
       renderLocalizedEntries({
-        barePath: `/services/${encodeURIComponent(cat.name)}`,
+        barePath: `/services/${getCategorySlug(cat.name)}`,
         changefreq: 'weekly',
         priority: '0.8',
         images: cat.images,

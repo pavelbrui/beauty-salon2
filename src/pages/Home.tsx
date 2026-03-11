@@ -9,9 +9,11 @@ import { MapLocation } from '../components/MapLocation';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
+import { LocalBusinessSchema, BreadcrumbSchema } from '../components/schema';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
+import { getCategorySlug } from '../utils/categorySlugMap';
 import { CategoryVideoCard } from '../components/CategoryVideoCard';
 import { prerenderReady } from '../utils/prerenderReady';
 
@@ -111,7 +113,35 @@ export const Home: React.FC = () => {
         title={(t as any).home_seo?.title || 'Salon Kosmetyczny Białystok'}
         description={(t as any).home_seo?.description || 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.'}
         canonical="/"
-        keywords={[
+        keywords={language === 'en' ? [
+          'beauty salon Białystok',
+          'permanent makeup Białystok',
+          'beautician Białystok',
+          'lash extensions Białystok',
+          'gel manicure Białystok',
+          'brow lamination Białystok',
+          'lash lift Białystok',
+          'carbon peeling Białystok',
+          'microblading Białystok',
+          'tattoo removal Białystok',
+          'beauty treatments Białystok',
+          'best beauty salon Białystok',
+          'Katarzyna Brui',
+        ] : language === 'ru' ? [
+          'салон красоты Белосток',
+          'перманентный макияж Белосток',
+          'косметолог Белосток',
+          'наращивание ресниц Белосток',
+          'гибридный маникюр Белосток',
+          'ламинирование бровей Белосток',
+          'лифтинг ресниц Белосток',
+          'карбоновый пилинг Белосток',
+          'микроблейдинг Белосток',
+          'удаление тату Белосток',
+          'косметические процедуры Белосток',
+          'лучший салон красоты Белосток',
+          'Катажина Бруй',
+        ] : [
           'salon kosmetyczny Białystok',
           'makijaż permanentny Białystok',
           'kosmetyczka Białystok',
@@ -127,60 +157,11 @@ export const Home: React.FC = () => {
           'najlepszy salon kosmetyczny Białystok',
           'henna brwi Białystok',
           'lifting rzęs Białystok',
-          'Katarzyna Brui'
+          'Katarzyna Brui',
         ]}
-        structuredData={{
-          '@context': 'https://schema.org',
-          '@type': 'BeautySalon',
-          'name': 'Salon Kosmetyczny Katarzyna Brui',
-          'image': [
-            'https://katarzynabrui.pl/og-image.jpg',
-            'https://katarzynabrui.pl/og-image2.jpg'
-          ],
-          'url': 'https://katarzynabrui.pl',
-          'telephone': '+48880435102',
-          'priceRange': '$$',
-          'address': {
-            '@type': 'PostalAddress',
-            'streetAddress': 'ul. Młynowa 46, Lok U11',
-            'addressLocality': 'Białystok',
-            'postalCode': '15-404',
-            'addressCountry': 'PL'
-          },
-          'geo': {
-            '@type': 'GeoCoordinates',
-            'latitude': 53.1274782,
-            'longitude': 23.1462283
-          },
-          'openingHoursSpecification': [
-            {
-              '@type': 'OpeningHoursSpecification',
-              'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-              'opens': '09:00',
-              'closes': '20:00'
-            },
-            {
-              '@type': 'OpeningHoursSpecification',
-              'dayOfWeek': 'Saturday',
-              'opens': '09:00',
-              'closes': '16:00'
-            }
-          ],
-          'aggregateRating': {
-            '@type': 'AggregateRating',
-            'ratingValue': '5.0',
-            'reviewCount': '384',
-            'bestRating': '5',
-            'worstRating': '1',
-            'url': 'https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok'
-          },
-          'sameAs': [
-            'https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/',
-            'https://www.instagram.com/katarzyna.brui_',
-            'https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok'
-          ]
-        }}
       />
+      <LocalBusinessSchema />
+      <BreadcrumbSchema items={[{ name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' }]} />
       <header className="relative h-screen">
         {/* Hero image — semantic <img> for Google Image indexing */}
         <img
@@ -246,6 +227,8 @@ export const Home: React.FC = () => {
                   muted
                   loop
                   playsInline
+                  poster="/og-image2.jpg"
+                  preload="metadata"
                 >
                   <source src="/intro-video.mp4" type="video/mp4" />
                 </video>
@@ -274,10 +257,27 @@ export const Home: React.FC = () => {
                 videoUrl={cat.videoUrl}
                 servicesCountLabel={t.servicesCount}
                 ctaLabel={t.viewCategoryServices}
-                onClick={() => navigate(`/services/${encodeURIComponent(cat.name)}`)}
+                onClick={() => navigate(`/services/${getCategorySlug(cat.name)}`)}
               />
             ))}
           </div>
+
+          {/* VideoObject structured data for intro video */}
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
+            name: language === 'en' ? 'Katarzyna Brui Beauty Salon – Białystok'
+                : language === 'ru' ? 'Салон красоты Катажина Бруй – Белосток'
+                : 'Salon Kosmetyczny Katarzyna Brui – Białystok',
+            description: language === 'en'
+              ? 'Professional beauty salon in Białystok. Permanent makeup, lash extensions, brow lamination, carbon peeling, manicure.'
+              : language === 'ru'
+              ? 'Профессиональный салон красоты в Белостоке. Перманентный макияж, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр.'
+              : 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure.',
+            thumbnailUrl: 'https://katarzynabrui.pl/og-image2.jpg',
+            contentUrl: 'https://katarzynabrui.pl/intro-video.mp4',
+            uploadDate: '2025-01-01',
+          })}} />
 
           {/* VideoObject structured data for categories with videos */}
           {categories.some(c => c.videoUrl) && (
@@ -287,11 +287,19 @@ export const Home: React.FC = () => {
                 .map(c => ({
                   '@context': 'https://schema.org',
                   '@type': 'VideoObject',
-                  name: getCategoryName(c.name, language, (t as any).categories),
-                  description: `${getCategoryName(c.name, language, (t as any).categories)} – salon kosmetyczny Katarzyna Brui, Białystok`,
+                  name: language === 'en'
+                    ? `${getCategoryName(c.name, language, (t as any).categories)} – Katarzyna Brui Beauty Salon`
+                    : language === 'ru'
+                    ? `${getCategoryName(c.name, language, (t as any).categories)} – Салон красоты Катажина Бруй`
+                    : `${getCategoryName(c.name, language, (t as any).categories)} – Salon Katarzyna Brui Białystok`,
+                  description: language === 'en'
+                    ? `${getCategoryName(c.name, language, (t as any).categories)} services at Katarzyna Brui beauty salon in Białystok.`
+                    : language === 'ru'
+                    ? `${getCategoryName(c.name, language, (t as any).categories)} – услуги салона красоты Катажина Бруй, Белосток.`
+                    : `${getCategoryName(c.name, language, (t as any).categories)} – zabiegi w salonie kosmetycznym Katarzyna Brui, Białystok.`,
                   thumbnailUrl: c.image,
                   contentUrl: c.videoUrl,
-                  uploadDate: '2026-03-01',
+                  uploadDate: '2025-01-01',
                 }))
             )}} />
           )}

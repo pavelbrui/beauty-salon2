@@ -11,6 +11,20 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
+// Category slug map (must match src/utils/categorySlugMap.ts)
+const CATEGORY_SLUG_MAP = {
+  'makijaż permanentny': 'makijaz-permanentny',
+  'stylizacja rzęs': 'stylizacja-rzes',
+  'rzęsy': 'rzesy',
+  'pielęgnacja brwi': 'pielegnacja-brwi',
+  'peeling węglowy': 'peeling-weglowy',
+  'laserowe usuwanie': 'laserowe-usuwanie',
+  'manicure': 'manicure',
+  'pakiety': 'pakiety',
+};
+const getCategorySlug = (name) =>
+  CATEGORY_SLUG_MAP[name] || CATEGORY_SLUG_MAP[name.toLowerCase()] || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
 /* ── helpers (shared logic with generate-sitemap.mjs) ── */
 
 const loadEnv = async () => {
@@ -107,7 +121,7 @@ const main = async () => {
   console.log(`[prerender-routes] Found: ${blogSlugs.length} blog posts, ${trainingSlugs.length} trainings, ${categories.length} categories`);
 
   const dynamicPages = [
-    ...categories.map((c) => `/services/${encodeURIComponent(c)}`),
+    ...categories.map((c) => `/services/${getCategorySlug(c)}`),
     ...blogSlugs.map((s) => `/blog/${encodeURIComponent(s)}`),
     ...trainingSlugs.map((s) => `/training/${encodeURIComponent(s)}`),
   ];

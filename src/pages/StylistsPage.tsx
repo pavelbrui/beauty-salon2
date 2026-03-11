@@ -64,16 +64,29 @@ export const StylistsPage: React.FC = () => {
         title={(t as any).stylists_seo?.title || 'Nasi Specjaliści - Kosmetyczki i Stylistki'}
         description={(t as any).stylists_seo?.description || 'Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku.'}
         canonical="/stylists"
-        keywords={[
+        keywords={language === 'en' ? [
+          'beautician Białystok',
+          'lash stylist Białystok',
+          'permanent makeup artist Białystok',
+          'brow specialist Białystok',
+          'beauty team Białystok',
+          'best beautician Białystok',
+        ] : language === 'ru' ? [
+          'косметолог Белосток',
+          'стилист ресниц Белосток',
+          'мастер перманентного макияжа Белосток',
+          'специалист по бровям Белосток',
+          'лучший косметолог Белосток',
+        ] : [
           'kosmetyczka Białystok',
           'stylistka rzęs Białystok',
           'linergistka Białystok',
           'specjalistka makijażu permanentnego',
           'specjalistka brwi Białystok',
-          'najlepsza kosmetyczka Białystok'
+          'najlepsza kosmetyczka Białystok',
         ]}
         breadcrumbs={[
-          { name: 'Strona główna', url: '/' },
+          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
           { name: t.stylists || 'Specjaliści', url: '/stylists' },
         ]}
         structuredData={stylists.length > 0 ? {

@@ -62,17 +62,28 @@ export const GalleryPage: React.FC = () => {
     ? images
     : images.filter(img => img.category === selectedCategory);
 
+  const gallerySchemaName = language === 'en'
+    ? 'Treatment Gallery – Katarzyna Brui Beauty Salon Białystok'
+    : language === 'ru'
+    ? 'Галерея работ – Салон красоты Катажина Бруй Белосток'
+    : 'Galeria prac – Salon Katarzyna Brui Białystok';
+  const gallerySchemaDesc = language === 'en'
+    ? 'Beauty treatment results: permanent makeup, lash extensions, brow lamination, manicure.'
+    : language === 'ru'
+    ? 'Результаты косметических процедур: перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр.'
+    : 'Efekty zabiegów kosmetycznych: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.';
+
   const gallerySchema = images.length > 0 ? {
     '@context': 'https://schema.org',
     '@type': 'ImageGallery',
-    'name': 'Galeria prac – Salon Katarzyna Brui Białystok',
-    'description': 'Efekty zabiegów kosmetycznych: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.',
+    'name': gallerySchemaName,
+    'description': gallerySchemaDesc,
     'url': 'https://katarzynabrui.pl/gallery',
     'image': images.slice(0, 20).map(img => ({
       '@type': 'ImageObject',
       'url': img.url,
-      'name': getDescription(img) || `${getCategoryLabel(img.category)} – salon Katarzyna Brui Białystok`,
-      'description': getDescription(img) || `${getCategoryLabel(img.category)} – efekty zabiegów, salon kosmetyczny Białystok`,
+      'name': getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'Katarzyna Brui Salon' : language === 'ru' ? 'салон Катажина Бруй' : 'salon Katarzyna Brui Białystok'}`,
+      'description': getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'treatment results, beauty salon Białystok' : language === 'ru' ? 'результаты процедур, салон красоты Белосток' : 'efekty zabiegów, salon kosmetyczny Białystok'}`,
     })),
     'author': {
       '@type': 'BeautySalon',
@@ -87,17 +98,31 @@ export const GalleryPage: React.FC = () => {
         description={(t as any).gallery_seo?.description || 'Zobacz efekty zabiegów salonu Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure.'}
         canonical="/gallery"
         image={images[0]?.url}
-        keywords={[
+        keywords={language === 'en' ? [
+          'permanent makeup results',
+          'beauty salon gallery Białystok',
+          'permanent brow makeup before after',
+          'lash extensions results',
+          'brow lamination before after',
+          'beautician portfolio Białystok',
+        ] : language === 'ru' ? [
+          'результаты перманентного макияжа',
+          'галерея салон красоты Белосток',
+          'перманентный макияж бровей до и после',
+          'наращивание ресниц результаты',
+          'ламинирование бровей до и после',
+          'портфолио косметолога Белосток',
+        ] : [
           'efekty makijażu permanentnego',
           'galeria salon kosmetyczny Białystok',
           'makijaż permanentny brwi efekty',
           'stylizacja rzęs efekty',
           'laminacja brwi przed i po',
-          'portfolio kosmetyczka Białystok'
+          'portfolio kosmetyczka Białystok',
         ]}
         structuredData={gallerySchema}
         breadcrumbs={[
-          { name: 'Strona główna', url: '/' },
+          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
           { name: t.gallery || 'Galeria', url: '/gallery' },
         ]}
       />

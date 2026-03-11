@@ -196,6 +196,11 @@ export const translations = {
       faq: 'Najczęściej zadawane pytania',
       bookAppointment: 'Zarezerwuj wizytę',
       viewAllServices: 'Zobacz wszystkie usługi',
+      procedureSteps: 'Przebieg zabiegu',
+      contraindications: 'Przeciwwskazania',
+      effectsGallery: 'Galeria efektów',
+      viewFullGallery: 'Zobacz pełną galerię',
+      relatedArticles: 'Powiązane artykuły',
     },
     blog: 'Blog',
     blog_page: {
@@ -214,6 +219,7 @@ export const translations = {
       bookButton: 'Zarezerwuj wizytę',
       recentBlog: 'Najnowsze z naszego bloga',
       viewAll: 'Zobacz wszystkie artykuły',
+      relatedServices: 'Powiązane zabiegi',
       categories: {
         permanent_makeup: 'Makijaż permanentny',
         brows_lashes: 'Brwi i Rzęsy',
@@ -531,6 +537,11 @@ export const translations = {
       faq: 'Frequently Asked Questions',
       bookAppointment: 'Book an appointment',
       viewAllServices: 'View all services',
+      procedureSteps: 'Treatment Procedure',
+      contraindications: 'Contraindications',
+      effectsGallery: 'Effects Gallery',
+      viewFullGallery: 'View full gallery',
+      relatedArticles: 'Related Articles',
     },
     blog: 'Blog',
     blog_page: {
@@ -549,6 +560,7 @@ export const translations = {
       bookButton: 'Book appointment',
       recentBlog: 'Latest from our blog',
       viewAll: 'View all articles',
+      relatedServices: 'Related Treatments',
       categories: {
         permanent_makeup: 'Permanent Makeup',
         brows_lashes: 'Brows & Lashes',
@@ -866,6 +878,11 @@ export const translations = {
       faq: 'Часто задаваемые вопросы',
       bookAppointment: 'Записаться на приём',
       viewAllServices: 'Все услуги',
+      procedureSteps: 'Этапы процедуры',
+      contraindications: 'Противопоказания',
+      effectsGallery: 'Галерея результатов',
+      viewFullGallery: 'Смотреть всю галерею',
+      relatedArticles: 'Связанные статьи',
     },
     blog: 'Блог',
     blog_page: {
@@ -884,6 +901,7 @@ export const translations = {
       bookButton: 'Записаться',
       recentBlog: 'Новое в нашем блоге',
       viewAll: 'Смотреть все статьи',
+      relatedServices: 'Связанные процедуры',
       categories: {
         permanent_makeup: 'Перманентный макияж',
         brows_lashes: 'Брови и ресницы',

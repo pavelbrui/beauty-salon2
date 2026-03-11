@@ -4,6 +4,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { Service } from '../types';
 import { SEO } from '../components/SEO';
+import { ServiceSchema, BreadcrumbSchema, BASE_URL } from '../components/schema';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { getCategoryName, getServiceName } from '../utils/serviceTranslation';
 
@@ -58,40 +59,17 @@ export const PricesPage: React.FC = () => {
     return m > 0 ? `${h}h ${m}min` : `${h}h`;
   };
 
-  // Structured data — OfferCatalog with all services
-  const structuredData = services.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'OfferCatalog',
-    'name': language === 'en' ? 'Price List – Katarzyna Brui Beauty Salon'
-          : language === 'ru' ? 'Прайс-лист – Салон красоты Катажина Бруй'
-          : 'Cennik zabiegów – Salon Katarzyna Brui Białystok',
-    'url': 'https://katarzynabrui.pl/prices',
-    'provider': {
-      '@type': 'BeautySalon',
-      'name': 'Salon Kosmetyczny Katarzyna Brui',
-      'address': {
-        '@type': 'PostalAddress',
-        'streetAddress': 'ul. Młynowa 46, Lok U11',
-        'addressLocality': 'Białystok',
-        'postalCode': '15-404',
-        'addressCountry': 'PL',
-      },
-      'telephone': '+48880435102',
-    },
-    'itemListElement': categories.flatMap(cat =>
-      services.filter(s => s.category === cat).map(service => ({
-        '@type': 'Offer',
-        'itemOffered': {
-          '@type': 'Service',
-          'name': service.name,
-          'category': cat,
-        },
-        'price': (service.price / 100).toFixed(0),
-        'priceCurrency': 'PLN',
-        'availability': 'https://schema.org/InStock',
-      }))
-    ),
-  } : undefined;
+  const pricesCatalogName = language === 'en' ? 'Price List – Katarzyna Brui Beauty Salon'
+    : language === 'ru' ? 'Прайс-лист – Салон красоты Катажина Бруй'
+    : 'Cennik zabiegów – Salon Katarzyna Brui Białystok';
+
+  const allServices = categories.flatMap(cat =>
+    services.filter(s => s.category === cat).map(service => ({
+      name: service.name,
+      category: cat,
+      price: service.price,
+    }))
+  );
 
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
@@ -99,6 +77,7 @@ export const PricesPage: React.FC = () => {
         title={pt?.title || 'Cennik Zabiegów Kosmetycznych'}
         description={pt?.description || 'Pełny cennik zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku.'}
         canonical={language === 'pl' ? '/cennik' : '/prices'}
+        alternates={{ pl: '/cennik', en: '/prices', ru: '/prices' }}
         keywords={language === 'pl' ? [
           'cennik salon kosmetyczny Białystok',
           'cennik zabiegów kosmetycznych Białystok',
@@ -130,12 +109,16 @@ export const PricesPage: React.FC = () => {
           'ламинирование бровей стоимость',
           'прайс лист косметические услуги',
         ]}
-        structuredData={structuredData}
-        breadcrumbs={[
-          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
-          { name: pt?.heading || 'Cennik', url: '/prices' },
-        ]}
       />
+      <ServiceSchema
+        catalogName={pricesCatalogName}
+        url={`${BASE_URL}/prices`}
+        services={allServices}
+      />
+      <BreadcrumbSchema items={[
+        { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
+        { name: pt?.heading || 'Cennik', url: language === 'pl' ? '/cennik' : '/prices' },
+      ]} />
 
       <div className="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         {/* Hero */}

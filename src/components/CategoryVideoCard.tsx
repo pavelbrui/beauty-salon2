@@ -8,6 +8,7 @@ interface CategoryVideoCardProps {
   servicesCountLabel: string;
   ctaLabel: string;
   onClick: () => void;
+  poster?: string;
 }
 
 export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
@@ -18,6 +19,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
   servicesCountLabel,
   ctaLabel,
   onClick,
+  poster,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLButtonElement>(null);
@@ -129,6 +131,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
         <video
           ref={setVideoRef}
           src={videoUrl}
+          poster={poster || image}
           muted
           loop
           playsInline

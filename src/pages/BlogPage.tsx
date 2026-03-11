@@ -4,11 +4,15 @@ import { LocalizedLink } from '../components/LocalizedLink';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { SEO } from '../components/SEO';
+import { ArticleSchema, BreadcrumbSchema } from '../components/schema';
 import { supabase } from '../lib/supabase';
 import { BlogPost } from '../types';
 import { getLocalizedField, renderBlock } from '../utils/blockRenderer';
 import { ContentBlock } from '../types';
 import { prerenderReady } from '../utils/prerenderReady';
+import { getBlogRelationship } from '../data/contentRelationships';
+import { getLandingPageBySlug, LocalizedText } from '../data/landingPages';
+import { serviceImages } from '../assets/images';
 
 /**
  * Extract FAQ structured data (schema.org/FAQPage) from blog post content blocks.
@@ -159,39 +163,7 @@ export const BlogPage: React.FC = () => {
     const postTitle = getLocalizedField(post, 'title', language);
     const postExcerpt = getLocalizedField(post, 'excerpt', language);
 
-    const articleSchema: Record<string, unknown> = {
-      '@type': 'Article',
-      headline: postTitle,
-      description: postExcerpt,
-      image: post.cover_image_url || `${BASE_URL}/og-image.jpg`,
-      author: { '@type': 'Person', name: post.author },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Salon Kosmetyczny Katarzyna Brui',
-        logo: { '@type': 'ImageObject', url: `${BASE_URL}/og-image.jpg` },
-      },
-      datePublished: post.published_at,
-      dateModified: post.updated_at,
-      mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.slug}` },
-    };
-
     const faqItems = extractFaqItems(post.content_blocks, language);
-    const faqSchema: Record<string, unknown> | null = faqItems.length > 0 ? {
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map(({ question, answer }) => ({
-        '@type': 'Question',
-        name: question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: answer,
-        },
-      })),
-    } : null;
-
-    const structuredData: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@graph': [articleSchema, ...(faqSchema ? [faqSchema] : [])],
-    };
 
     return (
       <main className="pt-16 min-h-screen bg-neutral-50">
@@ -202,13 +174,22 @@ export const BlogPage: React.FC = () => {
           type="article"
           image={post.cover_image_url || undefined}
           keywords={post.seo_keywords || []}
-          structuredData={structuredData}
-          breadcrumbs={[
-            { name: 'Strona główna', url: '/' },
-            { name: 'Blog', url: '/blog' },
-            { name: postTitle, url: `/blog/${post.slug}` },
-          ]}
         />
+        <ArticleSchema
+          headline={postTitle}
+          description={postExcerpt}
+          image={post.cover_image_url || undefined}
+          author={post.author}
+          datePublished={post.published_at}
+          dateModified={post.updated_at}
+          slug={`/blog/${post.slug}`}
+          faqItems={faqItems.length > 0 ? faqItems : undefined}
+        />
+        <BreadcrumbSchema items={[
+          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: postTitle, url: `/blog/${post.slug}` },
+        ]} />
 
         {/* Hero */}
         <div className="relative overflow-hidden h-72 md:h-96">
@@ -257,20 +238,84 @@ export const BlogPage: React.FC = () => {
           </div>
         </article>
 
-        {/* CTA */}
-        <div className="max-w-4xl mx-auto px-4 pb-8">
-          <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              {(bp?.bookCta as string) || 'Chcesz wypróbować? Umów wizytę!'}
-            </h2>
-            <LocalizedLink
-              to="/services"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
-            >
-              {(bp?.bookButton as string) || 'Zarezerwuj wizytę'}
-            </LocalizedLink>
-          </div>
-        </div>
+        {/* Smart CTA — links to relevant service/landing page based on blog category */}
+        {(() => {
+          const relationship = getBlogRelationship(post.category);
+          const ctaLink = relationship?.ctaLink || '/services';
+          const loc = (text: LocalizedText) => text[language as keyof LocalizedText] || text.pl;
+          const ctaButtonText = relationship?.ctaText
+            ? loc(relationship.ctaText)
+            : ((bp?.bookButton as string) || 'Zarezerwuj wizytę');
+          return (
+            <div className="max-w-4xl mx-auto px-4 pb-8">
+              <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  {(bp?.bookCta as string) || 'Chcesz wypróbować? Umów wizytę!'}
+                </h2>
+                <LocalizedLink
+                  to={ctaLink}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+                >
+                  {ctaButtonText}
+                </LocalizedLink>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Related Services / Landing Pages */}
+        {(() => {
+          const relationship = getBlogRelationship(post.category);
+          const loc = (text: LocalizedText) => text[language as keyof LocalizedText] || text.pl;
+          const relatedLandingPages = relationship?.landingPageSlugs
+            .map(s => getLandingPageBySlug(s))
+            .filter(Boolean) || [];
+          if (relatedLandingPages.length === 0) return null;
+
+          const getImageForKey = (key: string): string => {
+            const map: Record<string, string> = {
+              permanentMakeup: serviceImages.permanentMakeup,
+              lashes: serviceImages.lashes,
+              browCare: serviceImages.browCare,
+              carbonPeeling: serviceImages.carbonPeeling,
+              tattooRemoval: serviceImages.tattooRemoval,
+              manicure: serviceImages.manicure,
+            };
+            return map[key] || serviceImages.permanentMakeup;
+          };
+
+          return (
+            <div className="max-w-4xl mx-auto px-4 pb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                {(bp?.relatedServices as string) || 'Powiązane zabiegi'}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {relatedLandingPages.map(lp => (
+                  <LocalizedLink
+                    key={lp!.slug}
+                    to={`/${lp!.slug}`}
+                    className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 group"
+                  >
+                    <img
+                      src={getImageForKey(lp!.imageKey)}
+                      alt={loc(lp!.hero.title)}
+                      className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                      loading="lazy"
+                      width={64}
+                      height={64}
+                    />
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors truncate">
+                        {loc(lp!.hero.title)}
+                      </h3>
+                      <p className="text-sm text-gray-500 line-clamp-1">{loc(lp!.hero.subtitle)}</p>
+                    </div>
+                  </LocalizedLink>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Related posts */}
         {related.length > 0 && (
@@ -315,16 +360,24 @@ export const BlogPage: React.FC = () => {
         title={pageTitle}
         description={pageDesc}
         canonical="/blog"
-        keywords={[
+        keywords={language === 'en' ? [
+          'beauty blog Białystok',
+          'permanent makeup tips',
+          'beauty salon blog',
+          'brow lash care tips',
+          'beauty trends 2026',
+        ] : language === 'ru' ? [
+          'бьюти блог Белосток',
+          'перманентный макияж советы',
+          'блог салона красоты',
+          'уход за бровями и ресницами',
+          'тренды красоты 2026',
+        ] : [
           'blog beauty Białystok',
           'makijaż permanentny porady',
           'salon kosmetyczny blog',
           'pielęgnacja brwi rzęs',
           'trendy beauty 2026',
-        ]}
-        breadcrumbs={[
-          { name: 'Strona główna', url: '/' },
-          { name: 'Blog', url: '/blog' },
         ]}
         structuredData={filteredPosts.length > 0 ? {
           '@context': 'https://schema.org',
@@ -344,6 +397,10 @@ export const BlogPage: React.FC = () => {
           })),
         } : undefined}
       />
+      <BreadcrumbSchema items={[
+        { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
+        { name: 'Blog', url: '/blog' },
+      ]} />
 
       {/* Hero */}
       <div className="relative overflow-hidden py-20 md:py-28">

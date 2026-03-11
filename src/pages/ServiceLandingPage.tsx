@@ -4,15 +4,16 @@ import { LocalizedLink } from '../components/LocalizedLink';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { SEO } from '../components/SEO';
+import { BreadcrumbSchema, BASE_URL, BUSINESS_PROVIDER, BUSINESS_GEO, BUSINESS_AGGREGATE_RATING } from '../components/schema';
 import { supabase } from '../lib/supabase';
-import { Service } from '../types';
+import { Service, BlogPost } from '../types';
 import { ServiceCard } from '../components/ServiceCard';
 import { serviceImages } from '../assets/images';
 import { getServiceName } from '../utils/serviceTranslation';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getLandingPageBySlug, LandingPageConfig, LocalizedText } from '../data/landingPages';
-
-const BASE_URL = 'https://katarzynabrui.pl';
+import { getLandingRelationship } from '../data/contentRelationships';
+import { getLocalizedField } from '../utils/blockRenderer';
 
 const loc = (text: LocalizedText, language: string): string =>
   text[language as keyof LocalizedText] || text.pl;
@@ -38,11 +39,15 @@ export const ServiceLandingPage: React.FC = () => {
   const config = landingSlug ? getLandingPageBySlug(landingSlug) : undefined;
 
   const [services, setServices] = useState<Service[]>([]);
+  const [galleryImages, setGalleryImages] = useState<{ id: string; url: string; description?: string; description_en?: string; description_ru?: string }[]>([]);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!config?.category) {
       setLoading(false);
+      // Still load related blog posts for pages without a category (szkolenia)
+      if (landingSlug) loadRelatedPosts(landingSlug);
       return;
     }
     const load = async () => {
@@ -74,10 +79,46 @@ export const ServiceLandingPage: React.FC = () => {
           getImageForKey(config.imageKey),
       }));
       setServices(withImages);
+
+      // Load gallery images from service_images for this category
+      if (config.showEffectsGallery !== false) {
+        const serviceIds = servicesRes.data.map((s: Service) => s.id);
+        if (serviceIds.length > 0) {
+          const { data: imgData } = await supabase
+            .from('service_images')
+            .select('id, url, description, description_en, description_ru')
+            .in('service_id', serviceIds)
+            .limit(8);
+          if (imgData) setGalleryImages(imgData);
+        }
+      }
+
       setLoading(false);
     };
     load();
-  }, [config?.category, config?.imageKey]);
+    if (landingSlug) loadRelatedPosts(landingSlug);
+  }, [config?.category, config?.imageKey, landingSlug]);
+
+  const loadRelatedPosts = async (slug: string) => {
+    const relationship = getLandingRelationship(slug);
+    if (!relationship || relationship.relatedBlogCategories.length === 0) return;
+    const { data } = await supabase
+      .from('blog_posts')
+      .select('id, title, title_en, title_ru, slug, excerpt, excerpt_en, excerpt_ru, cover_image_url, published_at, reading_time_minutes, category')
+      .eq('is_published', true)
+      .in('category', relationship.relatedBlogCategories)
+      .order('published_at', { ascending: false })
+      .limit(3);
+    if (data) setRelatedPosts(data as BlogPost[]);
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString(
+      language === 'pl' ? 'pl-PL' : language === 'ru' ? 'ru-RU' : 'en-US',
+      { year: 'numeric', month: 'long', day: 'numeric' }
+    );
+  };
 
   // 404 — slug not found
   if (!config) {
@@ -99,7 +140,7 @@ export const ServiceLandingPage: React.FC = () => {
   const seoDesc = loc(config.seo.description, language);
   const seoKeywords = loc(config.seo.keywords, language).split(', ');
 
-  // Structured data: Service + FAQPage
+  // Structured data: Service + FAQPage — uses shared business constants
   const serviceSchema: Record<string, unknown> = {
     '@type': 'Service',
     'name': loc(config.hero.title, language),
@@ -107,28 +148,10 @@ export const ServiceLandingPage: React.FC = () => {
     'url': `${BASE_URL}/${config.slug}`,
     'image': heroImage,
     'provider': {
-      '@type': 'BeautySalon',
-      'name': 'Salon Kosmetyczny Katarzyna Brui',
-      'telephone': '+48880435102',
-      'url': BASE_URL,
-      'address': {
-        '@type': 'PostalAddress',
-        'streetAddress': 'ul. Młynowa 46, Lok U11',
-        'addressLocality': 'Białystok',
-        'postalCode': '15-404',
-        'addressCountry': 'PL',
-      },
-      'geo': {
-        '@type': 'GeoCoordinates',
-        'latitude': 53.1325,
-        'longitude': 23.1688,
-      },
-      'aggregateRating': {
-        '@type': 'AggregateRating',
-        'ratingValue': '5.0',
-        'reviewCount': '384',
-        'bestRating': '5',
-      },
+      ...BUSINESS_PROVIDER,
+      url: BASE_URL,
+      geo: BUSINESS_GEO,
+      aggregateRating: BUSINESS_AGGREGATE_RATING,
     },
     'areaServed': {
       '@type': 'City',
@@ -182,12 +205,12 @@ export const ServiceLandingPage: React.FC = () => {
         image={heroImage}
         keywords={seoKeywords}
         structuredData={structuredData}
-        breadcrumbs={[
-          { name: 'Strona główna', url: '/' },
-          { name: t.services || 'Usługi', url: '/services' },
-          { name: loc(config.hero.title, language), url: `/${config.slug}` },
-        ]}
       />
+      <BreadcrumbSchema items={[
+        { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
+        { name: t.services || 'Usługi', url: '/services' },
+        { name: loc(config.hero.title, language), url: `/${config.slug}` },
+      ]} />
 
       {/* Hero */}
       <section className="relative overflow-hidden h-72 md:h-96">
@@ -216,7 +239,34 @@ export const ServiceLandingPage: React.FC = () => {
         <p className="text-lg text-gray-600 leading-relaxed">
           {loc(config.intro, language)}
         </p>
+        {config.extendedIntro && (
+          <p className="text-lg text-gray-600 leading-relaxed mt-4">
+            {loc(config.extendedIntro, language)}
+          </p>
+        )}
       </section>
+
+      {/* Procedure Steps */}
+      {config.procedureSteps && config.procedureSteps.length > 0 && (
+        <section className="max-w-4xl mx-auto px-4 py-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            {lp?.procedureSteps || 'Przebieg zabiegu'}
+          </h2>
+          <div className="space-y-6">
+            {config.procedureSteps.map((step, i) => (
+              <div key={i} className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-lg">
+                  {i + 1}
+                </div>
+                <div className="pt-1">
+                  <h3 className="font-semibold text-gray-900 mb-1">{loc(step.title, language)}</h3>
+                  <p className="text-gray-600 leading-relaxed">{loc(step.description, language)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Services grid */}
       {config.category && (
@@ -242,6 +292,21 @@ export const ServiceLandingPage: React.FC = () => {
         </section>
       )}
 
+      {/* Pricing Link */}
+      {config.pricingLink && (
+        <section className="max-w-4xl mx-auto px-4 py-6">
+          <LocalizedLink
+            to={config.pricingLink.url}
+            className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl p-5 hover:bg-amber-100 transition-colors group"
+          >
+            <span className="font-medium text-gray-900">{loc(config.pricingLink.text, language)}</span>
+            <svg className="w-5 h-5 text-amber-500 group-hover:translate-x-1 transition-transform flex-shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </LocalizedLink>
+        </section>
+      )}
+
       {/* Benefits */}
       <section className="max-w-4xl mx-auto px-4 py-10">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -260,6 +325,61 @@ export const ServiceLandingPage: React.FC = () => {
           ))}
         </ul>
       </section>
+
+      {/* Contraindications */}
+      {config.contraindications && config.contraindications.length > 0 && (
+        <section className="max-w-4xl mx-auto px-4 py-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {lp?.contraindications || 'Przeciwwskazania'}
+          </h2>
+          <div className="bg-red-50 border border-red-100 rounded-2xl p-6">
+            <ul className="space-y-2">
+              {config.contraindications.map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <svg className="w-5 h-5 mt-0.5 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="text-gray-700">{loc(item, language)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Effects Gallery */}
+      {config.showEffectsGallery !== false && galleryImages.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {lp?.effectsGallery || 'Galeria efektów'}
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {galleryImages.map(img => (
+              <div key={img.id} className="relative overflow-hidden rounded-xl aspect-square group">
+                <img
+                  src={img.url}
+                  alt={
+                    (language === 'en' ? img.description_en : language === 'ru' ? img.description_ru : img.description) ||
+                    loc(config.hero.title, language)
+                  }
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  width={300}
+                  height={300}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-6">
+            <LocalizedLink to="/gallery" className="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center gap-1">
+              {lp?.viewFullGallery || 'Zobacz pełną galerię'}
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </LocalizedLink>
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       {config.faq.length > 0 && (
@@ -291,6 +411,45 @@ export const ServiceLandingPage: React.FC = () => {
                   {language === 'en' ? item.answer_en : language === 'ru' ? item.answer_ru : item.answer}
                 </div>
               </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Related Articles */}
+      {relatedPosts.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            {lp?.relatedArticles || 'Powiązane artykuły'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedPosts.map(post => (
+              <LocalizedLink
+                key={post.id}
+                to={`/blog/${post.slug}`}
+                className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div className="relative overflow-hidden h-48">
+                  {post.cover_image_url ? (
+                    <img
+                      src={post.cover_image_url}
+                      alt={getLocalizedField(post, 'title', language)}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      width={400}
+                      height={192}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600" />
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                    {getLocalizedField(post, 'title', language)}
+                  </h3>
+                  <p className="text-sm text-gray-500">{formatDate(post.published_at)}</p>
+                </div>
+              </LocalizedLink>
             ))}
           </div>
         </section>

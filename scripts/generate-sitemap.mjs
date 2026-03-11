@@ -24,6 +24,20 @@ const loadEnv = async () => {
 
 const BASE_URL = 'https://katarzynabrui.pl';
 const LOCALES = ['pl', 'en', 'ru'];
+
+// Category slug map (must match src/utils/categorySlugMap.ts)
+const CATEGORY_SLUG_MAP = {
+  'makijaż permanentny': 'makijaz-permanentny',
+  'stylizacja rzęs': 'stylizacja-rzes',
+  'rzęsy': 'rzesy',
+  'pielęgnacja brwi': 'pielegnacja-brwi',
+  'peeling węglowy': 'peeling-weglowy',
+  'laserowe usuwanie': 'laserowe-usuwanie',
+  'manicure': 'manicure',
+  'pakiety': 'pakiety',
+};
+const getCategorySlug = (name) =>
+  CATEGORY_SLUG_MAP[name] || CATEGORY_SLUG_MAP[name.toLowerCase()] || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 const SITEMAP_PATH = `${process.cwd()}/public/sitemap.xml`;
 
 const DYNAMIC_START = '<!-- DYNAMIC CONTENT START: auto-generated. Do not edit manually. -->';
@@ -289,7 +303,7 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
   if (categories.length > 0) {
     lines.push('  <!-- Dynamic service category URLs -->');
     for (const cat of categories) {
-      const barePath = `/services/${encodeURIComponent(cat.name)}`;
+      const barePath = `/services/${getCategorySlug(cat.name)}`;
       lines.push(
         renderLocalizedEntries({
           barePath,

@@ -473,11 +473,11 @@
   </url>
   <!-- Dynamic service category URLs -->
   <url>
-    <loc>https://katarzynabrui.pl/services/Laserowe%20usuwanie</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
+    <loc>https://katarzynabrui.pl/services/laserowe-usuwanie</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
@@ -486,11 +486,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Laserowe%20usuwanie</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
+    <loc>https://katarzynabrui.pl/en/services/laserowe-usuwanie</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
@@ -499,11 +499,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Laserowe%20usuwanie</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Laserowe%20usuwanie"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Laserowe%20usuwanie"/>
+    <loc>https://katarzynabrui.pl/ru/services/laserowe-usuwanie</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/laserowe-usuwanie"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/laserowe-usuwanie"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323485036-8f837333-ed0a-45af-865e-8bea93830b7b.webp</image:loc>
       <image:title>Laserowe usuwanie – salon Katarzyna Brui Białystok</image:title>
@@ -512,11 +512,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
+    <loc>https://katarzynabrui.pl/services/makijaz-permanentny</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
@@ -525,11 +525,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Makija%C5%BC%20permanentny</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
+    <loc>https://katarzynabrui.pl/en/services/makijaz-permanentny</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
@@ -538,11 +538,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Makija%C5%BC%20permanentny</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Makija%C5%BC%20permanentny"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Makija%C5%BC%20permanentny"/>
+    <loc>https://katarzynabrui.pl/ru/services/makijaz-permanentny</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/makijaz-permanentny"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/makijaz-permanentny"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/5a73327f21184b88a8b9fedfb56a61-katarzyna-brui-biz-photo-1d98bd067f1944208bd8a14a6dcbde-booksy.jpeg</image:loc>
       <image:title>Makijaż permanentny brwi – salon Katarzyna Brui Białystok</image:title>
@@ -551,11 +551,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Manicure%20i%20pedicure</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
+    <loc>https://katarzynabrui.pl/services/manicure-i-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
@@ -564,11 +564,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Manicure%20i%20pedicure</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
+    <loc>https://katarzynabrui.pl/en/services/manicure-i-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
@@ -577,11 +577,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Manicure%20i%20pedicure"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Manicure%20i%20pedicure"/>
+    <loc>https://katarzynabrui.pl/ru/services/manicure-i-pedicure</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/manicure-i-pedicure"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/manicure-i-pedicure"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772380114743-e44fad91-53ab-45ba-9762-4f079a883a49.jpg</image:loc>
       <image:title>Manicure i pedicure – salon Katarzyna Brui Białystok</image:title>
@@ -590,11 +590,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Pakiety</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Pakiety"/>
+    <loc>https://katarzynabrui.pl/services/pakiety</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/pakiety"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
@@ -603,11 +603,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Pakiety</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Pakiety"/>
+    <loc>https://katarzynabrui.pl/en/services/pakiety</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/pakiety"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
@@ -616,11 +616,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Pakiety</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Pakiety"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Pakiety"/>
+    <loc>https://katarzynabrui.pl/ru/services/pakiety</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/pakiety"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/pakiety"/>
     <image:image>
       <image:loc>https://twifcurnuhlmhhrnwpib.supabase.co/storage/v1/object/public/service-images/categories/1772323260848-3901aa4f-046c-4826-8175-451c2f521786.webp</image:loc>
       <image:title>Pakiety – salon Katarzyna Brui Białystok</image:title>
@@ -629,11 +629,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
+    <loc>https://katarzynabrui.pl/services/peeling-weglowy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
@@ -642,11 +642,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Peeling%20w%C4%99glowy</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
+    <loc>https://katarzynabrui.pl/en/services/peeling-weglowy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
@@ -655,11 +655,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Peeling%20w%C4%99glowy</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Peeling%20w%C4%99glowy"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Peeling%20w%C4%99glowy"/>
+    <loc>https://katarzynabrui.pl/ru/services/peeling-weglowy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/peeling-weglowy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/peeling-weglowy"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/service_photos/9747b7458ba3419d995eed0367b690c1.jpeg</image:loc>
       <image:title>Peeling węglowy – salon Katarzyna Brui Białystok</image:title>
@@ -668,38 +668,38 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Stylizacja%20brwi</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
+    <loc>https://katarzynabrui.pl/services/stylizacja-brwi</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Stylizacja%20brwi</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
+    <loc>https://katarzynabrui.pl/en/services/stylizacja-brwi</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Stylizacja%20brwi</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20brwi"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20brwi"/>
+    <loc>https://katarzynabrui.pl/ru/services/stylizacja-brwi</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-brwi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-brwi"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
+    <loc>https://katarzynabrui.pl/services/stylizacja-rzes</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
@@ -708,11 +708,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/en/services/Stylizacja%20rz%C4%99s</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
+    <loc>https://katarzynabrui.pl/en/services/stylizacja-rzes</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
@@ -721,11 +721,11 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://katarzynabrui.pl/ru/services/Stylizacja%20rz%C4%99s</loc>
-    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/Stylizacja%20rz%C4%99s"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/Stylizacja%20rz%C4%99s"/>
+    <loc>https://katarzynabrui.pl/ru/services/stylizacja-rzes</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/services/stylizacja-rzes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/services/stylizacja-rzes"/>
     <image:image>
       <image:loc>https://d375139ucebi94.cloudfront.net/region2/pl/162206/biz_photo/fae2fc9a84a544ceafb0a8aca24206-katarzyna-brui-biz-photo-74fdb20b9f8342fd83839bde75da44-booksy.jpeg</image:loc>
       <image:title>Stylizacja rzęs – salon Katarzyna Brui Białystok</image:title>
