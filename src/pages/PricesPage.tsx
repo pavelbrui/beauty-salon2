@@ -77,7 +77,6 @@ export const PricesPage: React.FC = () => {
         title={pt?.title || 'Cennik Zabiegów Kosmetycznych'}
         description={pt?.description || 'Pełny cennik zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku.'}
         canonical={language === 'pl' ? '/cennik' : '/prices'}
-        alternates={{ pl: '/cennik', en: '/prices', ru: '/prices' }}
         keywords={language === 'pl' ? [
           'cennik salon kosmetyczny Białystok',
           'cennik zabiegów kosmetycznych Białystok',

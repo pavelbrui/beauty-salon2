@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { stripLangPrefix } from '../hooks/useLocalizedPath';
+import { getRouteAlternates } from '../utils/routeAlternates';
 
 export interface BreadcrumbItem {
   name: string;
@@ -65,8 +66,8 @@ export const SEO: React.FC<SEOProps> = ({
   const barePath = canonical || stripLangPrefix(location.pathname) || '/';
   const url = getLocalizedUrl(barePath, language);
 
-  // Per-language paths for hreflang: use custom alternates if provided, else same barePath for all
-  const altPaths = alternates || { pl: barePath, en: barePath, ru: barePath };
+  // Per-language paths for hreflang: custom alternates → route map → same barePath fallback
+  const altPaths = alternates || getRouteAlternates(barePath);
 
   return (
     <Helmet>
