@@ -15,16 +15,11 @@ export default {
           '0%': { transform: 'scaleX(0)', transformOrigin: 'left' },
           '50%': { transform: 'scaleX(1)' },
           '100%': { transform: 'scaleX(0)', transformOrigin: 'right' }
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' }
         }
       },
       animation: {
         shimmer: 'shimmer 3s linear infinite',
-        slideRight: 'slideRight 1.5s ease-in-out infinite',
-        slideUp: 'slideUp 0.4s ease-out'
+        slideRight: 'slideRight 1.5s ease-in-out infinite'
       }
     },
   },

@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { stripLangPrefix } from '../hooks/useLocalizedPath';
+import { getRouteAlternates } from '../utils/routeAlternates';
 
 export interface BreadcrumbItem {
   name: string;
@@ -19,6 +20,12 @@ interface SEOProps {
   keywords?: string[];
   structuredData?: Record<string, unknown>;
   breadcrumbs?: BreadcrumbItem[];
+  /** Custom per-language alternate paths. Overrides default hreflang generation. */
+  alternates?: {
+    pl: string;
+    en: string;
+    ru: string;
+  };
 }
 
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
@@ -50,6 +57,7 @@ export const SEO: React.FC<SEOProps> = ({
   keywords,
   structuredData,
   breadcrumbs,
+  alternates,
 }) => {
   const { language } = useLanguage();
   const location = useLocation();
@@ -57,6 +65,9 @@ export const SEO: React.FC<SEOProps> = ({
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Makijaż Permanentny Białystok`;
   const barePath = canonical || stripLangPrefix(location.pathname) || '/';
   const url = getLocalizedUrl(barePath, language);
+
+  // Per-language paths for hreflang: custom alternates → route map → same barePath fallback
+  const altPaths = alternates || getRouteAlternates(barePath);
 
   return (
     <Helmet>
@@ -71,9 +82,9 @@ export const SEO: React.FC<SEOProps> = ({
 
       {/* Hreflang alternate links — skip for noindex pages */}
       {!noindex && LANGUAGES.map(lang => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={getLocalizedUrl(barePath, lang)} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={getLocalizedUrl(altPaths[lang], lang)} />
       ))}
-      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${barePath}`} />}
+      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${altPaths.pl}`} />}
 
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={fullTitle} />

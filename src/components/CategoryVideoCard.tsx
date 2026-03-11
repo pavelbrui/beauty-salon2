@@ -8,6 +8,7 @@ interface CategoryVideoCardProps {
   servicesCountLabel: string;
   ctaLabel: string;
   onClick: () => void;
+  poster?: string;
   imgLoading?: 'eager' | 'lazy';
 }
 
@@ -19,6 +20,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
   servicesCountLabel,
   ctaLabel,
   onClick,
+  poster,
   imgLoading = 'lazy',
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -131,7 +133,7 @@ export const CategoryVideoCard: React.FC<CategoryVideoCardProps> = ({
         <video
           ref={setVideoRef}
           src={videoUrl}
-          poster={image}
+          poster={poster || image}
           muted
           loop
           playsInline

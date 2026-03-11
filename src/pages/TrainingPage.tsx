@@ -118,13 +118,21 @@ export const TrainingPage: React.FC = () => {
           description={trainingDesc}
           canonical={`/training/${training.slug}`}
           image={training.cover_image_url_detail || training.cover_image_url || undefined}
-          keywords={[
+          keywords={language === 'en' ? [
+            `${trainingTitle.toLowerCase()} course Białystok`,
+            `${trainingTitle.toLowerCase()} training`,
+            'beauty courses Białystok',
+          ] : language === 'ru' ? [
+            `обучение ${trainingTitle.toLowerCase()} Белосток`,
+            `курс ${trainingTitle.toLowerCase()}`,
+            'бьюти курсы Белосток',
+          ] : [
             `szkolenie ${training.title.toLowerCase()} Białystok`,
             `kurs ${training.title.toLowerCase()}`,
             'szkolenia beauty Białystok',
           ]}
           breadcrumbs={[
-            { name: 'Strona główna', url: '/' },
+            { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
             { name: tp?.header || t.training || 'Szkolenia', url: '/training' },
             { name: trainingTitle, url: `/training/${training.slug}` },
           ]}
@@ -258,18 +266,31 @@ export const TrainingPage: React.FC = () => {
         title={pageTitle}
         description={pageDesc}
         canonical="/training"
-        keywords={[
+        keywords={language === 'en' ? [
+          'permanent makeup course Białystok',
+          'beauty training Białystok',
+          'microblading course Poland',
+          'lash styling course',
+          'beauty courses Poland',
+          'permanent makeup training',
+        ] : language === 'ru' ? [
+          'обучение перманентному макияжу Белосток',
+          'курс перманентного макияжа Белосток',
+          'бьюти курсы Белосток',
+          'курс микроблейдинг',
+          'обучение наращиванию ресниц',
+          'косметические курсы Белосток',
+        ] : [
           'szkolenie makijaż permanentny Białystok',
           'kurs makijażu permanentnego Białystok',
           'szkolenia beauty Białystok',
           'kurs linergistka',
           'szkolenie microblading',
           'kurs stylizacji rzęs',
-          'permanent makeup course Poland',
           'szkolenia kosmetyczne Białystok',
         ]}
         breadcrumbs={[
-          { name: 'Strona główna', url: '/' },
+          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
           { name: tp?.header || t.training || 'Szkolenia', url: '/training' },
         ]}
         structuredData={trainings.length > 0 ? {

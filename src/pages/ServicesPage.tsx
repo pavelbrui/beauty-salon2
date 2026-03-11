@@ -9,8 +9,14 @@ import { ServiceSection } from '../components/ServiceSection';
 import { BookingModal } from '../components/BookingModal';
 import { serviceImages } from '../assets/images';
 import { SEO } from '../components/SEO';
+import { ServiceSchema, BreadcrumbSchema, BASE_URL } from '../components/schema';
 import { getCategoryName } from '../utils/serviceTranslation';
+import { getCategorySlug, getCategoryNameFromSlug } from '../utils/categorySlugMap';
 import { prerenderReady } from '../utils/prerenderReady';
+import { getBlogCategoriesForServiceCategory } from '../data/contentRelationships';
+import { BlogPost } from '../types';
+import { getLocalizedField } from '../utils/blockRenderer';
+import { LocalizedLink } from '../components/LocalizedLink';
 
 interface CategorySEO {
   title: string;
@@ -18,159 +24,172 @@ interface CategorySEO {
   keywords: string[];
 }
 
-const categorySEOData: Record<string, CategorySEO> = {
-  'makijaż permanentny': {
-    title: 'Makijaż Permanentny Białystok - Brwi, Usta, Oczy',
-    description: 'Profesjonalny makijaż permanentny brwi, ust i oczu w Białymstoku. Microblading, metoda pudrowa, ombre. Bezpłatna konsultacja. Umów wizytę - Salon Katarzyna Brui.',
-    keywords: [
-      'makijaż permanentny Białystok',
-      'makijaż permanentny brwi Białystok',
-      'makijaż permanentny ust Białystok',
-      'microblading Białystok',
-      'makijaż permanentny brwi cena',
-      'metoda pudrowa brwi Białystok',
-      'makijaż permanentny oczu',
-      'ombre brwi permanentne',
-      'pigmentacja brwi Białystok',
-      'linergistka Białystok',
-      'korekta makijażu permanentnego',
-      'najlepszy makijaż permanentny Białystok',
-      'makijaż permanentny brwi metoda pudrowa',
-      'ile kosztuje makijaż permanentny brwi',
-    ],
+interface MultiLangCategorySEO {
+  pl: CategorySEO;
+  en: CategorySEO;
+  ru: CategorySEO;
+}
+
+const categorySEOData: Record<string, MultiLangCategorySEO> = {
+  'makijaz-permanentny': {
+    pl: {
+      title: 'Makijaż Permanentny Białystok - Brwi, Usta, Oczy',
+      description: 'Profesjonalny makijaż permanentny brwi, ust i oczu w Białymstoku. Microblading, metoda pudrowa, ombre. Bezpłatna konsultacja. Umów wizytę - Salon Katarzyna Brui.',
+      keywords: ['makijaż permanentny Białystok', 'makijaż permanentny brwi Białystok', 'makijaż permanentny ust Białystok', 'microblading Białystok', 'makijaż permanentny brwi cena', 'metoda pudrowa brwi Białystok', 'ombre brwi permanentne', 'pigmentacja brwi Białystok', 'linergistka Białystok', 'najlepszy makijaż permanentny Białystok'],
+    },
+    en: {
+      title: 'Permanent Makeup Białystok - Brows, Lips, Eyes',
+      description: 'Professional permanent makeup for brows, lips and eyes in Białystok. Microblading, powder brows, ombre. Free consultation. Book now - Katarzyna Brui Salon.',
+      keywords: ['permanent makeup Białystok', 'microblading Białystok', 'powder brows Białystok', 'permanent brow makeup', 'ombre brows', 'permanent lip makeup Białystok', 'best permanent makeup Białystok'],
+    },
+    ru: {
+      title: 'Перманентный макияж Белосток - Брови, Губы, Глаза',
+      description: 'Профессиональный перманентный макияж бровей, губ и глаз в Белостоке. Микроблейдинг, пудровая техника, омбре. Бесплатная консультация. Запишитесь - Салон Катажина Бруй.',
+      keywords: ['перманентный макияж Белосток', 'микроблейдинг Белосток', 'пудровые брови Белосток', 'перманент бровей', 'перманент губ Белосток', 'омбре брови'],
+    },
   },
-  'stylizacja rzęs': {
-    title: 'Przedłużanie i Laminacja Rzęs Białystok',
-    description: 'Profesjonalne przedłużanie rzęs 1:1, 2-3D, Russian Volume oraz laminacja i lifting rzęs w Białymstoku. Naturalne efekty. Umów wizytę - Salon Katarzyna Brui.',
-    keywords: [
-      'przedłużanie rzęs Białystok',
-      'stylizacja rzęs Białystok',
-      'rzęsy 1:1 Białystok',
-      'rzęsy objętościowe Białystok',
-      'przedłużanie rzęs 2D 3D Białystok',
-      'przedłużanie rzęs cena Białystok',
-      'uzupełnienie rzęs Białystok',
-      'Russian Volume rzęsy Białystok',
-      'rzęsy mokry efekt Białystok',
-      'najlepsza stylizacja rzęs Białystok',
-      'ile kosztuje przedłużanie rzęs',
-      'salon rzęs Białystok',
-    ],
+  'stylizacja-rzes': {
+    pl: {
+      title: 'Przedłużanie i Laminacja Rzęs Białystok',
+      description: 'Profesjonalne przedłużanie rzęs 1:1, 2-3D, Russian Volume oraz laminacja i lifting rzęs w Białymstoku. Naturalne efekty. Umów wizytę - Salon Katarzyna Brui.',
+      keywords: ['przedłużanie rzęs Białystok', 'stylizacja rzęs Białystok', 'rzęsy 1:1 Białystok', 'rzęsy objętościowe Białystok', 'Russian Volume rzęsy Białystok', 'ile kosztuje przedłużanie rzęs', 'salon rzęs Białystok'],
+    },
+    en: {
+      title: 'Lash Extensions & Lash Lift Białystok',
+      description: 'Professional lash extensions 1:1, 2-3D, Russian Volume and lash lift in Białystok. Natural look. Book now - Katarzyna Brui Salon.',
+      keywords: ['lash extensions Białystok', 'Russian Volume lashes Białystok', 'lash lift Białystok', 'eyelash extensions Poland', 'best lash extensions Białystok'],
+    },
+    ru: {
+      title: 'Наращивание и ламинирование ресниц Белосток',
+      description: 'Профессиональное наращивание ресниц 1:1, 2-3D, Russian Volume и ламинирование ресниц в Белостоке. Натуральный эффект. Запишитесь - Салон Катажина Бруй.',
+      keywords: ['наращивание ресниц Белосток', 'ресницы Russian Volume Белосток', 'ламинирование ресниц Белосток', 'наращивание ресниц цена Белосток'],
+    },
   },
-  'rzęsy': {
-    title: 'Lifting i Botox Rzęs Białystok',
-    description: 'Lifting rzęs, botox rzęs i henna rzęs w Białymstoku. Naturalnie podkręcone i odżywione rzęsy. Efekty do 8 tygodni. Umów wizytę - Salon Katarzyna Brui.',
-    keywords: [
-      'lifting rzęs Białystok',
-      'laminacja rzęs Białystok',
-      'botox rzęs Białystok',
-      'henna rzęs Białystok',
-      'lifting rzęs cena',
-      'laminacja rzęs cena Białystok',
-      'ile kosztuje lifting rzęs',
-      'lifting rzęs efekty',
-    ],
+  'rzesy': {
+    pl: {
+      title: 'Lifting i Botox Rzęs Białystok',
+      description: 'Lifting rzęs, botox rzęs i henna rzęs w Białymstoku. Naturalnie podkręcone i odżywione rzęsy. Efekty do 8 tygodni. Umów wizytę - Salon Katarzyna Brui.',
+      keywords: ['lifting rzęs Białystok', 'laminacja rzęs Białystok', 'botox rzęs Białystok', 'henna rzęs Białystok', 'lifting rzęs cena', 'ile kosztuje lifting rzęs'],
+    },
+    en: {
+      title: 'Lash Lift & Lash Botox Białystok',
+      description: 'Lash lift, lash botox and lash tinting in Białystok. Naturally curled and nourished lashes. Results up to 8 weeks. Book now - Katarzyna Brui Salon.',
+      keywords: ['lash lift Białystok', 'lash botox Białystok', 'lash tinting Białystok', 'lash lamination Białystok'],
+    },
+    ru: {
+      title: 'Лифтинг и ботокс ресниц Белосток',
+      description: 'Лифтинг ресниц, ботокс ресниц и окрашивание ресниц в Белостоке. Естественно подкрученные и ухоженные ресницы. Эффект до 8 недель. Запишитесь - Салон Катажина Бруй.',
+      keywords: ['лифтинг ресниц Белосток', 'ботокс ресниц Белосток', 'окрашивание ресниц Белосток', 'ламинирование ресниц Белосток'],
+    },
   },
-  'pielęgnacja brwi': {
-    title: 'Laminacja i Henna Brwi Białystok',
-    description: 'Laminacja brwi, henna pudrowa, regulacja i stylizacja brwi w Białymstoku. Profesjonalna architektura brwi. Efekty do 6 tygodni. Umów wizytę online.',
-    keywords: [
-      'laminacja brwi Białystok',
-      'henna brwi Białystok',
-      'regulacja brwi Białystok',
-      'laminacja brwi cena Białystok',
-      'henna pudrowa brwi Białystok',
-      'stylizacja brwi Białystok',
-      'architektura brwi Białystok',
-      'laminacja brwi + henna Białystok',
-      'botox brwi Białystok',
-      'ile kosztuje laminacja brwi',
-      'jak długo utrzymuje się laminacja brwi',
-      'najlepsza stylizacja brwi Białystok',
-    ],
+  'pielegnacja-brwi': {
+    pl: {
+      title: 'Laminacja i Henna Brwi Białystok',
+      description: 'Laminacja brwi, henna pudrowa, regulacja i stylizacja brwi w Białymstoku. Profesjonalna architektura brwi. Efekty do 6 tygodni. Umów wizytę online.',
+      keywords: ['laminacja brwi Białystok', 'henna brwi Białystok', 'regulacja brwi Białystok', 'architektura brwi Białystok', 'stylizacja brwi Białystok', 'ile kosztuje laminacja brwi'],
+    },
+    en: {
+      title: 'Brow Lamination & Brow Tinting Białystok',
+      description: 'Brow lamination, powder henna, shaping and styling in Białystok. Professional brow architecture. Results up to 6 weeks. Book online.',
+      keywords: ['brow lamination Białystok', 'brow tinting Białystok', 'brow shaping Białystok', 'brow styling Białystok', 'henna brows Białystok'],
+    },
+    ru: {
+      title: 'Ламинирование и окрашивание бровей Белосток',
+      description: 'Ламинирование бровей, пудровая хна, коррекция и стилизация бровей в Белостоке. Профессиональная архитектура бровей. Эффект до 6 недель. Запишитесь онлайн.',
+      keywords: ['ламинирование бровей Белосток', 'хна бровей Белосток', 'коррекция бровей Белосток', 'архитектура бровей Белосток'],
+    },
   },
-  'peeling węglowy': {
-    title: 'Peeling Węglowy Białystok - Carbon Peel',
-    description: 'Laserowy peeling węglowy Black Doll w Białymstoku. Oczyszczanie porów, redukcja trądziku i przebarwień. Efekty po pierwszym zabiegu. Umów wizytę - Salon Katarzyna Brui.',
-    keywords: [
-      'peeling węglowy Białystok',
-      'laserowy peeling węglowy Białystok',
-      'carbon peel Białystok',
-      'black doll zabieg Białystok',
-      'peeling węglowy cena',
-      'oczyszczanie twarzy laserowe Białystok',
-      'peeling węglowy efekty',
-      'peeling węglowy na trądzik',
-      'laserowe oczyszczanie twarzy Białystok',
-      'ile kosztuje peeling węglowy',
-    ],
+  'peeling-weglowy': {
+    pl: {
+      title: 'Peeling Węglowy Białystok - Carbon Peel',
+      description: 'Laserowy peeling węglowy Black Doll w Białymstoku. Oczyszczanie porów, redukcja trądziku i przebarwień. Efekty po pierwszym zabiegu. Umów wizytę - Salon Katarzyna Brui.',
+      keywords: ['peeling węglowy Białystok', 'carbon peel Białystok', 'laserowy peeling węglowy Białystok', 'black doll Białystok', 'peeling węglowy cena', 'ile kosztuje peeling węglowy'],
+    },
+    en: {
+      title: 'Carbon Peel Białystok - Laser Carbon Peeling',
+      description: 'Laser carbon peeling Black Doll in Białystok. Pore cleansing, acne and pigmentation reduction. Results after first treatment. Book now - Katarzyna Brui Salon.',
+      keywords: ['carbon peel Białystok', 'laser carbon peeling Białystok', 'Black Doll facial Białystok', 'carbon facial Poland'],
+    },
+    ru: {
+      title: 'Карбоновый пилинг Белосток - Carbon Peel',
+      description: 'Лазерный карбоновый пилинг Black Doll в Белостоке. Очищение пор, уменьшение акне и пигментации. Результат после первой процедуры. Запишитесь - Салон Катажина Бруй.',
+      keywords: ['карбоновый пилинг Белосток', 'лазерный карбоновый пилинг Белосток', 'Black Doll Белосток', 'карбоновый пилинг цена'],
+    },
   },
-  'laserowe usuwanie': {
-    title: 'Laserowe Usuwanie Tatuażu Białystok',
-    description: 'Laserowe usuwanie tatuaży i makijażu permanentnego w Białymstoku. Skuteczne zabiegi laserem. Konsultacja gratis. Umów wizytę - Salon Katarzyna Brui.',
-    keywords: [
-      'usuwanie tatuażu Białystok',
-      'laserowe usuwanie tatuażu Białystok',
-      'usuwanie makijażu permanentnego Białystok',
-      'usuwanie tatuażu laserem cena',
-      'usuwanie tatuażu laserem Białystok',
-      'usuwanie makijażu permanentnego brwi',
-      'usuwanie kresek permanentnych',
-      'ile kosztuje usunięcie tatuażu',
-      'laser Q-Switch Białystok',
-      'redukcja tatuażu laserem Białystok',
-    ],
+  'laserowe-usuwanie': {
+    pl: {
+      title: 'Laserowe Usuwanie Tatuażu Białystok',
+      description: 'Laserowe usuwanie tatuaży i makijażu permanentnego w Białymstoku. Skuteczne zabiegi laserem. Konsultacja gratis. Umów wizytę - Salon Katarzyna Brui.',
+      keywords: ['usuwanie tatuażu Białystok', 'laserowe usuwanie tatuażu Białystok', 'usuwanie makijażu permanentnego Białystok', 'usuwanie tatuażu laserem cena', 'laser Q-Switch Białystok'],
+    },
+    en: {
+      title: 'Laser Tattoo Removal Białystok',
+      description: 'Laser tattoo and permanent makeup removal in Białystok. Effective laser treatments. Free consultation. Book now - Katarzyna Brui Salon.',
+      keywords: ['tattoo removal Białystok', 'laser tattoo removal Białystok', 'permanent makeup removal Białystok', 'Q-Switch laser Białystok'],
+    },
+    ru: {
+      title: 'Лазерное удаление тату Белосток',
+      description: 'Лазерное удаление татуировок и перманентного макияжа в Белостоке. Эффективные процедуры лазером. Бесплатная консультация. Запишитесь - Салон Катажина Бруй.',
+      keywords: ['удаление тату Белосток', 'лазерное удаление тату Белосток', 'удаление перманентного макияжа Белосток', 'лазер Q-Switch Белосток'],
+    },
   },
   'manicure': {
-    title: 'Manicure Hybrydowy i Żelowy Białystok',
-    description: 'Manicure hybrydowy, żelowy i klasyczny w Białymstoku. Profesjonalna stylizacja paznokci, trwałe zdobienia. Umów wizytę online - Salon Katarzyna Brui.',
-    keywords: [
-      'manicure Białystok',
-      'manicure hybrydowy Białystok',
-      'manicure żelowy Białystok',
-      'manicure klasyczny Białystok',
-      'paznokcie hybrydowe Białystok',
-      'stylizacja paznokci Białystok',
-      'manicure hybrydowy cena Białystok',
-      'paznokcie żelowe Białystok',
-      'salon paznokci Białystok',
-      'najlepszy manicure Białystok',
-      'zdobienia paznokci Białystok',
-    ],
+    pl: {
+      title: 'Manicure Hybrydowy i Żelowy Białystok',
+      description: 'Manicure hybrydowy, żelowy i klasyczny w Białymstoku. Profesjonalna stylizacja paznokci, trwałe zdobienia. Umów wizytę online - Salon Katarzyna Brui.',
+      keywords: ['manicure Białystok', 'manicure hybrydowy Białystok', 'manicure żelowy Białystok', 'paznokcie hybrydowe Białystok', 'stylizacja paznokci Białystok', 'najlepszy manicure Białystok'],
+    },
+    en: {
+      title: 'Gel & Hybrid Manicure Białystok',
+      description: 'Gel, hybrid and classic manicure in Białystok. Professional nail styling, lasting designs. Book online - Katarzyna Brui Salon.',
+      keywords: ['manicure Białystok', 'gel manicure Białystok', 'hybrid manicure Białystok', 'nail salon Białystok', 'best manicure Białystok'],
+    },
+    ru: {
+      title: 'Гибридный и гелевый маникюр Белосток',
+      description: 'Гибридный, гелевый и классический маникюр в Белостоке. Профессиональная стилизация ногтей, стойкий дизайн. Запишитесь онлайн - Салон Катажина Бруй.',
+      keywords: ['маникюр Белосток', 'гибридный маникюр Белосток', 'гелевый маникюр Белосток', 'ногти Белосток', 'лучший маникюр Белосток'],
+    },
   },
   'pakiety': {
-    title: 'Pakiety Zabiegów Kosmetycznych Białystok',
-    description: 'Pakiety zabiegów kosmetycznych w atrakcyjnych cenach. Makijaż permanentny, rzęsy, brwi, peeling węglowy. Oszczędź z pakietem - Salon Katarzyna Brui Białystok.',
-    keywords: [
-      'pakiety zabiegów kosmetycznych Białystok',
-      'pakiet makijaż permanentny',
-      'pakiet przedłużanie rzęs + laminacja brwi',
-      'pakiet peeling węglowy',
-      'promocje salon kosmetyczny Białystok',
-      'zabiegi w pakiecie taniej Białystok',
-    ],
+    pl: {
+      title: 'Pakiety Zabiegów Kosmetycznych Białystok',
+      description: 'Pakiety zabiegów kosmetycznych w atrakcyjnych cenach. Makijaż permanentny, rzęsy, brwi, peeling węglowy. Oszczędź z pakietem - Salon Katarzyna Brui Białystok.',
+      keywords: ['pakiety zabiegów kosmetycznych Białystok', 'pakiet makijaż permanentny', 'pakiet przedłużanie rzęs', 'promocje salon kosmetyczny Białystok'],
+    },
+    en: {
+      title: 'Beauty Treatment Packages Białystok',
+      description: 'Beauty treatment packages at attractive prices. Permanent makeup, lashes, brows, carbon peeling. Save with a package - Katarzyna Brui Salon Białystok.',
+      keywords: ['beauty packages Białystok', 'treatment packages Białystok', 'beauty deals Białystok', 'beauty salon promotions Poland'],
+    },
+    ru: {
+      title: 'Пакеты косметических процедур Белосток',
+      description: 'Пакеты косметических процедур по привлекательным ценам. Перманентный макияж, ресницы, брови, карбоновый пилинг. Сэкономьте с пакетом - Салон Катажина Бруй Белосток.',
+      keywords: ['пакеты процедур Белосток', 'пакет перманентный макияж', 'акции салон красоты Белосток'],
+    },
   },
 };
 
-const defaultSEO: CategorySEO = {
-  title: 'Usługi Kosmetyczne Białystok | Cennik Zabiegów',
-  description: 'Pełna oferta zabiegów kosmetycznych w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure, laserowe usuwanie tatuażu. Cennik i rezerwacja online.',
-  keywords: [
-    'usługi kosmetyczne Białystok',
-    'zabiegi kosmetyczne cennik',
-    'makijaż permanentny Białystok cena',
-    'stylizacja rzęs Białystok cena',
-    'laminacja brwi Białystok',
-    'peeling węglowy Białystok',
-    'manicure Białystok',
-    'laserowe usuwanie tatuażu Białystok',
-    'salon kosmetyczny cennik Białystok',
-    'pielęgnacja brwi Białystok',
-  ],
+const defaultSEOData: MultiLangCategorySEO = {
+  pl: {
+    title: 'Usługi Kosmetyczne Białystok | Cennik Zabiegów',
+    description: 'Pełna oferta zabiegów kosmetycznych w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure, laserowe usuwanie tatuażu. Cennik i rezerwacja online.',
+    keywords: ['usługi kosmetyczne Białystok', 'zabiegi kosmetyczne cennik', 'makijaż permanentny Białystok cena', 'stylizacja rzęs Białystok cena', 'laminacja brwi Białystok', 'salon kosmetyczny cennik Białystok'],
+  },
+  en: {
+    title: 'Beauty Services Białystok | Treatment Price List',
+    description: 'Full range of beauty treatments in Białystok: permanent makeup, lash extensions, brow lamination, carbon peeling, manicure, laser tattoo removal. Prices and online booking.',
+    keywords: ['beauty services Białystok', 'beauty treatments Białystok', 'permanent makeup price', 'lash extensions price', 'beauty salon price list Poland'],
+  },
+  ru: {
+    title: 'Косметические услуги Белосток | Прайс-лист',
+    description: 'Полный спектр косметических услуг в Белостоке: перманентный макияж, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр, лазерное удаление тату. Цены и запись онлайн.',
+    keywords: ['косметические услуги Белосток', 'прайс лист косметические процедуры', 'перманентный макияж цена', 'наращивание ресниц цена Белосток'],
+  },
 };
 
 export const ServicesPage: React.FC = () => {
-  const { category } = useParams();
+  const { category: categorySlug } = useParams();
+  const category = categorySlug ? getCategoryNameFromSlug(categorySlug) : undefined;
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [, setIsLoading] = useState(true);
@@ -181,10 +200,35 @@ export const ServicesPage: React.FC = () => {
   const navigate = useLocalizedNavigate();
 
   const [categoryImageMap, setCategoryImageMap] = useState<Map<string, string>>(new Map());
+  const [categoryVideoMap, setCategoryVideoMap] = useState<Map<string, string>>(new Map());
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     loadServices();
   }, []);
+
+  useEffect(() => {
+    if (category) {
+      const blogCategories = getBlogCategoriesForServiceCategory(category);
+      if (blogCategories.length > 0) {
+        supabase
+          .from('blog_posts')
+          .select('id, title, title_en, title_ru, slug, excerpt, excerpt_en, excerpt_ru, cover_image_url, published_at, reading_time_minutes, category')
+          .eq('is_published', true)
+          .in('category', blogCategories)
+          .order('published_at', { ascending: false })
+          .limit(3)
+          .then(({ data }) => {
+            if (data) setRelatedPosts(data as BlogPost[]);
+            else setRelatedPosts([]);
+          });
+      } else {
+        setRelatedPosts([]);
+      }
+    } else {
+      setRelatedPosts([]);
+    }
+  }, [category]);
 
   useEffect(() => {
     if (services.length > 0) {
@@ -195,16 +239,19 @@ export const ServicesPage: React.FC = () => {
   const sortCategoriesByOrder = async (cats: string[]) => {
     const { data } = await supabase
       .from('service_categories')
-      .select('name, sort_order, image_url')
+      .select('name, sort_order, image_url, video_url')
       .order('sort_order');
 
     if (data && data.length > 0) {
       const orderMap = new Map(data.map((c: { name: string; sort_order: number }) => [c.name, c.sort_order]));
       const imgMap = new Map<string, string>();
-      data.forEach((c: { name: string; image_url: string | null }) => {
+      const vidMap = new Map<string, string>();
+      data.forEach((c: { name: string; image_url: string | null; video_url: string | null }) => {
         if (c.image_url) imgMap.set(c.name, c.image_url);
+        if (c.video_url) vidMap.set(c.name, c.video_url);
       });
       setCategoryImageMap(imgMap);
+      setCategoryVideoMap(vidMap);
       const sorted = [...cats].sort((a, b) => {
         const oa = orderMap.get(a) ?? 999;
         const ob = orderMap.get(b) ?? 999;
@@ -269,7 +316,7 @@ export const ServicesPage: React.FC = () => {
   };
 
   const handleCategoryClick = (cat: string) => {
-    navigate(`/services/${encodeURIComponent(cat)}`);
+    navigate(`/services/${getCategorySlug(cat)}`);
   };
 
   const handleBookService = (service: Service) => {
@@ -277,76 +324,62 @@ export const ServicesPage: React.FC = () => {
     setShowBookingModal(true);
   };
 
+  const lang = language as 'pl' | 'en' | 'ru';
+  const defaultLangSEO = defaultSEOData[lang];
   const translatedDefaultSEO: CategorySEO = {
-    title: (t as any).services_seo?.title || defaultSEO.title,
-    description: (t as any).services_seo?.description || defaultSEO.description,
-    keywords: defaultSEO.keywords,
+    title: (t as any).services_seo?.title || defaultLangSEO.title,
+    description: (t as any).services_seo?.description || defaultLangSEO.description,
+    keywords: defaultLangSEO.keywords,
   };
-  const seo = category ? (categorySEOData[category] || translatedDefaultSEO) : translatedDefaultSEO;
+  const catSEOEntry = categorySlug ? categorySEOData[categorySlug] : undefined;
+  const seo = catSEOEntry ? catSEOEntry[lang] : translatedDefaultSEO;
 
   // Pick a representative image for og:image based on current category
   const categoryImage = category
     ? (categoryImageMap.get(category) || getStaticImageForCategory(category))
     : serviceImages.permanentMakeup;
 
-  // Build JSON-LD structured data for services
   const visibleServices = category
     ? services.filter(s => s.category === category)
     : services;
 
-  const servicesSchema = visibleServices.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'OfferCatalog',
-    'name': category
-      ? `${getCategoryName(category, language, (t as any).categories)} – Salon Katarzyna Brui`
-      : 'Usługi kosmetyczne – Salon Katarzyna Brui Białystok',
-    'url': `https://katarzynabrui.pl${category ? `/services/${encodeURIComponent(category)}` : '/services'}`,
-    'itemListElement': visibleServices.map(service => ({
-      '@type': 'Offer',
-      'itemOffered': {
-        '@type': 'Service',
-        'name': service.name,
-        'description': service.description || undefined,
-        'image': service.imageUrl || undefined,
-        'provider': {
-          '@type': 'BeautySalon',
-          'name': 'Salon Kosmetyczny Katarzyna Brui',
-          'address': {
-            '@type': 'PostalAddress',
-            'streetAddress': 'ul. Młynowa 46, Lok U11',
-            'addressLocality': 'Białystok',
-            'postalCode': '15-404',
-            'addressCountry': 'PL',
-          },
-        },
-      },
-      'price': (service.price / 100).toFixed(0),
-      'priceCurrency': 'PLN',
-      'availability': 'https://schema.org/InStock',
-    })),
-  } : undefined;
+  const catalogName = category
+    ? `${getCategoryName(category, language, (t as any).categories)} – Salon Katarzyna Brui`
+    : 'Usługi kosmetyczne – Salon Katarzyna Brui Białystok';
+  const catalogUrl = `${BASE_URL}${categorySlug ? `/services/${categorySlug}` : '/services'}`;
+
+  const homeName = language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna';
+  const breadcrumbItems = category
+    ? [
+        { name: homeName, url: '/' },
+        { name: t.services || 'Usługi', url: '/services' },
+        { name: getCategoryName(category, language, (t as any).categories), url: `/services/${categorySlug}` },
+      ]
+    : [
+        { name: homeName, url: '/' },
+        { name: t.services || 'Usługi', url: '/services' },
+      ];
 
   return (
     <main className="pt-16 min-h-screen bg-neutral-50">
       <SEO
         title={seo.title}
         description={seo.description}
-        canonical={category ? `/services/${encodeURIComponent(category)}` : '/services'}
+        canonical={categorySlug ? `/services/${categorySlug}` : '/services'}
         image={categoryImage}
         keywords={seo.keywords}
-        structuredData={servicesSchema}
-        breadcrumbs={category
-          ? [
-              { name: 'Strona główna', url: '/' },
-              { name: t.services || 'Usługi', url: '/services' },
-              { name: getCategoryName(category, language, (t as any).categories), url: `/services/${encodeURIComponent(category)}` },
-            ]
-          : [
-              { name: 'Strona główna', url: '/' },
-              { name: t.services || 'Usługi', url: '/services' },
-            ]
-        }
       />
+      <ServiceSchema
+        catalogName={catalogName}
+        url={catalogUrl}
+        services={visibleServices.map(s => ({
+          name: s.name,
+          description: s.description || undefined,
+          image: s.imageUrl || undefined,
+          price: s.price,
+        }))}
+      />
+      <BreadcrumbSchema items={breadcrumbItems} />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
         
@@ -387,12 +420,92 @@ export const ServicesPage: React.FC = () => {
           ))}
         </div>
 
+        {/* Related Articles for current category */}
+        {category && relatedPosts.length > 0 && (
+          <div className="mt-12 pt-10 border-t border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {((t as Record<string, unknown>).landing_pages as Record<string, string>)?.relatedArticles || 'Powiązane artykuły'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedPosts.map(post => {
+                const postTitle = getLocalizedField(post, 'title', language);
+                const postExcerpt = getLocalizedField(post, 'excerpt', language);
+                const formatDate = (dateStr?: string) => {
+                  if (!dateStr) return '';
+                  return new Date(dateStr).toLocaleDateString(
+                    language === 'pl' ? 'pl-PL' : language === 'ru' ? 'ru-RU' : 'en-US',
+                    { year: 'numeric', month: 'long', day: 'numeric' }
+                  );
+                };
+                return (
+                  <LocalizedLink
+                    key={post.id}
+                    to={`/blog/${post.slug}`}
+                    className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <div className="relative overflow-hidden h-48">
+                      {post.cover_image_url ? (
+                        <img
+                          src={post.cover_image_url}
+                          alt={postTitle}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                          width={400}
+                          height={192}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600" />
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                        {postTitle}
+                      </h3>
+                      {postExcerpt && (
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">{postExcerpt}</p>
+                      )}
+                      <p className="text-sm text-gray-500">{formatDate(post.published_at)}</p>
+                    </div>
+                  </LocalizedLink>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {showBookingModal && selectedService && (
           <BookingModal
             service={selectedService}
             onClose={() => setShowBookingModal(false)}
           />
         )}
+
+        {/* VideoObject structured data for categories with videos */}
+        {(() => {
+          const videoCats = (category ? [category] : categories).filter(c => categoryVideoMap.get(c));
+          if (videoCats.length === 0) return null;
+          return (
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
+              videoCats.map(c => ({
+                '@context': 'https://schema.org',
+                '@type': 'VideoObject',
+                name: language === 'en'
+                  ? `${getCategoryName(c, language, (t as any).categories)} – Katarzyna Brui Beauty Salon`
+                  : language === 'ru'
+                  ? `${getCategoryName(c, language, (t as any).categories)} – Салон красоты Катажина Бруй`
+                  : `${getCategoryName(c, language, (t as any).categories)} – Salon Katarzyna Brui Białystok`,
+                description: language === 'en'
+                  ? `${getCategoryName(c, language, (t as any).categories)} services at Katarzyna Brui beauty salon in Białystok.`
+                  : language === 'ru'
+                  ? `${getCategoryName(c, language, (t as any).categories)} – услуги салона красоты Катажина Бруй, Белосток.`
+                  : `${getCategoryName(c, language, (t as any).categories)} – zabiegi w salonie kosmetycznym Katarzyna Brui, Białystok.`,
+                thumbnailUrl: categoryImageMap.get(c) || getStaticImageForCategory(c),
+                contentUrl: categoryVideoMap.get(c),
+                uploadDate: '2025-01-01',
+              }))
+            )}} />
+          );
+        })()}
       </div>
     </main>
   );

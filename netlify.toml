@@ -14,6 +14,154 @@
   to = "/.netlify/functions/sitemap"
   status = 200
 
+# 301 redirects: old encoded category URLs → clean slugs (PL)
+[[redirects]]
+  from = "/services/Makija%C5%BC%20permanentny"
+  to = "/services/makijaz-permanentny"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Stylizacja%20rz%C4%99s"
+  to = "/services/stylizacja-rzes"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Rz%C4%99sy"
+  to = "/services/rzesy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Piel%C4%99gnacja%20brwi"
+  to = "/services/pielegnacja-brwi"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Peeling%20w%C4%99glowy"
+  to = "/services/peeling-weglowy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Laserowe%20usuwanie"
+  to = "/services/laserowe-usuwanie"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Manicure"
+  to = "/services/manicure"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/Pakiety"
+  to = "/services/pakiety"
+  status = 301
+  force = true
+
+# 301 redirects: old encoded category URLs → clean slugs (EN)
+[[redirects]]
+  from = "/en/services/Makija%C5%BC%20permanentny"
+  to = "/en/services/makijaz-permanentny"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Stylizacja%20rz%C4%99s"
+  to = "/en/services/stylizacja-rzes"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Rz%C4%99sy"
+  to = "/en/services/rzesy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Piel%C4%99gnacja%20brwi"
+  to = "/en/services/pielegnacja-brwi"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Peeling%20w%C4%99glowy"
+  to = "/en/services/peeling-weglowy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Laserowe%20usuwanie"
+  to = "/en/services/laserowe-usuwanie"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Manicure"
+  to = "/en/services/manicure"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/services/Pakiety"
+  to = "/en/services/pakiety"
+  status = 301
+  force = true
+
+# 301 redirects: old encoded category URLs → clean slugs (RU)
+[[redirects]]
+  from = "/ru/services/Makija%C5%BC%20permanentny"
+  to = "/ru/services/makijaz-permanentny"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Stylizacja%20rz%C4%99s"
+  to = "/ru/services/stylizacja-rzes"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Rz%C4%99sy"
+  to = "/ru/services/rzesy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Piel%C4%99gnacja%20brwi"
+  to = "/ru/services/pielegnacja-brwi"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Peeling%20w%C4%99glowy"
+  to = "/ru/services/peeling-weglowy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Laserowe%20usuwanie"
+  to = "/ru/services/laserowe-usuwanie"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Manicure"
+  to = "/ru/services/manicure"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ru/services/Pakiety"
+  to = "/ru/services/pakiety"
+  status = 301
+  force = true
+
+# SPA catch-all (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
