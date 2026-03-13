@@ -7,6 +7,7 @@ import { SEO } from '../components/SEO';
 import { ServiceSchema, BreadcrumbSchema, BASE_URL } from '../components/schema';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { getCategoryName, getServiceName } from '../utils/serviceTranslation';
+import { prerenderReady } from '../utils/prerenderReady';
 
 export const PricesPage: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -30,6 +31,7 @@ export const PricesPage: React.FC = () => {
     if (servicesRes.error) {
       console.error('Error loading services:', servicesRes.error);
       setIsLoading(false);
+      prerenderReady();
       return;
     }
 
@@ -49,6 +51,7 @@ export const PricesPage: React.FC = () => {
     }
 
     setIsLoading(false);
+    prerenderReady();
   };
 
   const formatPrice = (price: number) => `${(price / 100).toFixed(0)} PLN`;

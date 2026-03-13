@@ -14,6 +14,7 @@ import { getCategoryName } from '../utils/serviceTranslation';
 import { getLandingPageBySlug, LandingPageConfig, LocalizedText } from '../data/landingPages';
 import { getLandingRelationship } from '../data/contentRelationships';
 import { getLocalizedField } from '../utils/blockRenderer';
+import { prerenderReady } from '../utils/prerenderReady';
 
 const loc = (text: LocalizedText, language: string): string =>
   text[language as keyof LocalizedText] || text.pl;
@@ -46,6 +47,7 @@ export const ServiceLandingPage: React.FC = () => {
   useEffect(() => {
     if (!config?.category) {
       setLoading(false);
+      prerenderReady();
       // Still load related blog posts for pages without a category (szkolenia)
       if (landingSlug) loadRelatedPosts(landingSlug);
       return;
@@ -63,6 +65,7 @@ export const ServiceLandingPage: React.FC = () => {
       if (servicesRes.error) {
         console.error('Error loading services:', servicesRes.error);
         setLoading(false);
+        prerenderReady();
         return;
       }
       const catImgMap = new Map<string, string>();
@@ -94,6 +97,7 @@ export const ServiceLandingPage: React.FC = () => {
       }
 
       setLoading(false);
+      prerenderReady();
     };
     load();
     if (landingSlug) loadRelatedPosts(landingSlug);
