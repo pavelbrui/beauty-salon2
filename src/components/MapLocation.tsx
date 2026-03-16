@@ -18,7 +18,7 @@ export const MapLocation: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
   const mapRef = useRef<HTMLDivElement>(null);
-  const [mapFailed, setMapFailed] = useState(true);
+  const [mapFailed, setMapFailed] = useState(!MAPS_API_KEY);
 
   useEffect(() => {
     if (!MAPS_API_KEY || mapFailed) return;
