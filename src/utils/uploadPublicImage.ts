@@ -31,9 +31,12 @@ function inferExtension(file: File): string {
   return ext;
 }
 
-function sanitizeContentType(type: string | undefined): string | undefined {
+function sanitizeContentType(type: string | undefined): string {
   if (!type) return 'image/jpeg';
-  if (NON_WEB_MIMES.has(type.toLowerCase())) return 'image/jpeg';
+  const lower = type.toLowerCase();
+  if (NON_WEB_MIMES.has(lower)) return 'image/jpeg';
+  // Files with wrong or generic MIME (e.g. application/octet-stream) → force JPEG
+  if (!lower.startsWith('image/')) return 'image/jpeg';
   return type;
 }
 
@@ -59,6 +62,8 @@ export async function uploadPublicImage(params: {
   const fileName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
   const path = `${params.folder}/${fileName}`;
 
+  console.log('[upload] file:', compressed.name, 'type:', compressed.type, '→ contentType:', contentType, 'ext:', ext, 'size:', compressed.size);
+
   const { error: uploadError } = await withTimeout(
     supabase.storage.from(bucket).upload(path, compressed, {
       contentType,
@@ -69,7 +74,10 @@ export async function uploadPublicImage(params: {
     'Upload trwa zbyt długo. Sprawdź połączenie internetowe i spróbuj ponownie.'
   );
 
-  if (uploadError) throw uploadError;
+  if (uploadError) {
+    console.error('[upload] error:', uploadError.message, 'path:', path, 'size:', compressed.size);
+    throw uploadError;
+  }
 
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   if (!data?.publicUrl) {

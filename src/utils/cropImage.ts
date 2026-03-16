@@ -44,7 +44,9 @@ export function cropImageFile(
             reject(new Error('Failed to create blob from cropped image'));
             return;
           }
-          const croppedFile = new File([blob], originalFileName, {
+          // Always use .jpg extension since we output JPEG data
+          const jpgName = originalFileName.replace(/\.[^.]+$/, '.jpg');
+          const croppedFile = new File([blob], jpgName, {
             type: 'image/jpeg',
           });
           resolve(croppedFile);

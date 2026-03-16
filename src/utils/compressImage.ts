@@ -1,5 +1,6 @@
 const MAX_DIMENSION = 1920;
 const QUALITY = 0.82;
+const IMAGE_LOAD_TIMEOUT_MS = 30000; // 30s safety net
 
 // Formats that most browsers can't display — MUST be converted to JPEG/WebP
 const NON_WEB_TYPES = new Set([
@@ -37,7 +38,22 @@ export async function compressImage(
     const img = new Image();
     const url = URL.createObjectURL(file);
 
+    // Safety timeout — if Image never fires onload/onerror (e.g. very large
+    // or unusual files), we don't want the upload to hang forever.
+    const timeout = setTimeout(() => {
+      URL.revokeObjectURL(url);
+      console.warn('[compressImage] timeout loading image, using original file:', file.name, file.type, file.size);
+      if (mustConvert) {
+        reject(new Error(
+          'Przetwarzanie obrazu trwa zbyt długo. Spróbuj zmniejszyć rozmiar zdjęcia lub zapisać jako JPG.'
+        ));
+      } else {
+        resolve(file);
+      }
+    }, IMAGE_LOAD_TIMEOUT_MS);
+
     img.onload = () => {
+      clearTimeout(timeout);
       URL.revokeObjectURL(url);
 
       let { width, height } = img;
@@ -92,6 +108,12 @@ export async function compressImage(
             // version — even if larger — because browsers can't display originals.
             // For web formats, only use compressed if actually smaller.
             if (blob.size >= file.size && !mustConvert) {
+              // WebP was larger — try JPEG as well before giving up
+              if (format === 'image/webp') {
+                tryFormat('image/jpeg', q);
+                return;
+              }
+              // Both WebP and JPEG are larger — use original
               resolve(file);
               return;
             }
@@ -109,7 +131,9 @@ export async function compressImage(
     };
 
     img.onerror = () => {
+      clearTimeout(timeout);
       URL.revokeObjectURL(url);
+      console.warn('[compressImage] image load error:', file.name, file.type, file.size);
       if (mustConvert) {
         const formatHint = file.type || file.name.split('.').pop()?.toUpperCase() || 'nieznany';
         reject(new Error(
