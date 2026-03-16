@@ -37,6 +37,7 @@ export const MapLocation: React.FC = () => {
           mapTypeControl: false,
           streetViewControl: false,
           zoomControl: true,
+          mapId: '27627263eddbda42d07c7d97',
         });
 
         const marker = new window.google.maps.Marker({
@@ -55,6 +56,10 @@ export const MapLocation: React.FC = () => {
         });
 
         marker.addListener('click', () => infoWindow.open(map, marker));
+
+        // Fallback to iframe if tiles don't load within 5s
+        const timeout = setTimeout(() => setMapFailed(true), 5000);
+        map.addListener('tilesloaded', () => clearTimeout(timeout));
       } catch {
         setMapFailed(true);
       }
