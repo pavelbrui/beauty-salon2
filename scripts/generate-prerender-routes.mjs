@@ -118,6 +118,7 @@ const main = async () => {
   const staticPages = [
     '/',
     '/services',
+    '/prices',
     '/stylists',
     '/gallery',
     '/training',

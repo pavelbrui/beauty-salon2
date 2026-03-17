@@ -9,21 +9,22 @@ import { LanguageLayout } from './components/LanguageLayout';
 import { usePageTracking } from './hooks/usePageTracking';
 import { CookieConsent } from './components/CookieConsent';
 
-// Lazy-loaded pages for code splitting
-const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
-const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
-const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
-const TrainingPage = lazy(() => import('./pages/TrainingPage').then(m => ({ default: m.TrainingPage })));
-const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
-const PricesPage = lazy(() => import('./pages/PricesPage').then(m => ({ default: m.PricesPage })));
+// Static imports for SEO-critical pages (prerendered at build time)
+import { Home } from './pages/Home';
+import { ServicesPage } from './pages/ServicesPage';
+import { BlogPage } from './pages/BlogPage';
+import { TrainingPage } from './pages/TrainingPage';
+import { GalleryPage } from './pages/GalleryPage';
+import { StylistsPage } from './pages/StylistsPage';
+import { PricesPage } from './pages/PricesPage';
+import { ServiceLandingPage } from './pages/ServiceLandingPage';
 
+// Lazy-loaded pages — not indexed by search engines
+const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
 const BookingPage = lazy(() => import('./pages/BookingPage').then(m => ({ default: m.BookingPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage').then(m => ({ default: m.AppointmentsPage })));
-const StylistsPage = lazy(() => import('./pages/StylistsPage').then(m => ({ default: m.StylistsPage })));
-const GalleryPage = lazy(() => import('./pages/GalleryPage').then(m => ({ default: m.GalleryPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
-const ServiceLandingPage = lazy(() => import('./pages/ServiceLandingPage').then(m => ({ default: m.ServiceLandingPage })));
 
 const PageLoader = () => (
   <div className="flex flex-col justify-center items-center min-h-screen bg-white">
