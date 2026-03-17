@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Service } from '../types';
-import { ServiceCard } from './ServiceCard';
+import { ServiceCardOptimized } from './ServiceCardOptimized';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { getCategoryName } from '../utils/serviceTranslation';
@@ -115,7 +115,7 @@ export const ServiceSection: React.FC<ServiceSectionProps> = ({
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <ServiceCard
+              <ServiceCardOptimized
                 service={service}
               />
             </motion.div>

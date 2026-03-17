@@ -7,7 +7,7 @@ import { SEO } from '../components/SEO';
 import { BreadcrumbSchema, BASE_URL, BUSINESS_PROVIDER, BUSINESS_GEO, BUSINESS_AGGREGATE_RATING } from '../components/schema';
 import { supabase } from '../lib/supabase';
 import { Service, BlogPost } from '../types';
-import { ServiceCard } from '../components/ServiceCard';
+import { ServiceCardOptimized } from '../components/ServiceCardOptimized';
 import { serviceImages } from '../assets/images';
 import { getServiceName } from '../utils/serviceTranslation';
 import { getCategoryName } from '../utils/serviceTranslation';
@@ -290,7 +290,7 @@ export const ServiceLandingPage: React.FC = () => {
           ) : services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service, idx) => (
-                <ServiceCard key={service.id} service={service} imgLoading={idx < 3 ? 'eager' : 'lazy'} />
+                <ServiceCardOptimized key={service.id} service={service} imgLoading={idx < 3 ? 'eager' : 'lazy'} />
               ))}
             </div>
           ) : null}

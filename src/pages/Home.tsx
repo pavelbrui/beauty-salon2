@@ -14,7 +14,7 @@ import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getCategorySlug } from '../utils/categorySlugMap';
-import { CategoryVideoCard } from '../components/CategoryVideoCard';
+import { CategoryVideoCardOptimized } from '../components/CategoryVideoCardOptimized';
 import { prerenderReady } from '../utils/prerenderReady';
 
 interface CategoryInfo {
@@ -383,7 +383,7 @@ export const Home: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((cat, idx) => (
-              <CategoryVideoCard
+              <CategoryVideoCardOptimized
                 key={cat.name}
                 displayName={getCategoryName(cat.name, language, (t as any).categories)}
                 count={cat.count}
@@ -393,6 +393,7 @@ export const Home: React.FC = () => {
                 ctaLabel={t.viewCategoryServices}
                 onClick={() => navigate(`/services/${getCategorySlug(cat.name)}`)}
                 imgLoading={idx < 3 ? 'eager' : 'lazy'}
+                customAlt={`${getCategoryName(cat.name, language, (t as any).categories)} – zabiegi kosmetyczne w Białymstoku`}
               />
             ))}
           </div>
