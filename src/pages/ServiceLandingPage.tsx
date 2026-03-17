@@ -15,6 +15,11 @@ import { getLandingPageBySlug, LandingPageConfig, LocalizedText } from '../data/
 import { getLandingRelationship } from '../data/contentRelationships';
 import { getLocalizedField } from '../utils/blockRenderer';
 import { prerenderReady } from '../utils/prerenderReady';
+import { FAQSection } from '../components/FAQSection';
+import { RelatedServices } from '../components/RelatedServices';
+import { Breadcrumbs } from '../components/Breadcrumbs';
+import { getFAQByCategory } from '../data/faqData';
+import { getCategorySlug } from '../utils/categorySlugMap';
 
 const loc = (text: LocalizedText, language: string): string =>
   text[language as keyof LocalizedText] || text.pl;
@@ -457,6 +462,35 @@ export const ServiceLandingPage: React.FC = () => {
               </LocalizedLink>
             ))}
           </div>
+        </section>
+      )}
+
+      {/* FAQ from faqData */}
+      {config.category && (() => {
+        const categorySlug = getCategorySlug(config.category);
+        const faqItems = getFAQByCategory(categorySlug);
+        if (faqItems.length > 0) {
+          return (
+            <section className="max-w-4xl mx-auto px-4 py-10">
+              <FAQSection
+                title={lp?.faq || 'Najczęściej zadawane pytania'}
+                faqs={faqItems}
+                includeSchema={true}
+              />
+            </section>
+          );
+        }
+        return null;
+      })()}
+
+      {/* Related Services */}
+      {config.category && services.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-10">
+          <RelatedServices
+            services={services}
+            maxServices={4}
+            title={lp?.relatedServices || 'Powiązane usługi'}
+          />
         </section>
       )}
 
