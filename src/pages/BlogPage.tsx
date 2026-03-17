@@ -13,6 +13,8 @@ import { prerenderReady } from '../utils/prerenderReady';
 import { getBlogRelationship } from '../data/contentRelationships';
 import { getLandingPageBySlug, LocalizedText } from '../data/landingPages';
 import { serviceImages } from '../assets/images';
+import { RelatedBlogPosts } from '../components/RelatedBlogPosts';
+import { Breadcrumbs, BreadcrumbItem } from '../components/Breadcrumbs';
 
 /**
  * Extract FAQ structured data (schema.org/FAQPage) from blog post content blocks.
@@ -321,7 +323,33 @@ export const BlogPage: React.FC = () => {
           );
         })()}
 
-        {/* Related posts */}
+        {/* Breadcrumbs */}
+        {post && (
+          <div className="max-w-4xl mx-auto px-4 pt-6">
+            <Breadcrumbs
+              items={[
+                { label: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', path: '/' },
+                { label: 'Blog', path: '/blog' },
+                { label: postTitle },
+              ]}
+            />
+          </div>
+        )}
+
+        {/* Related posts using RelatedBlogPosts component */}
+        {related.length > 0 && post && (
+          <div className="max-w-6xl mx-auto px-4 pb-16">
+            <RelatedBlogPosts
+              currentPostId={post.id}
+              posts={posts}
+              maxPosts={3}
+              filterByTags={true}
+              title={(bp?.relatedPosts as string) || 'Podobne artykuły'}
+            />
+          </div>
+        )}
+
+        {/* Legacy related posts */}
         {related.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 pb-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">
