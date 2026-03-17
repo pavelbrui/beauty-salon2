@@ -46,11 +46,11 @@ export const Footer: React.FC = () => {
             <h3 className="font-bold text-lg mb-4">{language === 'pl' ? 'Kontakt' : language === 'en' ? 'Contact' : 'Контакт'}</h3>
             <address className="text-gray-400 text-sm not-italic space-y-2">
               <p>Salon Kosmetyczny Katarzyna Brui</p>
-              <p>ul. Słonimskiego 4/2</p>
-              <p>15-950 Białystok, Polska</p>
+              <p>ul. Młynowa 46, U11</p>
+              <p>15-404 Białystok, Polska</p>
               <p className="pt-2">
-                <a href="tel:+48857405000" className="hover:text-amber-400 transition-colors">
-                  +48 857 405 000
+                <a href="tel:+48880435102" className="hover:text-amber-400 transition-colors">
+                  +48 880 435 102
                 </a>
               </p>
               <p>
@@ -82,7 +82,7 @@ export const Footer: React.FC = () => {
         <div className="border-t border-gray-700 pt-8 mb-8">
           <div className="flex justify-center gap-6">
             <a
-              href="https://facebook.com/katarzynabrui"
+              href="https://facebook.com/Katarzyna-Brui-Permanent-100081111466742"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-amber-400 transition-colors"
@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
               </svg>
             </a>
             <a
-              href="https://instagram.com/katarzynabrui"
+              href="https://instagram.com/katarzyna.brui_"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-amber-400 transition-colors"
