@@ -239,7 +239,7 @@ export const Home: React.FC = () => {
         title={(t as any).home_seo?.title || 'Salon Kosmetyczny Białystok'}
         description={(t as any).home_seo?.description || 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.'}
         canonical="/"
-        keywords={language === 'en' ? [
+        key        keywords={language === 'en' ? [
           'beauty salon Białystok',
           'permanent makeup Białystok',
           'beautician Białystok',
@@ -258,7 +258,7 @@ export const Home: React.FC = () => {
           'перманентный макияж Белосток',
           'косметолог Белосток',
           'наращивание ресниц Белосток',
-          'гибридный маникюр Белосток',
+          'гель-маникюр Белосток',
           'ламинирование бровей Белосток',
           'лифтинг ресниц Белосток',
           'карбоновый пилинг Белосток',
@@ -266,25 +266,39 @@ export const Home: React.FC = () => {
           'удаление тату Белосток',
           'косметические процедуры Белосток',
           'лучший салон красоты Белосток',
-          'Катажина Бруй',
+          'Катажина Бруи',
         ] : [
           'salon kosmetyczny Białystok',
           'makijaż permanentny Białystok',
-          'kosmetyczka Białystok',
-          'przedłużanie rzęs Białystok',
-          'manicure hybrydowy Białystok',
+          'permanentny brwi Białystok',
+          'permanentny ust Białystok',
+          'brwi pudrowe Białystok',
+          'usuwanie tatuażu Białystok',
+          'laserowe usuwanie tatuażu Białystok',
+          'usuwanie makijażu permanentnego Białystok',
           'laminacja brwi Białystok',
           'laminacja rzęs Białystok',
+          'lifting rzęs Białystok',
+          'henna pudrowa Białystok',
+          'stylizacja brwi Białystok',
+          'przedłużanie rzęs Białystok',
+          'manicure Białystok',
+          'pedicure Białystok',
+          'paznokcie hybrydowe Białystok',
+          'manicure żelowy Białystok',
           'peeling węglowy Białystok',
-          'microblading Białystok',
-          'stylizacja rzęs Białystok',
-          'usuwanie tatuażu Białystok',
-          'zabiegi kosmetyczne Białystok',
-          'najlepszy salon kosmetyczny Białystok',
+          'carbon peeling Białystok',
+          'Katarzyna Brui',
+          'najlepszy salon kosmetyczny Białystok opinie',
+          'makijaż permanentny brwi cena Białystok',
+          'korekta makijażu permanentnego Białystok',
+          'paznokcie Białystok centrum',
+          'manicure męski Białystok',
+          'peeling węglowy efekty opinie',
           'henna brwi Białystok',
           'lifting rzęs Białystok',
           'Katarzyna Brui',
-        ]}
+        ]
       />
       <LocalBusinessSchema />
       <BreadcrumbSchema items={[{ name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' }]} />

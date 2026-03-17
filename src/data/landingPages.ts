@@ -65,7 +65,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Профессиональный перманентный макияж бровей, губ и глаз в Белостоке. Микроблейдинг, пудровая техника, омбре. Бесплатная консультация. Запишитесь в салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'makijaż permanentny Białystok, microblading Białystok, makijaż permanentny brwi, makijaż permanentny ust, metoda pudrowa brwi, ombre brwi, linergistka Białystok, najlepszy makijaż permanentny Białystok, makijaż permanentny cena',
+        pl: 'makijaż permanentny Białystok, permanentny brwi Białystok, permanentny ust Białystok, brwi pudrowe Białystok, powder brows Białystok, ombre brows Białystok, kreska permanentna oczy Białystok, najlepszy makijaż permanentny Białystok opinie, makijaż permanentny brwi cena Białystok, korekta makijażu permanentnego Białystok, permanentny ust efekt naturalny, linergistka Białystok, microblading Białystok, nanopigmentacja Białystok, combo brows Białystok, makijaż permanentny cena Białystok',
         en: 'permanent makeup Białystok, microblading Białystok, permanent brows, permanent lips, powder brows, ombre brows, best permanent makeup Białystok',
         ru: 'перманентный макияж Белосток, микроблейдинг Белосток, перманент бровей, перманент губ, пудровые брови, омбре брови',
       },
@@ -208,7 +208,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Профессиональное наращивание ресниц 1:1, объёмное 2-6D, ламинирование и лифтинг ресниц в Белостоке. Натуральный эффект, стойкость до 4 недель. Запишитесь — Салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'przedłużanie rzęs Białystok, stylizacja rzęs Białystok, rzęsy 1:1, rzęsy objętościowe, laminacja rzęs Białystok, lifting rzęs Białystok, rzęsy 2D 3D, przedłużanie rzęs cena Białystok',
+        pl: 'stylizacja rzęs Białystok, przedłużanie rzęs Białystok, rzęsy objętościowe Białystok, rzęsy 1:1, rzęsy 2D, rzęsy 3D, Hollywood effect, Kim Kardashian style, najlepsza stylizacja rzęs Białystok, laminacja rzęs Białystok, lifting rzęs Białystok, botoks rzęs Białystok, cena przedłużania rzęs',
         en: 'lash extensions Białystok, lash styling, classic lashes, volume lashes, lash lamination, lash lift, lash extensions price',
         ru: 'наращивание ресниц Белосток, стилизация ресниц, ресницы 1:1, объёмные ресницы, ламинирование ресниц, лифтинг ресниц',
       },
@@ -349,7 +349,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Профессиональное ламинирование бровей, хна, коррекция и ботокс бровей в Белостоке. Идеально уложенные брови до 8 недель. Запишитесь в салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'laminacja brwi Białystok, henna brwi Białystok, regulacja brwi, botox brwi, pielęgnacja brwi Białystok, henna pudrowa, styling brwi',
+        pl: 'stylizacja brwi Białystok, laminacja brwi Białystok, henna pudrowa Białystok, regulacja brwi Białystok, architektura i geometria brwi, farbka do brwi, botoks brwi, nitkowanie brwi Białystok, najlepsza stylizacja brwi opinie, cena laminacji brwi',
         en: 'brow lamination Białystok, brow henna, brow shaping, brow botox, brow care, powder henna, brow styling',
         ru: 'ламинирование бровей Белосток, хна бровей, коррекция бровей, ботокс бровей, уход за бровями',
       },
@@ -489,7 +489,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Лазерный карбоновый пилинг в Белостоке. Глубокое очищение, сужение пор, омоложение кожи. Мгновенный результат после одной процедуры. Запишитесь — Салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'peeling węglowy Białystok, peeling węglowy cena, laserowe oczyszczanie skóry, carbon peeling, peeling laserowy Białystok, oczyszczanie twarzy Białystok',
+        pl: 'peeling węglowy Białystok, carbon peeling Białystok, laserowy peeling węglowy, czarna lalka, zabieg bankietowy, oczyszczanie twarzy laserem, peeling węglowy efekty, peeling węglowy cena, peeling węglowy opinie, peeling węglowy na trądzik, zwężanie porów',
         en: 'carbon peeling Białystok, laser skin cleansing, carbon peel price, facial cleansing Białystok',
         ru: 'карбоновый пилинг Белосток, лазерное очищение кожи, карбоновый пилинг цена, очищение лица Белосток',
       },
@@ -630,7 +630,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Лазерное удаление тату и перманентного макияжа в Белостоке. Эффективный лазер Nd:YAG, безопасная процедура. Консультация бесплатно. Салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'usuwanie tatuażu Białystok, laserowe usuwanie tatuażu, usuwanie makijażu permanentnego, laser Nd:YAG, usuwanie tatuażu cena Białystok',
+        pl: 'usuwanie tatuażu Białystok, laserowe usuwanie tatuażu Białystok, usuwanie makijażu permanentnego Białystok, laserowe usuwanie pmu Białystok, ile kosztuje usunięcie tatuażu Białystok, laserowe usuwanie tatuażu cena, usuwanie nieudanego makijażu permanentnego',
         en: 'tattoo removal Białystok, laser tattoo removal, permanent makeup removal, Nd:YAG laser',
         ru: 'удаление тату Белосток, лазерное удаление тату, удаление перманентного макияжа, лазер Nd:YAG',
       },
@@ -771,7 +771,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         ru: 'Профессиональный гибридный, гелевый, классический и японский маникюр в Белостоке. Стойкие цвета, ухоженные руки. Запишитесь онлайн — Салон Катажина Бруи.',
       },
       keywords: {
-        pl: 'manicure Białystok, manicure hybrydowy Białystok, manicure żelowy, manicure klasyczny, manicure japoński Białystok, paznokcie Białystok, manicure cena Białystok',
+        pl: 'manicure Białystok, paznokcie Białystok, manicure hybrydowy Białystok, manicure żelowy Białystok, uzupełnianie paznokci żelowych, manicure japoński, manicure klasyczny, manicure męski Białystok, pedicure Białystok, pedicure hybrydowy, pedicure leczniczy, paznokcie Białystok centrum, najlepszy manicure Białystok opinie, cennik manicure',
         en: 'manicure Białystok, hybrid manicure, gel manicure, classic manicure, Japanese manicure, nails Białystok',
         ru: 'маникюр Белосток, гибридный маникюр, гелевый маникюр, классический маникюр, японский маникюр, ногти Белосток',
       },
