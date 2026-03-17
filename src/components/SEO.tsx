@@ -29,7 +29,7 @@ interface SEOProps {
 }
 
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
-const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, pielęgnacja brwi. Umów wizytę online!';
+const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.';
 const BASE_URL = 'https://katarzynabrui.pl';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
 
