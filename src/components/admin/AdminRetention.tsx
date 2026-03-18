@@ -90,21 +90,35 @@ export const AdminRetention: React.FC = () => {
   const fetchFromBooksyApi = async () => {
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData?.session?.access_token;
-    if (!token) throw new Error('Not authenticated');
+    if (!token) throw new Error('Nie jesteś zalogowany');
 
-    const res = await fetch(
-      `/.netlify/functions/booksy-clients?action=retention_data`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 55000); // 55s timeout
+
+    try {
+      const months = timeRange === '3m' ? 3 : timeRange === '6m' ? 6 : timeRange === '12m' ? 12 : 6;
+      const res = await fetch(
+        `/.netlify/functions/booksy-clients?action=retention_data&months=${months}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(err.error || `HTTP ${res.status}`);
       }
-    );
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: res.statusText }));
-      throw new Error(err.error || `HTTP ${res.status}`);
+      return (await res.json()) as RetentionData;
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error('Przekroczono czas oczekiwania. Spróbuj mniejszy zakres czasu lub źródło "Lokalna baza".');
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeout);
     }
-
-    return (await res.json()) as RetentionData;
   };
 
   // --- Fetch from local DB (booksy_bookings + bookings tables) ---

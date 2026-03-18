@@ -207,33 +207,42 @@ async function fetchReportMonth(
   return sections;
 }
 
-/** Fetch multiple months of report data */
+/** Fetch multiple months of report data — in parallel batches */
 async function fetchRetentionReportData(
   session: BooksySessionData,
   monthsBack: number = 12
 ): Promise<ReportSection[]> {
   const allSections = new Map<string, ReportSection>();
 
-  // Fetch month by month
+  // Build list of month ranges
+  const monthRanges: { from: string; till: string }[] = [];
   for (let i = 0; i < monthsBack; i++) {
     const from = monthStart(i);
     const till = monthEnd(from);
+    monthRanges.push({ from, till });
+  }
 
-    try {
-      const sections = await fetchReportMonth(session, from, till);
+  // Fetch in parallel batches of 4 to avoid overwhelming the API
+  const BATCH_SIZE = 4;
+  for (let batchStart = 0; batchStart < monthRanges.length; batchStart += BATCH_SIZE) {
+    const batch = monthRanges.slice(batchStart, batchStart + BATCH_SIZE);
+    const results = await Promise.allSettled(
+      batch.map(({ from, till }) => fetchReportMonth(session, from, till))
+    );
 
-      for (const section of sections) {
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        console.error(`[BOOKSY-CLIENTS] Batch fetch error:`, result.reason);
+        continue;
+      }
+      for (const section of result.value) {
         const rid = section.resource_id;
         if (allSections.has(rid)) {
-          // Merge rows into existing section
           allSections.get(rid)!.table.rows.push(...section.table.rows);
         } else {
           allSections.set(rid, { ...section });
         }
       }
-    } catch (err) {
-      console.error(`[BOOKSY-CLIENTS] Error fetching ${from} to ${till}:`, err);
-      // Continue with other months even if one fails
     }
   }
 
@@ -354,7 +363,7 @@ const handler: Handler = async (event: HandlerEvent) => {
   try {
     switch (action) {
       case 'retention_data': {
-        const months = parseInt(event.queryStringParameters?.months || '12');
+        const months = parseInt(event.queryStringParameters?.months || '6');
         const sections = await fetchRetentionReportData(session, Math.min(months, 24));
         const result = transformToRetentionData(sections);
 
