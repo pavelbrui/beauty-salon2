@@ -17,7 +17,6 @@ import { getLocalizedField } from '../utils/blockRenderer';
 import { prerenderReady } from '../utils/prerenderReady';
 import { FAQSection } from '../components/FAQSection';
 import { RelatedServices } from '../components/RelatedServices';
-import { Breadcrumbs } from '../components/Breadcrumbs';
 import { getFAQByCategory } from '../data/faqData';
 import { getCategorySlug } from '../utils/categorySlugMap';
 

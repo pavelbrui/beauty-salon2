@@ -84,7 +84,6 @@ export const AdminRetention: React.FC = () => {
   const [data, setData] = useState<RetentionData | null>(null);
   const [dataSource, setDataSource] = useState<DataSource>('booksy_api');
   const [timeRange, setTimeRange] = useState<TimeRange>('all');
-  const [selectedStylist, setSelectedStylist] = useState<string>('all');
   const [expandedStylist, setExpandedStylist] = useState<number | null>(null);
 
   // --- Fetch from Booksy API ---
@@ -120,7 +119,7 @@ export const AdminRetention: React.FC = () => {
     if (err1) throw new Error(`DB error: ${err1.message}`);
 
     // Get local bookings with user info
-    const { data: localBookings, error: err2 } = await supabase
+    const { error: err2 } = await supabase
       .from('bookings')
       .select('*, time_slots(stylist_id, start_time, end_time), services(name), stylists:time_slots(stylists(name, id))')
       .in('status', ['confirmed', 'completed'])

@@ -14,7 +14,7 @@ import { getBlogRelationship } from '../data/contentRelationships';
 import { getLandingPageBySlug, LocalizedText } from '../data/landingPages';
 import { serviceImages } from '../assets/images';
 import { RelatedBlogPosts } from '../components/RelatedBlogPosts';
-import { Breadcrumbs, BreadcrumbItem } from '../components/Breadcrumbs';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 
 /**
  * Extract FAQ structured data (schema.org/FAQPage) from blog post content blocks.

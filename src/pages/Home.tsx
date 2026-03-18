@@ -239,7 +239,7 @@ export const Home: React.FC = () => {
         title={(t as any).home_seo?.title || 'Salon Kosmetyczny Białystok'}
         description={(t as any).home_seo?.description || 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.'}
         canonical="/"
-        key        keywords={language === 'en' ? [
+        keywords={language === 'en' ? [
           'beauty salon Białystok',
           'permanent makeup Białystok',
           'beautician Białystok',
@@ -298,7 +298,7 @@ export const Home: React.FC = () => {
           'henna brwi Białystok',
           'lifting rzęs Białystok',
           'Katarzyna Brui',
-        ]
+        ]}
       />
       <LocalBusinessSchema />
       <BreadcrumbSchema items={[{ name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' }]} />

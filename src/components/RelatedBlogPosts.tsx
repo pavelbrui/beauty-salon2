@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
-import { translations } from '../i18n/translations';
 
 interface BlogPost {
   id: string;
@@ -55,7 +54,6 @@ export const RelatedBlogPosts: React.FC<RelatedBlogPostsProps> = ({
 }) => {
   const { language } = useLanguage();
   const navigate = useLocalizedNavigate();
-  const t = translations[language];
 
   // Find current post to get its tags
   const currentPost = posts.find(p => p.id === currentPostId);
