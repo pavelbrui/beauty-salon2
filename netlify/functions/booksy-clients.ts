@@ -9,7 +9,8 @@ const businessId = process.env.BOOKSY_BUSINESS_ID || '162206';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-const BOOKSY_API_BASE = 'https://pl.booksy.com/core/v2/business_api/me';
+// Correct Booksy Stats API base URL (NOT core/v2)
+const BOOKSY_STATS_API = `https://pl.booksy.com/api/pl/2/business_api/me/stats/businesses/${businessId}`;
 
 // --- Types ---
 interface BooksySessionData {
@@ -19,38 +20,50 @@ interface BooksySessionData {
   user_agent?: string;
 }
 
-interface BooksyClient {
-  id: number;
-  first_name: string;
-  last_name: string;
-  phone?: string;
-  email?: string;
-  visits_count: number;
-  no_shows_count?: number;
-  last_visit?: string;
-  created?: string;
-  note?: string;
-  image_url?: string;
-  stats?: {
-    total_amount?: number;
-    visits_count?: number;
+interface ReportRow {
+  booking_date: string;    // "DD.MM.YYYY HH:MM"
+  customer_name: string;
+  service_name: string;
+  service_category_name?: string;
+  status: string;
+  service_value?: string;  // "160,00 zł"
+}
+
+interface ReportSection {
+  title: string;           // Stylist name
+  resource_id: string;     // e.g. "671988"
+  pagination: {
+    page: number;
+    per_page: number;
+    last_page: number;
+  };
+  table: {
+    rows: ReportRow[];
   };
 }
 
-interface BooksyAppointment {
+interface StatsReportResponse {
+  sections: ReportSection[];
+}
+
+// Output types matching what AdminRetention.tsx expects
+interface OutputClient {
   id: number;
-  client_id?: number;
-  client?: { id: number; first_name: string; last_name: string };
-  staff_id?: number;
-  resource_id?: number;
-  resource?: { id: number; name: string };
-  datetime?: string;
-  date?: string;
-  start_time?: string;
-  end_time?: string;
-  status?: string;
-  service?: { name: string; id: number };
-  created?: string;
+  first_name: string;
+  last_name: string;
+  visits_count: number;
+  last_visit?: string;
+}
+
+interface OutputAppointment {
+  id: number;
+  client_id: number;
+  client: { id: number; first_name: string; last_name: string };
+  resource_id: number;
+  datetime: string;
+  status: string;
+  service: { name: string; id: number };
+  stylist_name: string;
 }
 
 // --- Auth ---
@@ -106,19 +119,42 @@ function buildHeaders(session: BooksySessionData): Record<string, string> {
   return headers;
 }
 
-// --- Booksy API calls ---
+// --- Date helpers ---
 
-/** Fetch clients list with pagination */
-async function fetchClients(
+/** Parse "DD.MM.YYYY HH:MM" Polish date format into ISO string */
+function parseBooksyDate(dateStr: string): string {
+  // Format: "31.03.2026 16:00"
+  const match = dateStr.match(/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2})$/);
+  if (!match) return dateStr; // Return as-is if format doesn't match
+  const [, day, month, year, hour, minute] = match;
+  return `${year}-${month}-${day}T${hour}:${minute}:00`;
+}
+
+/** Get first day of month N months ago, in YYYY-MM-DD format */
+function monthStart(monthsAgo: number): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() - monthsAgo);
+  d.setDate(1);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Get last day of a given month, in YYYY-MM-DD format */
+function monthEnd(dateStr: string): string {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + 1);
+  d.setDate(0); // Last day of previous month
+  return d.toISOString().slice(0, 10);
+}
+
+// --- Booksy Stats API calls ---
+
+/** Fetch one month of the appointments_by_staffer report, with pagination for each section */
+async function fetchReportMonth(
   session: BooksySessionData,
-  page: number = 1,
-  perPage: number = 100,
-  search?: string
-): Promise<{ clients: BooksyClient[]; total: number; page: number; pages: number }> {
-  let url = `${BOOKSY_API_BASE}/businesses/${businessId}/clients/?page=${page}&per_page=${perPage}`;
-  if (search) {
-    url += `&search=${encodeURIComponent(search)}`;
-  }
+  dateFrom: string,
+  dateTill: string
+): Promise<ReportSection[]> {
+  const url = `${BOOKSY_STATS_API}/report?report_key=appointments_by_staffer&date_from=${dateFrom}&date_till=${dateTill}&time_span=month`;
 
   console.log(`[BOOKSY-CLIENTS] GET ${url}`);
   const response = await fetch(url, {
@@ -137,184 +173,137 @@ async function fetchClients(
     throw new Error(`Booksy API error ${response.status}: ${text}`);
   }
 
-  const data = await response.json();
-  console.log(`[BOOKSY-CLIENTS] Response keys:`, Object.keys(data));
+  const data: StatsReportResponse = await response.json();
+  const sections = data.sections || [];
 
-  // Booksy API might return data in different formats
-  // Try common patterns
-  const clients = data.clients || data.results || data.data || [];
-  const total = data.total || data.count || data.meta?.total || clients.length;
-  const pages = data.pages || data.meta?.pages || Math.ceil(total / perPage);
+  // For each section, check if there are more pages and fetch them
+  for (const section of sections) {
+    if (!section.pagination) continue;
+    const lastPage = section.pagination.last_page || 1;
 
-  return { clients, total, page, pages };
-}
+    if (lastPage > 1) {
+      // Fetch remaining pages for this staffer
+      for (let page = 2; page <= lastPage; page++) {
+        const pageUrl = `${BOOKSY_STATS_API}/report?report_key=appointments_by_staffer&date_from=${dateFrom}&date_till=${dateTill}&time_span=month&page_${section.resource_id}=${page}`;
 
-/** Fetch all clients (paginated) */
-async function fetchAllClients(session: BooksySessionData): Promise<BooksyClient[]> {
-  const allClients: BooksyClient[] = [];
-  let page = 1;
-  const perPage = 100;
-  let hasMore = true;
+        console.log(`[BOOKSY-CLIENTS] Paginating staffer ${section.title} page ${page}/${lastPage}`);
+        const pageResp = await fetch(pageUrl, {
+          method: 'GET',
+          headers: buildHeaders(session),
+        });
 
-  while (hasMore) {
-    const result = await fetchClients(session, page, perPage);
-    allClients.push(...result.clients);
-
-    if (page >= result.pages || result.clients.length < perPage) {
-      hasMore = false;
-    } else {
-      page++;
-    }
-
-    // Safety limit — max 50 pages (5000 clients)
-    if (page > 50) break;
-  }
-
-  return allClients;
-}
-
-/** Fetch client detail with visit history */
-async function fetchClientDetail(
-  session: BooksySessionData,
-  clientId: number
-): Promise<unknown> {
-  const url = `${BOOKSY_API_BASE}/businesses/${businessId}/clients/${clientId}/`;
-  console.log(`[BOOKSY-CLIENTS] GET ${url}`);
-
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: buildHeaders(session),
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Booksy API error ${response.status}: ${text}`);
-  }
-
-  return await response.json();
-}
-
-/** Fetch appointments/bookings history */
-async function fetchAppointments(
-  session: BooksySessionData,
-  page: number = 1,
-  perPage: number = 100,
-  dateFrom?: string,
-  dateTo?: string
-): Promise<{ appointments: BooksyAppointment[]; total: number; pages: number }> {
-  let url = `${BOOKSY_API_BASE}/businesses/${businessId}/appointments/?page=${page}&per_page=${perPage}`;
-  if (dateFrom) url += `&date_from=${dateFrom}`;
-  if (dateTo) url += `&date_to=${dateTo}`;
-
-  console.log(`[BOOKSY-CLIENTS] GET ${url}`);
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: buildHeaders(session),
-  });
-
-  if (response.status === 401 || response.status === 403) {
-    await supabase.from('booksy_session').update({ is_valid: false }).eq('id', 'default');
-    throw new Error(`Booksy session expired (${response.status})`);
-  }
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Booksy API error ${response.status}: ${text}`);
-  }
-
-  const data = await response.json();
-  console.log(`[BOOKSY-CLIENTS] Appointments response keys:`, Object.keys(data));
-
-  const appointments = data.appointments || data.results || data.data || [];
-  const total = data.total || data.count || appointments.length;
-  const pages = data.pages || data.meta?.pages || Math.ceil(total / perPage);
-
-  return { appointments, total, pages };
-}
-
-/** Fetch all appointments (paginated) */
-async function fetchAllAppointments(
-  session: BooksySessionData,
-  dateFrom?: string,
-  dateTo?: string
-): Promise<BooksyAppointment[]> {
-  const all: BooksyAppointment[] = [];
-  let page = 1;
-  const perPage = 100;
-  let hasMore = true;
-
-  while (hasMore) {
-    const result = await fetchAppointments(session, page, perPage, dateFrom, dateTo);
-    all.push(...result.appointments);
-
-    if (page >= result.pages || result.appointments.length < perPage) {
-      hasMore = false;
-    } else {
-      page++;
-    }
-
-    if (page > 100) break; // Safety: max 10000 appointments
-  }
-
-  return all;
-}
-
-/** Try to discover available API endpoints (for debugging) */
-async function discoverEndpoints(session: BooksySessionData): Promise<Record<string, unknown>> {
-  const endpoints = [
-    `/businesses/${businessId}/clients/`,
-    `/businesses/${businessId}/appointments/`,
-    `/businesses/${businessId}/bookings/`,
-    `/businesses/${businessId}/stats/`,
-    `/businesses/${businessId}/reports/`,
-    `/businesses/${businessId}/reviews/`,
-    `/businesses/${businessId}/resources/`,
-    `/businesses/${businessId}/services/`,
-  ];
-
-  const results: Record<string, unknown> = {};
-
-  for (const ep of endpoints) {
-    const url = `${BOOKSY_API_BASE}${ep}?page=1&per_page=1`;
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: buildHeaders(session),
-      });
-      const text = await response.text();
-      let json: unknown = null;
-      try { json = JSON.parse(text); } catch { json = text.substring(0, 200); }
-
-      results[ep] = {
-        status: response.status,
-        ok: response.ok,
-        keys: json && typeof json === 'object' ? Object.keys(json as Record<string, unknown>) : null,
-        sample: json,
-      };
-    } catch (err) {
-      results[ep] = { error: String(err) };
-    }
-  }
-
-  return results;
-}
-
-// --- Load stylist mappings for enrichment ---
-async function loadStylistMappings(): Promise<Map<number, string>> {
-  const { data } = await supabase
-    .from('booksy_stylist_mapping')
-    .select('booksy_resource_id, stylists(name)')
-    .not('booksy_resource_id', 'is', null);
-
-  const map = new Map<number, string>();
-  if (data) {
-    for (const row of data) {
-      if (row.booksy_resource_id && (row as any).stylists?.name) {
-        map.set(row.booksy_resource_id, (row as any).stylists.name);
+        if (pageResp.ok) {
+          const pageData: StatsReportResponse = await pageResp.json();
+          // Find matching section in paginated response
+          const matchSection = pageData.sections?.find(s => s.resource_id === section.resource_id);
+          if (matchSection?.table?.rows) {
+            section.table.rows.push(...matchSection.table.rows);
+          }
+        }
       }
     }
   }
-  return map;
+
+  return sections;
+}
+
+/** Fetch multiple months of report data */
+async function fetchRetentionReportData(
+  session: BooksySessionData,
+  monthsBack: number = 12
+): Promise<ReportSection[]> {
+  const allSections = new Map<string, ReportSection>();
+
+  // Fetch month by month
+  for (let i = 0; i < monthsBack; i++) {
+    const from = monthStart(i);
+    const till = monthEnd(from);
+
+    try {
+      const sections = await fetchReportMonth(session, from, till);
+
+      for (const section of sections) {
+        const rid = section.resource_id;
+        if (allSections.has(rid)) {
+          // Merge rows into existing section
+          allSections.get(rid)!.table.rows.push(...section.table.rows);
+        } else {
+          allSections.set(rid, { ...section });
+        }
+      }
+    } catch (err) {
+      console.error(`[BOOKSY-CLIENTS] Error fetching ${from} to ${till}:`, err);
+      // Continue with other months even if one fails
+    }
+  }
+
+  return Array.from(allSections.values());
+}
+
+/** Transform Booksy report sections into RetentionData format */
+function transformToRetentionData(sections: ReportSection[]): {
+  clients: OutputClient[];
+  appointments: OutputAppointment[];
+  stylist_mappings: Record<string, string>;
+} {
+  const clientMap = new Map<string, OutputClient>();
+  const appointments: OutputAppointment[] = [];
+  const stylistMappings: Record<string, string> = {};
+  let clientIdCounter = 1;
+  let appointmentIdCounter = 1;
+
+  for (const section of sections) {
+    const stylistName = section.title;
+    const resourceId = parseInt(section.resource_id) || 0;
+    stylistMappings[resourceId] = stylistName;
+
+    for (const row of section.table.rows) {
+      const customerName = (row.customer_name || '').trim();
+      if (!customerName) continue;
+
+      const clientKey = customerName.toLowerCase();
+
+      // Get or create client
+      let client = clientMap.get(clientKey);
+      if (!client) {
+        const parts = customerName.split(' ');
+        client = {
+          id: clientIdCounter++,
+          first_name: parts[0] || '',
+          last_name: parts.slice(1).join(' ') || '',
+          visits_count: 0,
+          last_visit: undefined,
+        };
+        clientMap.set(clientKey, client);
+      }
+
+      client.visits_count++;
+
+      // Parse date
+      const isoDate = parseBooksyDate(row.booking_date);
+      if (!client.last_visit || isoDate > client.last_visit) {
+        client.last_visit = isoDate;
+      }
+
+      // Create appointment
+      appointments.push({
+        id: appointmentIdCounter++,
+        client_id: client.id,
+        client: { id: client.id, first_name: client.first_name, last_name: client.last_name },
+        resource_id: resourceId,
+        datetime: isoDate,
+        status: row.status || '',
+        service: { name: row.service_name || '', id: 0 },
+        stylist_name: stylistName,
+      });
+    }
+  }
+
+  return {
+    clients: Array.from(clientMap.values()),
+    appointments,
+    stylist_mappings: stylistMappings,
+  };
 }
 
 // --- Handler ---
@@ -360,80 +349,35 @@ const handler: Handler = async (event: HandlerEvent) => {
     };
   }
 
-  const action = event.queryStringParameters?.action || 'clients';
+  const action = event.queryStringParameters?.action || 'retention_data';
 
   try {
     switch (action) {
-      case 'clients': {
-        const page = parseInt(event.queryStringParameters?.page || '1');
-        const search = event.queryStringParameters?.search;
-        const result = await fetchClients(session, page, 100, search);
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(result) };
-      }
-
-      case 'all_clients': {
-        const clients = await fetchAllClients(session);
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ clients, total: clients.length }) };
-      }
-
-      case 'client_detail': {
-        const clientId = parseInt(event.queryStringParameters?.clientId || '0');
-        if (!clientId) {
-          return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ error: 'clientId required' }) };
-        }
-        const detail = await fetchClientDetail(session, clientId);
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(detail) };
-      }
-
-      case 'appointments': {
-        const dateFrom = event.queryStringParameters?.date_from;
-        const dateTo = event.queryStringParameters?.date_to;
-        const allAppts = await fetchAllAppointments(session, dateFrom, dateTo);
-        const stylistMap = await loadStylistMappings();
-
-        // Enrich with stylist names
-        const enriched = allAppts.map(a => ({
-          ...a,
-          stylist_name: (a.resource_id && stylistMap.get(a.resource_id))
-            || a.resource?.name
-            || undefined,
-        }));
-
-        return {
-          statusCode: 200,
-          headers: corsHeaders,
-          body: JSON.stringify({ appointments: enriched, total: enriched.length }),
-        };
-      }
-
       case 'retention_data': {
-        // Fetch both clients and appointments for retention analysis
-        const [clients, appointments] = await Promise.all([
-          fetchAllClients(session),
-          fetchAllAppointments(session),
-        ]);
-        const stylistMap = await loadStylistMappings();
+        const months = parseInt(event.queryStringParameters?.months || '12');
+        const sections = await fetchRetentionReportData(session, Math.min(months, 24));
+        const result = transformToRetentionData(sections);
+
+        console.log(`[BOOKSY-CLIENTS] Retention data: ${result.clients.length} clients, ${result.appointments.length} appointments`);
 
         return {
           statusCode: 200,
           headers: corsHeaders,
-          body: JSON.stringify({
-            clients,
-            appointments: appointments.map(a => ({
-              ...a,
-              stylist_name: (a.resource_id && stylistMap.get(a.resource_id))
-                || a.resource?.name
-                || undefined,
-            })),
-            stylist_mappings: Object.fromEntries(stylistMap),
-          }),
+          body: JSON.stringify(result),
         };
       }
 
-      case 'discover': {
-        // Debug: discover available Booksy API endpoints
-        const results = await discoverEndpoints(session);
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(results) };
+      case 'report_raw': {
+        // Debug: return raw report for one month
+        const dateFrom = event.queryStringParameters?.date_from || monthStart(0);
+        const dateTill = event.queryStringParameters?.date_till || monthEnd(dateFrom);
+        const sections = await fetchReportMonth(session, dateFrom, dateTill);
+
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({ sections, date_from: dateFrom, date_till: dateTill }),
+        };
       }
 
       default:

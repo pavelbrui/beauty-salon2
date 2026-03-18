@@ -5,10 +5,9 @@ import App from './App'
 import './index.css'
 import { prerenderReady } from './utils/prerenderReady'
 
-// Global fallback: if no page dispatches prerender-ready within 10s, do it anyway
-if ((window as unknown as { __PRERENDER_STATUS?: unknown }).__PRERENDER_STATUS) {
-  setTimeout(prerenderReady, 10000)
-}
+// Global fallback: if no page dispatches prerender-ready within 5s, do it anyway.
+// Safe to run unconditionally — in normal browsing the event has no listeners.
+setTimeout(prerenderReady, 5000)
 
 const container = document.getElementById('app')
 

@@ -15,8 +15,9 @@ export function prerenderReady(): void {
   dispatched = true;
 
   // setTimeout is reliable in headless Puppeteer (unlike requestAnimationFrame).
-  // 300ms is enough for React to re-render and Helmet to update the <head>.
+  // 1000ms gives React time to re-render and Helmet to flush DOM changes,
+  // even on CI servers rendering multiple routes concurrently.
   setTimeout(() => {
     document.dispatchEvent(new Event('prerender-ready'));
-  }, 300);
+  }, 1000);
 }
