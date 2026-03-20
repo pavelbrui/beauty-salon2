@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
+import { LocalizedLink } from './LocalizedLink';
 
 const GA_ID = 'G-BP257P61XY';
 
@@ -54,7 +55,10 @@ export function CookieConsent() {
           <span className="text-2xl mt-0.5 shrink-0">🍪</span>
           <div className="flex-1 min-w-0">
             <p className="text-gray-700 text-sm leading-relaxed">
-              {(t as Record<string, unknown>).cookieText as string}
+              {(t as Record<string, unknown>).cookieText as string}{' '}
+              <LocalizedLink to="/privacy-policy" className="text-amber-600 hover:text-amber-700 underline">
+                {language === 'pl' ? 'Polityka prywatności' : language === 'en' ? 'Privacy Policy' : 'Политика конфиденциальности'}
+              </LocalizedLink>
             </p>
             <div className="flex gap-3 mt-4">
               <button

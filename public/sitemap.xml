@@ -281,6 +281,62 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://katarzynabrui.pl/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/privacy-policy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/privacy-policy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/privacy-policy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <!-- Terms and Conditions -->
+  <url>
+    <loc>https://katarzynabrui.pl/terms</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://katarzynabrui.pl/ru/terms</loc>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://katarzynabrui.pl/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://katarzynabrui.pl/en/terms"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://katarzynabrui.pl/ru/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://katarzynabrui.pl/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
   <!-- DYNAMIC CONTENT START: auto-generated. Do not edit manually. -->
   <!-- SEO landing page URLs -->
   <url>

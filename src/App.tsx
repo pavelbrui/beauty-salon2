@@ -17,7 +17,6 @@ import { TrainingPage } from './pages/TrainingPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { StylistsPage } from './pages/StylistsPage';
 import { PricesPage } from './pages/PricesPage';
-import { ServiceLandingPage } from './pages/ServiceLandingPage';
 
 // Lazy-loaded pages — not indexed by search engines
 const Admin = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
@@ -25,6 +24,9 @@ const BookingPage = lazy(() => import('./pages/BookingPage').then(m => ({ defaul
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const AppointmentsPage = lazy(() => import('./pages/AppointmentsPage').then(m => ({ default: m.AppointmentsPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const ServiceLandingPage = lazy(() => import('./pages/ServiceLandingPage').then(m => ({ default: m.ServiceLandingPage })));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
 
 const PageLoader = () => (
   <div className="flex flex-col justify-center items-center min-h-screen bg-white">
@@ -60,6 +62,8 @@ const publicRoutes = (
     <Route path="training/:slug" element={<TrainingPage />} />
     <Route path="blog" element={<BlogPage />} />
     <Route path="blog/:slug" element={<BlogPage />} />
+    <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+    <Route path="terms" element={<TermsPage />} />
     {/* SEO landing pages — must be last (catch-all for root-level slugs) */}
     <Route path=":landingSlug" element={<ServiceLandingPage />} />
   </>

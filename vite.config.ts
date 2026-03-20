@@ -86,7 +86,7 @@ export default defineConfig(async ({ command }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const plugins: any[] = [react()]
 
-  if (command === 'build') {
+  if (command === 'build' && process.env.SKIP_PRERENDER !== '1') {
     try {
       const { default: prerender } = await import('@prerenderer/rollup-plugin')
       const routes = loadPrerenderRoutes()
@@ -109,5 +109,31 @@ export default defineConfig(async ({ command }) => {
     }
   }
 
-  return { plugins }
+  return {
+    plugins,
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('/src/data/landingPages.ts')) return 'landing-pages-data'
+            if (id.includes('/src/i18n/translations.ts')) return 'translations'
+
+            if (!id.includes('node_modules')) return undefined
+
+            if (id.includes('framer-motion')) return 'vendor-motion'
+            if (id.includes('@supabase/supabase-js')) return 'vendor-supabase'
+            if (id.includes('date-fns')) return 'vendor-date'
+            if (
+              id.includes('react-icons') ||
+              id.includes('@heroicons/react') ||
+              id.includes('@headlessui/react')
+            ) {
+              return 'vendor-icons'
+            }
+            return 'vendor-misc'
+          },
+        },
+      },
+    },
+  }
 })

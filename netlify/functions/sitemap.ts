@@ -364,6 +364,8 @@ const STATIC_PAGES: StaticPage[] = [
   },
   { barePath: '/training', changefreq: 'monthly', priority: '0.8' },
   { barePath: '/blog', changefreq: 'weekly', priority: '0.8' },
+  { barePath: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
+  { barePath: '/terms', changefreq: 'yearly', priority: '0.3' },
 ];
 
 /** SEO landing page slugs (must match src/data/landingPages.ts) */
