@@ -91,7 +91,7 @@ async function loadSession(): Promise<BooksySessionData | null> {
 
   return {
     access_token: data.access_token,
-    api_key: data.api_key || 'frontdesk-76661e2b-25f0-49b4-b33a-9d78957a58e3',
+    api_key: data.api_key || process.env.BOOKSY_API_KEY || '',
     fingerprint: data.fingerprint || undefined,
     user_agent: data.user_agent || undefined,
   };

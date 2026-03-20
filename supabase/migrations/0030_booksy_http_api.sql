@@ -6,7 +6,7 @@
 -- 1. Add access_token and related fields to booksy_session
 ALTER TABLE public.booksy_session
   ADD COLUMN IF NOT EXISTS access_token text,
-  ADD COLUMN IF NOT EXISTS api_key text DEFAULT 'frontdesk-76661e2b-25f0-49b4-b33a-9d78957a58e3',
+  ADD COLUMN IF NOT EXISTS api_key text,
   ADD COLUMN IF NOT EXISTS fingerprint text;
 
 -- 2. Add booksy_resource_id to stylist mapping (Booksy worker numeric ID)
