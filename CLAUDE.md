@@ -181,7 +181,7 @@ Google login uses Supabase Auth with the Google provider. The flow: App → Goog
    - Enable Google provider, add Client ID + Client Secret from Google Cloud Console
 3. **Google Cloud Console** → APIs & Services → Credentials → OAuth 2.0 Client:
    - **Authorized JavaScript origins**: `https://katarzynabrui.pl`, `http://localhost:3000`
-   - **Authorized redirect URIs**: `https://twifcurnuhlmhhrnwpib.supabase.co/auth/v1/callback`
+   - **Authorized redirect URIs**: `https://<project-ref>.supabase.co/auth/v1/callback`
 
 ### Code
 - `src/lib/auth.ts` — `signInWithGoogle()` uses `window.location.origin` as `redirectTo`
