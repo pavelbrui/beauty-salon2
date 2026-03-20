@@ -257,7 +257,7 @@ export const TrainingPage: React.FC = () => {
   }
 
   // --- LIST VIEW ---
-  const pageTitle = tp?.heroTitle || tp?.header || t.training || 'Szkolenia';
+  const pageTitle = tp?.seoTitle || tp?.heroTitle || tp?.header || t.training || 'Szkolenia';
   const pageDesc = tp?.seoDescription || '';
 
   return (

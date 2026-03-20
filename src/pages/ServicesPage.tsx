@@ -381,7 +381,7 @@ export const ServicesPage: React.FC = () => {
       />
       <BreadcrumbSchema items={breadcrumbItems} />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{t.services}</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{(t as any).services_seo?.h1 || t.services}</h1>
         
         <div className="flex flex-wrap gap-2 justify-center mb-10">
           <button

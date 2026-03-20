@@ -383,7 +383,7 @@ export const BlogPage: React.FC = () => {
   }
 
   // --- LIST VIEW ---
-  const pageTitle = (bp?.heroTitle as string) || 'Blog Beauty';
+  const pageTitle = (bp?.seoTitle as string) || (bp?.heroTitle as string) || 'Blog Beauty';
   const pageDesc = (bp?.seoDescription as string) || '';
 
   return (

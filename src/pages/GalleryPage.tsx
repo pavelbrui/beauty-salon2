@@ -210,7 +210,10 @@ export const GalleryPage: React.FC = () => {
         ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t.gallery}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{(t as any).gallery_seo?.h1 || t.gallery}</h1>
+        {(t as any).gallery_seo?.intro && (
+          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-10">{(t as any).gallery_seo.intro}</p>
+        )}
 
         <div className="flex flex-wrap justify-center mb-8 gap-2">
           {categories.map((category) => (
