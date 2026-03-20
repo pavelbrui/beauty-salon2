@@ -5,7 +5,7 @@ import { isRateLimited, getClientIp } from './utils/rateLimit';
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
-const businessId = process.env.BOOKSY_BUSINESS_ID || '162206';
+const businessId = process.env.BOOKSY_BUSINESS_ID || '';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 

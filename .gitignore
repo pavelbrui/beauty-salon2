@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 .env
 .mcp.json
+.claude/settings.local.json
 test-results/
 playwright-report/
 playwright/.cache/

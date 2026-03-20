@@ -7,7 +7,7 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 const syncSecret = process.env.BOOKSY_SYNC_SECRET || '';
-const businessId = process.env.BOOKSY_BUSINESS_ID || '162206';
+const businessId = process.env.BOOKSY_BUSINESS_ID || '';
 const resendApiKey = process.env.RESEND_API_KEY || '';
 
 /** Constant-time string comparison to prevent timing attacks */
