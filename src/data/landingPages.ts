@@ -18,6 +18,11 @@ export interface ProcedureStep {
   description: LocalizedText;
 }
 
+export interface ContentSection {
+  heading: LocalizedText;
+  body: LocalizedText;
+}
+
 export interface LandingPageConfig {
   slug: string;
   category: string;
@@ -33,6 +38,8 @@ export interface LandingPageConfig {
   extendedIntro?: LocalizedText;
   pricingLink?: { text: LocalizedText; url: string };
   showEffectsGallery?: boolean;
+  /** Additional H2 content sections (effects, aftercare, methods, etc.) for SEO depth */
+  contentSections?: ContentSection[];
 }
 
 export const LANDING_PAGES: LandingPageConfig[] = [
@@ -177,6 +184,56 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Na czym polega makijaż permanentny brwi?',
+          en: 'What is permanent brow makeup?',
+          ru: 'Что такое перманентный макияж бровей?',
+        },
+        body: {
+          pl: 'Makijaż permanentny brwi to zaawansowana technika mikropigmentacji, polegająca na wprowadzeniu biokompatybilnego pigmentu pod skórę na głębokość 0,5–1 mm. W salonie Katarzyna Brui w Białymstoku oferujemy kilka sprawdzonych metod: microblading (realistyczne włoski rysowane ręcznym narzędziem), technikę pudrową (powder brows — miękki efekt cienia, idealny dla osób z tłustą cerą), ombre brwi (delikatny gradient od jasnej nasady do ciemniejszego ogonka) oraz combo brows (połączenie włosków i cienia). Każda metoda daje inny efekt wizualny — podczas bezpłatnej konsultacji w naszym salonie w Białymstoku pomagamy dobrać technikę najlepiej pasującą do Twojego typu urody, kształtu twarzy i codziennego stylu.',
+          en: 'Permanent brow makeup is an advanced micropigmentation technique involving the introduction of biocompatible pigment under the skin at a depth of 0.5–1 mm. At Katarzyna Brui salon in Białystok, we offer several proven methods: microblading (realistic hair strokes drawn with a manual tool), powder brows (soft shadow effect, ideal for oily skin), ombre brows (gentle gradient from light base to darker tail), and combo brows (combination of strokes and shading). Each method produces a different visual effect — during a free consultation at our Białystok salon, we help select the technique that best suits your beauty type, face shape, and everyday style.',
+          ru: 'Перманентный макияж бровей — это продвинутая техника микропигментации, при которой биосовместимый пигмент вводится под кожу на глубину 0,5–1 мм. В салоне Катажина Бруи в Белостоке мы предлагаем несколько проверенных методов: микроблейдинг (реалистичные волоски, нарисованные ручным инструментом), пудровую технику (мягкий эффект тени, идеально для жирной кожи), омбре бровей (плавный градиент от светлого основания к тёмному хвостику) и комбо брови (сочетание волосков и тени). Каждый метод даёт разный визуальный эффект — на бесплатной консультации в нашем салоне в Белостоке мы помогаем подобрать технику, наиболее подходящую вашему типу внешности, форме лица и повседневному стилю.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Efekty i trwałość makijażu permanentnego',
+          en: 'Permanent makeup results and longevity',
+          ru: 'Результаты и стойкость перманентного макияжа',
+        },
+        body: {
+          pl: 'Efekt makijażu permanentnego brwi utrzymuje się od 12 do 36 miesięcy — czas trwania zależy od typu skóry (skóra tłusta szybciej metabolizuje pigment), ekspozycji na promieniowanie UV, stosowanych kosmetyków pielęgnacyjnych oraz indywidualnego metabolizmu. Bezpośrednio po zabiegu kolor jest intensywniejszy niż docelowy — to normalne. W ciągu pierwszych 7-10 dni skóra się goi, pigment jasnieje o 30-50%, a ostateczny kolor stabilizuje się po 4-6 tygodniach. Dlatego każdy makijaż permanentny w naszym salonie w Białymstoku obejmuje bezpłatną korektę po 4-8 tygodniach — pozwala ona dopracować kształt i nasycenie koloru. Regularne odświeżanie co 12-18 miesięcy pozwala utrzymać świeży, naturalny wygląd brwi przez wiele lat.',
+          en: 'Permanent brow makeup results last 12 to 36 months — duration depends on skin type (oily skin metabolizes pigment faster), UV exposure, skincare products used, and individual metabolism. Immediately after the procedure, the color is more intense than the target shade — this is normal. During the first 7-10 days, the skin heals, pigment lightens by 30-50%, and the final color stabilizes after 4-6 weeks. That is why every permanent makeup at our Białystok salon includes a free touch-up after 4-8 weeks — it allows perfecting the shape and color saturation. Regular refreshing every 12-18 months keeps your brows looking fresh and natural for years.',
+          ru: 'Результат перманентного макияжа бровей сохраняется от 12 до 36 месяцев — продолжительность зависит от типа кожи (жирная кожа быстрее выводит пигмент), воздействия ультрафиолета, используемых средств ухода и индивидуального метаболизма. Сразу после процедуры цвет интенсивнее целевого — это нормально. В первые 7-10 дней кожа заживает, пигмент светлеет на 30-50%, а окончательный цвет стабилизируется через 4-6 недель. Поэтому каждый перманентный макияж в нашем салоне в Белостоке включает бесплатную коррекцию через 4-8 недель — она позволяет довести до совершенства форму и насыщенность цвета. Регулярное обновление каждые 12-18 месяцев позволяет поддерживать свежий, естественный вид бровей на протяжении многих лет.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Pielęgnacja po makijażu permanentnym',
+          en: 'Aftercare for permanent makeup',
+          ru: 'Уход после перманентного макияжа',
+        },
+        body: {
+          pl: 'Prawidłowa pielęgnacja po zabiegu makijażu permanentnego jest kluczowa dla uzyskania pięknego i trwałego efektu. Przez pierwsze 24 godziny unikaj kontaktu z wodą w okolicy brwi. Przez 7-10 dni stosuj maść regenerującą (podajemy ją po zabiegu), unikaj makijażu w okolicy brwi, sauny, basenu, solarium i intensywnego wysiłku fizycznego. Nie zdrapuj łuszczących się strupków — pozwól im odpaść naturalnie, aby pigment równomiernie osiadł w skórze. Przez 4 tygodnie unikaj peelingów chemicznych i zabiegów laserowych na twarzy. Stosuj krem z filtrem SPF 50, ponieważ promieniowanie UV przyspiesza blaknięcie pigmentu. W naszym salonie w Białymstoku każda klientka otrzymuje szczegółową instrukcję pielęgnacji oraz zestaw produktów potrzebnych na okres gojenia.',
+          en: 'Proper aftercare following permanent makeup is key to achieving beautiful, long-lasting results. For the first 24 hours, avoid water contact in the brow area. For 7-10 days, apply the regenerating ointment (provided after the treatment), avoid makeup near the brows, sauna, pool, solarium, and intense physical exercise. Do not pick at peeling scabs — let them fall off naturally so the pigment settles evenly in the skin. For 4 weeks, avoid chemical peels and laser treatments on the face. Use SPF 50 sunscreen, as UV radiation accelerates pigment fading. At our Białystok salon, every client receives detailed aftercare instructions and a set of products needed for the healing period.',
+          ru: 'Правильный уход после процедуры перманентного макияжа — ключ к красивому и долговечному результату. В первые 24 часа избегайте контакта с водой в области бровей. В течение 7-10 дней наносите регенерирующую мазь (выдаём после процедуры), избегайте макияжа в области бровей, сауны, бассейна, солярия и интенсивных физических нагрузок. Не сдирайте шелушащиеся корочки — позвольте им отпасть естественно, чтобы пигмент равномерно закрепился в коже. В течение 4 недель избегайте химических пилингов и лазерных процедур на лице. Используйте крем с SPF 50, так как ультрафиолет ускоряет выцветание пигмента. В нашем салоне в Белостоке каждая клиентка получает подробную инструкцию по уходу и набор средств для периода заживления.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Dlaczego warto wybrać salon Katarzyna Brui w Białymstoku?',
+          en: 'Why choose Katarzyna Brui salon in Białystok?',
+          ru: 'Почему стоит выбрать салон Катажина Бруи в Белостоке?',
+        },
+        body: {
+          pl: 'Salon Katarzyna Brui to jedno z najbardziej cenionych miejsc do makijażu permanentnego w Białymstoku. Z ponad 10-letnim doświadczeniem i oceną 5.0/5.0 na Booksy (ponad 380 opinii) gwarantujemy najwyższy poziom usług. Pracujemy wyłącznie na certyfikowanych pigmentach premium, które zapewniają naturalny kolor bez ryzyka zmiany odcienia na niebieski lub szary. Każdy zabieg poprzedzamy dokładną konsultacją — analizujemy rysy twarzy, typ skóry i oczekiwania klientki. Nasz salon przy ul. Młynowej 46 w Białymstoku jest wyposażony w najnowocześniejszy sprzęt, a wszystkie narzędzia są jednorazowe i sterylne. Cena makijażu permanentnego brwi obejmuje konsultację, zabieg oraz bezpłatną korektę — bez ukrytych kosztów.',
+          en: 'Katarzyna Brui salon is one of the most highly rated permanent makeup destinations in Białystok. With over 10 years of experience and a 5.0/5.0 rating on Booksy (over 380 reviews), we guarantee the highest level of service. We work exclusively with certified premium pigments that ensure natural color without the risk of shifting to blue or grey tones. Every treatment is preceded by a thorough consultation — we analyze facial features, skin type, and client expectations. Our salon at ul. Młynowa 46 in Białystok is equipped with state-of-the-art devices, and all tools are single-use and sterile. The permanent brow makeup price includes consultation, the procedure, and a free touch-up — no hidden costs.',
+          ru: 'Салон Катажина Бруи — одно из самых высоко оценённых мест для перманентного макияжа в Белостоке. С более чем 10-летним опытом и рейтингом 5.0/5.0 на Booksy (более 380 отзывов) мы гарантируем высочайший уровень обслуживания. Мы работаем исключительно с сертифицированными премиальными пигментами, которые обеспечивают натуральный цвет без риска изменения оттенка на синий или серый. Каждую процедуру предваряет тщательная консультация — мы анализируем черты лица, тип кожи и ожидания клиентки. Наш салон на ул. Млынова 46 в Белостоке оснащён современнейшим оборудованием, а все инструменты одноразовые и стерильные. Цена перманентного макияжа бровей включает консультацию, процедуру и бесплатную коррекцию — без скрытых расходов.',
+        },
+      },
+    ],
   },
 
   // 2. Stylizacja rzęs
@@ -318,6 +375,44 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Rodzaje przedłużania rzęs w naszym salonie',
+          en: 'Types of lash extensions at our salon',
+          ru: 'Виды наращивания ресниц в нашем салоне',
+        },
+        body: {
+          pl: 'W salonie Katarzyna Brui w Białymstoku oferujemy pełen zakres technik przedłużania rzęs. Metoda klasyczna 1:1 polega na przyklejeniu jednej sztucznej rzęsy do jednej naturalnej — idealnie podkreśla oczy i daje naturalny efekt. Rzęsy objętościowe 2D-3D to dwa lub trzy ultracienkie rzęsy nakładane na jedną naturalną — dają głębszy, bardziej wyrazisty wygląd. Russian Volume (4D-6D) to technika tworząca wachlarzyki z wielu rzęs, dająca dramatyczny, pełny efekt. Oferujemy również efekty specjalne: lisi (wydłużenie kącików zewnętrznych), lalki (długie rzęsy w centralnej części oka) oraz Kim Kardashian style (połączenie różnych długości). Każdy zestaw dobieramy indywidualnie do kształtu oka, naturalnych rzęs i oczekiwań klientki.',
+          en: 'At Katarzyna Brui salon in Białystok, we offer a full range of lash extension techniques. The classic 1:1 method involves bonding one synthetic lash to one natural lash — it perfectly accentuates the eyes and gives a natural effect. Volume 2D-3D lashes use two or three ultra-thin lashes applied to one natural lash — creating a deeper, more expressive look. Russian Volume (4D-6D) uses handmade fans of multiple lashes for a dramatic, full effect. We also offer special effects: fox eye (extended outer corners), doll eye (long lashes in the center), and Kim Kardashian style (mixed lengths). Every set is individually matched to the eye shape, natural lashes, and client expectations.',
+          ru: 'В салоне Катажина Бруи в Белостоке мы предлагаем полный спектр техник наращивания ресниц. Классический метод 1:1 — одна искусственная ресница приклеивается к одной натуральной, идеально подчёркивает глаза и даёт естественный эффект. Объёмные ресницы 2D-3D — два или три ультратонких ресницы на одну натуральную, создают более глубокий, выразительный вид. Russian Volume (4D-6D) — техника создания пучков из множества ресниц для драматичного, полного эффекта. Мы также предлагаем специальные эффекты: лисий (удлинение внешних уголков), кукольный (длинные ресницы в центре) и стиль Ким Кардашьян (микс разных длин). Каждый набор подбирается индивидуально под форму глаза, натуральные ресницы и ожидания клиентки.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Jak pielęgnować rzęsy po przedłużeniu?',
+          en: 'How to care for lash extensions?',
+          ru: 'Как ухаживать за наращёнными ресницами?',
+        },
+        body: {
+          pl: 'Prawidłowa pielęgnacja rzęs po przedłużeniu znacząco wydłuża trwałość efektu. Przez pierwsze 24 godziny unikaj kontaktu z wodą i parą — klej potrzebuje czasu na pełne utwardzenie. Codziennie rano rozczesuj rzęsy specjalną szczoteczką (przekażemy ją po zabiegu). Unikaj olejowych kosmetyków i demakijaży w okolicy oczu — olej rozpuszcza klej. Nie pocieraj oczu i nie śpij na brzuchu, aby nie zgniatać rzęs. Do mycia okolicy oczu używaj delikatnej pianki bezlipidowej. Unikaj sauny i basenu przez 48 godzin po zabiegu. Przy odpowiedniej pielęgnacji przedłużone rzęsy w naszym salonie w Białymstoku utrzymują się do 4 tygodni. Zalecamy regularne uzupełnienia co 3-4 tygodnie.',
+          en: 'Proper aftercare for lash extensions significantly extends the lasting effect. For the first 24 hours, avoid water and steam — the adhesive needs time to fully cure. Brush your lashes with a special spoolie every morning (provided after treatment). Avoid oil-based cosmetics and removers around the eyes — oil dissolves the adhesive. Do not rub your eyes or sleep face down to avoid crushing the lashes. Use a gentle oil-free foam cleanser for the eye area. Avoid sauna and pool for 48 hours after treatment. With proper care, lash extensions at our Białystok salon last up to 4 weeks. We recommend regular refills every 3-4 weeks.',
+          ru: 'Правильный уход за наращёнными ресницами значительно продлевает стойкость эффекта. В первые 24 часа избегайте контакта с водой и паром — клею нужно время для полного отвердения. Каждое утро расчёсывайте ресницы специальной щёточкой (выдаём после процедуры). Избегайте масляных косметических средств и демакияжа в области глаз — масло растворяет клей. Не трите глаза и не спите лицом в подушку, чтобы не сминать ресницы. Для умывания области глаз используйте нежную безлипидную пенку. Избегайте сауны и бассейна в течение 48 часов после процедуры. При правильном уходе наращённые ресницы в нашем салоне в Белостоке держатся до 4 недель. Рекомендуем регулярные коррекции каждые 3-4 недели.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Dlaczego warto przedłużyć rzęsy w salonie Katarzyna Brui?',
+          en: 'Why choose Katarzyna Brui salon for lash extensions?',
+          ru: 'Почему стоит нарастить ресницы в салоне Катажина Бруи?',
+        },
+        body: {
+          pl: 'Salon Katarzyna Brui przy ul. Młynowej 46 w Białymstoku to miejsce, w którym stylizacja rzęs jest naszą pasją. Pracujemy na hipoalergicznych klejach medycznych i certyfikowanych rzęsach syntetycznych, bezpiecznych nawet dla wrażliwych oczu. Nasze stylistki mają wieloletnie doświadczenie i regularnie uczestniczą w szkoleniach z najnowszych technik. Ocena 5.0/5.0 na Booksy potwierdza najwyższą jakość naszych usług. Oferujemy bezpłatną konsultację, podczas której dobieramy efekt rzęs do kształtu oka i preferencji klientki. Cena przedłużania rzęs w naszym salonie zaczyna się od 100 PLN — każde uzupełnienie jest tańsze. Zapraszamy do rezerwacji online.',
+          en: 'Katarzyna Brui salon at ul. Młynowa 46 in Białystok is a place where lash styling is our passion. We use hypoallergenic medical-grade adhesives and certified synthetic lashes, safe even for sensitive eyes. Our stylists have years of experience and regularly attend training in the latest techniques. A 5.0/5.0 rating on Booksy confirms the highest quality of our services. We offer a free consultation where we match the lash effect to the eye shape and client preferences. Lash extension prices at our salon start from 100 PLN — refills are more affordable. Book online today.',
+          ru: 'Салон Катажина Бруи на ул. Млынова 46 в Белостоке — место, где стилизация ресниц — наша страсть. Мы используем гипоаллергенные медицинские клеи и сертифицированные синтетические ресницы, безопасные даже для чувствительных глаз. Наши стилисты имеют многолетний опыт и регулярно проходят обучение новейшим техникам. Рейтинг 5.0/5.0 на Booksy подтверждает высочайшее качество наших услуг. Мы предлагаем бесплатную консультацию, на которой подбираем эффект ресниц под форму глаза и предпочтения клиентки. Цены на наращивание ресниц в нашем салоне начинаются от 100 PLN — коррекции дешевле. Приглашаем записаться онлайн.',
+        },
+      },
+    ],
   },
 
   // 3. Laminacja brwi
@@ -458,6 +553,44 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Na czym polega laminacja brwi?',
+          en: 'What is brow lamination?',
+          ru: 'Что такое ламинирование бровей?',
+        },
+        body: {
+          pl: 'Laminacja brwi to jeden z najpopularniejszych zabiegów pielęgnacyjnych w naszym salonie w Białymstoku. Polega na utrwaleniu włosków brwi w wybranym kierunku za pomocą specjalnych preparatów keratynowych. Efekt to gęste, wypełnione brwi o idealnym kształcie — bez konieczności codziennego układania. Zabieg trwa około 45-60 minut i jest całkowicie bezbolesny. W salonie Katarzyna Brui stosujemy preparaty najwyższej jakości, które jednocześnie odżywiają i wzmacniają włoski brwi. Efekt laminacji utrzymuje się 4-6 tygodni. Zabieg idealnie nadaje się dla osób z niesfornymi, rosnącymi w różnych kierunkach brwiami, a także dla tych, którzy chcą optycznie zagęścić brwi bez makijażu permanentnego.',
+          en: 'Brow lamination is one of the most popular care treatments at our salon in Białystok. It involves setting brow hairs in a chosen direction using special keratin-based products. The result is thick, filled brows with a perfect shape — without the need for daily styling. The procedure takes about 45-60 minutes and is completely painless. At Katarzyna Brui salon, we use the highest quality products that simultaneously nourish and strengthen brow hairs. Lamination results last 4-6 weeks. The treatment is ideal for those with unruly brows growing in different directions, as well as those who want optically thicker brows without permanent makeup.',
+          ru: 'Ламинирование бровей — одна из самых популярных ухаживающих процедур в нашем салоне в Белостоке. Она заключается в фиксации волосков бровей в выбранном направлении с помощью специальных кератиновых препаратов. Результат — густые, заполненные брови идеальной формы без необходимости ежедневной укладки. Процедура длится около 45-60 минут и абсолютно безболезненна. В салоне Катажина Бруи мы используем препараты высочайшего качества, которые одновременно питают и укрепляют волоски бровей. Эффект ламинирования сохраняется 4-6 недель. Процедура идеально подходит для обладательниц непослушных бровей, растущих в разных направлениях, а также для тех, кто хочет оптически уплотнить брови без перманентного макияжа.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Henna pudrowa brwi — efekt i trwałość',
+          en: 'Powder henna brows — effect and longevity',
+          ru: 'Пудровая хна для бровей — эффект и стойкость',
+        },
+        body: {
+          pl: 'Henna pudrowa to nowoczesna alternatywa dla tradycyjnej henny brwi, która daje miękki, naturalny efekt wypełnionych brwi. W przeciwieństwie do klasycznej henny, wersja pudrowa nie barwi skóry intensywnie, lecz tworzy delikatny cień podkreślający kształt. Efekt na skórze utrzymuje się 1-2 tygodnie, a na włoskach 3-4 tygodnie. W naszym salonie w Białymstoku dobieramy odcień henny indywidualnie, uwzględniając kolor włosów, karnację i preferencje klientki. Henna pudrowa jest bezpieczna i nie wymaga czasu rekonwalescencji. Zabieg trwa około 30-40 minut i można go łączyć z regulacją lub laminacją brwi dla kompleksowego efektu.',
+          en: 'Powder henna is a modern alternative to traditional brow henna that creates a soft, natural filled-brow effect. Unlike classic henna, the powder version does not intensely stain the skin but creates a subtle shadow that enhances the shape. The skin tint lasts 1-2 weeks, while the hair color lasts 3-4 weeks. At our Białystok salon, we individually match the henna shade, considering hair color, complexion, and client preferences. Powder henna is safe and requires no downtime. The procedure takes about 30-40 minutes and can be combined with brow shaping or lamination for a comprehensive result.',
+          ru: 'Пудровая хна — современная альтернатива традиционной хне для бровей, которая создаёт мягкий, естественный эффект заполненных бровей. В отличие от классической хны, пудровая версия не окрашивает кожу интенсивно, а создаёт деликатную тень, подчёркивающую форму. Тонирование кожи сохраняется 1-2 недели, а цвет на волосках — 3-4 недели. В нашем салоне в Белостоке мы подбираем оттенок хны индивидуально с учётом цвета волос, тона кожи и предпочтений клиентки. Пудровая хна безопасна и не требует периода восстановления. Процедура длится около 30-40 минут и может сочетаться с коррекцией или ламинированием бровей для комплексного эффекта.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Kompleksowa pielęgnacja brwi w Białymstoku',
+          en: 'Comprehensive brow care in Białystok',
+          ru: 'Комплексный уход за бровями в Белостоке',
+        },
+        body: {
+          pl: 'W salonie Katarzyna Brui przy ul. Młynowej 46 w Białymstoku oferujemy kompleksową pielęgnację brwi, łącząc różne zabiegi dla osiągnięcia idealnego efektu. Nasza oferta obejmuje: laminację brwi (utrwalenie kształtu na 4-6 tygodni), hennę pudrową (delikatne wypełnienie kolorem), regulację (precyzyjna korekta kształtu), botox brwi (głębokie odżywienie i regeneracja włosków) oraz styling brwi (profesjonalne układanie na co dzień). Każdy zabieg poprzedzamy analizą kształtu twarzy i typu brwi. Nasze specjalistki pomogą dobrać idealny zestaw zabiegów, abyś cieszyła się pięknymi brwiami bez codziennego makijażu. Cena laminacji brwi w Białymstoku zaczyna się od 80 PLN — sprawdź nasz pełny cennik.',
+          en: 'At Katarzyna Brui salon at ul. Młynowa 46 in Białystok, we offer comprehensive brow care, combining different treatments for the perfect result. Our offerings include: brow lamination (shape setting for 4-6 weeks), powder henna (gentle color fill), shaping (precise contour correction), brow botox (deep nourishment and hair regeneration), and brow styling (professional daily shaping). Each treatment is preceded by face shape and brow type analysis. Our specialists will help select the ideal treatment combination so you can enjoy beautiful brows without daily makeup. Brow lamination prices in Białystok start from 80 PLN — check our full price list.',
+          ru: 'В салоне Катажина Бруи на ул. Млынова 46 в Белостоке мы предлагаем комплексный уход за бровями, сочетая разные процедуры для достижения идеального результата. Наше предложение включает: ламинирование бровей (фиксация формы на 4-6 недель), пудровую хну (деликатное заполнение цветом), коррекцию (точная коррекция формы), ботокс бровей (глубокое питание и восстановление волосков) и стайлинг бровей (профессиональная укладка на каждый день). Каждую процедуру предваряет анализ формы лица и типа бровей. Наши специалисты помогут подобрать идеальную комбинацию процедур, чтобы вы наслаждались красивыми бровями без ежедневного макияжа. Цена ламинирования бровей в Белостоке начинается от 80 PLN — проверьте наш полный прайс-лист.',
+        },
+      },
+    ],
   },
 
   // 4. Peeling węglowy
@@ -599,6 +732,32 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Jak działa peeling węglowy?',
+          en: 'How does carbon peeling work?',
+          ru: 'Как работает карбоновый пилинг?',
+        },
+        body: {
+          pl: 'Peeling węglowy (carbon peel) to innowacyjny zabieg laserowy łączący właściwości peelingujące i regenerujące. Na skórę twarzy nakładamy specjalną maskę z nanocząsteczkami węgla aktywnego, które wnikają głęboko w pory, absorbując zanieczyszczenia, nadmiar sebum i martwe komórki naskórka. Następnie wiązka lasera Nd:YAG podgrzewa cząsteczki węgla, powodując ich mikrowybuch — to oczyszcza pory od wewnątrz, stymuluje produkcję kolagenu i wyrównuje koloryt skóry. Cały zabieg w naszym salonie w Białymstoku trwa 30-45 minut, jest bezbolesny i nie wymaga okresu rekonwalescencji. Efekty widoczne są natychmiast — skóra jest gładka, promienna i oczyszczona.',
+          en: 'Carbon peeling is an innovative laser treatment combining exfoliating and regenerating properties. A special mask with activated carbon nanoparticles is applied to the face, penetrating deep into pores to absorb impurities, excess sebum, and dead skin cells. Then an Nd:YAG laser beam heats the carbon particles, causing micro-explosions — this cleanses pores from within, stimulates collagen production, and evens out skin tone. The entire procedure at our Białystok salon takes 30-45 minutes, is painless, and requires no downtime. Results are visible immediately — skin is smooth, radiant, and deeply cleansed.',
+          ru: 'Карбоновый пилинг — инновационная лазерная процедура, сочетающая пилинговые и регенерирующие свойства. На кожу лица наносится специальная маска с наночастицами активированного угля, которые проникают глубоко в поры, поглощая загрязнения, избыток себума и мёртвые клетки эпидермиса. Затем луч лазера Nd:YAG нагревает частицы угля, вызывая микровзрыв — это очищает поры изнутри, стимулирует выработку коллагена и выравнивает тон кожи. Вся процедура в нашем салоне в Белостоке длится 30-45 минут, безболезненна и не требует периода восстановления. Результаты видны сразу — кожа гладкая, сияющая и глубоко очищенная.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Efekty peelingiem węglowym — dla kogo?',
+          en: 'Carbon peeling results — who is it for?',
+          ru: 'Результаты карбонового пилинга — для кого?',
+        },
+        body: {
+          pl: 'Peeling węglowy w Białymstoku to zabieg idealny dla osób borykających się z rozszerzonymi porami, trądzikiem, przebarwieniami, nierównym kolorytem skóry oraz pierwszymi oznakami starzenia. Po serii 4-6 zabiegów (co 2-3 tygodnie) można zaobserwować: znaczne zmniejszenie porów, redukcję stanów zapalnych i trądziku, wyrównanie kolorytu i zredukowanie przebarwień, poprawę elastyczności i jędrności skóry, zmniejszenie drobnych zmarszczek. Zabieg jest bezpieczny dla każdego typu skóry — zarówno tłustej, mieszanej, jak i wrażliwej. W salonie Katarzyna Brui w Białymstoku dobieramy parametry lasera indywidualnie do stanu skóry każdego klienta, zapewniając maksymalną skuteczność i bezpieczeństwo.',
+          en: 'Carbon peeling in Białystok is an ideal treatment for those struggling with enlarged pores, acne, hyperpigmentation, uneven skin tone, and early signs of aging. After a series of 4-6 treatments (every 2-3 weeks), you can observe: significant pore reduction, decreased inflammation and acne, evened skin tone and reduced hyperpigmentation, improved elasticity and firmness, reduced fine lines. The treatment is safe for all skin types — oily, combination, and sensitive. At Katarzyna Brui salon in Białystok, we individually adjust laser parameters to each client\'s skin condition, ensuring maximum effectiveness and safety.',
+          ru: 'Карбоновый пилинг в Белостоке — идеальная процедура для тех, кто борется с расширенными порами, акне, пигментными пятнами, неровным тоном кожи и первыми признаками старения. После серии из 4-6 процедур (каждые 2-3 недели) можно наблюдать: значительное сужение пор, уменьшение воспалений и акне, выравнивание тона кожи и уменьшение пигментации, улучшение эластичности и упругости кожи, уменьшение мелких морщин. Процедура безопасна для любого типа кожи — жирной, комбинированной и чувствительной. В салоне Катажина Бруи в Белостоке мы индивидуально подбираем параметры лазера под состояние кожи каждого клиента, обеспечивая максимальную эффективность и безопасность.',
+        },
+      },
+    ],
   },
 
   // 5. Usuwanie tatuażu
@@ -740,6 +899,32 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Jak przebiega laserowe usuwanie tatuażu?',
+          en: 'How does laser tattoo removal work?',
+          ru: 'Как проходит лазерное удаление тату?',
+        },
+        body: {
+          pl: 'Laserowe usuwanie tatuażu w salonie Katarzyna Brui w Białymstoku odbywa się za pomocą nowoczesnego lasera Nd:YAG, który emituje krótkie impulsy światła o wysokiej energii. Wiązka lasera przenika przez naskórek i selektywnie niszczy cząsteczki pigmentu tatuażu, rozbijając je na mniejsze fragmenty. Te fragmenty są następnie naturalnie usuwane przez układ limfatyczny organizmu w ciągu kilku tygodni. Zabieg trwa od 15 do 60 minut, w zależności od wielkości tatuażu. Stosujemy znieczulenie topiczne, aby zminimalizować dyskomfort. Laser Nd:YAG skutecznie usuwa pigmenty czarne, granatowe i ciemnobrązowe. W przypadku kolorowych tatuaży (czerwone, zielone, żółte) może być potrzebna większa liczba sesji.',
+          en: 'Laser tattoo removal at Katarzyna Brui salon in Białystok is performed using a modern Nd:YAG laser that emits short, high-energy light pulses. The laser beam penetrates through the epidermis and selectively destroys tattoo pigment particles, breaking them into smaller fragments. These fragments are then naturally eliminated by the body\'s lymphatic system over several weeks. The procedure takes 15 to 60 minutes, depending on tattoo size. We apply topical anesthesia to minimize discomfort. The Nd:YAG laser effectively removes black, navy, and dark brown pigments. For colored tattoos (red, green, yellow), more sessions may be needed.',
+          ru: 'Лазерное удаление тату в салоне Катажина Бруи в Белостоке проводится с помощью современного лазера Nd:YAG, который излучает короткие импульсы света высокой энергии. Луч лазера проникает через эпидермис и избирательно разрушает частицы пигмента татуировки, дробя их на мелкие фрагменты. Эти фрагменты затем естественным путём выводятся лимфатической системой организма в течение нескольких недель. Процедура длится от 15 до 60 минут в зависимости от размера татуировки. Мы наносим местную анестезию для минимизации дискомфорта. Лазер Nd:YAG эффективно удаляет чёрные, тёмно-синие и тёмно-коричневые пигменты. Для цветных татуировок (красные, зелёные, жёлтые) может потребоваться больше сеансов.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Usuwanie makijażu permanentnego laserem',
+          en: 'Laser permanent makeup removal',
+          ru: 'Лазерное удаление перманентного макияжа',
+        },
+        body: {
+          pl: 'Oprócz usuwania tatuaży, specjalizujemy się również w laserowym usuwaniu niechcianego makijażu permanentnego brwi, ust i oczu. Proces jest podobny do usuwania tatuażu, jednak wymaga szczególnej ostrożności ze względu na delikatną skórę twarzy. W salonie Katarzyna Brui w Białymstoku mamy doświadczenie w usuwaniu makijażu permanentnego wykonanego różnymi technikami — microblading, pudrowa, klasyczna. Zazwyczaj potrzeba 3-8 sesji w odstępach 6-8 tygodni, aby całkowicie usunąć pigment. Ważne jest, że usuwanie makijażu permanentnego laserem nie pozostawia blizn przy prawidłowym wykonaniu. Oferujemy bezpłatną konsultację, podczas której oceniamy rodzaj i głębokość pigmentu oraz ustalamy plan zabiegów.',
+          en: 'In addition to tattoo removal, we also specialize in laser removal of unwanted permanent makeup from brows, lips, and eyes. The process is similar to tattoo removal but requires extra care due to the delicate facial skin. At Katarzyna Brui salon in Białystok, we have experience removing permanent makeup done with various techniques — microblading, powder, classic. Typically, 3-8 sessions at 6-8 week intervals are needed for complete pigment removal. Importantly, laser permanent makeup removal does not leave scars when done properly. We offer a free consultation where we assess the pigment type and depth and establish a treatment plan.',
+          ru: 'Помимо удаления татуировок, мы также специализируемся на лазерном удалении нежелательного перманентного макияжа бровей, губ и глаз. Процесс аналогичен удалению тату, но требует особой осторожности из-за нежной кожи лица. В салоне Катажина Бруи в Белостоке мы имеем опыт удаления перманентного макияжа, выполненного различными техниками — микроблейдинг, пудровая, классическая. Обычно требуется 3-8 сеансов с интервалом 6-8 недель для полного удаления пигмента. Важно, что лазерное удаление перманентного макияжа не оставляет рубцов при правильном выполнении. Мы предлагаем бесплатную консультацию, на которой оцениваем тип и глубину пигмента и составляем план процедур.',
+        },
+      },
+    ],
   },
 
   // 6. Manicure
@@ -879,6 +1064,32 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Rodzaje manicure w salonie Katarzyna Brui',
+          en: 'Types of manicure at Katarzyna Brui salon',
+          ru: 'Виды маникюра в салоне Катажина Бруи',
+        },
+        body: {
+          pl: 'W naszym salonie w Białymstoku oferujemy kilka rodzajów manicure, aby każda klientka znalazła idealne rozwiązanie. Manicure hybrydowy to najpopularniejszy wybór — lakier hybrydowy utrzymuje się 3-4 tygodnie bez odpryskiwań i zachowuje intensywny kolor i połysk. Manicure żelowy to idealne rozwiązanie dla łamliwych paznokci — żel wzmacnia płytkę paznokciową i pozwala na przedłużanie. Manicure klasyczny to tradycyjna pielęgnacja paznokci z lakierem — opcja dla osób preferujących naturalny wygląd. Manicure japoński to luksusowy zabieg pielęgnacyjny, który odżywia, wygładza i nadaje paznokciom zdrowy, naturalny blask bez lakieru. Wszystkie zabiegi wykonujemy na najwyższej jakości produktach, a frezowanie paznokci przeprowadzamy precyzyjnie i bezpiecznie.',
+          en: 'At our Białystok salon, we offer several types of manicure so every client can find their ideal solution. Hybrid manicure is the most popular choice — hybrid polish lasts 3-4 weeks without chipping, maintaining intense color and shine. Gel manicure is perfect for brittle nails — gel strengthens the nail plate and allows for extensions. Classic manicure is traditional nail care with polish — an option for those who prefer a natural look. Japanese manicure is a luxury care treatment that nourishes, smooths, and gives nails a healthy, natural glow without polish. All treatments are performed using the highest quality products, and nail filing is done precisely and safely.',
+          ru: 'В нашем салоне в Белостоке мы предлагаем несколько видов маникюра, чтобы каждая клиентка нашла идеальное решение. Гибридный маникюр — самый популярный выбор: гибридный лак держится 3-4 недели без сколов, сохраняя насыщенный цвет и блеск. Гелевый маникюр — идеальное решение для ломких ногтей: гель укрепляет ногтевую пластину и позволяет наращивание. Классический маникюр — традиционный уход за ногтями с лаком для тех, кто предпочитает естественный вид. Японский маникюр — люксовая ухаживающая процедура, которая питает, разглаживает и придаёт ногтям здоровое, естественное сияние без лака. Все процедуры выполняются с использованием продуктов высочайшего качества, а опил ногтей проводится точно и безопасно.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Jak dbać o paznokcie po manicure hybrydowym?',
+          en: 'How to care for nails after hybrid manicure?',
+          ru: 'Как ухаживать за ногтями после гибридного маникюра?',
+        },
+        body: {
+          pl: 'Aby manicure hybrydowy utrzymał się jak najdłużej, warto pamiętać o kilku zasadach. Przez pierwsze 2 godziny po zabiegu unikaj kontaktu z gorącą wodą i chemikaliami domowymi. Do prac domowych używaj rękawiczek ochronnych — detergenty mogą osłabić lakier. Regularnie nawilżaj skórki i paznokcie olejkiem do skórek — utrzyma to skórę wokół paznokci w dobrej kondycji. Nie zdejmuj lakieru hybrydowego samodzielnie — ściąganie go siłą uszkadza płytkę paznokciową. Przyjdź do naszego salonu w Białymstoku na profesjonalne zdejmowanie co 3-4 tygodnie. Między wizytami możesz nakładać utwardzacz na paznokcie, aby je dodatkowo wzmocnić. W salonie Katarzyna Brui po każdym zabiegu nakładamy odżywczy olejek na skórki.',
+          en: 'To keep your hybrid manicure lasting as long as possible, remember a few guidelines. For the first 2 hours after the treatment, avoid contact with hot water and household chemicals. Use protective gloves for housework — detergents can weaken the polish. Regularly moisturize cuticles and nails with cuticle oil — it keeps the skin around nails in good condition. Do not remove hybrid polish yourself — peeling it off damages the nail plate. Visit our Białystok salon for professional removal every 3-4 weeks. Between visits, you can apply a nail hardener for extra strengthening. At Katarzyna Brui salon, we apply nourishing cuticle oil after every treatment.',
+          ru: 'Чтобы гибридный маникюр держался как можно дольше, стоит помнить о нескольких правилах. В первые 2 часа после процедуры избегайте контакта с горячей водой и бытовой химией. Для домашних дел используйте защитные перчатки — моющие средства могут ослабить лак. Регулярно увлажняйте кутикулу и ногти маслом для кутикулы — это поддержит кожу вокруг ногтей в хорошем состоянии. Не снимайте гибридный лак самостоятельно — сдирание повреждает ногтевую пластину. Приходите в наш салон в Белостоке на профессиональное снятие каждые 3-4 недели. Между визитами можно наносить укрепляющее средство на ногти для дополнительного укрепления. В салоне Катажина Бруи после каждой процедуры мы наносим питательное масло на кутикулу.',
+        },
+      },
+    ],
   },
 
   // 7. Pedicure
@@ -1019,6 +1230,32 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       url: '/prices',
     },
     showEffectsGallery: true,
+    contentSections: [
+      {
+        heading: {
+          pl: 'Na czym polega profesjonalny pedicure?',
+          en: 'What does professional pedicure involve?',
+          ru: 'Что включает профессиональный педикюр?',
+        },
+        body: {
+          pl: 'Profesjonalny pedicure w salonie Katarzyna Brui w Białymstoku to kompleksowa pielęgnacja stóp, która obejmuje kilka etapów. Zaczynamy od kąpieli stóp w ciepłej wodzie z dodatkiem zmiękczających preparatów. Następnie usuwamy zrogowacenia, odciski i twardą skórę za pomocą frezarki lub narzędzi podologicznych. Dokładnie przycinamy i kształtujemy paznokcie, oczyszczamy skórki. Stopy zostają nawilżone i odżywione kremem. Na końcu nakładamy lakier hybrydowy lub klasyczny w wybranym kolorze. Cały zabieg trwa 60-90 minut. W naszym salonie szczególną uwagę zwracamy na higienę — wszystkie narzędzia są sterylizowane. Pedicure zalecamy co 4-6 tygodni dla utrzymania zdrowych, zadbanych stóp.',
+          en: 'Professional pedicure at Katarzyna Brui salon in Białystok is comprehensive foot care that includes several stages. We start with a warm foot soak with softening products. Then we remove calluses, corns, and hard skin using a drill or podiatric tools. We carefully trim and shape nails, clean cuticles. Feet are moisturized and nourished with cream. Finally, we apply hybrid or classic polish in your chosen color. The entire treatment takes 60-90 minutes. At our salon, we pay special attention to hygiene — all tools are sterilized. We recommend pedicure every 4-6 weeks for healthy, well-maintained feet.',
+          ru: 'Профессиональный педикюр в салоне Катажина Бруи в Белостоке — это комплексный уход за стопами, включающий несколько этапов. Начинаем с ванночки для ног в тёплой воде с размягчающими препаратами. Затем удаляем ороговевшую кожу, натоптыши и мозоли с помощью фрезера или подологических инструментов. Тщательно подстригаем и формируем ногти, очищаем кутикулу. Стопы увлажняются и питаются кремом. В завершение наносим гибридный или классический лак выбранного цвета. Вся процедура длится 60-90 минут. В нашем салоне мы уделяем особое внимание гигиене — все инструменты стерилизуются. Педикюр рекомендуем каждые 4-6 недель для поддержания здоровых, ухоженных стоп.',
+        },
+      },
+      {
+        heading: {
+          pl: 'Pedicure hybrydowy czy klasyczny — co wybrać?',
+          en: 'Hybrid or classic pedicure — which to choose?',
+          ru: 'Гибридный или классический педикюр — что выбрать?',
+        },
+        body: {
+          pl: 'Wybór między pedicure hybrydowym a klasycznym zależy od Twojego stylu życia i oczekiwań. Pedicure hybrydowy to doskonały wybór na lato i wakacje — lakier utrzymuje się 4-6 tygodni bez odpryskiwań, jest odporny na wodę i piasek. Idealny, gdy chcesz mieć idealne paznokcie stóp bez martwienia się o odpryski. Pedicure klasyczny z lakierem tradycyjnym to opcja dla osób, które lubią częściej zmieniać kolor lub preferują naturalny wygląd paznokci. W salonie Katarzyna Brui w Białymstoku wykonujemy oba rodzaje pedicure z taką samą dbałością o szczegóły. Oferujemy szeroki wybór kolorów lakierów hybrydowych premium. Cena pedicure w Białymstoku zaczyna się od 80 PLN — sprawdź aktualny cennik na naszej stronie.',
+          en: 'The choice between hybrid and classic pedicure depends on your lifestyle and expectations. Hybrid pedicure is an excellent choice for summer and vacations — polish lasts 4-6 weeks without chipping, is water and sand resistant. Ideal when you want perfect toenails without worrying about chips. Classic pedicure with traditional polish is an option for those who like to change colors more frequently or prefer a natural nail look. At Katarzyna Brui salon in Białystok, we perform both types of pedicure with the same attention to detail. We offer a wide range of premium hybrid polish colors. Pedicure prices in Białystok start from 80 PLN — check the current price list on our website.',
+          ru: 'Выбор между гибридным и классическим педикюром зависит от вашего образа жизни и ожиданий. Гибридный педикюр — отличный выбор на лето и отпуск: лак держится 4-6 недель без сколов, устойчив к воде и песку. Идеален, когда хотите иметь идеальные ногти на ногах без беспокойства о сколах. Классический педикюр с традиционным лаком — вариант для тех, кто любит чаще менять цвет или предпочитает естественный вид ногтей. В салоне Катажина Бруи в Белостоке мы выполняем оба вида педикюра с одинаковым вниманием к деталям. Мы предлагаем широкий выбор цветов премиальных гибридных лаков. Цена педикюра в Белостоке начинается от 80 PLN — проверьте актуальный прайс-лист на нашем сайте.',
+        },
+      },
+    ],
   },
 
   // 8. Szkolenia

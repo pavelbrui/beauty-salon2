@@ -408,7 +408,14 @@ export const ServicesPage: React.FC = () => {
             </button>
           ))}
         </div>
-        
+
+        {/* Category intro text for SEO */}
+        {categorySlug && (t as any).category_intros?.[categorySlug] && (
+          <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto leading-relaxed">
+            {(t as any).category_intros[categorySlug]}
+          </p>
+        )}
+
         <div className="space-y-16">
           {(category ? [category] : categories).map(cat => (
             <ServiceSection

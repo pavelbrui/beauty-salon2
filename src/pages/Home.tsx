@@ -296,8 +296,6 @@ export const Home: React.FC = () => {
           'manicure męski Białystok',
           'peeling węglowy efekty opinie',
           'henna brwi Białystok',
-          'lifting rzęs Białystok',
-          'Katarzyna Brui',
         ]}
       />
       <LocalBusinessSchema />

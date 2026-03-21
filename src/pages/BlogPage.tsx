@@ -549,6 +549,28 @@ export const BlogPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* CTA — link to services */}
+      <div className="max-w-4xl mx-auto px-4 pb-16">
+        <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-8 md:p-10 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            {language === 'en' ? 'Ready to try? Book your appointment!'
+              : language === 'ru' ? 'Готовы попробовать? Запишитесь на приём!'
+              : 'Chcesz wypróbować? Umów wizytę!'}
+          </h2>
+          <p className="text-gray-600 mb-6 max-w-xl mx-auto">
+            {language === 'en' ? 'Explore our full range of beauty treatments — permanent makeup, lash extensions, brow care, manicure and more.'
+              : language === 'ru' ? 'Ознакомьтесь с полным спектром наших услуг — перманентный макияж, наращивание ресниц, уход за бровями, маникюр и многое другое.'
+              : 'Sprawdź pełną ofertę naszych zabiegów — makijaż permanentny, przedłużanie rzęs, pielęgnacja brwi, manicure i wiele więcej.'}
+          </p>
+          <LocalizedLink
+            to="/services"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
+          >
+            {language === 'en' ? 'View all treatments' : language === 'ru' ? 'Смотреть все процедуры' : 'Zobacz wszystkie zabiegi'}
+          </LocalizedLink>
+        </div>
+      </div>
     </main>
   );
 };
