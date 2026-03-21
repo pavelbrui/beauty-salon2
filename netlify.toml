@@ -6,6 +6,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Instagram sync - runs daily at 8:00 AM UTC (10:00 AM Poland)
+[functions.instagram-sync]
+  schedule = "0 8 * * *"
+
 [build.environment]
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,BOOKSY_BUSINESS_ID,BOOKSY_SYNC_SECRET,VITE_BOOKSY_SYNC_SECRET,VITE_NOTIFICATION_SECRET,NOTIFICATION_SECRET"
@@ -162,6 +166,17 @@
   to = "/ru/services/pakiety"
   status = 301
   force = true
+
+# API routes
+[[redirects]]
+  from = "/api/gbp-login"
+  to = "/.netlify/functions/gbp-login"
+  status = 200
+
+[[redirects]]
+  from = "/api/instagram-sync"
+  to = "/.netlify/functions/instagram-sync"
+  status = 200
 
 # SPA catch-all (must be last)
 [[redirects]]

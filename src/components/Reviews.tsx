@@ -36,14 +36,22 @@ export const Reviews: React.FC = () => {
             </div>
           ))}
         </div>
-        <div className="text-center mt-8">
+        <div className="text-center mt-8 space-y-2">
           <a
             href="https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-600 hover:text-amber-700 font-medium"
+            className="text-amber-600 hover:text-amber-700 font-medium block"
           >
-            {t.reviews.viewMore} →
+            {t.reviews.viewMoreBooksy} →
+          </a>
+          <a
+            href="https://www.google.com/maps/place/?q=place_id:ChIJzQK31Dv9H0cR0aqPnVAPkDo"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-600 hover:text-amber-700 font-medium block"
+          >
+            {t.reviews.viewMoreGoogle} →
           </a>
         </div>
       </div>

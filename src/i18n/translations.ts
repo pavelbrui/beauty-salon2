@@ -47,7 +47,8 @@ export const translations = {
     },
     reviews: {
       title: 'Opinie naszych klientek',
-      viewMore: 'Zobacz więcej opinii na Booksy',
+      viewMoreBooksy: 'Zobacz więcej opinii na Booksy',
+      viewMoreGoogle: 'Zobacz opinie na Google',
       reviewers: {
         'Magdalena W.': {
           content: 'Pani Kasia jest prawdziwą mistrzynią w swoim fachu. Jestem zachwycona efektem makijażu permanentnego brwi. Bardzo profesjonalne podejście, dokładne omówienie zabiegu i dbałość o każdy szczegół.'
@@ -404,7 +405,8 @@ export const translations = {
     },
     reviews: {
       title: 'Our Clients Reviews',
-      viewMore: 'View more reviews on Booksy',
+      viewMoreBooksy: 'View more reviews on Booksy',
+      viewMoreGoogle: 'View reviews on Google',
       reviewers: {
         'Magdalena W.': {
           content: 'Ms. Kasia is a true master of her craft. I am delighted with the effect of permanent eyebrow makeup. Very professional approach, detailed discussion of the procedure and attention to every detail.'
@@ -761,7 +763,8 @@ export const translations = {
     },
     reviews: {
       title: 'Отзывы наших клиентов',
-      viewMore: 'Смотреть больше отзывов на Booksy',
+      viewMoreBooksy: 'Смотреть больше отзывов на Booksy',
+      viewMoreGoogle: 'Смотреть отзывы на Google',
       reviewers: {
         'Magdalena W.': {
           content: 'Пани Кася настоящий мастер своего дела. Я в восторге от результата перманентного макияжа бровей. Очень профессиональный подход, детальное обсуждение процедуры и внимание к каждой детали.'
