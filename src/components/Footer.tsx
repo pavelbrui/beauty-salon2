@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
                 <LocalizedLink
                   key={link.path}
                   to={link.path}
-                  className="text-gray-400 hover:text-amber-400 transition-colors text-sm"
+                  className="block text-gray-400 hover:text-amber-400 transition-colors text-sm"
                 >
                   {link.label}
                 </LocalizedLink>
@@ -69,7 +69,7 @@ export const Footer: React.FC = () => {
                 <LocalizedLink
                   key={link.path}
                   to={link.path}
-                  className="text-gray-400 hover:text-amber-400 transition-colors text-sm"
+                  className="block text-gray-400 hover:text-amber-400 transition-colors text-sm"
                 >
                   {link.label}
                 </LocalizedLink>

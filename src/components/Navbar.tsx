@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { AuthModal } from './AuthModal';
 import { useAdmin } from '../hooks/useAdmin';
+import { sendRegistrationEmail } from '../lib/notifications';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { LocalizedLink } from './LocalizedLink';
 import { stripLangPrefix, localizedPath, SupportedLanguage } from '../hooks/useLocalizedPath';
@@ -38,8 +39,16 @@ export const Navbar: React.FC = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      // Detect new Google OAuth registration (created_at within last 60s)
+      if (event === 'SIGNED_IN' && session?.user) {
+        const createdAt = new Date(session.user.created_at).getTime();
+        const now = Date.now();
+        if (now - createdAt < 60_000 && session.user.app_metadata?.provider === 'google') {
+          sendRegistrationEmail(session.user.email || '', 'google');
+        }
+      }
     });
     return () => subscription.unsubscribe();
   }, []);

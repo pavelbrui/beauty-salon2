@@ -424,7 +424,7 @@ export const Home: React.FC = () => {
               : 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure.',
             thumbnailUrl: 'https://katarzynabrui.pl/og-image2.jpg',
             contentUrl: 'https://katarzynabrui.pl/intro-video.mp4',
-            uploadDate: '2025-01-01',
+            uploadDate: '2025-01-01T00:00:00+01:00',
           })}} />
 
           {/* VideoObject structured data for categories with videos */}
@@ -441,7 +441,7 @@ export const Home: React.FC = () => {
                     description: videoSeo.description,
                     thumbnailUrl: c.image,
                     contentUrl: c.videoUrl,
-                    uploadDate: new Date().toISOString().slice(0, 10),
+                    uploadDate: new Date().toISOString(),
                     embedUrl: `https://katarzynabrui.pl/services/${getCategorySlug(c.name)}`,
                     inLanguage: language,
                   };

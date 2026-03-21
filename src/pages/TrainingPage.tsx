@@ -242,7 +242,7 @@ export const TrainingPage: React.FC = () => {
                 : 'Call or write to learn more about dates and sign up for the training.'}
             </p>
             <a
-              href="tel:+48123456789"
+              href="tel:+48880435102"
               className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -440,7 +440,7 @@ export const TrainingPage: React.FC = () => {
               : "Not sure which training to choose? We'll help you find the best course for your needs."}
           </p>
           <a
-            href="tel:+48123456789"
+            href="tel:+48880435102"
             className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-colors shadow-lg shadow-amber-200"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

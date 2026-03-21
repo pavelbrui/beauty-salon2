@@ -42,6 +42,26 @@ export const notifyClient = async (
  * Fire-and-forget: sends a real email via Netlify Function + Resend.
  * Authenticates via the user's Supabase JWT — no shared secret in frontend.
  */
+/**
+ * Fire-and-forget: notifies admin + developer about new user registration.
+ */
+export const sendRegistrationEmail = async (
+  email: string,
+  provider: 'email' | 'google' = 'email',
+) => {
+  try {
+    fetch('/.netlify/functions/send-registration-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, provider }),
+    }).catch(() => {
+      // fire-and-forget
+    });
+  } catch (err) {
+    console.error('Registration email notification error:', err);
+  }
+};
+
 export const sendBookingEmail = async (
   bookingId: string,
   type: 'confirmation' | 'cancellation' | 'reschedule' | 'deleted',

@@ -49,7 +49,7 @@ export const ArticleSchema: React.FC<ArticleSchemaProps> = ({
         description: description || headline,
         contentUrl: videoUrl,
         thumbnailUrl: image || `${BASE_URL}/og-image.jpg`,
-        uploadDate: datePublished,
+        uploadDate: datePublished?.includes('T') ? datePublished : `${datePublished}T00:00:00+01:00`,
         publisher: BUSINESS_PUBLISHER,
       },
     } : {}),

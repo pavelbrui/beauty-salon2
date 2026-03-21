@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { signIn, signUp, signInWithGoogle } from '../lib/auth';
 import { saveUserData } from '../utils/cookies';
+import { sendRegistrationEmail } from '../lib/notifications';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 
@@ -87,6 +88,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setError(matchedKey ? langErrors[matchedKey] : (langErrors['Invalid login credentials'] || authError.message));
     } else {
       saveUserData({ email });
+      if (mode === 'signup') {
+        sendRegistrationEmail(email, 'email');
+      }
       if (onSuccess) onSuccess();
       onClose();
     }

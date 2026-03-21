@@ -157,7 +157,7 @@ export const GalleryPage: React.FC = () => {
           'description': itemDesc,
           'contentUrl': img.video_url,
           'thumbnailUrl': img.url !== img.video_url ? img.url : img.video_url,
-          'uploadDate': img.created_at,
+          'uploadDate': img.created_at?.includes('T') ? img.created_at : `${img.created_at}T00:00:00+01:00`,
           'publisher': { '@type': 'Organization', 'name': 'Salon Kosmetyczny Katarzyna Brui' },
         };
       }
