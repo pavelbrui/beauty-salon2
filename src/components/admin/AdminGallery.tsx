@@ -182,7 +182,7 @@ export const AdminGallery: React.FC = () => {
         <div className="flex gap-2">
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
             onChange={handleImageUpload}
             disabled={uploading}
             className="hidden"

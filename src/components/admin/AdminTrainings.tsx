@@ -677,7 +677,7 @@ export const AdminTrainings: React.FC = () => {
                   {uploadingCard ? 'Przesyłanie...' : (coverImageUrl ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
                     onChange={e => handleImageUpload(e, setCoverImageUrl, setUploadingCard)}
                     disabled={uploadingCard}
                     className="hidden"
@@ -751,7 +751,7 @@ export const AdminTrainings: React.FC = () => {
                     {uploadingDetail ? 'Przesyłanie...' : (coverImageUrlDetail ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
                       onChange={e => handleImageUpload(e, setCoverImageUrlDetail, setUploadingDetail)}
                       disabled={uploadingDetail}
                       className="hidden"

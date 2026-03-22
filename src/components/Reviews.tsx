@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaGoogle } from 'react-icons/fa';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 
@@ -22,13 +22,20 @@ export const Reviews: React.FC = () => {
               <div className="flex items-center mb-4">
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">{author}</h3>
-                  <div className="flex items-center mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <FaStar
-                        key={i}
-                        className="text-amber-400"
-                      />
-                    ))}
+                  <div className="flex items-center mt-1 gap-2">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className="text-amber-400"
+                        />
+                      ))}
+                    </div>
+                    {review.source === 'google' ? (
+                      <FaGoogle className="text-blue-500 text-sm" title="Google" />
+                    ) : (
+                      <span className="text-amber-600 text-xs font-bold" title="Booksy">B</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -46,7 +53,7 @@ export const Reviews: React.FC = () => {
             {t.reviews.viewMoreBooksy} →
           </a>
           <a
-            href="https://www.google.com/maps/place/?q=place_id:ChIJzQK31Dv9H0cR0aqPnVAPkDo"
+            href="https://www.google.com/maps/search/?api=1&query=Katarzyna+Brui+Permanent+Białystok&query_place_id=ChIJzQK31Dv9H0cR0aqPnVAPkDo"
             target="_blank"
             rel="noopener noreferrer"
             className="text-amber-600 hover:text-amber-700 font-medium block"

@@ -8,8 +8,5 @@ Disallow: /ru/profile
 Disallow: /booking/
 Disallow: /en/booking/
 Disallow: /ru/booking/
-Disallow: /appointments
-Disallow: /en/appointments
-Disallow: /ru/appointments
 
 Sitemap: https://katarzynabrui.pl/sitemap.xml

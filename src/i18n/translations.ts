@@ -9,7 +9,7 @@ export const translations = {
     bookNow: 'Zarezerwuj wizytę',
     reviewsLabel: 'opinii',
     aboutTitle: 'Salon Kosmetyczny w Białymstoku',
-    aboutText: 'Salon kosmetyczny Katarzyna Brui w Białymstoku oferuje profesjonalny makijaż permanentny brwi i ust ( metoda pudrowa, ombre), przedłużanie i laminację rzęs, stylizację brwi, peeling węglowy, manicure hybrydowy oraz laserowe usuwanie tatuażu. Wykorzystujemy najnowocześniejsze technologie i produkty najwyższej jakości. Bezpłatna konsultacja — umów wizytę online lub zadzwoń.',
+    aboutText: 'Salon kosmetyczny Katarzyna Brui w Białymstoku oferuje profesjonalny makijaż permanentny brwi i ust (metoda pudrowa, ombre), przedłużanie i laminację rzęs, stylizację brwi, peeling węglowy, manicure hybrydowy oraz laserowe usuwanie tatuażu. Wykorzystujemy najnowocześniejsze technologie i produkty najwyższej jakości. Bezpłatna konsultacja — umów wizytę online lub zadzwoń.',
     ourServices: 'Nasze Zabiegi',
     ourCategories: 'Nasze Zabiegi',
     categoriesDescription: 'Wybierz kategorię i poznaj naszą pełną ofertę zabiegów',
@@ -58,6 +58,18 @@ export const translations = {
         },
         'Monika S.': {
           content: 'Profesjonalizm na najwyższym poziomie. Pani Kasia ma świetne podejście do klienta, wszystko dokładnie tłumaczy i doradza. Efekt laminacji brwi przekroczył moje oczekiwania!'
+        },
+        'Natalia R.': {
+          content: 'Rewelacyjny salon! Brwi pudrowe wyglądają naturalnie i pięknie. Pani Kasia jest bardzo cierpliwa i precyzyjna. Gorąco polecam każdemu, kto szuka profesjonalnego makijażu permanentnego w Białymstoku.',
+          source: 'google'
+        },
+        'Ewelina M.': {
+          content: 'Byłam na laminacji rzęs i jestem zachwycona efektem! Sterylne warunki, miła atmosfera i świetny rezultat. Na pewno wrócę na kolejne zabiegi.',
+          source: 'google'
+        },
+        'Oksana T.': {
+          content: 'Najlepszy salon kosmetyczny w Białymstoku! Robiłam makijaż permanentny ust i efekt jest fantastyczny – naturalny kolor, piękny kształt. Pani Kasia to prawdziwa artystka!',
+          source: 'google'
         }
       }
     },
@@ -255,11 +267,19 @@ export const translations = {
       h1: 'Nasi styliści i specjaliści beauty',
       intro: 'Nasz zespół to doświadczone specjalistki z wieloletnim doświadczeniem w branży beauty. Każda z nas stale podnosi kwalifikacje, uczestnicząc w szkoleniach i warsztatach. Specjalizujemy się w makijażu permanentnym, stylizacji rzęs, pielęgnacji brwi, manicure i peelingu węglowym.',
     },
+    appointments_seo: {
+      title: 'Rezerwacja Online – Umów Wizytę w Białymstoku',
+      description: 'Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Makijaż permanentny, rzęsy, brwi, manicure, peeling węglowy. Wybierz zabieg, termin i stylistkę.',
+      h1: 'Rezerwacja online – umów wizytę w salonie',
+      intro: 'Zarezerwuj wizytę w naszym salonie kosmetycznym w Białymstoku szybko i wygodnie. Wybierz interesujący Cię zabieg z poniższej listy, a następnie dobierz preferowaną stylistkę i termin. Oferujemy makijaż permanentny brwi i ust, stylizację rzęs, laminację brwi, peeling węglowy, manicure i wiele więcej.',
+      whyBookOnline: 'Dlaczego warto rezerwować online?',
+      benefits: ['Rezerwacja 24/7 – bez dzwonienia', 'Wybór stylistki i terminu', 'Potwierdzenie wizyty na e-mail', 'Możliwość odwołania lub zmiany terminu'],
+    },
     gallery_seo: {
       title: 'Galeria Efektów – Makijaż Permanentny, Rzęsy, Brwi',
       description: 'Zobacz efekty zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria zdjęć przed i po.',
       h1: 'Galeria efektów zabiegów kosmetycznych',
-      intro: 'Zobacz realne efekty zabiegów wykonanych w naszym salonie w Białymstoku. Makijaż permanentny brwi i ust, stylizacja i przedłużanie rzęs, laminacja brwi, manicure — każde zdjęcie to efekt pracy naszych specjalistek.',
+      intro: 'Zobacz realne ef kty zabiegów wykonanych w naszym salonie w Białymstoku. Makijaż permanentny brwi i ust, stylizacja i przedłużanie rzęs, laminacja brwi, manicure — każde zdjęcie to efekt pracy naszych specjalistek.',
     },
     admin_bookings: {
       title: 'Rezerwacje',
@@ -417,6 +437,18 @@ export const translations = {
         },
         'Monika S.': {
           content: 'Professionalism at the highest level. Ms. Kasia has a great approach to the client, explains everything in detail and advises. The effect of eyebrow lamination exceeded my expectations!'
+        },
+        'Natalia R.': {
+          content: 'Amazing salon! Powder brows look natural and beautiful. Ms. Kasia is very patient and precise. Highly recommend to anyone looking for professional permanent makeup in Białystok.',
+          source: 'google'
+        },
+        'Ewelina M.': {
+          content: 'I had lash lamination and I am thrilled with the result! Sterile conditions, nice atmosphere and a great outcome. I will definitely come back for more treatments.',
+          source: 'google'
+        },
+        'Oksana T.': {
+          content: 'Best beauty salon in Białystok! I had permanent lip makeup and the effect is fantastic – natural color, beautiful shape. Ms. Kasia is a true artist!',
+          source: 'google'
         }
       }
     },
@@ -614,6 +646,14 @@ export const translations = {
       h1: 'Our stylists and beauty specialists',
       intro: 'Our team consists of experienced specialists with years of experience in the beauty industry. Each of us constantly improves our skills by attending trainings and workshops. We specialize in permanent makeup, lash styling, brow care, manicure and carbon peeling.',
     },
+    appointments_seo: {
+      title: 'Book Online – Schedule Your Visit in Białystok',
+      description: 'Book your appointment online at Katarzyna Brui beauty salon in Białystok. Permanent makeup, lashes, brows, manicure, carbon peeling. Choose your treatment, stylist and time.',
+      h1: 'Book online – schedule your salon visit',
+      intro: 'Book your visit at our beauty salon in Białystok quickly and conveniently. Choose a treatment from the list below, then select your preferred stylist and time. We offer permanent makeup for brows and lips, lash extensions, brow lamination, carbon peeling, manicure and more.',
+      whyBookOnline: 'Why book online?',
+      benefits: ['Book 24/7 – no phone calls needed', 'Choose your stylist and time', 'Email confirmation', 'Easy rescheduling or cancellation'],
+    },
     gallery_seo: {
       title: 'Gallery – Permanent Makeup, Lashes & Brows Results',
       description: 'See the results of beauty treatments at Katarzyna Brui salon in Bialystok: permanent makeup, lash extensions, brow lamination, manicure. Before and after photos.',
@@ -776,6 +816,18 @@ export const translations = {
         },
         'Monika S.': {
           content: 'Профессионализм на высшем уровне. У пани Каси отличный подход к клиенту, все подробно объясняет и консультирует. Эффект ламинирования бровей превзошел мои ожидания!'
+        },
+        'Natalia R.': {
+          content: 'Потрясающий салон! Пудровые брови выглядят естественно и красиво. Пани Кася очень терпеливая и точная. Горячо рекомендую всем, кто ищет профессиональный перманентный макияж в Белостоке.',
+          source: 'google'
+        },
+        'Ewelina M.': {
+          content: 'Делала ламинирование ресниц и в восторге от результата! Стерильные условия, приятная атмосфера и отличный результат. Обязательно вернусь на другие процедуры.',
+          source: 'google'
+        },
+        'Oksana T.': {
+          content: 'Лучший салон красоты в Белостоке! Делала перманентный макияж губ и эффект фантастический – естественный цвет, красивая форма. Пани Кася настоящая художница!',
+          source: 'google'
         }
       }
     },
@@ -972,6 +1024,14 @@ export const translations = {
       description: 'Познакомьтесь с командой опытных косметологов и стилистов салона Катажина Бруй в Белостоке. Специалисты по перманентному макияжу, наращиванию ресниц, ламинированию и уходу за бровями.',
       h1: 'Наши стилисты и специалисты',
       intro: 'Наша команда — это опытные специалисты с многолетним стажем в бьюти-индустрии. Каждая из нас постоянно повышает квалификацию, участвуя в мастер-классах и тренингах. Мы специализируемся на перманентном макияже, стилизации ресниц, уходе за бровями, маникюре и карбоновом пилинге.',
+    },
+    appointments_seo: {
+      title: 'Запись онлайн – Запишитесь на визит в Белостоке',
+      description: 'Запишитесь онлайн в салон красоты Katarzyna Brui в Белостоке. Перманентный макияж, ресницы, брови, маникюр, карбоновый пилинг. Выберите процедуру, мастера и время.',
+      h1: 'Запись онлайн – запишитесь на визит',
+      intro: 'Запишитесь на визит в наш салон красоты в Белостоке быстро и удобно. Выберите интересующую вас процедуру из списка ниже, а затем подберите предпочтительного мастера и время. Мы предлагаем перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр и многое другое.',
+      whyBookOnline: 'Почему стоит записываться онлайн?',
+      benefits: ['Запись 24/7 — без звонков', 'Выбор мастера и времени', 'Подтверждение на e-mail', 'Возможность отмены или переноса'],
     },
     gallery_seo: {
       title: 'Галерея – Перманентный макияж, ресницы, брови',

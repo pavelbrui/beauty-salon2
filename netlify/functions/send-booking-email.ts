@@ -30,7 +30,7 @@ async function verifyAuthToken(token: string): Promise<boolean> {
   }
 }
 
-const ADMIN_EMAIL = 'brui.katya@icloud.com';
+const ADMIN_EMAIL = 'brui.katarzyna@gmail.com';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
 const SALON_PHONE = '+48 733 407 981';
 const SALON_ADDRESS = 'ul. Młynowa 46, local U11, Białystok';

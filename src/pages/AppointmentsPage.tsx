@@ -13,6 +13,7 @@ import { StylistFilter } from '../components/StylistFilter';
 export const AppointmentsPage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
+  const ap = (t as any).appointments_seo as Record<string, any> | undefined;
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useLocalizedNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -149,15 +150,37 @@ export const AppointmentsPage: React.FC = () => {
   return (
     <main className="pt-16 min-h-screen bg-neutral-50 overflow-x-hidden">
       <SEO
-        title="Rezerwacja Online - Umów Wizytę"
-        description="Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz zabieg, termin i stylistkę. Szybka i wygodna rezerwacja bez dzwonienia!"
+        title={ap?.title || 'Rezerwacja Online – Umów Wizytę w Białymstoku'}
+        description={ap?.description || 'Zarezerwuj wizytę online w salonie kosmetycznym Katarzyna Brui w Białymstoku. Wybierz zabieg, termin i stylistkę.'}
         canonical="/appointments"
-        noindex
+        keywords={language === 'en' ? [
+          'book beauty appointment Białystok',
+          'online booking beauty salon',
+          'permanent makeup appointment',
+          'lash extensions booking Białystok',
+        ] : language === 'ru' ? [
+          'запись салон красоты Белосток',
+          'онлайн запись косметолог',
+          'перманентный макияж запись',
+          'наращивание ресниц запись Белосток',
+        ] : [
+          'rezerwacja salon kosmetyczny Białystok',
+          'umów wizytę kosmetyczka online',
+          'makijaż permanentny rezerwacja',
+          'przedłużanie rzęs rezerwacja Białystok',
+        ]}
+        breadcrumbs={[
+          { name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' },
+          { name: ap?.h1 || t.appointments, url: '/appointments' },
+        ]}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {t.appointments}
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          {ap?.h1 || t.appointments}
         </h1>
+        {ap?.intro && (
+          <p className="text-gray-600 max-w-3xl mb-8">{ap.intro}</p>
+        )}
 
         {/* Show user's bookings if logged in */}
         {isLoggedIn && (
@@ -216,6 +239,23 @@ export const AppointmentsPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* SEO: Why book online section */}
+        {ap?.whyBookOnline && ap?.benefits && (
+          <div className="mt-12 bg-white rounded-lg shadow p-6 md:p-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{ap.whyBookOnline}</h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {(ap.benefits as string[]).map((benefit: string, i: number) => (
+                <li key={i} className="flex items-start gap-2 text-gray-600">
+                  <svg className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </main>
   );

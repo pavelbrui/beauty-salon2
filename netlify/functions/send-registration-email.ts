@@ -3,7 +3,7 @@ import { isRateLimited, getClientIp } from './utils/rateLimit';
 
 const resendApiKey = process.env.RESEND_API_KEY || '';
 
-const ADMIN_EMAIL = 'brui.katya@icloud.com';
+const ADMIN_EMAIL = 'brui.katarzyna@gmail.com';
 const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
 

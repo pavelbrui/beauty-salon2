@@ -166,7 +166,7 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
             {uploading ? 'Przesyłanie...' : (b.url ? 'Zmień zdjęcie' : 'Wgraj zdjęcie')}
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
               onChange={handleImageUpload}
               disabled={uploading}
               className="hidden"

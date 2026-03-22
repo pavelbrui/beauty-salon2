@@ -33,7 +33,7 @@ async function verifyAuthToken(token: string): Promise<boolean> {
 }
 
 const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
-const ADMIN_EMAIL = 'brui.katya@icloud.com';
+const ADMIN_EMAIL = 'brui.katarzyna@gmail.com';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);

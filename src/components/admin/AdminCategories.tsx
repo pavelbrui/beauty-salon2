@@ -283,7 +283,7 @@ export const AdminCategories = () => {
                   <input
                     ref={el => { fileInputRefs.current[cat.id] = el; }}
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];

@@ -420,7 +420,7 @@ export const AdminBlog: React.FC = () => {
             )}
             <label className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
               {uploadingCover ? 'Wysyłanie...' : 'Wybierz plik'}
-              <input type="file" accept="image/*" onChange={handleCoverFileSelect} className="hidden" />
+              <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp" onChange={handleCoverFileSelect} className="hidden" />
             </label>
             {coverImageUrl && (
               <button onClick={() => setCoverImageUrl('')} className="text-xs text-red-500 hover:text-red-700">Usuń</button>

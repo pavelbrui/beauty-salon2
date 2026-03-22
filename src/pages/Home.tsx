@@ -328,11 +328,9 @@ export const Home: React.FC = () => {
           </p>
           <div className="mt-12 flex flex-col items-center gap-4">
             <div className="flex items-center space-x-4 justify-center">
-              <a
-                href="https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer inline-block"
+              <button
+                onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer text-left"
               >
                 <span className="text-amber-500 text-2xl font-semibold">5.0</span>
                 <span className="text-gray-800 ml-2">/ 5.0</span>
@@ -340,7 +338,7 @@ export const Home: React.FC = () => {
                   <span>384 </span>
                   <span>{t.reviewsLabel}</span>
                 </div>
-              </a>
+              </button>
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"
@@ -373,7 +371,7 @@ export const Home: React.FC = () => {
                   muted
                   loop
                   playsInline
-                  poster="/og-image2.jpg"
+                  poster="/apple-touch-icon.png"
                   preload="metadata"
                 >
                   <source src="/intro-video.mp4" type="video/mp4" />

@@ -52,7 +52,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ serviceId, onUploadCom
       <div className="mt-1 flex items-center">
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
           onChange={handleUpload}
           disabled={uploading}
           className="block w-full text-sm text-gray-500

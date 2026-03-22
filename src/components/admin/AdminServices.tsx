@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { translateFromPolish } from '../../utils/translateService';
 import { StylistFilter } from '../StylistFilter';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
+import { uploadVideo } from '../../utils/uploadVideo';
 import { withTimeout } from '../../utils/withTimeout';
 import { serviceImages } from '../../assets/images';
 import { ImageCropper } from './ImageCropper';
@@ -25,6 +26,7 @@ interface ServiceImage {
   id: string;
   url: string;
   alt_text?: string;
+  video_url?: string | null;
 }
 
 export const AdminServices = () => {
@@ -47,6 +49,7 @@ export const AdminServices = () => {
 
   const [editImages, setEditImages] = useState<ServiceImage[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   // Image cropping state
@@ -122,7 +125,7 @@ export const AdminServices = () => {
   const loadServices = async () => {
     const { data, error } = await supabase
       .from('services')
-      .select('*, service_images(id, url, alt_text)')
+      .select('*, service_images(id, url, alt_text, video_url)')
       .order('category');
     
     if (error) {
@@ -141,7 +144,7 @@ export const AdminServices = () => {
   const loadEditImages = async (serviceId: string) => {
     const { data } = await supabase
       .from('service_images')
-      .select('id, url, alt_text')
+      .select('id, url, alt_text, video_url')
       .eq('service_id', serviceId);
     setEditImages(data || []);
   };
@@ -213,6 +216,49 @@ export const AdminServices = () => {
     }
 
     await loadEditImages(serviceId);
+  };
+
+  const handleVideoUpload = async (event: React.ChangeEvent<HTMLInputElement>, serviceId: string) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    event.target.value = '';
+
+    setUploadingVideo(true);
+    setImageUploadError(null);
+
+    try {
+      const { publicUrl } = await uploadVideo({ file, folder: 'service-videos' });
+
+      const { error: dbError } = await withTimeout(
+        supabase.from('service_images').insert({
+          service_id: serviceId,
+          url: publicUrl,
+          video_url: publicUrl,
+          alt_text: file.name,
+        }),
+        20000,
+        'Zapis video w bazie trwa zbyt długo'
+      );
+
+      if (dbError) throw dbError;
+
+      await loadEditImages(serviceId);
+    } catch (err) {
+      setImageUploadError(err instanceof Error ? err.message : 'Błąd podczas wgrywania video');
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleRemoveVideo = async (imageId: string, serviceId: string) => {
+    const { error } = await supabase
+      .from('service_images')
+      .delete()
+      .eq('id', imageId);
+
+    if (!error) {
+      await loadEditImages(serviceId);
+    }
   };
 
   const handleAutoTranslateName = async (polishName: string) => {
@@ -708,24 +754,40 @@ export const AdminServices = () => {
                 />
               </div>
 
-              {/* Image section */}
+              {/* Image & Video section */}
               {editingService && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Zdjęcia usługi
+                    Zdjęcia i video usługi
                   </label>
                   {editImages.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {editImages.map(img => (
                         <div key={img.id} className="relative group">
-                          <img
-                            src={img.url}
-                            alt={img.alt_text || ''}
-                            className="w-20 h-20 rounded-lg object-cover border border-gray-200"
-                          />
+                          {img.video_url ? (
+                            <>
+                              <video
+                                src={img.video_url}
+                                muted
+                                className="w-20 h-20 rounded-lg object-cover border border-gray-200"
+                              />
+                              <div className="absolute top-0.5 left-0.5 bg-black/60 text-white rounded px-1 text-[10px]">
+                                MP4
+                              </div>
+                            </>
+                          ) : (
+                            <img
+                              src={img.url}
+                              alt={img.alt_text || ''}
+                              className="w-20 h-20 rounded-lg object-cover border border-gray-200"
+                            />
+                          )}
                           <button
                             type="button"
-                            onClick={() => handleDeleteImage(img.id, editingService.id)}
+                            onClick={() => img.video_url
+                              ? handleRemoveVideo(img.id, editingService.id)
+                              : handleDeleteImage(img.id, editingService.id)
+                            }
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             ×
@@ -734,31 +796,49 @@ export const AdminServices = () => {
                       ))}
                     </div>
                   )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileSelect(e, editingService.id)}
-                    disabled={uploadingImage}
-                    className="block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-md file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-amber-50 file:text-amber-700
-                      hover:file:bg-amber-100"
-                  />
-                  {uploadingImage && (
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/heic,image/heif,image/tiff,image/bmp,.jpg,.jpeg,.png,.gif,.webp,.svg,.heic,.heif,.tiff,.tif,.bmp"
+                        onChange={(e) => handleFileSelect(e, editingService.id)}
+                        disabled={uploadingImage}
+                        className="block w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-md file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-amber-50 file:text-amber-700
+                          hover:file:bg-amber-100"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="video/mp4,video/quicktime,video/webm,video/x-m4v,.mov,.mp4,.webm,.m4v"
+                        onChange={(e) => handleVideoUpload(e, editingService.id)}
+                        disabled={uploadingVideo}
+                        className="block w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-md file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-purple-50 file:text-purple-700
+                          hover:file:bg-purple-100"
+                      />
+                    </div>
+                  </div>
+                  {(uploadingImage || uploadingVideo) && (
                     <div className="mt-2 flex items-center gap-2 text-sm text-amber-600">
                       <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Wgrywanie...
+                      {uploadingVideo ? 'Wgrywanie video...' : 'Wgrywanie...'}
                     </div>
                   )}
                   {imageUploadError && (
                     <p className="mt-1 text-sm text-red-600">{imageUploadError}</p>
                   )}
-                  <p className="mt-1 text-xs text-gray-400">Maks. 15MB — duże zdjęcia zostaną automatycznie skompresowane</p>
+                  <p className="mt-1 text-xs text-gray-400">Zdjęcia: maks. 15MB (auto-kompresja) · Video: maks. 50MB (MP4, MOV, WebM)</p>
                 </div>
               )}
 
@@ -780,7 +860,7 @@ export const AdminServices = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving || uploadingImage || modalLoading}
+                  disabled={saving || uploadingImage || uploadingVideo || modalLoading}
                   className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {(saving || modalLoading) && (
