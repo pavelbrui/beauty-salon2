@@ -58,8 +58,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, imgLoading = 
         <button
           onClick={() => navigate(`/booking/${service.id}`)}
           className="mt-6 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-amber-600 transition-colors shadow-sm"
+          aria-label={`${t.bookNow}: ${getServiceName(service, language)}`}
         >
-          {t.bookNow}
+          {t.bookNow}: {getServiceName(service, language)}
         </button>
       </div>
     </div>

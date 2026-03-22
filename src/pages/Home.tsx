@@ -10,6 +10,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { LocalBusinessSchema, BreadcrumbSchema } from '../components/schema';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getCategorySlug } from '../utils/categorySlugMap';
@@ -401,7 +402,7 @@ export const Home: React.FC = () => {
                 image={cat.image}
                 videoUrl={cat.videoUrl}
                 servicesCountLabel={t.servicesCount}
-                ctaLabel={t.viewCategoryServices}
+                ctaLabel={`${t.viewCategoryServices}: ${getCategoryName(cat.name, language, (t as any).categories)}`}
                 onClick={() => navigate(`/services/${getCategorySlug(cat.name)}`)}
                 imgLoading={idx < 3 ? 'eager' : 'lazy'}
                 customAlt={`${getCategoryName(cat.name, language, (t as any).categories)} – zabiegi kosmetyczne w Białymstoku`}
@@ -505,6 +506,24 @@ export const Home: React.FC = () => {
               <h3 className="text-xl font-medium text-amber-600 mb-4">
                 {t.contact.socialMedia.title}
               </h3>
+              <div className="flex justify-center space-x-4 mb-4">
+                <a
+                  href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-600 hover:text-amber-700 transition-colors"
+                >
+                  <FaFacebook size={28} />
+                </a>
+                <a
+                  href="https://www.instagram.com/katarzyna.brui_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-600 hover:text-amber-700 transition-colors"
+                >
+                  <FaInstagram size={28} />
+                </a>
+              </div>
               <p className="text-gray-600">{t.contact.socialMedia.followUs}</p>
             </div>
           </div>

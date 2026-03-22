@@ -110,7 +110,10 @@ export const StylistsPage: React.FC = () => {
         } : undefined}
       />
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{(t as any).stylists_seo?.h1 || t.stylists}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{(t as any).stylists_seo?.h1 || t.stylists}</h1>
+        {(t as any).stylists_seo?.intro && (
+          <p className="text-gray-600 max-w-3xl mb-10">{(t as any).stylists_seo.intro}</p>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {stylists.map((stylist, idx) => (
@@ -148,10 +151,11 @@ export const StylistsPage: React.FC = () => {
                 <p className="text-gray-600">{getStylistDescription(stylist, language)}</p>
                 <button
                   onClick={() => navigate(`/appointments?stylist=${stylist.id}`)}
-                  className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium 
+                  className="mt-4 w-full bg-amber-500 text-white py-3 px-6 rounded-lg font-medium
                            hover:bg-amber-600 transition-colors shadow-sm"
+                  aria-label={`${t.bookNow} – ${stylist.name}`}
                 >
-                  {t.bookNow}
+                  {t.bookNow} – {stylist.name}
                 </button>
               </div>
             </div>

@@ -29,6 +29,7 @@ interface SEOProps {
 }
 
 const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
+const SITE_NAME_SHORT = 'Katarzyna Brui';
 const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.';
 const BASE_URL = 'https://katarzynabrui.pl';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
@@ -62,7 +63,7 @@ export const SEO: React.FC<SEOProps> = ({
   const { language } = useLanguage();
   const location = useLocation();
 
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Makijaż Permanentny Białystok`;
+  const fullTitle = title ? `${title} | ${SITE_NAME_SHORT}` : `${SITE_NAME} | Makijaż Permanentny Białystok`;
   const barePath = canonical || stripLangPrefix(location.pathname) || '/';
   const url = getLocalizedUrl(barePath, language);
 
