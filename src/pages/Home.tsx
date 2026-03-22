@@ -10,7 +10,6 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { LocalBusinessSchema, BreadcrumbSchema } from '../components/schema';
-import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getCategorySlug } from '../utils/categorySlugMap';
@@ -32,11 +31,11 @@ const VIDEO_SEO_DATA: Record<string, { pl: { title: string; description: string 
       description: 'Makijaż permanentny brwi i ust Białystok – efekty zabiegów. Brwi pudrowe (powder brows), ombre brwi, microblading, nano brows, combo brows, makijaż permanentny ust. Najlepsza linergistka Białystok – salon Katarzyna Brui. Cena, metody, efekty.',
     },
     en: {
-      title: 'Permanent Makeup Białystok – Powder Brows, Ombre Brows, Microblading, Nano Brows',
+      title: 'Permanent Makeup Białystok – Powder Brows, Ombre Brows, Nano Brows',
       description: 'Permanent makeup brows and lips in Białystok. Powder brows, ombre brows, microblading, nano brows, combo brows – treatment results. Katarzyna Brui beauty salon, best permanent makeup artist.',
     },
     ru: {
-      title: 'Перманентный макияж Белосток – пудровые брови, омбре, микроблейдинг, нанопигментация',
+      title: 'Перманентный макияж Белосток – пудровые брови, омбре, нанопигментация',
       description: 'Перманентный макияж бровей и губ Белосток – результаты процедур. Пудровые брови, омбре, микроблейдинг, нано брови, комбо брови. Лучший мастер перманента – салон Katarzyna Brui.',
     },
   },
@@ -506,24 +505,6 @@ export const Home: React.FC = () => {
               <h3 className="text-xl font-medium text-amber-600 mb-4">
                 {t.contact.socialMedia.title}
               </h3>
-              <div className="flex justify-center space-x-4 mb-4">
-                <a
-                  href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-600 hover:text-amber-700 transition-colors"
-                >
-                  <FaFacebook size={28} />
-                </a>
-                <a
-                  href="https://www.instagram.com/katarzyna.brui_"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-600 hover:text-amber-700 transition-colors"
-                >
-                  <FaInstagram size={28} />
-                </a>
-              </div>
               <p className="text-gray-600">{t.contact.socialMedia.followUs}</p>
             </div>
           </div>

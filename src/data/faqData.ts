@@ -19,9 +19,9 @@ export const faqByCategory: Record<string, FAQItem[]> = {
       question: 'Ile trwa zabieg makijażu permanentnego brwi?',
       question_en: 'How long does permanent brow makeup take?',
       question_ru: 'Сколько длится процедура перманентного макияжа бровей?',
-      answer: 'Zabieg trwa zazwyczaj 2-3 godziny. Czas zależy od wybranej metody (microblading, powder brows, combo brows) i indywidualnych potrzeb klienta. Podczas wizyty przeprowadzam konsultację, przygotowanie skóry, nanoszenie pigmentu oraz instrukcje pielęgnacji.',
-      answer_en: 'The procedure usually takes 2-3 hours. Duration depends on the chosen method (microblading, powder brows, combo brows) and individual client needs. The visit includes consultation, skin preparation, pigment application, and aftercare instructions.',
-      answer_ru: 'Процедура обычно занимает 2-3 часа. Время зависит от выбранного метода (микроблейдинг, пудровые брови, комбо) и индивидуальных потребностей клиента. Визит включает консультацию, подготовку кожи, нанесение пигмента и инструкции по уходу.',
+      answer: 'Zabieg trwa zazwyczaj 2-3 godziny. Czas zależy od wybranej metody (powder brows, combo brows) i indywidualnych potrzeb klienta. Podczas wizyty przeprowadzam konsultację, przygotowanie skóry, nanoszenie pigmentu oraz instrukcje pielęgnacji.',
+      answer_en: 'The procedure usually takes 2-3 hours. Duration depends on the chosen method (powder brows, combo brows) and individual client needs. The visit includes consultation, skin preparation, pigment application, and aftercare instructions.',
+      answer_ru: 'Процедура обычно занимает 2-3 часа. Время зависит от выбранного метода (пудровые брови, комбо) и индивидуальных потребностей клиента. Визит включает консультацию, подготовку кожи, нанесение пигмента и инструкции по уходу.',
     },
     {
       question: 'Czy makijaż permanentny brwi boli?',

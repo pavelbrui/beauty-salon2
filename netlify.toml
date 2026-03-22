@@ -169,6 +169,11 @@
 
 # API routes
 [[redirects]]
+  from = "/api/test-email"
+  to = "/.netlify/functions/test-email"
+  status = 200
+
+[[redirects]]
   from = "/api/gbp-login"
   to = "/.netlify/functions/gbp-login"
   status = 200

@@ -59,6 +59,7 @@ export interface Booking {
 export interface Stylist {
   id: string;
   name: string;
+  email?: string;
   role?: string;
   role_en?: string;
   role_ru?: string;

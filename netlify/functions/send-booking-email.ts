@@ -58,7 +58,7 @@ interface BookingData {
   end_time: string | null;
   notes: string | null;
   services: { name: string; price: number; duration: number } | null;
-  stylists: { name: string } | null;
+  stylists: { name: string; email: string | null } | null;
 }
 
 // --- Polish date formatting ---
@@ -173,6 +173,8 @@ function buildEmails(
   const serviceName = booking.services?.name || 'Usługa';
   const clientName = booking.contact_name || 'Klient';
 
+  const stylistEmail = booking.stylists?.email;
+
   switch (type) {
     case 'confirmation':
       // Email to client
@@ -189,6 +191,14 @@ function buildEmails(
         subject: `Nowa rezerwacja: ${clientName} — ${serviceName}`,
         html: adminNotificationHtml(booking, 'Nowa rezerwacja'),
       });
+      // Email to stylist
+      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+        emails.push({
+          to: stylistEmail,
+          subject: `Nowa rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Nowa rezerwacja'),
+        });
+      }
       break;
 
     case 'cancellation':
@@ -197,6 +207,13 @@ function buildEmails(
         subject: `Anulowana rezerwacja: ${clientName} — ${serviceName}`,
         html: adminNotificationHtml(booking, 'Anulowana rezerwacja'),
       });
+      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+        emails.push({
+          to: stylistEmail,
+          subject: `Anulowana rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Anulowana rezerwacja'),
+        });
+      }
       break;
 
     case 'reschedule':
@@ -205,6 +222,13 @@ function buildEmails(
         subject: `Zmiana terminu: ${clientName} — ${serviceName}`,
         html: adminNotificationHtml(booking, 'Zmiana terminu rezerwacji', extraMessage),
       });
+      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+        emails.push({
+          to: stylistEmail,
+          subject: `Zmiana terminu: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Zmiana terminu rezerwacji', extraMessage),
+        });
+      }
       break;
 
     case 'deleted':
@@ -213,6 +237,13 @@ function buildEmails(
         subject: `Usunięta rezerwacja: ${clientName} — ${serviceName}`,
         html: adminNotificationHtml(booking, 'Usunięta rezerwacja'),
       });
+      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+        emails.push({
+          to: stylistEmail,
+          subject: `Usunięta rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Usunięta rezerwacja'),
+        });
+      }
       break;
   }
 
@@ -274,7 +305,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
       id, status, contact_name, contact_phone, contact_email,
       start_time, end_time, notes,
       services ( name, price, duration ),
-      stylists ( name )
+      stylists ( name, email )
     `)
     .eq('id', payload.bookingId)
     .single();

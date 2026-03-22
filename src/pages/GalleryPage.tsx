@@ -126,6 +126,18 @@ export const GalleryPage: React.FC = () => {
     return getGalleryDescription(image, language);
   };
 
+  /** Build a descriptive alt text for images without a manual description */
+  const getFallbackAlt = (image: GalleryImage, idx: number) => {
+    const cat = getCategoryLabel(image.category);
+    const suffix = language === 'en'
+      ? 'beauty salon Katarzyna Brui Białystok'
+      : language === 'ru'
+      ? 'салон красоты Katarzyna Brui Белосток'
+      : 'salon kosmetyczny Katarzyna Brui Białystok';
+    const resultWord = language === 'en' ? 'result' : language === 'ru' ? 'результат' : 'efekt zabiegu';
+    return `${cat} – ${resultWord} ${idx + 1} – ${suffix}`;
+  };
+
   const filteredImages = selectedCategory === 'all'
     ? images
     : images.filter(img => img.category === selectedCategory);
@@ -148,7 +160,7 @@ export const GalleryPage: React.FC = () => {
     'description': gallerySchemaDesc,
     'url': 'https://katarzynabrui.pl/gallery',
     'image': images.slice(0, 20).map(img => {
-      const itemName = getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'Katarzyna Brui Salon' : language === 'ru' ? 'салон Катажина Бруй' : 'salon Katarzyna Brui Białystok'}`;
+      const itemName = getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'treatment result, Katarzyna Brui Salon Białystok' : language === 'ru' ? 'результат процедуры, салон Katarzyna Brui Белосток' : 'efekt zabiegu, salon Katarzyna Brui Białystok'}`;
       const itemDesc = getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'treatment results, beauty salon Białystok' : language === 'ru' ? 'результаты процедур, салон красоты Белосток' : 'efekty zabiegów, salon kosmetyczny Białystok'}`;
       if (img.video_url) {
         return {
@@ -259,8 +271,8 @@ export const GalleryPage: React.FC = () => {
                 >
                   <img
                     src={image.url}
-                    alt={desc || `${getCategoryLabel(image.category)} – salon Katarzyna Brui Białystok`}
-                    title={desc || `${getCategoryLabel(image.category)} – efekty zabiegów`}
+                    alt={desc || getFallbackAlt(image, idx)}
+                    title={desc || getFallbackAlt(image, idx)}
                     loading={idx < 6 ? 'eager' : 'lazy'}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     width={600}
@@ -302,7 +314,7 @@ export const GalleryPage: React.FC = () => {
           ) : (
             <img
               src={lightboxImage.url}
-              alt={getDescription(lightboxImage) || `${getCategoryLabel(lightboxImage.category)} – salon Katarzyna Brui Białystok`}
+              alt={getDescription(lightboxImage) || `${getCategoryLabel(lightboxImage.category)} – ${language === 'en' ? 'beauty salon Katarzyna Brui Białystok' : language === 'ru' ? 'салон красоты Katarzyna Brui Белосток' : 'salon kosmetyczny Katarzyna Brui Białystok'}`}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}
             />

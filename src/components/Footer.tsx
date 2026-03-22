@@ -9,7 +9,6 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = [
-    { path: '/services', label: t.services },
     { path: '/appointments', label: t.appointments },
     { path: '/blog', label: (t as Record<string, unknown>).blog as string || 'Blog' },
     { path: '/gallery', label: t.gallery },

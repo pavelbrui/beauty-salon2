@@ -174,7 +174,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           onClick={async () => {
             setError('');
             setLoading(true);
-            const { error: googleError } = await signInWithGoogle();
+            const currentUrl = typeof window !== 'undefined' ? window.location.href : undefined;
+            const { error: googleError } = await signInWithGoogle(currentUrl);
             setLoading(false);
             if (googleError) {
               setError(googleError.message);

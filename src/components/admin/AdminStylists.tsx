@@ -7,6 +7,7 @@ import { withTimeout } from '../../utils/withTimeout';
 interface Stylist {
   id: string;
   name: string;
+  email?: string;
   role: string;
   role_en?: string;
   role_ru?: string;
@@ -50,6 +51,9 @@ export const AdminStylists: React.FC = () => {
   const [nightStartHour, setNightStartHour] = useState(22);
   const [nightEndHour, setNightEndHour] = useState(6);
   const [nightMinSlotHour, setNightMinSlotHour] = useState(10);
+
+  // Email state
+  const [stylistEmail, setStylistEmail] = useState('');
 
   // Save state
   const [saving, setSaving] = useState(false);
@@ -169,6 +173,7 @@ export const AdminStylists: React.FC = () => {
         supabase.from('stylists').upsert({
           id: stylist.id,
           name: stylist.name,
+          email: stylistEmail || null,
           role: stylist.role,
           role_en: roleEn || null,
           role_ru: roleRu || null,
@@ -219,6 +224,7 @@ export const AdminStylists: React.FC = () => {
 
   const handleEdit = (stylist: Stylist) => {
     setEditingStylist(stylist);
+    setStylistEmail(stylist.email || '');
     setRoleEn(stylist.role_en || '');
     setRoleRu(stylist.role_ru || '');
     setSpecEn(stylist.specialties_en?.join(', ') || '');
@@ -247,6 +253,7 @@ export const AdminStylists: React.FC = () => {
             resetTranslationState();
             resetImageState();
             resetRestrictions();
+            setStylistEmail('');
             setSaveError(null);
             setIsModalOpen(true);
           }}
@@ -346,6 +353,19 @@ export const AdminStylists: React.FC = () => {
                   defaultValue={editingStylist?.name}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email (do powiadomień o rezerwacjach)
+                </label>
+                <input
+                  type="email"
+                  value={stylistEmail}
+                  onChange={(e) => setStylistEmail(e.target.value)}
+                  placeholder="stylistka@example.com"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500"
                 />
               </div>
 
