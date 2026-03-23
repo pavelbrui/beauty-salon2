@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { SEO } from '../components/SEO';
 import { LocalizedLink } from '../components/LocalizedLink';
+import { prerenderReady } from '../utils/prerenderReady';
 
 const content = {
   pl: {
@@ -442,6 +443,8 @@ These terms are made available free of charge on the website in a format that al
 export const TermsPage: React.FC = () => {
   const { language } = useLanguage();
   const t = content[language];
+
+  React.useEffect(() => { prerenderReady(); }, []);
 
   return (
     <>

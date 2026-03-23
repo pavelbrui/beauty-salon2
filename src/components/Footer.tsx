@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { LocalizedLink } from './LocalizedLink';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 
 export const Footer: React.FC = () => {
   const { language } = useLanguage();
@@ -58,6 +59,28 @@ export const Footer: React.FC = () => {
                 </a>
               </p>
             </address>
+            <div className="flex space-x-4 mt-4">
+              <a
+                href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook – Katarzyna Brui Permanent"
+                className="text-gray-400 hover:text-amber-400 transition-colors"
+              >
+                <FaFacebook size={20} />
+                <span className="sr-only">Facebook</span>
+              </a>
+              <a
+                href="https://www.instagram.com/katarzyna.brui_"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram – @katarzyna.brui_"
+                className="text-gray-400 hover:text-amber-400 transition-colors"
+              >
+                <FaInstagram size={20} />
+                <span className="sr-only">Instagram</span>
+              </a>
+            </div>
           </div>
 
           {/* Legal Links */}

@@ -9,6 +9,7 @@ import { Service, Stylist } from '../types';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
 import { StylistFilter } from '../components/StylistFilter';
+import { prerenderReady } from '../utils/prerenderReady';
 
 export const AppointmentsPage: React.FC = () => {
   const { language } = useLanguage();
@@ -81,6 +82,7 @@ export const AppointmentsPage: React.FC = () => {
       console.error('Error loading services:', err);
     } finally {
       setLoading(false);
+      prerenderReady();
     }
   };
 

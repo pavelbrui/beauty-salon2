@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { SEO } from '../components/SEO';
 import { LocalizedLink } from '../components/LocalizedLink';
+import { prerenderReady } from '../utils/prerenderReady';
 
 const content = {
   pl: {
@@ -354,6 +355,8 @@ www.uodo.gov.pl`,
 export const PrivacyPolicyPage: React.FC = () => {
   const { language } = useLanguage();
   const t = content[language];
+
+  React.useEffect(() => { prerenderReady(); }, []);
 
   return (
     <>

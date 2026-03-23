@@ -509,17 +509,21 @@ export const Home: React.FC = () => {
                   href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Facebook – Katarzyna Brui Permanent"
                   className="text-amber-600 hover:text-amber-700 transition-colors"
                 >
                   <FaFacebook size={28} />
+                  <span className="sr-only">Facebook</span>
                 </a>
                 <a
                   href="https://www.instagram.com/katarzyna.brui_"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Instagram – @katarzyna.brui_"
                   className="text-amber-600 hover:text-amber-700 transition-colors"
                 >
                   <FaInstagram size={28} />
+                  <span className="sr-only">Instagram</span>
                 </a>
               </div>
               <p className="text-gray-600">{t.contact.socialMedia.followUs}</p>

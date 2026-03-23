@@ -129,13 +129,13 @@ export const GalleryPage: React.FC = () => {
   /** Build a descriptive alt text for images without a manual description */
   const getFallbackAlt = (image: GalleryImage, idx: number) => {
     const cat = getCategoryLabel(image.category);
-    const suffix = language === 'en'
-      ? 'beauty salon Katarzyna Brui Białystok'
-      : language === 'ru'
-      ? 'салон красоты Katarzyna Brui Белосток'
-      : 'salon kosmetyczny Katarzyna Brui Białystok';
-    const resultWord = language === 'en' ? 'result' : language === 'ru' ? 'результат' : 'efekt zabiegu';
-    return `${cat} – ${resultWord} ${idx + 1} – ${suffix}`;
+    if (language === 'en') {
+      return `${cat} – treatment result ${idx + 1}, Katarzyna Brui beauty salon Białystok`;
+    }
+    if (language === 'ru') {
+      return `${cat} – результат процедуры ${idx + 1}, салон красоты Katarzyna Brui Белосток`;
+    }
+    return `${cat} – efekt zabiegu ${idx + 1} w Białymstoku, salon Katarzyna Brui`;
   };
 
   const filteredImages = selectedCategory === 'all'
