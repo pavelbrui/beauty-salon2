@@ -96,9 +96,9 @@ export default defineConfig(async ({ command }) => {
           routes,
           renderer: '@prerenderer/renderer-puppeteer',
           rendererOptions: {
-            maxConcurrentRoutes: 4,
+            maxConcurrentRoutes: 2,
             renderAfterDocumentEvent: 'prerender-ready',
-            timeout: 20000,
+            timeout: 45000,
           },
           postProcess: fixHelmetMeta,
         })
