@@ -41,7 +41,15 @@ interface SitemapVideo {
   thumbnailUrl: string;
   title: string;
   description: string;
+  uploadDate?: string;
 }
+
+/** Google-supported video formats for sitemap video:content_loc */
+const SUPPORTED_VIDEO_EXTENSIONS = ['.mp4', '.webm', '.3gp', '.m4v'];
+const isSupportedVideoFormat = (url: string): boolean => {
+  const lower = url.toLowerCase().split('?')[0];
+  return SUPPORTED_VIDEO_EXTENSIONS.some(ext => lower.endsWith(ext));
+};
 
 // --- Render helpers ---
 const renderAlternateLinks = (barePath: string): string =>
@@ -66,14 +74,18 @@ const renderImageTags = (images: SitemapImage[]): string => {
 
 const renderVideoTags = (videos: SitemapVideo[]): string => {
   if (!videos || videos.length === 0) return '';
-  return videos
-    .map((v) =>
-      `    <video:video>
+  const supported = videos.filter(v => isSupportedVideoFormat(v.contentUrl));
+  if (supported.length === 0) return '';
+  return supported
+    .map((v) => {
+      const uploadTag = v.uploadDate ? `\n      <video:publication_date>${xmlEscape(v.uploadDate)}</video:publication_date>` : '';
+      return `    <video:video>
       <video:content_loc>${xmlEscape(v.contentUrl)}</video:content_loc>
       <video:thumbnail_loc>${xmlEscape(v.thumbnailUrl)}</video:thumbnail_loc>
       <video:title>${xmlEscape(v.title)}</video:title>
-      <video:description>${xmlEscape(v.description)}</video:description>
-    </video:video>`)
+      <video:description>${xmlEscape(v.description)}</video:description>${uploadTag}
+    </video:video>`;
+    })
     .join('\n');
 };
 
@@ -189,6 +201,31 @@ const CATEGORY_VIDEO_SEO: Record<string, { title: string; description: string }>
     title: 'Przedłużanie rzęs Białystok – rzęsy 1:1, objętościowe, laminacja',
     description: 'Rzęsy w Białymstoku. Przedłużanie rzęs 1:1, objętościowe 2D 3D, laminacja, lifting rzęs – salon Katarzyna Brui.',
   },
+};
+
+// --- Service images fetcher (gallery + category enrichment) ---
+interface ServiceImageRow {
+  url: string;
+  alt_text: string | null;
+  category: string;
+  description: string | null;
+}
+
+/** Map service_images category → service_categories name */
+const IMAGE_CAT_TO_SERVICE_CAT: Record<string, string> = {
+  makijaz: 'Makijaż permanentny',
+  rzesy: 'Stylizacja rzęs',
+  brwi: 'Stylizacja brwi',
+  laser: 'Laserowe usuwanie',
+  manicure: 'Manicure i pedicure',
+  pedicure: 'Manicure i pedicure',
+  peeling: 'Peeling węglowy',
+};
+
+const fetchServiceImages = async (): Promise<ServiceImageRow[]> => {
+  const rows = await supabaseFetch('service_images?select=url,alt_text,category,description&order=category') as ServiceImageRow[] | null;
+  if (!Array.isArray(rows)) return [];
+  return rows.filter(r => r.url);
 };
 
 // --- Data fetchers ---
@@ -382,11 +419,31 @@ const LANDING_PAGE_SLUGS = [
 
 // --- Main handler ---
 const handler: Handler = async () => {
-  const [categories, blogRows, trainingRows] = await Promise.all([
+  const [categories, blogRows, trainingRows, serviceImages] = await Promise.all([
     fetchServiceCategories(),
     fetchContentRows('blog_posts'),
     fetchContentRows('trainings'),
+    fetchServiceImages(),
   ]);
+
+  // Build image lists from service_images per category
+  const serviceImagesByCategory = new Map<string, SitemapImage[]>();
+  const allGalleryImages: SitemapImage[] = [];
+  for (const img of serviceImages) {
+    const sitemapImg: SitemapImage = {
+      url: img.url,
+      title: img.description || img.alt_text || 'Zabieg kosmetyczny – salon Katarzyna Brui Białystok',
+    };
+    allGalleryImages.push(sitemapImg);
+
+    // Map to service category for enrichment
+    const serviceCat = IMAGE_CAT_TO_SERVICE_CAT[img.category];
+    if (serviceCat) {
+      const existing = serviceImagesByCategory.get(serviceCat) || [];
+      existing.push(sitemapImg);
+      serviceImagesByCategory.set(serviceCat, existing);
+    }
+  }
 
   const entries: string[] = [];
 
@@ -395,9 +452,14 @@ const handler: Handler = async () => {
 
   // Static pages
   for (const page of STATIC_PAGES) {
-    // Attach category videos to homepage
-    if (page.barePath === '/' && homepageVideos.length > 0) {
-      entries.push(renderLocalizedEntries({ ...page, videos: homepageVideos }));
+    if (page.barePath === '/') {
+      // Homepage: attach category videos
+      const homeImages = [...(page.images || [])];
+      entries.push(renderLocalizedEntries({ ...page, images: homeImages, videos: homepageVideos }));
+    } else if (page.barePath === '/gallery') {
+      // Gallery: add ALL service_images
+      const galleryImages = [...(page.images || []), ...allGalleryImages];
+      entries.push(renderLocalizedEntries({ ...page, images: galleryImages }));
     } else {
       entries.push(renderLocalizedEntries(page));
     }
@@ -430,14 +492,17 @@ ${pricesAlternates}
     );
   }
 
-  // Service categories (dynamic from DB)
+  // Service categories (dynamic from DB) — enriched with service_images + videos
   for (const cat of categories) {
+    const extraImages = serviceImagesByCategory.get(cat.name) || [];
+    const allImages = [...cat.images, ...extraImages];
     entries.push(
       renderLocalizedEntries({
         barePath: `/services/${getCategorySlug(cat.name)}`,
         changefreq: 'weekly',
         priority: '0.8',
-        images: cat.images,
+        images: allImages,
+        videos: cat.videos,
       })
     );
   }

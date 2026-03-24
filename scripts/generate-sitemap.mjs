@@ -96,17 +96,28 @@ const renderImageTags = (images) => {
     .join('\n');
 };
 
-/** Render <video:video> tags. videos = [{ contentUrl, thumbnailUrl, title, description }] */
+/** Google-supported video formats for sitemap video:content_loc */
+const SUPPORTED_VIDEO_EXTENSIONS = ['.mp4', '.webm', '.3gp', '.m4v'];
+const isSupportedVideoFormat = (url) => {
+  const lower = url.toLowerCase().split('?')[0];
+  return SUPPORTED_VIDEO_EXTENSIONS.some(ext => lower.endsWith(ext));
+};
+
+/** Render <video:video> tags. videos = [{ contentUrl, thumbnailUrl, title, description, uploadDate? }] */
 const renderVideoTags = (videos) => {
   if (!videos || videos.length === 0) return '';
-  return videos
-    .map((v) =>
-      `    <video:video>
+  const supported = videos.filter(v => isSupportedVideoFormat(v.contentUrl));
+  if (supported.length === 0) return '';
+  return supported
+    .map((v) => {
+      const uploadTag = v.uploadDate ? `\n      <video:publication_date>${xmlEscape(v.uploadDate)}</video:publication_date>` : '';
+      return `    <video:video>
       <video:content_loc>${xmlEscape(v.contentUrl)}</video:content_loc>
       <video:thumbnail_loc>${xmlEscape(v.thumbnailUrl)}</video:thumbnail_loc>
       <video:title>${xmlEscape(v.title)}</video:title>
-      <video:description>${xmlEscape(v.description)}</video:description>
-    </video:video>`)
+      <video:description>${xmlEscape(v.description)}</video:description>${uploadTag}
+    </video:video>`;
+    })
     .join('\n');
 };
 
@@ -321,6 +332,24 @@ const fetchServiceCategories = async () => {
   }
 };
 
+/** Map service_images category → service_categories name */
+const IMAGE_CAT_TO_SERVICE_CAT = {
+  makijaz: 'Makijaż permanentny',
+  rzesy: 'Stylizacja rzęs',
+  brwi: 'Stylizacja brwi',
+  laser: 'Laserowe usuwanie',
+  manicure: 'Manicure i pedicure',
+  pedicure: 'Manicure i pedicure',
+  peeling: 'Peeling węglowy',
+};
+
+/** Fetch all service_images for gallery + category enrichment. */
+const fetchServiceImages = async () => {
+  const rows = await supabaseFetch('service_images?select=url,alt_text,category,description&order=category');
+  if (!Array.isArray(rows)) return [];
+  return rows.filter((r) => r.url);
+};
+
 const dedupeBySlug = (rows) => {
   const map = new Map();
 
@@ -345,9 +374,29 @@ const LANDING_PAGE_SLUGS = [
   'szkolenia-kosmetyczne-bialystok',
 ];
 
-const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
+const buildDynamicSection = ({ blogRows, trainingRows, categories, serviceImages }) => {
   const lines = [`  ${DYNAMIC_START}`];
   let count = 0;
+
+  // Build image lists from service_images per category
+  const serviceImagesByCategory = new Map();
+  const allGalleryImages = [];
+  for (const img of serviceImages) {
+    const sitemapImg = {
+      url: img.url,
+      title: img.description || img.alt_text || 'Zabieg kosmetyczny – salon Katarzyna Brui Białystok',
+    };
+    allGalleryImages.push(sitemapImg);
+    const serviceCat = IMAGE_CAT_TO_SERVICE_CAT[img.category];
+    if (serviceCat) {
+      const existing = serviceImagesByCategory.get(serviceCat) || [];
+      existing.push(sitemapImg);
+      serviceImagesByCategory.set(serviceCat, existing);
+    }
+  }
+
+  // Note: gallery images are added in the Netlify function sitemap.
+  // The static sitemap.xml already has /gallery entries; no duplicates needed here.
 
   // SEO landing pages
   if (LANDING_PAGE_SLUGS.length > 0) {
@@ -370,13 +419,15 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories }) => {
     lines.push('  <!-- Dynamic service category URLs -->');
     for (const cat of categories) {
       const barePath = `/services/${getCategorySlug(cat.name)}`;
+      const extraImages = serviceImagesByCategory.get(cat.name) || [];
+      const allImages = [...cat.images, ...extraImages];
       lines.push(
         renderLocalizedEntries({
           barePath,
           changefreq: 'weekly',
           priority: '0.8',
           lastmod: null,
-          images: cat.images,
+          images: allImages,
           videos: cat.videos,
         })
       );
@@ -458,13 +509,14 @@ const main = async () => {
     console.warn('[sitemap] public/sitemap.xml not found, creating a new one.');
   }
 
-  const [blogRows, trainingRows, categories] = await Promise.all([
+  const [blogRows, trainingRows, categories, serviceImages] = await Promise.all([
     fetchSupabaseRows('blog_posts').then(dedupeBySlug),
     fetchSupabaseRows('trainings').then(dedupeBySlug),
     fetchServiceCategories(),
+    fetchServiceImages(),
   ]);
 
-  const dynamicSection = buildDynamicSection({ blogRows, trainingRows, categories });
+  const dynamicSection = buildDynamicSection({ blogRows, trainingRows, categories, serviceImages });
   const cleaned = removeExistingDynamicSection(sitemapContent);
 
   if (!cleaned.includes('</urlset>')) {

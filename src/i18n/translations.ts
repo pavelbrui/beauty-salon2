@@ -187,12 +187,12 @@ export const translations = {
     training: 'Szkolenia',
     training_page: {
       title: 'Szkolenie z makijażu permanentnego',
-      seoTitle: 'Szkolenia Beauty Białystok – Kursy Makijażu Permanentnego',
-      seoDescription: 'Profesjonalne szkolenia z makijażu permanentnego w Białymstoku – nauka technik brwi, ust i kreski. Dołącz do kursu i rozpocznij karierę w beauty.',
+      seoTitle: 'Szkolenia Beauty Białystok | Kursy Makijażu Permanentnego i Stylizacji – Katarzyna Brui',
+      seoDescription: 'Profesjonalne szkolenia beauty w Białymstoku: makijaż permanentny, stylizacja brwi, rzęs i paznokci. Kursy dla początkujących i zaawansowanych. Certyfikat i praktyka na modelkach.',
       header: 'Szkolenia makijażu permanentnego',
       intro: 'Oferujemy kompleksowe kursy dla początkujących i zaawansowanych, prowadzone przez doświadczoną stylistkę.',
       heroTitle: 'Profesjonalne Szkolenia Beauty w Białymstoku',
-      heroSubtitle: 'Rozpocznij karierę w branży beauty z naszymi certyfikowanymi kursami',
+      heroSubtitle: 'Kursy makijażu permanentnego, stylizacji brwi i rzęs dla początkujących i zaawansowanych. Certyfikat, praktyka na modelkach i wsparcie po szkoleniu.',
       allCourses: 'Wszystkie kursy',
       price: 'Cena',
       duration: 'Czas trwania',
@@ -220,8 +220,8 @@ export const translations = {
     blog_page: {
       heroTitle: 'Blog Beauty',
       heroSubtitle: 'Porady, trendy i wiedza o zabiegach kosmetycznych',
-      seoTitle: 'Blog Beauty – Porady o Makijażu Permanentnym',
-      seoDescription: 'Blog kosmetyczny salonu Katarzyna Brui w Białymstoku. Porady o makijażu permanentnym, pielęgnacji brwi i rzęs, manicure. Sprawdź najnowsze trendy beauty.',
+      seoTitle: 'Blog Beauty – Porady o Makijażu Permanentnym i Pielęgnacji | Katarzyna Brui',
+      seoDescription: 'Blog kosmetyczny salonu Katarzyna Brui w Białymstoku. Porady o makijażu permanentnym, pielęgnacji brwi i rzęs, manicure i trendach beauty. Przeczytaj przed wizytą w salonie.',
       allPosts: 'Wszystkie',
       readMore: 'Czytaj więcej',
       backToBlog: 'Wróć do bloga',
@@ -243,12 +243,12 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Salon Kosmetyczny Białystok – Makijaż Permanentny, Rzęsy, Brwi',
-      description: 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure i szkolenia beauty. Rezerwacja online. ul. Młynowa 46. Tel: 880 435 102.',
+      title: 'Salon Kosmetyczny w Białymstoku | Makijaż Permanentny, Brwi, Rzęsy – Katarzyna Brui',
+      description: 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure i szkolenia beauty. Umów wizytę online. ul. Młynowa 46.',
     },
     services_seo: {
-      title: 'Zabiegi Kosmetyczne Białystok – Oferta i Cennik',
-      description: 'Sprawdź ofertę zabiegów w salonie Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure, laserowe usuwanie tatuażu. Cennik i rezerwacja online.',
+      title: 'Zabiegi Kosmetyczne Białystok | Rzęsy, Brwi, Manicure, PMU – Katarzyna Brui',
+      description: 'Sprawdź pełną ofertę zabiegów w salonie Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure hybrydowy, laserowe usuwanie tatuażu. Cennik i rezerwacja online.',
       h1: 'Zabiegi kosmetyczne w Białymstoku',
     },
     category_intros: {
@@ -262,8 +262,8 @@ export const translations = {
       'pakiety': 'Pakiety zabiegów kosmetycznych w atrakcyjnych cenach. Połącz ulubione zabiegi i oszczędź — makijaż permanentny, rzęsy, brwi, peeling węglowy. Idealne na prezent.',
     },
     stylists_seo: {
-      title: 'Nasz Zespół – Stylistki i Kosmetyczki Białystok',
-      description: 'Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs, laminacji i pielęgnacji brwi.',
+      title: 'Nasz Zespół – Stylistki i Kosmetyczki | Salon Katarzyna Brui Białystok',
+      description: 'Poznaj zespół doświadczonych kosmetyczek i stylistek salonu Katarzyna Brui w Białymstoku. Specjalistki makijażu permanentnego, stylizacji rzęs, laminacji brwi i manicure.',
       h1: 'Nasi styliści i specjaliści beauty',
       intro: 'Nasz zespół to doświadczone specjalistki z wieloletnim doświadczeniem w branży beauty. Każda z nas stale podnosi kwalifikacje, uczestnicząc w szkoleniach i warsztatach. Specjalizujemy się w makijażu permanentnym, stylizacji rzęs, pielęgnacji brwi, manicure i peelingu węglowym.',
     },
@@ -276,10 +276,10 @@ export const translations = {
       benefits: ['Rezerwacja 24/7 – bez dzwonienia', 'Wybór stylistki i terminu', 'Potwierdzenie wizyty na e-mail', 'Możliwość odwołania lub zmiany terminu'],
     },
     gallery_seo: {
-      title: 'Galeria Efektów – Makijaż Permanentny, Rzęsy, Brwi',
+      title: 'Galeria Efektów Zabiegów | Makijaż Permanentny, Rzęsy, Brwi – Białystok',
       description: 'Zobacz efekty zabiegów kosmetycznych w salonie Katarzyna Brui w Białymstoku: makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure. Galeria zdjęć przed i po.',
       h1: 'Galeria efektów zabiegów kosmetycznych',
-      intro: 'Zobacz realne ef kty zabiegów wykonanych w naszym salonie w Białymstoku. Makijaż permanentny brwi i ust, stylizacja i przedłużanie rzęs, laminacja brwi, manicure — każde zdjęcie to efekt pracy naszych specjalistek.',
+      intro: 'Zobacz realne efekty zabiegów wykonanych w naszym salonie w Białymstoku. Makijaż permanentny brwi i ust, stylizacja i przedłużanie rzęs, laminacja brwi, manicure — każde zdjęcie to efekt pracy naszych specjalistek.',
     },
     admin_bookings: {
       title: 'Rezerwacje',
@@ -566,12 +566,12 @@ export const translations = {
     training: 'Trainings',
     training_page: {
       title: 'Permanent Makeup Training',
-      seoTitle: 'Beauty Courses Białystok – Permanent Makeup Training',
-      seoDescription: 'Professional permanent makeup trainings in Bialystok – learn brow, lip and eyeliner techniques. Join our course and start your beauty career.',
+      seoTitle: 'Beauty Courses Bialystok | Permanent Makeup & Styling Training – Katarzyna Brui',
+      seoDescription: 'Professional beauty courses in Bialystok: permanent makeup, brow styling, lash and nail techniques. Courses for beginners and advanced. Certificate and hands-on practice.',
       header: 'Permanent Makeup Trainings',
       intro: 'We offer comprehensive courses for beginners and advanced students, led by an experienced stylist.',
       heroTitle: 'Professional Beauty Trainings in Bialystok',
-      heroSubtitle: 'Start your beauty career with our certified courses',
+      heroSubtitle: 'Permanent makeup, brow and lash styling courses for beginners and advanced. Certificate, hands-on practice on models and post-training support.',
       allCourses: 'All courses',
       price: 'Price',
       duration: 'Duration',
@@ -599,8 +599,8 @@ export const translations = {
     blog_page: {
       heroTitle: 'Beauty Blog',
       heroSubtitle: 'Tips, trends and knowledge about beauty treatments',
-      seoTitle: 'Beauty Blog – Permanent Makeup & Skincare Tips',
-      seoDescription: 'Beauty blog of Katarzyna Brui salon in Bialystok. Tips on permanent makeup, brow and lash care, manicure. Check out the latest beauty trends.',
+      seoTitle: 'Beauty Blog – Permanent Makeup & Skincare Tips | Katarzyna Brui',
+      seoDescription: 'Beauty blog of Katarzyna Brui salon in Bialystok. Tips on permanent makeup, brow and lash care, manicure and beauty trends. Read before your salon visit.',
       allPosts: 'All',
       readMore: 'Read more',
       backToBlog: 'Back to blog',
@@ -622,12 +622,12 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Beauty Salon Białystok – Permanent Makeup, Lashes & Brows',
-      description: 'Katarzyna Brui beauty salon in Bialystok, Poland. Permanent makeup, lash extensions, brow lamination, carbon peeling, manicure and beauty trainings. Book online. Mlynowa 46. Tel: 880 435 102.',
+      title: 'Beauty Salon in Bialystok | Permanent Makeup, Brows & Lashes – Katarzyna Brui',
+      description: 'Katarzyna Brui beauty salon in Bialystok, Poland. Permanent makeup for brows and lips, lash extensions, brow lamination, carbon peeling, manicure and beauty courses. Book your appointment online.',
     },
     services_seo: {
-      title: 'Beauty Treatments Białystok – Prices & Services',
-      description: 'Explore beauty treatments at Katarzyna Brui salon in Bialystok: permanent makeup (brows & lips), lash extensions, brow lamination, carbon peeling, manicure, laser tattoo removal. Prices and online booking.',
+      title: 'Beauty Treatments Bialystok | Lashes, Brows, Manicure, PMU – Katarzyna Brui',
+      description: 'Explore the full range of beauty treatments at Katarzyna Brui salon in Bialystok: permanent makeup (brows & lips), lash extensions, brow lamination, carbon peeling, hybrid manicure, laser tattoo removal. Prices and online booking.',
       h1: 'Beauty treatments in Bialystok',
     },
     category_intros: {
@@ -641,8 +641,8 @@ export const translations = {
       'pakiety': 'Beauty treatment packages at attractive prices. Combine your favorite treatments and save — permanent makeup, lashes, brows, carbon peeling. Perfect as a gift.',
     },
     stylists_seo: {
-      title: 'Our Team – Beauticians & Stylists Białystok',
-      description: 'Meet the experienced beauticians and stylists at Katarzyna Brui salon in Bialystok. Specialists in permanent makeup, lash styling, brow lamination and care.',
+      title: 'Our Team – Beauticians & Stylists | Katarzyna Brui Salon Bialystok',
+      description: 'Meet the experienced beauticians and stylists at Katarzyna Brui salon in Bialystok. Specialists in permanent makeup, lash styling, brow lamination and manicure.',
       h1: 'Our stylists and beauty specialists',
       intro: 'Our team consists of experienced specialists with years of experience in the beauty industry. Each of us constantly improves our skills by attending trainings and workshops. We specialize in permanent makeup, lash styling, brow care, manicure and carbon peeling.',
     },
@@ -655,7 +655,7 @@ export const translations = {
       benefits: ['Book 24/7 – no phone calls needed', 'Choose your stylist and time', 'Email confirmation', 'Easy rescheduling or cancellation'],
     },
     gallery_seo: {
-      title: 'Gallery – Permanent Makeup, Lashes & Brows Results',
+      title: 'Treatment Results Gallery | Permanent Makeup, Lashes & Brows – Bialystok',
       description: 'See the results of beauty treatments at Katarzyna Brui salon in Bialystok: permanent makeup, lash extensions, brow lamination, manicure. Before and after photos.',
       h1: 'Treatment results gallery',
       intro: 'Browse real results of treatments performed at our salon in Bialystok. Permanent makeup for brows and lips, lash extensions, brow lamination, manicure — every photo showcases our specialists\' work.',
@@ -945,12 +945,12 @@ export const translations = {
     training: 'Обучение',
     training_page: {
       title: 'Обучение перманентному макияжу',
-      seoTitle: 'Бьюти-курсы Белосток – Обучение перманентному макияжу',
-      seoDescription: 'Профессиональное обучение перманентному макияжу в Белостоке – изучите техники бровей, губ и стрелок. Присоединяйтесь к курсу и начните карьеру в бьюти.',
+      seoTitle: 'Бьюти-курсы Белосток | Обучение перманентному макияжу и стилизации – Katarzyna Brui',
+      seoDescription: 'Профессиональные бьюти-курсы в Белостоке: перманентный макияж, стилизация бровей, ресниц и ногтей. Курсы для начинающих и продвинутых. Сертификат и практика на моделях.',
       header: 'Обучение перманентному макияжу',
       intro: 'Мы предлагаем комплексные курсы для начинающих и продвинутых, проводимые опытным стилистом.',
       heroTitle: 'Профессиональные курсы красоты в Белостоке',
-      heroSubtitle: 'Начните карьеру в индустрии красоты с нашими сертифицированными курсами',
+      heroSubtitle: 'Курсы перманентного макияжа, стилизации бровей и ресниц для начинающих и продвинутых. Сертификат, практика на моделях и поддержка после обучения.',
       allCourses: 'Все курсы',
       price: 'Цена',
       duration: 'Продолжительность',
@@ -978,8 +978,8 @@ export const translations = {
     blog_page: {
       heroTitle: 'Бьюти-блог',
       heroSubtitle: 'Советы, тренды и знания о косметических процедурах',
-      seoTitle: 'Бьюти-блог – Советы по перманентному макияжу',
-      seoDescription: 'Косметический блог салона Катажина Бруй в Белостоке. Советы о перманентном макияже, уходе за бровями и ресницами, маникюре.',
+      seoTitle: 'Бьюти-блог – Советы по перманентному макияжу и уходу | Katarzyna Brui',
+      seoDescription: 'Косметический блог салона Katarzyna Brui в Белостоке. Советы о перманентном макияже, уходе за бровями и ресницами, маникюре и бьюти-трендах. Читайте перед визитом в салон.',
       allPosts: 'Все',
       readMore: 'Читать далее',
       backToBlog: 'Вернуться к блогу',
@@ -1001,12 +1001,12 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Салон красоты Белосток – Перманентный макияж, ресницы, брови',
-      description: 'Салон красоты Katarzyna Brui в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр и бьюти-курсы. Запись онлайн. ул. Млынова 46. Тел: 880 435 102.',
+      title: 'Салон красоты в Белостоке | Перманентный макияж, брови, ресницы – Katarzyna Brui',
+      description: 'Салон красоты Katarzyna Brui в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр и бьюти-курсы. Запишитесь онлайн.',
     },
     services_seo: {
-      title: 'Косметические процедуры Белосток – Цены и услуги',
-      description: 'Узнайте об услугах салона Катажина Бруй в Белостоке: перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр, лазерное удаление тату. Цены и запись онлайн.',
+      title: 'Косметические процедуры Белосток | Ресницы, брови, маникюр, PMU – Katarzyna Brui',
+      description: 'Полный каталог услуг салона Katarzyna Brui в Белостоке: перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, гибридный маникюр, лазерное удаление тату. Цены и запись онлайн.',
       h1: 'Косметические процедуры в Белостоке',
     },
     category_intros: {
@@ -1020,8 +1020,8 @@ export const translations = {
       'pakiety': 'Пакеты косметических процедур по привлекательным ценам. Объедините любимые процедуры и сэкономьте — перманентный макияж, ресницы, брови, карбоновый пилинг. Идеально для подарка.',
     },
     stylists_seo: {
-      title: 'Наша команда – Косметологи и стилисты Белосток',
-      description: 'Познакомьтесь с командой опытных косметологов и стилистов салона Катажина Бруй в Белостоке. Специалисты по перманентному макияжу, наращиванию ресниц, ламинированию и уходу за бровями.',
+      title: 'Наша команда – Косметологи и стилисты | Салон Katarzyna Brui Белосток',
+      description: 'Познакомьтесь с командой опытных косметологов и стилистов салона Katarzyna Brui в Белостоке. Специалисты по перманентному макияжу, наращиванию ресниц, ламинированию бровей и маникюру.',
       h1: 'Наши стилисты и специалисты',
       intro: 'Наша команда — это опытные специалисты с многолетним стажем в бьюти-индустрии. Каждая из нас постоянно повышает квалификацию, участвуя в мастер-классах и тренингах. Мы специализируемся на перманентном макияже, стилизации ресниц, уходе за бровями, маникюре и карбоновом пилинге.',
     },
@@ -1034,8 +1034,8 @@ export const translations = {
       benefits: ['Запись 24/7 — без звонков', 'Выбор мастера и времени', 'Подтверждение на e-mail', 'Возможность отмены или переноса'],
     },
     gallery_seo: {
-      title: 'Галерея – Перманентный макияж, ресницы, брови',
-      description: 'Смотрите результаты косметических процедур салона Катажина Бруй в Белостоке: перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр. Фото до и после.',
+      title: 'Галерея результатов процедур | Перманентный макияж, ресницы, брови – Белосток',
+      description: 'Смотрите результаты косметических процедур салона Katarzyna Brui в Белостоке: перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр. Фото до и после.',
       h1: 'Галерея результатов косметических процедур',
       intro: 'Посмотрите реальные результаты процедур, выполненных в нашем салоне в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, маникюр — каждое фото демонстрирует работу наших специалистов.',
     },

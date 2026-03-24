@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Services Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4">{t.services}</h3>
+            <span className="block font-bold text-lg mb-4">{t.services}</span>
             <nav className="space-y-2">
               {footerLinks.map(link => (
                 <LocalizedLink
@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="font-bold text-lg mb-4">{language === 'pl' ? 'Kontakt' : language === 'en' ? 'Contact' : 'Контакт'}</h3>
+            <span className="block font-bold text-lg mb-4">{language === 'pl' ? 'Kontakt' : language === 'en' ? 'Contact' : 'Контакт'}</span>
             <address className="text-gray-400 text-sm not-italic space-y-2">
               <p>Salon Kosmetyczny Katarzyna Brui</p>
               <p>ul. Młynowa 46, U11</p>
@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
 
           {/* Legal Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4">{language === 'pl' ? 'Informacje' : language === 'en' ? 'Information' : 'Информация'}</h3>
+            <span className="block font-bold text-lg mb-4">{language === 'pl' ? 'Informacje' : language === 'en' ? 'Information' : 'Информация'}</span>
             <nav className="space-y-2">
               {legalLinks.map(link => (
                 <LocalizedLink
