@@ -19,7 +19,9 @@ const FREE_MODELS = [
   'mistralai/mistral-small-3.1-24b-instruct:free',
 ];
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Lazy init — avoids crash when env vars are empty at module load
+let _sb: ReturnType<typeof createClient> | null = null;
+const getDb = () => { if (!_sb) _sb = createClient(supabaseUrl, supabaseServiceKey); return _sb; };
 
 // --- Types ---
 interface ScrapedPost {
@@ -453,7 +455,7 @@ async function uploadMediaToStorage(
     const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
     const path = `instagram/${filename}.${ext}`;
 
-    const { error } = await supabase.storage
+    const { error } = await getDb().storage
       .from('service-images')
       .upload(path, Buffer.from(buffer), {
         contentType,
@@ -465,7 +467,7 @@ async function uploadMediaToStorage(
       return null;
     }
 
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = getDb().storage
       .from('service-images')
       .getPublicUrl(path);
 
@@ -533,7 +535,7 @@ async function syncInstagramPosts(): Promise<{ synced: number; skipped: number; 
 
       if (!content) {
         console.error(`AI generation failed for post ${post.id}`);
-        await supabase.from('instagram_posts').insert({
+        await getDb().from('instagram_posts').insert({
           instagram_id: post.id,
           instagram_account: account,
           permalink: post.permalink,
@@ -620,7 +622,7 @@ async function syncInstagramPosts(): Promise<{ synced: number; skipped: number; 
 
       if (blogError) {
         console.error('Blog insert error:', blogError);
-        await supabase.from('instagram_posts').insert({
+        await getDb().from('instagram_posts').insert({
           instagram_id: post.id,
           instagram_account: account,
           permalink: post.permalink,
@@ -656,7 +658,7 @@ async function syncInstagramPosts(): Promise<{ synced: number; skipped: number; 
       }
 
       // Track the sync
-      await supabase.from('instagram_posts').insert({
+      await getDb().from('instagram_posts').insert({
         instagram_id: post.id,
         instagram_account: account,
         permalink: post.permalink,
@@ -801,7 +803,7 @@ async function manualImport(body: {
   }
 
   // Track the sync
-  await supabase.from('instagram_posts').insert({
+  await getDb().from('instagram_posts').insert({
     instagram_id: postId,
     instagram_account: account,
     permalink: permalink || null,
@@ -840,7 +842,7 @@ export const handler: Handler = async (event) => {
       const authHeader = event.headers?.authorization;
       if (authHeader) {
         const token = authHeader.replace('Bearer ', '');
-        const { data: { user } } = await supabase.auth.getUser(token);
+        const { data: { user } } = await getDb().auth.getUser(token);
         if (!user) {
           return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
         }

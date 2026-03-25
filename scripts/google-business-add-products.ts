@@ -218,19 +218,9 @@ async function downloadImage(url: string, destPath: string): Promise<boolean> {
   });
 }
 
-async function waitForUserLogin(page: Page) {
-  console.log('\n========================================');
-  console.log('  KROK 1: Zaloguj się do Google');
-  console.log('  Przeglądarka jest otwarta.');
-  console.log('  Zaloguj się na swoje konto Google,');
-  console.log('  a potem naciśnij ENTER w terminalu.');
-  console.log('========================================\n');
-
-  // Navigate to Google Business Profile
-  await page.goto('https://business.google.com/', { waitUntil: 'networkidle' });
-
-  // Wait for user to press Enter in terminal
-  await new Promise<void>((resolve) => {
+function waitForEnter(message: string): Promise<void> {
+  console.log(message);
+  return new Promise<void>((resolve) => {
     process.stdin.resume();
     process.stdin.once('data', () => {
       process.stdin.pause();
@@ -323,24 +313,66 @@ async function main() {
   console.log(`  Produktów do dodania: ${PRODUCTS.length}`);
   console.log('==============================================');
 
-  // Launch browser (visible, not headless)
-  const browser = await chromium.launch({
-    headless: false,
-    args: ['--start-maximized'],
-  });
+  // Copy Chrome profile to temp dir so we can use it with Playwright
+  const sourceDir = process.env.LOCALAPPDATA + '/Google/Chrome/User Data';
+  const tmpProfileDir = path.join(process.env.TEMP || 'c:/tmp', 'chrome-pw-profile');
 
-  const context = await browser.newContext({
-    viewport: null, // use full window
+  console.log('\nKopiuję profil Chrome (cookies, sesja)...');
+  // Copy only essential files for session (not the whole profile)
+  if (!fs.existsSync(tmpProfileDir)) fs.mkdirSync(tmpProfileDir, { recursive: true });
+
+  // Copy Default profile cookies & login data
+  const filesToCopy = [
+    'Default/Cookies',
+    'Default/Login Data',
+    'Default/Web Data',
+    'Default/Preferences',
+    'Default/Secure Preferences',
+    'Local State',
+  ];
+  for (const file of filesToCopy) {
+    const src = path.join(sourceDir, file);
+    const dest = path.join(tmpProfileDir, file);
+    try {
+      const destDir = path.dirname(dest);
+      if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+      fs.copyFileSync(src, dest);
+      console.log(`  [+] ${file}`);
+    } catch {
+      console.log(`  [-] ${file} (pominięto)`);
+    }
+  }
+
+  console.log('\nUruchamiam Chrome z kopią profilu...');
+
+  const context = await chromium.launchPersistentContext(tmpProfileDir, {
+    headless: false,
+    args: [
+      '--start-maximized',
+      '--disable-blink-features=AutomationControlled',
+    ],
+    viewport: null,
     locale: 'pl-PL',
+    channel: 'chrome',
   });
 
   const page = await context.newPage();
 
-  // Step 1: User logs in
-  await waitForUserLogin(page);
+  // Navigate to Google Business Profile
+  console.log('\nOtwieram Google Business Profile...');
+  await page.goto('https://business.google.com/', { waitUntil: 'networkidle', timeout: 30000 });
+  await page.waitForTimeout(3000);
 
-  console.log('\nSprawdzam czy jesteś zalogowana...');
-  await page.waitForTimeout(2000);
+  console.log('Sprawdzam czy jesteś zalogowana...');
+  const currentUrl = page.url();
+  console.log(`URL: ${currentUrl}`);
+
+  if (currentUrl.includes('accounts.google.com')) {
+    console.log('\n[!] Nie jesteś zalogowana. Zaloguj się ręcznie w otwartej przeglądarce.');
+    await waitForEnter('Naciśnij ENTER po zalogowaniu...');
+  } else {
+    console.log('[OK] Zalogowana!');
+  }
 
   // Step 2: Add products one by one
   console.log('\n--- Rozpoczynam dodawanie produktów ---\n');
@@ -371,7 +403,7 @@ async function main() {
     });
   });
 
-  await browser.close();
+  await context.close();
 }
 
 main().catch(console.error);

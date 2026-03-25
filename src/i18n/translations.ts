@@ -4,12 +4,12 @@ export const translations = {
     appointments: 'Rezerwacje',
     stylists: 'Styliści',
     gallery: 'Galeria',
-    welcomeTitle: 'Salon Kosmetyczny Białystok — Makijaż Permanentny, Rzęsy, Brwi',
-    welcomeSubtitle: 'Katarzyna Brui — ul. Młynowa 46, Białystok. Makijaż permanentny brwi i ust, przedłużanie rzęs, laminacja brwi, manicure.',
+    welcomeTitle: 'KATARZYNA BRUI Salon urody | Białystok — Makijaż Permanentny, Rzęsy, Brwi, Manicure.',
+    welcomeSubtitle: 'ul. Młynowa 46, Białystok. Makijaż permanentny brwi i ust, przedłużanie rzęs, laminacja brwi, manicure, pedicure.',
     bookNow: 'Zarezerwuj wizytę',
     reviewsLabel: 'opinii',
-    aboutTitle: 'Salon Kosmetyczny w Białymstoku',
-    aboutText: 'Salon kosmetyczny Katarzyna Brui w Białymstoku oferuje profesjonalny makijaż permanentny brwi i ust (metoda pudrowa, ombre), przedłużanie i laminację rzęs, stylizację brwi, peeling węglowy, manicure hybrydowy oraz laserowe usuwanie tatuażu. Wykorzystujemy najnowocześniejsze technologie i produkty najwyższej jakości. Bezpłatna konsultacja — umów wizytę online lub zadzwoń.',
+    aboutTitle: 'Salon urody w Białymstoku',
+    aboutText: 'Salon urody Katarzyna Brui w Białymstoku oferuje profesjonalny makijaż permanentny brwi i ust (metoda pudrowa, ombre), przedłużanie i laminację rzęs, stylizację brwi, peeling węglowy, manicure hybrydowy oraz laserowe usuwanie tatuażu. Wykorzystujemy najnowocześniejsze technologie i produkty najwyższej jakości. Bezpłatna konsultacja — umów wizytę online lub zadzwoń.',
     ourServices: 'Nasze Zabiegi',
     ourCategories: 'Nasze Zabiegi',
     categoriesDescription: 'Wybierz kategorię i poznaj naszą pełną ofertę zabiegów',
@@ -243,8 +243,8 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Salon Kosmetyczny w Białymstoku | Makijaż Permanentny, Brwi, Rzęsy – Katarzyna Brui',
-      description: 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure i szkolenia beauty. Umów wizytę online. ul. Młynowa 46.',
+      title: 'KATARZYNA BRUI Salon urody | Makijaż Permanentny, Brwi, Rzęsy – Białystok',
+      description: 'Salon urody Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure i szkolenia beauty. Umów wizytę online. ul. Młynowa 46.',
     },
     services_seo: {
       title: 'Zabiegi Kosmetyczne Białystok | Rzęsy, Brwi, Manicure, PMU – Katarzyna Brui',
@@ -364,7 +364,7 @@ export const translations = {
       emailCancelled: 'Odwołanie'
     },
     prices_page: {
-      title: 'Cennik Salon Kosmetyczny Białystok – Ile Kosztują Zabiegi | Katarzyna Brui',
+      title: 'Cennik KATARZYNA BRUI Salon urody Białystok – Ile Kosztują Zabiegi',
       description: 'Cennik zabiegów kosmetycznych Białystok 2026. Ile kosztuje makijaż permanentny brwi, przedłużanie rzęs, laminacja brwi, manicure hybrydowy, peeling węglowy? Aktualne ceny – salon Katarzyna Brui, ul. Młynowa 46.',
       heading: 'Cennik zabiegów',
       subtitle: 'Aktualne ceny wszystkich zabiegów kosmetycznych w naszym salonie w Białymstoku',
@@ -383,7 +383,7 @@ export const translations = {
     appointments: 'Appointments',
     stylists: 'Stylists',
     gallery: 'Gallery',
-    welcomeTitle: 'Beauty Salon Białystok — Permanent Makeup, Lashes, Brows',
+    welcomeTitle: 'KATARZYNA BRUI Beauty Salon Białystok — Permanent Makeup, Lashes, Brows',
     welcomeSubtitle: 'Katarzyna Brui — ul. Młynowa 46, Białystok. Permanent brow & lip makeup, lash extensions, brow lamination, manicure.',
     bookNow: 'Book Now',
     reviewsLabel: 'reviews',
@@ -622,7 +622,7 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Beauty Salon in Bialystok | Permanent Makeup, Brows & Lashes – Katarzyna Brui',
+      title: 'KATARZYNA BRUI Beauty Salon | Permanent Makeup, Brows & Lashes – Bialystok',
       description: 'Katarzyna Brui beauty salon in Bialystok, Poland. Permanent makeup for brows and lips, lash extensions, brow lamination, carbon peeling, manicure and beauty courses. Book your appointment online.',
     },
     services_seo: {
@@ -743,7 +743,7 @@ export const translations = {
       emailCancelled: 'Cancellation'
     },
     prices_page: {
-      title: 'Beauty Treatment Prices Bialystok – How Much Do Treatments Cost | Katarzyna Brui',
+      title: 'KATARZYNA BRUI Beauty Salon Prices Bialystok – How Much Do Treatments Cost',
       description: 'Beauty treatment price list Bialystok 2026. How much does permanent makeup, lash extensions, brow lamination, manicure, carbon peeling cost? Current prices – Katarzyna Brui salon, Mlynowa 46.',
       heading: 'Treatment prices',
       subtitle: 'Current prices for all beauty treatments at our salon in Bialystok',
@@ -762,7 +762,7 @@ export const translations = {
     appointments: 'Записаться',
     stylists: 'Стилисты',
     gallery: 'Галерея',
-    welcomeTitle: 'Салон красоты Белосток — Перманентный макияж, Ресницы, Брови',
+    welcomeTitle: 'KATARZYNA BRUI Салон красоты Белосток — Перманентный макияж, Ресницы, Брови',
     welcomeSubtitle: 'Katarzyna Brui — ул. Млынова 46, Белосток. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, маникюр.',
     bookNow: 'Записаться',
     reviewsLabel: 'отзывов',
@@ -1001,7 +1001,7 @@ export const translations = {
       }
     },
     home_seo: {
-      title: 'Салон красоты в Белостоке | Перманентный макияж, брови, ресницы – Katarzyna Brui',
+      title: 'KATARZYNA BRUI Салон красоты | Перманентный макияж, брови, ресницы – Белосток',
       description: 'Салон красоты Katarzyna Brui в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр и бьюти-курсы. Запишитесь онлайн.',
     },
     services_seo: {
@@ -1122,7 +1122,7 @@ export const translations = {
       emailCancelled: 'Отмена'
     },
     prices_page: {
-      title: 'Цены на косметические услуги Белосток – Сколько стоят процедуры | Катажина Бруй',
+      title: 'KATARZYNA BRUI Салон красоты – Цены на услуги Белосток',
       description: 'Прайс-лист косметических процедур Белосток 2026. Сколько стоит перманентный макияж бровей, наращивание ресниц, ламинирование бровей, маникюр, карбоновый пилинг? Актуальные цены – салон Катажина Бруй, ул. Млынова 46.',
       heading: 'Цены на услуги',
       subtitle: 'Актуальные цены на все косметические процедуры в нашем салоне в Белостоке',

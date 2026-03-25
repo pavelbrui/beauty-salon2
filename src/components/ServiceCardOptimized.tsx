@@ -59,7 +59,7 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
   const generateAltText = (): string => {
     if (customAlt) return customAlt;
     const serviceName = getServiceName(service, language);
-    return `${serviceName} – salon kosmetyczny Białystok – efekt zabiegu`;
+    return `${serviceName} – KATARZYNA BRUI Salon urody  Białystok – efekt zabiegu`;
   };
 
   const altText = generateAltText();

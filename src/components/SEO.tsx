@@ -28,7 +28,7 @@ interface SEOProps {
   };
 }
 
-const SITE_NAME = 'Salon Kosmetyczny Katarzyna Brui';
+const SITE_NAME = 'KATARZYNA BRUI Salon urody';
 const SITE_NAME_SHORT = 'Katarzyna Brui';
 const DEFAULT_DESCRIPTION = 'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.';
 const BASE_URL = 'https://katarzynabrui.pl';
@@ -104,7 +104,7 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-      <meta name="twitter:image:alt" content={title || 'Salon Kosmetyczny Katarzyna Brui Białystok'} />
+      <meta name="twitter:image:alt" content={title || 'KATARZYNA BRUI Salon urody Białystok'} />
       {structuredData && (
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
