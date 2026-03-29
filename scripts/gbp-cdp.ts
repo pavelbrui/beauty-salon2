@@ -1,7 +1,7 @@
 import { chromium, Page } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 
 // Launch real Chrome with remote debugging, then connect via Playwright CDP
 
@@ -93,7 +93,7 @@ async function main() {
 
   console.log('\nUruchamiam Chrome z remote debugging...');
 
-  const child = require('child_process').spawn(chromePath, [
+  const child = spawn(chromePath, [
     `--remote-debugging-port=9222`,
     `--user-data-dir=${tmpDir}`,
     '--no-first-run',
