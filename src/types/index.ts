@@ -118,7 +118,7 @@ export interface ListBlock {
   items: string[];
   items_en?: string[];
   items_ru?: string[];
-  style: 'bullet' | 'check';
+  style: 'bullet' | 'check' | 'ordered';
 }
 
 export interface EmbedBlock {
@@ -140,7 +140,26 @@ export interface VideoBlock {
   caption_ru?: string;
 }
 
-export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock | EmbedBlock | VideoBlock;
+export interface TableBlock {
+  id: string;
+  type: 'table';
+  headers: string[];
+  headers_en?: string[];
+  headers_ru?: string[];
+  rows: string[][];
+  rows_en?: string[][];
+  rows_ru?: string[][];
+}
+
+export interface QuoteBlock {
+  id: string;
+  type: 'quote';
+  text: string;
+  text_en?: string;
+  text_ru?: string;
+}
+
+export type ContentBlock = HeadingBlock | TextBlock | ImageBlock | ListBlock | EmbedBlock | VideoBlock | TableBlock | QuoteBlock;
 
 export interface BlogPost {
   id: string;

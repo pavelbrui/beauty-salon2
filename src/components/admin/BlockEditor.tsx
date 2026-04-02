@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock, VideoBlock } from '../../types';
+import { ContentBlock, HeadingBlock, TextBlock, ImageBlock, ListBlock, EmbedBlock, VideoBlock, TableBlock, QuoteBlock } from '../../types';
 import { CropSelector, parseCropPosition } from './CropSelector';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { uploadVideo } from '../../utils/uploadVideo';
@@ -21,6 +21,8 @@ const BLOCK_LABELS: Record<string, string> = {
   list: 'Lista',
   embed: 'Embed',
   video: 'Video',
+  table: 'Tabela',
+  quote: 'Cytat',
 };
 
 const BLOCK_COLORS: Record<string, string> = {
@@ -30,6 +32,8 @@ const BLOCK_COLORS: Record<string, string> = {
   list: 'bg-orange-100 text-orange-700',
   embed: 'bg-pink-100 text-pink-700',
   video: 'bg-red-100 text-red-700',
+  table: 'bg-teal-100 text-teal-700',
+  quote: 'bg-indigo-100 text-indigo-700',
 };
 
 type Lang = 'pl' | 'en' | 'ru';
@@ -78,6 +82,8 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'list': return `${block.items.length} pozycji (${block.style === 'check' ? 'check' : 'bullet'})`;
       case 'embed': return `${block.embed_type} — ${block.url ? block.url.slice(0, 40) + '...' : '(brak URL)'}`;
       case 'video': return block.caption || (block.url ? 'Video' : '(brak pliku)');
+      case 'table': return `${block.headers.length} kolumn, ${block.rows.length} wierszy`;
+      case 'quote': return (block.text || '(pusty cytat)').slice(0, 60) + (block.text.length > 60 ? '...' : '');
     }
   };
 
@@ -237,6 +243,15 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
           >
             ✓ Checklist
           </button>
+          <button
+            type="button"
+            onClick={() => onUpdate(index, { ...b, style: 'ordered' })}
+            className={`px-3 py-1 text-xs rounded-md transition-colors ${
+              b.style === 'ordered' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            1. Numerowana
+          </button>
         </div>
         {renderLangTabs()}
         <div className="space-y-2">
@@ -387,6 +402,103 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
     </div>
   );
 
+  const renderTableEditor = (b: TableBlock) => {
+    const currentHeaders = langTab === 'pl' ? b.headers : langTab === 'en' ? (b.headers_en || []) : (b.headers_ru || []);
+    const currentRows = langTab === 'pl' ? b.rows : langTab === 'en' ? (b.rows_en || []) : (b.rows_ru || []);
+    const colCount = b.headers.length;
+
+    const updateHeaders = (newHeaders: string[]) => {
+      if (langTab === 'pl') onUpdate(index, { ...b, headers: newHeaders });
+      else if (langTab === 'en') onUpdate(index, { ...b, headers_en: newHeaders });
+      else onUpdate(index, { ...b, headers_ru: newHeaders });
+    };
+
+    const updateRows = (newRows: string[][]) => {
+      if (langTab === 'pl') onUpdate(index, { ...b, rows: newRows });
+      else if (langTab === 'en') onUpdate(index, { ...b, rows_en: newRows });
+      else onUpdate(index, { ...b, rows_ru: newRows });
+    };
+
+    return (
+      <div className="space-y-3">
+        {renderLangTabs()}
+        <div className="text-xs font-medium text-gray-500 mb-1">Nagłówki kolumn:</div>
+        <div className="flex gap-2">
+          {currentHeaders.map((h, i) => (
+            <input
+              key={i}
+              type="text"
+              value={h}
+              onChange={e => {
+                const nh = [...currentHeaders];
+                nh[i] = e.target.value;
+                updateHeaders(nh);
+              }}
+              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+              placeholder={`Kolumna ${i + 1}`}
+            />
+          ))}
+          {langTab === 'pl' && (
+            <>
+              <button type="button" onClick={() => {
+                onUpdate(index, { ...b, headers: [...b.headers, ''], rows: b.rows.map(r => [...r, '']) });
+              }} className="text-amber-600 hover:text-amber-700 text-sm font-medium px-2">+</button>
+              {colCount > 1 && (
+                <button type="button" onClick={() => {
+                  onUpdate(index, { ...b, headers: b.headers.slice(0, -1), rows: b.rows.map(r => r.slice(0, -1)) });
+                }} className="text-red-500 hover:text-red-700 text-sm font-medium px-2">−</button>
+              )}
+            </>
+          )}
+        </div>
+        <div className="text-xs font-medium text-gray-500 mt-3 mb-1">Wiersze:</div>
+        {currentRows.map((row, ri) => (
+          <div key={ri} className="flex gap-2 items-center">
+            <span className="text-gray-400 text-xs w-5 text-right">{ri + 1}.</span>
+            {row.map((cell, ci) => (
+              <input
+                key={ci}
+                type="text"
+                value={cell}
+                onChange={e => {
+                  const nr = currentRows.map((r, idx) => idx === ri ? r.map((c, cidx) => cidx === ci ? e.target.value : c) : [...r]);
+                  updateRows(nr);
+                }}
+                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+              />
+            ))}
+            <button type="button" onClick={() => updateRows(currentRows.filter((_, idx) => idx !== ri))} className="text-red-400 hover:text-red-600 p-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={() => updateRows([...currentRows, Array(colCount).fill('')])} className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          Dodaj wiersz
+        </button>
+      </div>
+    );
+  };
+
+  const renderQuoteEditor = (b: QuoteBlock) => (
+    <div className="space-y-2">
+      {renderLangTabs()}
+      <textarea
+        value={langTab === 'pl' ? b.text : langTab === 'en' ? (b.text_en || '') : (b.text_ru || '')}
+        onChange={e => {
+          const val = e.target.value;
+          if (langTab === 'pl') onUpdate(index, { ...b, text: val });
+          else if (langTab === 'en') onUpdate(index, { ...b, text_en: val });
+          else onUpdate(index, { ...b, text_ru: val });
+        }}
+        rows={3}
+        placeholder={langTab === 'pl' ? 'Treść cytatu...' : langTab === 'en' ? 'Quote text...' : 'Текст цитаты...'}
+        className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+      />
+      <p className="text-xs text-gray-400">Możesz użyć HTML: &lt;strong&gt;pogrubienie&lt;/strong&gt;</p>
+    </div>
+  );
+
   const renderEditor = () => {
     switch (block.type) {
       case 'heading': return renderHeadingEditor(block);
@@ -395,6 +507,8 @@ export const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'list': return renderListEditor(block);
       case 'embed': return renderEmbedEditor(block);
       case 'video': return renderVideoEditor(block);
+      case 'table': return renderTableEditor(block);
+      case 'quote': return renderQuoteEditor(block);
     }
   };
 

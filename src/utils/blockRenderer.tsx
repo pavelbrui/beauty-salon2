@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentBlock, Training, BlogPost, EmbedBlock, VideoBlock } from '../types';
+import { ContentBlock, Training, BlogPost, EmbedBlock, VideoBlock, TableBlock, QuoteBlock } from '../types';
 import { cropPositionToStyle } from '../components/admin/CropSelector';
 
 export const getLocalizedText = (block: { text: string; text_en?: string; text_ru?: string }, language: string): string => {
@@ -34,6 +34,16 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
     }
     case 'text': {
       const text = getLocalizedText(block, language);
+      const hasHtml = /<[a-z][\s\S]*>/i.test(text);
+      if (hasHtml) {
+        return (
+          <p
+            key={block.id || index}
+            className="text-gray-700 leading-relaxed mb-4 [&_a]:text-amber-600 [&_a]:underline [&_a:hover]:text-amber-700 [&_strong]:font-semibold"
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+        );
+      }
       return (
         <p key={block.id || index} className="text-gray-700 leading-relaxed mb-4">
           {text}
@@ -84,11 +94,27 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
         );
       }
 
+      if (block.style === 'ordered') {
+        return (
+          <ol key={block.id || index} className="my-4 space-y-2 list-decimal pl-6">
+            {items.map((item, i) => {
+              const hasHtml = /<[a-z][\s\S]*>/i.test(item);
+              return hasHtml
+                ? <li key={i} className="text-gray-700" dangerouslySetInnerHTML={{ __html: item }} />
+                : <li key={i} className="text-gray-700">{item}</li>;
+            })}
+          </ol>
+        );
+      }
+
       return (
         <ul key={block.id || index} className="my-4 space-y-2 list-disc pl-6">
-          {items.map((item, i) => (
-            <li key={i} className="text-gray-700">{item}</li>
-          ))}
+          {items.map((item, i) => {
+            const hasHtml = /<[a-z][\s\S]*>/i.test(item);
+            return hasHtml
+              ? <li key={i} className="text-gray-700 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: item }} />
+              : <li key={i} className="text-gray-700">{item}</li>;
+          })}
         </ul>
       );
     }
@@ -161,6 +187,55 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
             </figcaption>
           )}
         </figure>
+      );
+    }
+    case 'table': {
+      const tb = block as TableBlock;
+      const headers = language === 'en' && tb.headers_en?.length ? tb.headers_en
+        : language === 'ru' && tb.headers_ru?.length ? tb.headers_ru
+        : tb.headers;
+      const rows = language === 'en' && tb.rows_en?.length ? tb.rows_en
+        : language === 'ru' && tb.rows_ru?.length ? tb.rows_ru
+        : tb.rows;
+      return (
+        <div key={tb.id || index} className="my-6 overflow-x-auto">
+          <table className="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
+            <thead>
+              <tr className="bg-amber-50">
+                {headers.map((h, i) => (
+                  <th key={i} className="px-4 py-3 text-left text-sm font-semibold text-gray-800 border-b border-amber-200">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  {row.map((cell, ci) => {
+                    const hasHtml = /<[a-z][\s\S]*>/i.test(cell);
+                    return hasHtml
+                      ? <td key={ci} className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: cell }} />
+                      : <td key={ci} className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100">{cell}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    case 'quote': {
+      const qb = block as QuoteBlock;
+      const text = getLocalizedText(qb, language);
+      const hasHtml = /<[a-z][\s\S]*>/i.test(text);
+      return (
+        <blockquote key={qb.id || index} className="my-6 border-l-4 border-amber-400 bg-amber-50/50 px-6 py-4 rounded-r-lg">
+          {hasHtml
+            ? <p className="text-gray-700 italic leading-relaxed [&_strong]:font-semibold [&_strong]:not-italic" dangerouslySetInnerHTML={{ __html: text }} />
+            : <p className="text-gray-700 italic leading-relaxed">{text}</p>
+          }
+        </blockquote>
       );
     }
     default:

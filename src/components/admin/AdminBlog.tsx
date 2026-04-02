@@ -231,6 +231,12 @@ export const AdminBlog: React.FC = () => {
       case 'video':
         newBlock = { id, type: 'video', url: '', caption: '' };
         break;
+      case 'table':
+        newBlock = { id, type: 'table', headers: ['', ''], rows: [['', '']] };
+        break;
+      case 'quote':
+        newBlock = { id, type: 'quote', text: '' };
+        break;
       default:
         return;
     }
@@ -447,19 +453,22 @@ export const AdminBlog: React.FC = () => {
         ))}
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {(['heading', 'text', 'image', 'list', 'embed', 'video'] as const).map(type => (
-            <button
-              key={type}
-              onClick={() => addBlock(type)}
-              className={`px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors ${
-                type === 'video'
-                  ? 'border-red-200 text-red-600 hover:bg-red-50'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              + {type === 'heading' ? 'Nagłówek' : type === 'text' ? 'Tekst' : type === 'image' ? 'Obraz' : type === 'list' ? 'Lista' : type === 'embed' ? 'Embed' : 'Video'}
-            </button>
-          ))}
+          {(['heading', 'text', 'image', 'list', 'table', 'quote', 'embed', 'video'] as const).map(type => {
+            const labels: Record<string, string> = { heading: 'Nagłówek', text: 'Tekst', image: 'Obraz', list: 'Lista', table: 'Tabela', quote: 'Cytat', embed: 'Embed', video: 'Video' };
+            const colorClass = type === 'video' ? 'border-red-200 text-red-600 hover:bg-red-50'
+              : type === 'table' ? 'border-teal-200 text-teal-600 hover:bg-teal-50'
+              : type === 'quote' ? 'border-indigo-200 text-indigo-600 hover:bg-indigo-50'
+              : 'border-gray-200 text-gray-600 hover:bg-gray-50';
+            return (
+              <button
+                key={type}
+                onClick={() => addBlock(type)}
+                className={`px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors ${colorClass}`}
+              >
+                + {labels[type]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
