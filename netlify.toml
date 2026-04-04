@@ -188,6 +188,11 @@
   to = "/.netlify/functions/autoseo-webhook"
   status = 200
 
+[[redirects]]
+  from = "/api/webhook"
+  to = "/.netlify/functions/autoseo-webhook"
+  status = 200
+
 # SPA catch-all (must be last)
 [[redirects]]
   from = "/*"
