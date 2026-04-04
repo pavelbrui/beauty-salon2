@@ -228,6 +228,23 @@ const fetchServiceImages = async (): Promise<ServiceImageRow[]> => {
   return rows.filter(r => r.url);
 };
 
+interface GalleryVideoRow {
+  id: string;
+  url: string;
+  video_url: string;
+  description: string | null;
+  alt_text: string | null;
+  created_at: string | null;
+}
+
+const fetchGalleryVideoRows = async (): Promise<GalleryVideoRow[]> => {
+  const rows = await supabaseFetch(
+    'service_images?select=id,url,video_url,description,alt_text,created_at&video_url=not.is.null&order=created_at.desc'
+  ) as GalleryVideoRow[] | null;
+  if (!Array.isArray(rows)) return [];
+  return rows.filter((r) => r.id && r.video_url && isSupportedVideoFormat(r.video_url));
+};
+
 // --- Data fetchers ---
 
 interface CategoryData {
@@ -418,12 +435,22 @@ const LANDING_PAGE_SLUGS = [
 ];
 
 // --- Main handler ---
+const INTRO_SITEMAP_VIDEO: SitemapVideo = {
+  contentUrl: `${BASE_URL}/intro-video.mp4`,
+  thumbnailUrl: `${BASE_URL}/og-image2.jpg`,
+  title: 'Salon Kosmetyczny Katarzyna Brui – Białystok (film)',
+  description:
+    'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure.',
+  uploadDate: '2025-01-01',
+};
+
 const handler: Handler = async () => {
-  const [categories, blogRows, trainingRows, serviceImages] = await Promise.all([
+  const [categories, blogRows, trainingRows, serviceImages, galleryVideoRows] = await Promise.all([
     fetchServiceCategories(),
     fetchContentRows('blog_posts'),
     fetchContentRows('trainings'),
     fetchServiceImages(),
+    fetchGalleryVideoRows(),
   ]);
 
   // Build image lists from service_images per category
@@ -447,15 +474,11 @@ const handler: Handler = async () => {
 
   const entries: string[] = [];
 
-  // Collect all category videos for homepage entry
-  const homepageVideos: SitemapVideo[] = categories.flatMap((cat) => cat.videos);
-
   // Static pages
   for (const page of STATIC_PAGES) {
     if (page.barePath === '/') {
-      // Homepage: attach category videos
       const homeImages = [...(page.images || [])];
-      entries.push(renderLocalizedEntries({ ...page, images: homeImages, videos: homepageVideos }));
+      entries.push(renderLocalizedEntries({ ...page, images: homeImages }));
     } else if (page.barePath === '/gallery') {
       // Gallery: add ALL service_images
       const galleryImages = [...(page.images || []), ...allGalleryImages];
@@ -492,7 +515,7 @@ ${pricesAlternates}
     );
   }
 
-  // Service categories (dynamic from DB) — enriched with service_images + videos
+  // Service categories (dynamic from DB) — enriched with service_images (videos use /video/category/… watch pages)
   for (const cat of categories) {
     const extraImages = serviceImagesByCategory.get(cat.name) || [];
     const allImages = [...cat.images, ...extraImages];
@@ -502,7 +525,51 @@ ${pricesAlternates}
         changefreq: 'weekly',
         priority: '0.8',
         images: allImages,
+      })
+    );
+  }
+
+  // Dedicated video watch pages (Google requires video primary content on URL in sitemap video loc)
+  entries.push(
+    renderLocalizedEntries({
+      barePath: '/video/salon-intro',
+      changefreq: 'monthly',
+      priority: '0.7',
+      videos: [INTRO_SITEMAP_VIDEO],
+    })
+  );
+  for (const cat of categories) {
+    if (cat.videos.length === 0) continue;
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/video/category/${getCategorySlug(cat.name)}`,
+        changefreq: 'monthly',
+        priority: '0.75',
         videos: cat.videos,
+      })
+    );
+  }
+  for (const row of galleryVideoRows) {
+    const title =
+      (row.description && row.description.trim().slice(0, 120)) ||
+      row.alt_text ||
+      'Galeria prac – film, salon Katarzyna Brui Białystok';
+    const description =
+      row.description?.trim() || 'Film z galerii prac – salon kosmetyczny Katarzyna Brui, Białystok.';
+    entries.push(
+      renderLocalizedEntries({
+        barePath: `/gallery/video/${row.id}`,
+        changefreq: 'monthly',
+        priority: '0.65',
+        videos: [
+          {
+            contentUrl: row.video_url,
+            thumbnailUrl: row.url,
+            title,
+            description,
+            uploadDate: formatLastmod(row.created_at) || undefined,
+          },
+        ],
       })
     );
   }

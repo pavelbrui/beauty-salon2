@@ -281,6 +281,17 @@ export const translations = {
       h1: 'Galeria efektów zabiegów kosmetycznych',
       intro: 'Zobacz realne efekty zabiegów wykonanych w naszym salonie w Białymstoku. Makijaż permanentny brwi i ust, stylizacja i przedłużanie rzęs, laminacja brwi, manicure — każde zdjęcie to efekt pracy naszych specjalistek.',
     },
+    video_watch: {
+      intro_title: 'Film o salonie Katarzyna Brui – Białystok',
+      intro_description:
+        'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure.',
+      category_heading: 'Film',
+      back_home: 'Strona główna',
+      back_gallery: 'Galeria',
+      back_category_services: 'Usługi w tej kategorii',
+      not_found: 'Film jest niedostępny lub został usunięty.',
+      gallery_video_title: 'Film z galerii prac',
+    },
     admin_bookings: {
       title: 'Rezerwacje',
       listView: 'Lista',
@@ -660,6 +671,17 @@ export const translations = {
       h1: 'Treatment results gallery',
       intro: 'Browse real results of treatments performed at our salon in Bialystok. Permanent makeup for brows and lips, lash extensions, brow lamination, manicure — every photo showcases our specialists\' work.',
     },
+    video_watch: {
+      intro_title: 'Katarzyna Brui Beauty Salon – Białystok (video)',
+      intro_description:
+        'Professional beauty salon in Białystok. Permanent makeup, lash extensions, brow lamination, carbon peeling, manicure.',
+      category_heading: 'Video',
+      back_home: 'Home',
+      back_gallery: 'Gallery',
+      back_category_services: 'Services in this category',
+      not_found: 'This video is unavailable or has been removed.',
+      gallery_video_title: 'Treatment gallery video',
+    },
     admin_bookings: {
       title: 'Bookings',
       listView: 'List',
@@ -1038,6 +1060,17 @@ export const translations = {
       description: 'Смотрите результаты косметических процедур салона Katarzyna Brui в Белостоке: перманентный макияж, наращивание ресниц, ламинирование бровей, маникюр. Фото до и после.',
       h1: 'Галерея результатов косметических процедур',
       intro: 'Посмотрите реальные результаты процедур, выполненных в нашем салоне в Белостоке. Перманентный макияж бровей и губ, наращивание ресниц, ламинирование бровей, маникюр — каждое фото демонстрирует работу наших специалистов.',
+    },
+    video_watch: {
+      intro_title: 'Видео о салоне Katarzyna Brui – Белосток',
+      intro_description:
+        'Профессиональный салон красоты в Белостоке. Перманентный макияж, наращивание ресниц, ламинирование бровей, карбоновый пилинг, маникюр.',
+      category_heading: 'Видео',
+      back_home: 'Главная',
+      back_gallery: 'Галерея',
+      back_category_services: 'Услуги категории',
+      not_found: 'Видео недоступно или удалено.',
+      gallery_video_title: 'Видео из галереи работ',
     },
     admin_bookings: {
       title: 'Записи',

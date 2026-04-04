@@ -350,6 +350,23 @@ const fetchServiceImages = async () => {
   return rows.filter((r) => r.url);
 };
 
+const fetchGalleryVideoRows = async () => {
+  const rows = await supabaseFetch(
+    'service_images?select=id,url,video_url,description,alt_text,created_at&video_url=not.is.null&order=created_at.desc'
+  );
+  if (!Array.isArray(rows)) return [];
+  return rows.filter((r) => r.id && r.video_url && isSupportedVideoFormat(r.video_url));
+};
+
+const INTRO_SITEMAP_VIDEO = {
+  contentUrl: `${BASE_URL}/intro-video.mp4`,
+  thumbnailUrl: `${BASE_URL}/og-image2.jpg`,
+  title: 'Salon Kosmetyczny Katarzyna Brui – Białystok (film)',
+  description:
+    'Profesjonalny salon kosmetyczny w Białymstoku. Makijaż permanentny, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure.',
+  uploadDate: '2025-01-01',
+};
+
 const dedupeBySlug = (rows) => {
   const map = new Map();
 
@@ -374,7 +391,7 @@ const LANDING_PAGE_SLUGS = [
   'szkolenia-kosmetyczne-bialystok',
 ];
 
-const buildDynamicSection = ({ blogRows, trainingRows, categories, serviceImages }) => {
+const buildDynamicSection = ({ blogRows, trainingRows, categories, serviceImages, galleryVideoRows }) => {
   const lines = [`  ${DYNAMIC_START}`];
   let count = 0;
 
@@ -428,11 +445,65 @@ const buildDynamicSection = ({ blogRows, trainingRows, categories, serviceImages
           priority: '0.8',
           lastmod: null,
           images: allImages,
-          videos: cat.videos,
         })
       );
       count++;
     }
+  }
+
+  lines.push('  <!-- Video watch page URLs -->');
+  lines.push(
+    renderLocalizedEntries({
+      barePath: '/video/salon-intro',
+      changefreq: 'monthly',
+      priority: '0.7',
+      lastmod: null,
+      images: [],
+      videos: [INTRO_SITEMAP_VIDEO],
+    })
+  );
+  count++;
+  for (const cat of categories) {
+    if (!cat.videos || cat.videos.length === 0) continue;
+    lines.push(
+      renderLocalizedEntries({
+        barePath: `/video/category/${getCategorySlug(cat.name)}`,
+        changefreq: 'monthly',
+        priority: '0.75',
+        lastmod: null,
+        images: [],
+        videos: cat.videos,
+      })
+    );
+    count++;
+  }
+  for (const row of galleryVideoRows) {
+    const title =
+      (row.description && String(row.description).trim().slice(0, 120)) ||
+      row.alt_text ||
+      'Galeria prac – film, salon Katarzyna Brui Białystok';
+    const description =
+      (row.description && String(row.description).trim()) ||
+      'Film z galerii prac – salon kosmetyczny Katarzyna Brui, Białystok.';
+    lines.push(
+      renderLocalizedEntries({
+        barePath: `/gallery/video/${row.id}`,
+        changefreq: 'monthly',
+        priority: '0.65',
+        lastmod: formatLastmod(row.created_at),
+        images: [],
+        videos: [
+          {
+            contentUrl: row.video_url,
+            thumbnailUrl: row.url,
+            title,
+            description,
+            uploadDate: formatLastmod(row.created_at) || undefined,
+          },
+        ],
+      })
+    );
+    count++;
   }
 
   if (blogRows.length > 0) {
@@ -509,14 +580,21 @@ const main = async () => {
     console.warn('[sitemap] public/sitemap.xml not found, creating a new one.');
   }
 
-  const [blogRows, trainingRows, categories, serviceImages] = await Promise.all([
+  const [blogRows, trainingRows, categories, serviceImages, galleryVideoRows] = await Promise.all([
     fetchSupabaseRows('blog_posts').then(dedupeBySlug),
     fetchSupabaseRows('trainings').then(dedupeBySlug),
     fetchServiceCategories(),
     fetchServiceImages(),
+    fetchGalleryVideoRows(),
   ]);
 
-  const dynamicSection = buildDynamicSection({ blogRows, trainingRows, categories, serviceImages });
+  const dynamicSection = buildDynamicSection({
+    blogRows,
+    trainingRows,
+    categories,
+    serviceImages,
+    galleryVideoRows,
+  });
   const cleaned = removeExistingDynamicSection(sitemapContent);
 
   if (!cleaned.includes('</urlset>')) {

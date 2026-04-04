@@ -15,6 +15,9 @@ import { ServicesPage } from './pages/ServicesPage';
 import { BlogPage } from './pages/BlogPage';
 import { TrainingPage } from './pages/TrainingPage';
 import { GalleryPage } from './pages/GalleryPage';
+import { IntroVideoWatchPage } from './pages/IntroVideoWatchPage';
+import { CategoryVideoWatchPage } from './pages/CategoryVideoWatchPage';
+import { GalleryVideoWatchPage } from './pages/GalleryVideoWatchPage';
 import { StylistsPage } from './pages/StylistsPage';
 import { PricesPage } from './pages/PricesPage';
 
@@ -58,6 +61,9 @@ const publicRoutes = (
     <Route path="appointments" element={<AppointmentsPage />} />
     <Route path="stylists" element={<StylistsPage />} />
     <Route path="gallery" element={<GalleryPage />} />
+    <Route path="gallery/video/:imageId" element={<GalleryVideoWatchPage />} />
+    <Route path="video/salon-intro" element={<IntroVideoWatchPage />} />
+    <Route path="video/category/:categorySlug" element={<CategoryVideoWatchPage />} />
     <Route path="training" element={<TrainingPage />} />
     <Route path="training/:slug" element={<TrainingPage />} />
     <Route path="blog" element={<BlogPage />} />

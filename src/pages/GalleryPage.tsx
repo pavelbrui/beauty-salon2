@@ -3,6 +3,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { supabase } from '../lib/supabase';
 import { SEO } from '../components/SEO';
+import { LocalizedLink } from '../components/LocalizedLink';
 import { GalleryImage } from '../types';
 import { getGalleryDescription } from '../utils/serviceTranslation';
 import { prerenderReady } from '../utils/prerenderReady';
@@ -10,10 +11,9 @@ import { prerenderReady } from '../utils/prerenderReady';
 interface GalleryVideoCardProps {
   image: GalleryImage;
   desc: string | undefined;
-  onClick: () => void;
 }
 
-const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc, onClick }) => {
+const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isTouchDevice = useRef(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
 
@@ -41,9 +41,9 @@ const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc, onClic
   }, [playVideo, pauseVideo]);
 
   return (
-    <button
-      onClick={onClick}
-      className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer"
+    <LocalizedLink
+      to={`/gallery/video/${image.id}`}
+      className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer block"
     >
       <video
         ref={videoRef}
@@ -71,7 +71,7 @@ const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc, onClic
           <p className="text-white p-4">{desc}</p>
         </div>
       )}
-    </button>
+    </LocalizedLink>
   );
 };
 
@@ -162,17 +162,7 @@ export const GalleryPage: React.FC = () => {
     'image': images.slice(0, 20).map(img => {
       const itemName = getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'treatment result, Katarzyna Brui Salon Białystok' : language === 'ru' ? 'результат процедуры, салон Katarzyna Brui Белосток' : 'efekt zabiegu, salon Katarzyna Brui Białystok'}`;
       const itemDesc = getDescription(img) || `${getCategoryLabel(img.category)} – ${language === 'en' ? 'treatment results, beauty salon Białystok' : language === 'ru' ? 'результаты процедур, салон красоты Белосток' : 'efekty zabiegów, salon kosmetyczny Białystok'}`;
-      if (img.video_url) {
-        return {
-          '@type': 'VideoObject',
-          'name': itemName,
-          'description': itemDesc,
-          'contentUrl': img.video_url,
-          'thumbnailUrl': img.url !== img.video_url ? img.url : img.video_url,
-          'uploadDate': img.created_at?.includes('T') ? img.created_at : `${img.created_at}T00:00:00+01:00`,
-          'publisher': { '@type': 'Organization', 'name': 'Salon Kosmetyczny Katarzyna Brui' },
-        };
-      }
+      // Video rich results: use dedicated /gallery/video/:id watch pages (VideoObject there), not gallery grid
       return {
         '@type': 'ImageObject',
         'url': img.url,
@@ -259,7 +249,6 @@ export const GalleryPage: React.FC = () => {
                     key={image.id}
                     image={image}
                     desc={desc}
-                    onClick={() => setLightboxImage(image)}
                   />
                 );
               }

@@ -200,7 +200,6 @@ export const ServicesPage: React.FC = () => {
   const navigate = useLocalizedNavigate();
 
   const [categoryImageMap, setCategoryImageMap] = useState<Map<string, string>>(new Map());
-  const [categoryVideoMap, setCategoryVideoMap] = useState<Map<string, string>>(new Map());
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
@@ -239,19 +238,16 @@ export const ServicesPage: React.FC = () => {
   const sortCategoriesByOrder = async (cats: string[]) => {
     const { data } = await supabase
       .from('service_categories')
-      .select('name, sort_order, image_url, video_url')
+      .select('name, sort_order, image_url')
       .order('sort_order');
 
     if (data && data.length > 0) {
       const orderMap = new Map(data.map((c: { name: string; sort_order: number }) => [c.name, c.sort_order]));
       const imgMap = new Map<string, string>();
-      const vidMap = new Map<string, string>();
-      data.forEach((c: { name: string; image_url: string | null; video_url: string | null }) => {
+      data.forEach((c: { name: string; image_url: string | null }) => {
         if (c.image_url) imgMap.set(c.name, c.image_url);
-        if (c.video_url) vidMap.set(c.name, c.video_url);
       });
       setCategoryImageMap(imgMap);
-      setCategoryVideoMap(vidMap);
       const sorted = [...cats].sort((a, b) => {
         const oa = orderMap.get(a) ?? 999;
         const ob = orderMap.get(b) ?? 999;
@@ -487,32 +483,6 @@ export const ServicesPage: React.FC = () => {
           />
         )}
 
-        {/* VideoObject structured data for categories with videos */}
-        {(() => {
-          const videoCats = (category ? [category] : categories).filter(c => categoryVideoMap.get(c));
-          if (videoCats.length === 0) return null;
-          return (
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(
-              videoCats.map(c => ({
-                '@context': 'https://schema.org',
-                '@type': 'VideoObject',
-                name: language === 'en'
-                  ? `${getCategoryName(c, language, (t as any).categories)} – Katarzyna Brui Beauty Salon`
-                  : language === 'ru'
-                  ? `${getCategoryName(c, language, (t as any).categories)} – Салон красоты Катажина Бруй`
-                  : `${getCategoryName(c, language, (t as any).categories)} – Salon Katarzyna Brui Białystok`,
-                description: language === 'en'
-                  ? `${getCategoryName(c, language, (t as any).categories)} services at Katarzyna Brui beauty salon in Białystok.`
-                  : language === 'ru'
-                  ? `${getCategoryName(c, language, (t as any).categories)} – услуги салона красоты Катажина Бруй, Белосток.`
-                  : `${getCategoryName(c, language, (t as any).categories)} – zabiegi w salonie kosmetycznym Katarzyna Brui, Białystok.`,
-                thumbnailUrl: categoryImageMap.get(c) || getStaticImageForCategory(c),
-                contentUrl: categoryVideoMap.get(c),
-                uploadDate: '2025-01-01T00:00:00+01:00',
-              }))
-            )}} />
-          );
-        })()}
       </div>
     </main>
   );

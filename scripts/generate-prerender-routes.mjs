@@ -123,6 +123,7 @@ const main = async () => {
     '/gallery',
     '/training',
     '/blog',
+    '/video/salon-intro',
     ...LANDING_PAGE_SLUGS.map((s) => `/${s}`),
   ];
 
@@ -136,6 +137,7 @@ const main = async () => {
 
   const dynamicPages = [
     ...categories.map((c) => `/services/${getCategorySlug(c)}`),
+    ...categories.map((c) => `/video/category/${getCategorySlug(c)}`),
     ...blogSlugs.map((s) => `/blog/${encodeURIComponent(s)}`),
     ...trainingSlugs.map((s) => `/training/${encodeURIComponent(s)}`),
   ];

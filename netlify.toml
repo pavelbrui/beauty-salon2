@@ -183,6 +183,11 @@
   to = "/.netlify/functions/instagram-sync"
   status = 200
 
+[[redirects]]
+  from = "/api/autoseo-webhook"
+  to = "/.netlify/functions/autoseo-webhook"
+  status = 200
+
 # SPA catch-all (must be last)
 [[redirects]]
   from = "/*"
