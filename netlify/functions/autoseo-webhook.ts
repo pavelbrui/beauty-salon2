@@ -43,13 +43,14 @@ function estimateReadingTime(html: string): number {
 }
 
 /** Convert HTML string into content_blocks array compatible with our CMS */
-function htmlToContentBlocks(
+async function htmlToContentBlocks(
   html: string,
   suffix: '' | '_en' | '_ru',
+  slug: string,
   heroImageUrl?: string | null,
   heroImageAlt?: string | null,
   infographicUrl?: string | null
-): any[] {
+): Promise<any[]> {
   const blocks: any[] = [];
   let blockId = 1;
 
@@ -133,10 +134,13 @@ function htmlToContentBlocks(
     // Inline image
     const imgMatch = trimmed.match(/<img[^>]*src=["']([^"']+)["'][^>]*(?:alt=["']([^"']*)["'])?[^>]*\/?>/is);
     if (imgMatch) {
+      const imgId = blockId++;
+      // Download inline image to Supabase Storage
+      const storedUrl = await downloadAndStoreImage(imgMatch[1], slug, `inline-${imgId}`);
       const block: any = {
-        id: String(blockId++),
+        id: String(imgId),
         type: 'image',
-        url: imgMatch[1],
+        url: storedUrl || imgMatch[1],
       };
       if (imgMatch[2]) {
         const captionKey = suffix ? `caption${suffix}` : 'caption';
@@ -298,9 +302,10 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
 
     // Build content blocks from HTML
-    const contentBlocks = htmlToContentBlocks(
+    const contentBlocks = await htmlToContentBlocks(
       payload.content_html,
       suffix,
+      payload.slug,
       storedHeroUrl || payload.heroImageUrl,
       payload.heroImageAlt,
       storedInfographicUrl || payload.infographicImageUrl

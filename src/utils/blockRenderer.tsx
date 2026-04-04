@@ -58,11 +58,9 @@ export const renderBlock = (block: ContentBlock, language: string, index: number
           <img
             src={block.url}
             alt={caption || 'Zabieg kosmetyczny – salon Katarzyna Brui Białystok'}
-            className="w-full max-h-[600px] rounded-xl shadow-lg"
-            style={cropPositionToStyle(block.position)}
+            className={`w-full rounded-xl shadow-lg ${block.position ? 'max-h-[600px]' : ''}`}
+            style={block.position ? cropPositionToStyle(block.position) : undefined}
             loading="lazy"
-            width={1200}
-            height={600}
           />
           {caption && (
             <figcaption className="text-sm text-gray-500 mt-3 text-center italic">
