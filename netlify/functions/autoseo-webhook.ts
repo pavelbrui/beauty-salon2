@@ -320,7 +320,6 @@ const handler: Handler = async (event: HandlerEvent) => {
       is_published: true,
       published_at: payload.publishedAt || new Date().toISOString(),
       reading_time_minutes: estimateReadingTime(payload.content_html),
-      autoseo_id: payload.id,
       updated_at: new Date().toISOString(),
     };
 
@@ -331,19 +330,9 @@ const handler: Handler = async (event: HandlerEvent) => {
       rowData.author = 'Katarzyna Brui';
     }
 
-    // Check if post already exists (by autoseo_id for dedup)
+    // Check if post already exists by slug (unique constraint) for dedup
     let existingPost = null;
-    if (payload.id) {
-      const { data } = await supabase
-        .from('blog_posts')
-        .select('id, slug, content_blocks')
-        .eq('autoseo_id', payload.id)
-        .maybeSingle();
-      existingPost = data;
-    }
-
-    // Also check by slug if no autoseo_id match
-    if (!existingPost) {
+    {
       const { data } = await supabase
         .from('blog_posts')
         .select('id, slug, content_blocks')
