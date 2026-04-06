@@ -56,9 +56,14 @@ const OG_LOCALES: Record<string, string> = {
   ru: 'ru_RU',
 };
 
+/** Ensure path ends with trailing slash (Netlify serves prerendered pages at /path/). */
+const ensureTrailingSlash = (path: string): string =>
+  path.endsWith('/') ? path : `${path}/`;
+
 const getLocalizedUrl = (barePath: string, lang: string): string => {
-  if (lang === 'pl') return `${BASE_URL}${barePath}`;
-  return `${BASE_URL}/${lang}${barePath}`;
+  const path = ensureTrailingSlash(barePath);
+  if (lang === 'pl') return `${BASE_URL}${path}`;
+  return `${BASE_URL}/${lang}${path}`;
 };
 
 /**

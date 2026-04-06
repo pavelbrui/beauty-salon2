@@ -61,11 +61,15 @@ const xmlEscape = (value) =>
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** Ensure path ends with trailing slash (Netlify serves prerendered pages at /path/). */
+const ensureTrailingSlash = (path) => path.endsWith('/') ? path : `${path}/`;
+
 const localizedUrl = (barePath, locale) => {
+  const path = ensureTrailingSlash(barePath);
   if (locale === 'pl') {
-    return `${BASE_URL}${barePath}`;
+    return `${BASE_URL}${path}`;
   }
-  return `${BASE_URL}/${locale}${barePath}`;
+  return `${BASE_URL}/${locale}${path}`;
 };
 
 const formatLastmod = (value) => {

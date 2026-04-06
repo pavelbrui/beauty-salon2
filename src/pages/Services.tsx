@@ -17,7 +17,7 @@ export const ServicesPage: React.FC = () => {
 
   const loadServices = async () => {
     const [servicesRes, catRes] = await Promise.all([
-      supabase.from('services').select('*, service_images(url)').eq('is_hidden', false).order('category'),
+      supabase.from('services').select('*, service_images(url, video_url)').eq('is_hidden', false).order('category'),
       supabase.from('service_categories').select('name, image_url'),
     ]);
 
@@ -37,7 +37,8 @@ export const ServicesPage: React.FC = () => {
       ...service,
       imageUrl: service.service_images?.[0]?.url
         || catImgMap.get(service.category)
-        || getStaticImageForCategory(service.category)
+        || getStaticImageForCategory(service.category),
+      videoUrl: service.service_images?.[0]?.video_url || null,
     }));
 
     setServices(servicesWithImages);

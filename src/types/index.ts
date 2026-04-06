@@ -21,6 +21,7 @@ export interface Service {
   description_en?: string;
   description_ru?: string;
   imageUrl?: string;
+  videoUrl?: string | null;
   is_hidden?: boolean;
 }
 

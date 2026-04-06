@@ -38,7 +38,9 @@ const fixHelmetMeta = (route: any) => {
   console.warn(`[prerender] WARNING: Helmet did not inject meta tags for ${routePath}`)
 
   // 1. Fix canonical URL (most critical — wrong canonical = not indexed)
-  const correctCanonical = `${BASE_URL}${routePath === '/' ? '' : routePath}`
+  // Ensure trailing slash to match Netlify's URL structure
+  const trailingPath = routePath.endsWith('/') ? routePath : `${routePath}/`
+  const correctCanonical = `${BASE_URL}${trailingPath}`
   route.html = html.replace(
     /<link rel="canonical" href="[^"]*">/,
     `<link rel="canonical" href="${correctCanonical}">`
@@ -46,9 +48,10 @@ const fixHelmetMeta = (route: any) => {
 
   // 2. Fix hreflang tags to point to the correct page (not homepage)
   const barePath = routePath.replace(/^\/(en|ru)\//, '/').replace(/^\/(en|ru)$/, '/')
-  const plPath = barePath === '/' ? '' : barePath
-  const enPath = `/en${barePath === '/' ? '/' : barePath}`
-  const ruPath = `/ru${barePath === '/' ? '/' : barePath}`
+  const bareTrailing = barePath.endsWith('/') ? barePath : `${barePath}/`
+  const plPath = bareTrailing
+  const enPath = `/en${bareTrailing}`
+  const ruPath = `/ru${bareTrailing}`
 
   route.html = route.html
     .replace(

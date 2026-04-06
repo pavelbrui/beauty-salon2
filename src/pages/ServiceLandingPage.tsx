@@ -60,7 +60,7 @@ export const ServiceLandingPage: React.FC = () => {
       const [servicesRes, catRes] = await Promise.all([
         supabase
           .from('services')
-          .select('*, service_images(url)')
+          .select('*, service_images(url, video_url)')
           .eq('is_hidden', false)
           .eq('category', config.category)
           .order('name'),
@@ -78,12 +78,13 @@ export const ServiceLandingPage: React.FC = () => {
           if (c.image_url) catImgMap.set(c.name, c.image_url);
         });
       }
-      const withImages = servicesRes.data.map((service: Service & { service_images?: { url: string }[] }) => ({
+      const withImages = servicesRes.data.map((service: Service & { service_images?: { url: string; video_url?: string | null }[] }) => ({
         ...service,
         imageUrl:
           service.service_images?.[0]?.url ||
           catImgMap.get(service.category) ||
           getImageForKey(config.imageKey),
+        videoUrl: service.service_images?.[0]?.video_url || null,
       }));
       setServices(withImages);
 
@@ -154,7 +155,7 @@ export const ServiceLandingPage: React.FC = () => {
     '@type': 'Service',
     'name': loc(config.hero.title, language),
     'description': seoDesc,
-    'url': `${BASE_URL}/${config.slug}`,
+    'url': `${BASE_URL}/${config.slug}/`,
     'image': heroImage,
     'provider': {
       ...BUSINESS_PROVIDER,

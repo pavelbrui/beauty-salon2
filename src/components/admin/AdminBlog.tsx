@@ -5,6 +5,7 @@ import { BlockEditor } from './BlockEditor';
 import { blogTemplates, generateSlug } from './blogTemplates';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { ImageCropper } from './ImageCropper';
+import { translateFromPolish } from '../../utils/translateService';
 
 type View = 'list' | 'editor';
 type Lang = 'pl' | 'en' | 'ru';
@@ -44,6 +45,7 @@ export const AdminBlog: React.FC = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [cropperImage, setCropperImage] = useState<string | null>(null);
   const [cropperFileName, setCropperFileName] = useState('');
+  const [translatingCount, setTranslatingCount] = useState(0);
 
   useEffect(() => { loadPosts(); }, []);
 
@@ -110,16 +112,47 @@ export const AdminBlog: React.FC = () => {
     }
 
     setSaving(true);
+
+    // Auto-translate missing fields before save
+    let finalTitleEn = titleEn;
+    let finalTitleRu = titleRu;
+    let finalExcerptEn = excerptEn;
+    let finalExcerptRu = excerptRu;
+
+    const needsTitleTranslation = title.trim() && (!titleEn || !titleRu);
+    const needsExcerptTranslation = excerpt.trim() && (!excerptEn || !excerptRu);
+
+    if (needsTitleTranslation || needsExcerptTranslation) {
+      const promises: Promise<void>[] = [];
+      if (needsTitleTranslation) {
+        promises.push(translateFromPolish(title).then(({ en, ru }) => {
+          finalTitleEn = finalTitleEn || en;
+          finalTitleRu = finalTitleRu || ru;
+        }));
+      }
+      if (needsExcerptTranslation) {
+        promises.push(translateFromPolish(excerpt).then(({ en, ru }) => {
+          finalExcerptEn = finalExcerptEn || en;
+          finalExcerptRu = finalExcerptRu || ru;
+        }));
+      }
+      await Promise.all(promises);
+      setTitleEn(finalTitleEn);
+      setTitleRu(finalTitleRu);
+      setExcerptEn(finalExcerptEn);
+      setExcerptRu(finalExcerptRu);
+    }
+
     const payload = {
       id: editingPost?.id || crypto.randomUUID(),
       title,
-      title_en: titleEn || null,
-      title_ru: titleRu || null,
+      title_en: finalTitleEn || null,
+      title_ru: finalTitleRu || null,
       slug,
       category,
       excerpt: excerpt || null,
-      excerpt_en: excerptEn || null,
-      excerpt_ru: excerptRu || null,
+      excerpt_en: finalExcerptEn || null,
+      excerpt_ru: finalExcerptRu || null,
       author: author || 'Katarzyna Brui',
       cover_image_url: coverImageUrl || null,
       seo_keywords: seoKeywords ? seoKeywords.split(',').map(k => k.trim()).filter(Boolean) : [],
@@ -189,6 +222,32 @@ export const AdminBlog: React.FC = () => {
   const handleCoverCropCancel = () => {
     if (cropperImage) URL.revokeObjectURL(cropperImage);
     setCropperImage(null);
+  };
+
+  const handleAutoTranslateTitle = async (polishTitle: string) => {
+    if (!polishTitle.trim()) return;
+    if (titleEn && titleRu) return;
+    setTranslatingCount(c => c + 1);
+    try {
+      const { en, ru } = await translateFromPolish(polishTitle);
+      setTitleEn(prev => prev || en);
+      setTitleRu(prev => prev || ru);
+    } finally {
+      setTranslatingCount(c => c - 1);
+    }
+  };
+
+  const handleAutoTranslateExcerpt = async (polishExcerpt: string) => {
+    if (!polishExcerpt.trim()) return;
+    if (excerptEn && excerptRu) return;
+    setTranslatingCount(c => c + 1);
+    try {
+      const { en, ru } = await translateFromPolish(polishExcerpt);
+      setExcerptEn(prev => prev || en);
+      setExcerptRu(prev => prev || ru);
+    } finally {
+      setTranslatingCount(c => c - 1);
+    }
   };
 
   const handleBlockUpdate = (index: number, block: ContentBlock) => {
@@ -365,9 +424,12 @@ export const AdminBlog: React.FC = () => {
 
         {/* Title */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tytuł ({metaLang.toUpperCase()})</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tytuł ({metaLang.toUpperCase()})
+            {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+          </label>
           {metaLang === 'pl' ? (
-            <input value={title} onChange={e => { setTitle(e.target.value); if (!editingPost) setSlug(generateSlug(e.target.value)); }} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Tytuł artykułu" />
+            <input value={title} onChange={e => { setTitle(e.target.value); if (!editingPost) setSlug(generateSlug(e.target.value)); }} onBlur={e => handleAutoTranslateTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Tytuł artykułu" />
           ) : metaLang === 'en' ? (
             <input value={titleEn} onChange={e => setTitleEn(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Article title (EN)" />
           ) : (
@@ -377,9 +439,12 @@ export const AdminBlog: React.FC = () => {
 
         {/* Excerpt */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Opis SEO ({metaLang.toUpperCase()})</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Opis SEO ({metaLang.toUpperCase()})
+            {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+          </label>
           {metaLang === 'pl' ? (
-            <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Krótki opis do meta description (150-200 znaków)" />
+            <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} onBlur={e => handleAutoTranslateExcerpt(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Krótki opis do meta description (150-200 znaków)" />
           ) : metaLang === 'en' ? (
             <textarea value={excerptEn} onChange={e => setExcerptEn(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Short SEO description (EN)" />
           ) : (

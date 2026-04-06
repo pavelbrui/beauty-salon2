@@ -41,7 +41,7 @@ export const ArticleSchema: React.FC<ArticleSchemaProps> = ({
     publisher: BUSINESS_PUBLISHER,
     datePublished,
     dateModified,
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}${slug}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}${slug.endsWith('/') ? slug : slug + '/'}` },
     ...(videoUrl ? {
       video: {
         '@type': 'VideoObject',

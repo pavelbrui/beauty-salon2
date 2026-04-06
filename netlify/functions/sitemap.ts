@@ -16,9 +16,14 @@ const xmlEscape = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
+/** Ensure path ends with trailing slash (Netlify serves prerendered pages at /path/). */
+const ensureTrailingSlash = (path: string): string =>
+  path.endsWith('/') ? path : `${path}/`;
+
 const localizedUrl = (barePath: string, locale: string): string => {
-  if (locale === 'pl') return `${BASE_URL}${barePath}`;
-  return `${BASE_URL}/${locale}${barePath}`;
+  const path = ensureTrailingSlash(barePath);
+  if (locale === 'pl') return `${BASE_URL}${path}`;
+  return `${BASE_URL}/${locale}${path}`;
 };
 
 const formatLastmod = (value: string | null): string | null => {
@@ -490,12 +495,12 @@ const handler: Handler = async () => {
 
   // Prices page — Polish uses /cennik slug, EN/RU use /prices
   const pricesAlternates = [
-    `    <xhtml:link rel="alternate" hreflang="pl" href="${xmlEscape(`${BASE_URL}/cennik`)}"/>`,
-    `    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(`${BASE_URL}/en/prices`)}"/>`,
-    `    <xhtml:link rel="alternate" hreflang="ru" href="${xmlEscape(`${BASE_URL}/ru/prices`)}"/>`,
-    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(`${BASE_URL}/cennik`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="pl" href="${xmlEscape(`${BASE_URL}/cennik/`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(`${BASE_URL}/en/prices/`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="ru" href="${xmlEscape(`${BASE_URL}/ru/prices/`)}"/>`,
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(`${BASE_URL}/cennik/`)}"/>`,
   ].join('\n');
-  for (const loc of [`${BASE_URL}/cennik`, `${BASE_URL}/en/prices`, `${BASE_URL}/ru/prices`]) {
+  for (const loc of [`${BASE_URL}/cennik/`, `${BASE_URL}/en/prices/`, `${BASE_URL}/ru/prices/`]) {
     entries.push(`  <url>
     <loc>${xmlEscape(loc)}</loc>
 ${pricesAlternates}

@@ -421,7 +421,7 @@ export const BlogPage: React.FC = () => {
             'item': {
               '@type': 'Article',
               'headline': getLocalizedField(p, 'title', language),
-              'url': `${BASE_URL}/blog/${p.slug}`,
+              'url': `${BASE_URL}/blog/${p.slug}/`,
               ...(p.cover_image_url && { 'image': p.cover_image_url }),
               'datePublished': p.published_at,
               'author': { '@type': 'Person', 'name': p.author || 'Katarzyna Brui' },
