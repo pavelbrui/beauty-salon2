@@ -49,9 +49,13 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  // Lazy-mount the <video> element client-side only. Keeps it out of the prerendered HTML
+  // so Google Video Indexer does not flag listing pages as non-watch pages hosting these videos.
+  const [videoMounted, setVideoMounted] = useState(false);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    setVideoMounted(true);
   }, []);
 
   const setVideoRef = useCallback((el: HTMLVideoElement | null) => {
@@ -155,7 +159,7 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
         />
 
         {/* Video overlay */}
-        {videoUrl && (
+        {videoUrl && videoMounted && (
           <video
             ref={setVideoRef}
             src={videoUrl}

@@ -32,11 +32,15 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  // Lazy-mount the <video> element client-side only. Keeps it out of the prerendered HTML
+  // so Google Video Indexer does not flag listing pages as non-watch pages hosting these videos.
+  const [videoMounted, setVideoMounted] = useState(false);
 
   const videoUrl = service.videoUrl;
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    setVideoMounted(true);
   }, []);
 
   const setVideoRefCb = useCallback((el: HTMLVideoElement | null) => {
@@ -138,7 +142,7 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
             height={imgHeight}
             decoding="async"
           />
-          {videoUrl && (
+          {videoUrl && videoMounted && (
             <video
               ref={setVideoRefCb}
               src={videoUrl}

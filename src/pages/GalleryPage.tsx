@@ -16,6 +16,11 @@ interface GalleryVideoCardProps {
 const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isTouchDevice = useRef(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+  // Lazy-mount client-side only — keeps <video> out of prerendered HTML so Google Video
+  // Indexer does not flag /gallery as a non-watch page hosting these videos. The dedicated
+  // watch pages live at /gallery/video/:id (GalleryVideoWatchPage).
+  const [videoMounted, setVideoMounted] = React.useState(false);
+  React.useEffect(() => { setVideoMounted(true); }, []);
 
   const playVideo = useCallback(() => {
     if (!videoRef.current) return;
@@ -38,25 +43,35 @@ const GalleryVideoCard: React.FC<GalleryVideoCardProps> = ({ image, desc }) => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [playVideo, pauseVideo]);
+  }, [playVideo, pauseVideo, videoMounted]);
 
   return (
     <LocalizedLink
       to={`/gallery/video/${image.id}`}
       className="relative group overflow-hidden rounded-xl shadow-lg aspect-square cursor-pointer block"
     >
-      <video
-        ref={videoRef}
-        src={image.video_url!}
-        poster={image.url !== image.video_url ? image.url : undefined}
-        className="w-full h-full object-cover"
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        onMouseEnter={isTouchDevice.current ? undefined : playVideo}
-        onMouseLeave={isTouchDevice.current ? undefined : pauseVideo}
-      />
+      {videoMounted ? (
+        <video
+          ref={videoRef}
+          src={image.video_url!}
+          poster={image.url !== image.video_url ? image.url : undefined}
+          className="w-full h-full object-cover"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onMouseEnter={isTouchDevice.current ? undefined : playVideo}
+          onMouseLeave={isTouchDevice.current ? undefined : pauseVideo}
+        />
+      ) : (
+        <img
+          src={image.url !== image.video_url ? image.url : '/og-image2.jpg'}
+          alt={desc || ''}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       {/* Play icon overlay (shown when paused via CSS) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity duration-300">
         <div className="w-12 h-12 rounded-full bg-black/40 flex items-center justify-center">

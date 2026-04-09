@@ -13,6 +13,12 @@ if (!hasSupabaseConfig) {
 const fallbackSupabaseUrl = 'https://placeholder.supabase.co';
 const fallbackSupabaseAnonKey = 'placeholder-anon-key';
 
+// No-op lock: bypass the default navigatorLock (Web Locks API) to avoid
+// orphaned-lock failures ("Lock broken by another request with the 'steal' option")
+// when many components call supabase.auth.* in parallel during mount.
+// Auth state is still kept consistent via onAuthStateChange listeners.
+const noopLock = async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn();
+
 export const supabase = createClient(
   supabaseUrl ?? fallbackSupabaseUrl,
   supabaseAnonKey ?? fallbackSupabaseAnonKey,
@@ -21,6 +27,7 @@ export const supabase = createClient(
       persistSession: hasSupabaseConfig,
       autoRefreshToken: hasSupabaseConfig,
       detectSessionInUrl: hasSupabaseConfig,
+      lock: noopLock,
     },
   }
 );

@@ -28,12 +28,20 @@ export const Home: React.FC = () => {
   const [categories, setCategories] = React.useState<CategoryInfo[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  // Lazy-mount intro <video> client-side only so it is NOT in the prerendered HTML.
+  // This keeps Google Video Indexer from flagging Home as a non-watch page hosting the intro video.
+  // The dedicated watch page lives at /video/salon-intro (IntroVideoWatchPage).
+  const [videoMounted, setVideoMounted] = React.useState(false);
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useLocalizedNavigate();
 
   React.useEffect(() => {
     loadCategories();
+  }, []);
+
+  React.useEffect(() => {
+    setVideoMounted(true);
   }, []);
 
   const loadCategories = async () => {
@@ -238,18 +246,28 @@ export const Home: React.FC = () => {
               </p>
             </div>
             <div className="flex-1 w-full max-w-md">
-              <div className="rounded-2xl overflow-hidden shadow-lg">
-                <video
-                  className="w-full"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  poster="/apple-touch-icon.png"
-                  preload="metadata"
-                >
-                  <source src="/intro-video.mp4" type="video/mp4" />
-                </video>
+              <div className="rounded-2xl overflow-hidden shadow-lg aspect-video bg-gray-100">
+                {videoMounted ? (
+                  <video
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/og-image2.jpg"
+                    preload="metadata"
+                  >
+                    <source src="/intro-video.mp4" type="video/mp4" />
+                  </video>
+                ) : (
+                  <img
+                    src="/og-image2.jpg"
+                    alt={t.aboutTitle}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
               </div>
             </div>
           </div>
