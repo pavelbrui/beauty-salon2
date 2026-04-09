@@ -52,6 +52,10 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
   // Lazy-mount the <video> element client-side only. Keeps it out of the prerendered HTML
   // so Google Video Indexer does not flag listing pages as non-watch pages hosting these videos.
   const [videoMounted, setVideoMounted] = useState(false);
+  // If the video fails to load/play (error, stall, hover-play timeout), unmount it and
+  // fall back to the static image so the card never shows a blank/black frame.
+  const [videoFailed, setVideoFailed] = useState(false);
+  const playTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -65,49 +69,83 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
     }
   }, []);
 
+  const clearPlayTimeout = useCallback(() => {
+    if (playTimeoutRef.current !== null) {
+      window.clearTimeout(playTimeoutRef.current);
+      playTimeoutRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const onPlaying = () => setIsPlaying(true);
+    const onPlaying = () => {
+      clearPlayTimeout();
+      setIsPlaying(true);
+    };
     const onPause = () => setIsPlaying(false);
     const onError = () => {
       console.warn('Video error:', video.error?.message, videoUrl);
+      clearPlayTimeout();
       setIsPlaying(false);
+      setVideoFailed(true);
     };
+    const onStalled = () => setIsPlaying(false);
 
     video.addEventListener('playing', onPlaying);
     video.addEventListener('pause', onPause);
     video.addEventListener('error', onError);
+    video.addEventListener('stalled', onStalled);
+    video.addEventListener('waiting', onStalled);
     return () => {
       video.removeEventListener('playing', onPlaying);
       video.removeEventListener('pause', onPause);
       video.removeEventListener('error', onError);
+      video.removeEventListener('stalled', onStalled);
+      video.removeEventListener('waiting', onStalled);
     };
-  }, [videoUrl]);
+  }, [videoUrl, videoMounted, clearPlayTimeout]);
 
-  const tryPlay = useCallback((video: HTMLVideoElement) => {
-    video.muted = true;
-    video.play().catch((e) => {
-      console.warn('Video play blocked:', e.name, e.message);
-    });
-  }, []);
+  const tryPlay = useCallback(
+    (video: HTMLVideoElement) => {
+      video.muted = true;
+      clearPlayTimeout();
+      // Give the video up to 1.5s to actually start playing; otherwise fall back to image.
+      playTimeoutRef.current = window.setTimeout(() => {
+        if (!videoRef.current || videoRef.current.paused || videoRef.current.readyState < 3) {
+          setVideoFailed(true);
+        }
+      }, 1500);
+      video.play().catch((e) => {
+        console.warn('Video play blocked:', e.name, e.message);
+        clearPlayTimeout();
+        setVideoFailed(true);
+      });
+    },
+    [clearPlayTimeout],
+  );
 
   const handleMouseEnter = useCallback(() => {
-    if (isTouchDevice || !videoUrl || !videoRef.current) return;
+    if (isTouchDevice || !videoUrl || videoFailed || !videoRef.current) return;
     setIsHovering(true);
     tryPlay(videoRef.current);
-  }, [isTouchDevice, videoUrl, tryPlay]);
+  }, [isTouchDevice, videoUrl, videoFailed, tryPlay]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
+    clearPlayTimeout();
     if (!videoRef.current) return;
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
-  }, []);
+  }, [clearPlayTimeout]);
 
   useEffect(() => {
-    if (!isTouchDevice || !videoUrl || !cardRef.current) return;
+    return () => clearPlayTimeout();
+  }, [clearPlayTimeout]);
+
+  useEffect(() => {
+    if (!isTouchDevice || !videoUrl || videoFailed || !cardRef.current) return;
 
     const el = cardRef.current;
     const observer = new IntersectionObserver(
@@ -123,9 +161,9 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isTouchDevice, videoUrl, tryPlay]);
+  }, [isTouchDevice, videoUrl, videoFailed, tryPlay]);
 
-  const showVideo = isPlaying && (isHovering || isTouchDevice);
+  const showVideo = !videoFailed && isPlaying && (isHovering || isTouchDevice);
 
   // Generate SEO-friendly alt text
   const generateAltText = (): string => {
@@ -159,7 +197,7 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
         />
 
         {/* Video overlay */}
-        {videoUrl && videoMounted && (
+        {videoUrl && videoMounted && !videoFailed && (
           <video
             ref={setVideoRef}
             src={videoUrl}

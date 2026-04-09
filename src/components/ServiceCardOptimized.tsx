@@ -35,6 +35,10 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
   // Lazy-mount the <video> element client-side only. Keeps it out of the prerendered HTML
   // so Google Video Indexer does not flag listing pages as non-watch pages hosting these videos.
   const [videoMounted, setVideoMounted] = useState(false);
+  // If the video fails to load/play (network error, stall, hover-play timeout), unmount it
+  // and fall back to the static image so the card never shows a blank/black frame.
+  const [videoFailed, setVideoFailed] = useState(false);
+  const playTimeoutRef = useRef<number | null>(null);
 
   const videoUrl = service.videoUrl;
 
@@ -48,43 +52,83 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
     if (el) el.muted = true;
   }, []);
 
+  const clearPlayTimeout = useCallback(() => {
+    if (playTimeoutRef.current !== null) {
+      window.clearTimeout(playTimeoutRef.current);
+      playTimeoutRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => setIsPlaying(true);
+    const onPlaying = () => {
+      clearPlayTimeout();
+      setIsPlaying(true);
+    };
     const onPause = () => setIsPlaying(false);
-    const onError = () => setIsPlaying(false);
+    const onError = () => {
+      clearPlayTimeout();
+      setIsPlaying(false);
+      setVideoFailed(true);
+    };
+    const onStalled = () => {
+      // Stalled = data has stopped arriving. Hide video until 'playing' fires again.
+      setIsPlaying(false);
+    };
     video.addEventListener('playing', onPlaying);
     video.addEventListener('pause', onPause);
     video.addEventListener('error', onError);
+    video.addEventListener('stalled', onStalled);
+    video.addEventListener('waiting', onStalled);
     return () => {
       video.removeEventListener('playing', onPlaying);
       video.removeEventListener('pause', onPause);
       video.removeEventListener('error', onError);
+      video.removeEventListener('stalled', onStalled);
+      video.removeEventListener('waiting', onStalled);
     };
-  }, [videoUrl]);
+  }, [videoUrl, videoMounted, clearPlayTimeout]);
 
-  const tryPlay = useCallback((video: HTMLVideoElement) => {
-    video.muted = true;
-    video.play().catch(() => {});
-  }, []);
+  const tryPlay = useCallback(
+    (video: HTMLVideoElement) => {
+      video.muted = true;
+      // Give the video up to 1.5s to actually start playing; otherwise treat it as failed.
+      clearPlayTimeout();
+      playTimeoutRef.current = window.setTimeout(() => {
+        if (!videoRef.current || videoRef.current.paused || videoRef.current.readyState < 3) {
+          setVideoFailed(true);
+        }
+      }, 1500);
+      video.play().catch(() => {
+        clearPlayTimeout();
+        setVideoFailed(true);
+      });
+    },
+    [clearPlayTimeout],
+  );
 
   const handleMouseEnter = useCallback(() => {
-    if (isTouchDevice || !videoUrl || !videoRef.current) return;
+    if (isTouchDevice || !videoUrl || videoFailed || !videoRef.current) return;
     setIsHovering(true);
     tryPlay(videoRef.current);
-  }, [isTouchDevice, videoUrl, tryPlay]);
+  }, [isTouchDevice, videoUrl, videoFailed, tryPlay]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false);
+    clearPlayTimeout();
     if (!videoRef.current) return;
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
-  }, []);
+  }, [clearPlayTimeout]);
+
+  useEffect(() => {
+    return () => clearPlayTimeout();
+  }, [clearPlayTimeout]);
 
   // Auto-play on scroll for touch devices
   useEffect(() => {
-    if (!isTouchDevice || !videoUrl || !cardRef.current) return;
+    if (!isTouchDevice || !videoUrl || videoFailed || !cardRef.current) return;
     const el = cardRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -98,9 +142,9 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isTouchDevice, videoUrl, tryPlay]);
+  }, [isTouchDevice, videoUrl, videoFailed, tryPlay]);
 
-  const showVideo = videoUrl && isPlaying && (isHovering || isTouchDevice);
+  const showVideo = !!videoUrl && !videoFailed && isPlaying && (isHovering || isTouchDevice);
 
   const formatPrice = (price: number) => {
     return `${(price / 100).toFixed(0)} PLN`;
@@ -142,7 +186,7 @@ export const ServiceCardOptimized: React.FC<ServiceCardOptimizedProps> = ({
             height={imgHeight}
             decoding="async"
           />
-          {videoUrl && videoMounted && (
+          {videoUrl && videoMounted && !videoFailed && (
             <video
               ref={setVideoRefCb}
               src={videoUrl}
