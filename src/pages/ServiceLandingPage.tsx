@@ -78,14 +78,20 @@ export const ServiceLandingPage: React.FC = () => {
           if (c.image_url) catImgMap.set(c.name, c.image_url);
         });
       }
-      const withImages = servicesRes.data.map((service: Service & { service_images?: { url: string; video_url?: string | null }[] }) => ({
-        ...service,
-        imageUrl:
-          service.service_images?.[0]?.url ||
-          catImgMap.get(service.category) ||
-          getImageForKey(config.imageKey),
-        videoUrl: service.service_images?.[0]?.video_url || null,
-      }));
+      const withImages = servicesRes.data.map((service: Service & { service_images?: { url: string; video_url?: string | null }[] }) => {
+        const firstImg = service.service_images?.[0];
+        // AdminServices stores `url === video_url` when uploading a video — treat that as "no static image".
+        const rawUrl = firstImg?.url;
+        const rawVideo = firstImg?.video_url || null;
+        const hasStaticImage = rawUrl && rawUrl !== rawVideo;
+        return {
+          ...service,
+          imageUrl: hasStaticImage
+            ? rawUrl
+            : catImgMap.get(service.category) || getImageForKey(config.imageKey),
+          videoUrl: rawVideo,
+        };
+      });
       setServices(withImages);
 
       // Load gallery images from service_images for this category

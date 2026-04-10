@@ -33,13 +33,21 @@ export const ServicesPage: React.FC = () => {
       });
     }
 
-    const servicesWithImages = servicesRes.data.map(service => ({
-      ...service,
-      imageUrl: service.service_images?.[0]?.url
-        || catImgMap.get(service.category)
-        || getStaticImageForCategory(service.category),
-      videoUrl: service.service_images?.[0]?.video_url || null,
-    }));
+    const servicesWithImages = servicesRes.data.map(service => {
+      const firstImg = service.service_images?.[0];
+      // AdminServices stores `url === video_url` when uploading a video — treat that as "no static image"
+      // so the card shows a real fallback image instead of a broken <img> pointing at the video file.
+      const rawUrl = firstImg?.url;
+      const rawVideo = firstImg?.video_url || null;
+      const hasStaticImage = rawUrl && rawUrl !== rawVideo;
+      return {
+        ...service,
+        imageUrl: hasStaticImage
+          ? rawUrl
+          : catImgMap.get(service.category) || getStaticImageForCategory(service.category),
+        videoUrl: rawVideo,
+      };
+    });
 
     setServices(servicesWithImages);
   };

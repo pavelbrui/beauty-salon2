@@ -3,8 +3,9 @@ import React, { useEffect, useRef } from 'react';
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const PLACE_ID = 'ChIJzQK31Dv9H0cR0aqPnVAPkDo';
-const LAT = 53.1325;
-const LNG = 23.1688;
+// Fallback coordinates (ul. Młynowa 46, 15-404 Białystok) — used only if Geocoder fails
+const FALLBACK_LAT = 53.13578;
+const FALLBACK_LNG = 23.15688;
 
 let mapsLoaded = false;
 let mapsLoadPromise: Promise<void> | null = null;
@@ -15,7 +16,7 @@ function loadGoogleMaps(): Promise<void> {
 
   mapsLoadPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=marker`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=marker,geocoding`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -29,6 +30,18 @@ function loadGoogleMaps(): Promise<void> {
   return mapsLoadPromise;
 }
 
+async function resolvePlaceCoords(): Promise<{ lat: number; lng: number }> {
+  try {
+    const geocoder = new google.maps.Geocoder();
+    const result = await geocoder.geocode({ placeId: PLACE_ID });
+    const loc = result.results[0]?.geometry?.location;
+    if (loc) return { lat: loc.lat(), lng: loc.lng() };
+  } catch {
+    // fall through to fallback
+  }
+  return { lat: FALLBACK_LAT, lng: FALLBACK_LNG };
+}
+
 export const MapLocation: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [error, setError] = React.useState(false);
@@ -37,18 +50,21 @@ export const MapLocation: React.FC = () => {
     let cancelled = false;
 
     loadGoogleMaps()
-      .then(() => {
+      .then(async () => {
+        if (cancelled || !mapRef.current) return;
+
+        const coords = await resolvePlaceCoords();
         if (cancelled || !mapRef.current) return;
 
         const map = new google.maps.Map(mapRef.current, {
-          center: { lat: LAT, lng: LNG },
-          zoom: 16,
+          center: coords,
+          zoom: 17,
           mapId: 'beauty-salon-map',
         });
 
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map,
-          position: { lat: LAT, lng: LNG },
+          position: coords,
           title: 'Katarzyna Brui - Salon Kosmetyczny',
         });
 
