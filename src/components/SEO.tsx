@@ -90,7 +90,7 @@ export const SEO: React.FC<SEOProps> = ({
       {!noindex && LANGUAGES.map(lang => (
         <link key={lang} rel="alternate" hrefLang={lang} href={getLocalizedUrl(altPaths[lang], lang)} />
       ))}
-      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${BASE_URL}${altPaths.pl}`} />}
+      {!noindex && <link rel="alternate" hrefLang="x-default" href={getLocalizedUrl(altPaths.pl, 'pl')} />}
 
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={fullTitle} />

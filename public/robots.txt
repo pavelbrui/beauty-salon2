@@ -2,6 +2,8 @@ User-agent: *
 Allow: /
 
 Disallow: /admin
+Disallow: /en/admin
+Disallow: /ru/admin
 Disallow: /profile
 Disallow: /en/profile
 Disallow: /ru/profile
