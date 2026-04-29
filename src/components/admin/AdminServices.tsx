@@ -261,27 +261,39 @@ export const AdminServices = () => {
     }
   };
 
-  const handleAutoTranslateName = async (polishName: string) => {
+  const handleAutoTranslateName = async (polishName: string, force = false) => {
     if (!polishName.trim()) return;
-    if (nameEn && nameRu) return;
+    const langsToTranslate = [];
+    if (force || !nameEn) langsToTranslate.push('en');
+    if (force || !nameRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+    
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishName);
-      setNameEn(prev => prev || en);
-      setNameRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishName, langsToTranslate);
+      if (translations.en) setNameEn(translations.en);
+      if (translations.ru) setNameRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
   };
 
-  const handleAutoTranslateDesc = async (polishDesc: string) => {
+  const handleAutoTranslateDesc = async (polishDesc: string, force = false) => {
     if (!polishDesc.trim()) return;
-    if (descEn && descRu) return;
+    const langsToTranslate = [];
+    if (force || !descEn) langsToTranslate.push('en');
+    if (force || !descRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+    
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishDesc);
-      setDescEn(prev => prev || en);
-      setDescRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishDesc, langsToTranslate);
+      if (translations.en) setDescEn(translations.en);
+      if (translations.ru) setDescRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
@@ -640,9 +652,24 @@ export const AdminServices = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nazwa (polski)
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nazwa (polski)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const polishName = (document.querySelector('input[name="name"]') as HTMLInputElement)?.value;
+                      if (polishName) handleAutoTranslateName(polishName, true);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <input
                   type="text"
                   name="name"
@@ -716,9 +743,24 @@ export const AdminServices = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Opis (polski)
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Opis (polski)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const polishDesc = (document.querySelector('textarea[name="description"]') as HTMLTextAreaElement)?.value;
+                      if (polishDesc) handleAutoTranslateDesc(polishDesc, true);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <textarea
                   name="description"
                   defaultValue={editingService?.description}

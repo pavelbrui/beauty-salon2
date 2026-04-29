@@ -41,6 +41,7 @@ type BookingStatus = 'pending' | 'confirmed' | 'cancelled';
 
 interface BookingFormData {
   serviceId: string;
+  customDuration?: string;
   stylistId: string;
   status: BookingStatus;
   startAt: string;
@@ -54,6 +55,7 @@ interface BookingFormData {
 const dateLocales = { pl, en: enUS, ru };
 const emptyBookingForm: BookingFormData = {
   serviceId: '',
+  customDuration: '60',
   stylistId: '',
   status: 'pending',
   startAt: '',
@@ -320,7 +322,7 @@ export const AdminBookings: React.FC = () => {
     if (notes.startsWith('[Booksy]')) {
       return notes.replace(/^\[Booksy\]\s*/, '').trim() || 'Booksy';
     }
-    return '—';
+    return 'Blokada Czasu / Inne';
   };
 
   const isBooksyMirror = (booking: AdminBooking) => (booking.notes || '').startsWith('[Booksy]');
@@ -338,28 +340,46 @@ export const AdminBookings: React.FC = () => {
 
   const getFormSchedule = (formData: BookingFormData | null) => {
     if (!formData || !formData.startAt || !formData.serviceId) return null;
-    const service = serviceMap.get(formData.serviceId);
-    if (!service) return null;
+    let duration = 0;
+    if (formData.serviceId === 'custom') {
+      duration = Number(formData.customDuration) || 60;
+    } else {
+      const service = serviceMap.get(formData.serviceId);
+      if (!service) return null;
+      duration = service.duration;
+    }
 
     const startIso = toIsoFromLocal(formData.startAt);
     if (!startIso) return null;
 
     const startDate = new Date(startIso);
-    const endDate = new Date(startDate.getTime() + service.duration * 60000);
+    const endDate = new Date(startDate.getTime() + duration * 60000);
     return {
       startIso,
       endIso: endDate.toISOString(),
-      duration: service.duration
+      duration
     };
   };
 
   const buildFormFromBooking = (booking: AdminBooking): BookingFormData => {
-    const serviceId = booking.service_id || booking.serviceId || services[0]?.id || '';
+    const isCustom = !booking.service_id && !booking.serviceId && !booking._isBooksy;
+    const serviceId = isCustom ? 'custom' : (booking.service_id || booking.serviceId || services[0]?.id || '');
     const startAt = toDateTimeLocalValue(booking.start_time || booking.time_slots?.start_time);
     const displayPrice = getBookingDisplayPrice(booking);
 
+    let customDuration = '60';
+    if (isCustom) {
+      const startTimeStr = booking.start_time || booking.time_slots?.start_time;
+      const endTimeStr = booking.end_time || booking.time_slots?.end_time;
+      if (startTimeStr && endTimeStr) {
+        const diffMs = new Date(endTimeStr).getTime() - new Date(startTimeStr).getTime();
+        customDuration = String(Math.round(diffMs / 60000));
+      }
+    }
+
     return {
       serviceId,
+      customDuration,
       stylistId: booking.stylist_id || '',
       status: booking.status,
       startAt,
@@ -376,9 +396,28 @@ export const AdminBookings: React.FC = () => {
       throw new Error(ab.missingService || 'Wybierz zabieg.');
     }
 
-    const service = serviceMap.get(formData.serviceId);
-    if (!service) {
-      throw new Error(ab.invalidService || 'Wybrany zabieg nie istnieje.');
+    let service = null;
+    let duration = 0;
+    let priceCents: number | null = null;
+    let isCustom = false;
+
+    if (formData.serviceId === 'custom') {
+      isCustom = true;
+      duration = Number(formData.customDuration);
+      if (!duration || duration <= 0) {
+        throw new Error('Podaj czas trwania blokady w minutach.');
+      }
+      priceCents = formData.pricePln ? parsePricePlnToCents(formData.pricePln) : null;
+    } else {
+      service = serviceMap.get(formData.serviceId);
+      if (!service) {
+        throw new Error(ab.invalidService || 'Wybrany zabieg nie istnieje.');
+      }
+      duration = service.duration;
+      priceCents = parsePricePlnToCents(formData.pricePln);
+      if (priceCents == null) {
+        throw new Error(ab.invalidPrice || 'Podaj poprawną cenę.');
+      }
     }
 
     if (!formData.startAt) {
@@ -391,30 +430,27 @@ export const AdminBookings: React.FC = () => {
     }
 
     const startDate = new Date(startIso);
-    const endDate = new Date(startDate.getTime() + service.duration * 60000);
+    const endDate = new Date(startDate.getTime() + duration * 60000);
     const endIso = endDate.toISOString();
-
-    const priceCents = parsePricePlnToCents(formData.pricePln);
-    if (priceCents == null) {
-      throw new Error(ab.invalidPrice || 'Podaj poprawną cenę.');
-    }
 
     const contactName = formData.contactName.trim();
     const contactPhone = formData.contactPhone.trim();
     const contactEmail = formData.contactEmail.trim();
-    if (!contactName && !contactPhone && !contactEmail) {
+    
+    if (!isCustom && !contactName && !contactPhone && !contactEmail) {
       throw new Error(ab.missingContact || 'Podaj przynajmniej jedno dane kontaktowe.');
     }
 
     return {
       service,
+      isCustom,
       startIso,
       endIso,
       contactName,
       contactPhone,
       contactEmail,
       notes: formData.notes.trim(),
-      priceOverride: priceCents === service.price ? null : priceCents
+      priceOverride: isCustom ? priceCents : (priceCents === service?.price ? null : priceCents)
     };
   };
 
@@ -451,17 +487,13 @@ export const AdminBookings: React.FC = () => {
   };
 
   const openCreate = () => {
-    const firstService = services[0];
-    if (!firstService) return;
-
-    const availableStylists = getStylistsForService(firstService.id);
-
     setCreateForm({
-      serviceId: firstService.id,
-      stylistId: availableStylists[0]?.id || '',
+      serviceId: 'custom',
+      customDuration: '60',
+      stylistId: stylists[0]?.id || '',
       status: 'pending',
       startAt: getNextHourStart(),
-      pricePln: formatPricePlnFromCents(firstService.price),
+      pricePln: '',
       contactName: '',
       contactPhone: '',
       contactEmail: '',
@@ -473,28 +505,30 @@ export const AdminBookings: React.FC = () => {
 
   const handleEditServiceChange = (serviceId: string) => {
     if (!editForm) return;
-    const service = serviceMap.get(serviceId);
-    const availableStylists = getStylistsForService(serviceId);
+    const isCustom = serviceId === 'custom';
+    const service = isCustom ? null : serviceMap.get(serviceId);
+    const availableStylists = isCustom ? stylists : getStylistsForService(serviceId);
     const stylistStillAvailable = availableStylists.some(stylist => stylist.id === editForm.stylistId);
 
     setEditForm({
       ...editForm,
       serviceId,
       stylistId: stylistStillAvailable ? editForm.stylistId : '',
-      pricePln: service ? formatPricePlnFromCents(service.price) : editForm.pricePln
+      pricePln: isCustom ? '' : (service ? formatPricePlnFromCents(service.price) : editForm.pricePln)
     });
   };
 
   const handleCreateServiceChange = (serviceId: string) => {
-    const service = serviceMap.get(serviceId);
-    const availableStylists = getStylistsForService(serviceId);
+    const isCustom = serviceId === 'custom';
+    const service = isCustom ? null : serviceMap.get(serviceId);
+    const availableStylists = isCustom ? stylists : getStylistsForService(serviceId);
     const stylistStillAvailable = availableStylists.some(stylist => stylist.id === createForm.stylistId);
 
     setCreateForm({
       ...createForm,
       serviceId,
       stylistId: stylistStillAvailable ? createForm.stylistId : '',
-      pricePln: service ? formatPricePlnFromCents(service.price) : createForm.pricePln
+      pricePln: isCustom ? '' : (service ? formatPricePlnFromCents(service.price) : createForm.pricePln)
     });
   };
 
@@ -548,7 +582,7 @@ export const AdminBookings: React.FC = () => {
       const { error: bookingError } = await supabase
         .from('bookings')
         .update({
-          service_id: parsed.service.id,
+          service_id: parsed.isCustom ? null : parsed.service?.id,
           stylist_id: editForm.stylistId || null,
           status: editForm.status,
           start_time: parsed.startIso,
@@ -657,7 +691,7 @@ export const AdminBookings: React.FC = () => {
       const { data: newBooking, error: createBookingError } = await supabase
         .from('bookings')
         .insert({
-          service_id: parsed.service.id,
+          service_id: parsed.isCustom ? null : parsed.service?.id,
           user_id: null,
           time_slot_id: newSlot.id,
           stylist_id: createForm.stylistId || null,
@@ -724,8 +758,8 @@ export const AdminBookings: React.FC = () => {
     });
   }, [locale]);
 
-  const editAvailableStylists = editForm?.serviceId ? getStylistsForService(editForm.serviceId) : stylists;
-  const createAvailableStylists = createForm.serviceId ? getStylistsForService(createForm.serviceId) : stylists;
+  const editAvailableStylists = editForm?.serviceId === 'custom' ? stylists : (editForm?.serviceId ? getStylistsForService(editForm.serviceId) : stylists);
+  const createAvailableStylists = createForm.serviceId === 'custom' ? stylists : (createForm.serviceId ? getStylistsForService(createForm.serviceId) : stylists);
   const editSchedule = getFormSchedule(editForm);
   const createSchedule = getFormSchedule(createForm);
   const editStartInfo = editSchedule ? formatDateTime(editSchedule.startIso) : null;
@@ -759,7 +793,6 @@ export const AdminBookings: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={openCreate}
-              disabled={services.length === 0}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50"
             >
               <PlusIcon className="h-4 w-4" />
@@ -1087,6 +1120,7 @@ export const AdminBookings: React.FC = () => {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                     <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
+                    <option value="custom" className="font-semibold text-amber-600">--- Blokada Czasu / Inne ---</option>
                     {services.map(service => (
                       <option key={service.id} value={service.id}>
                         {service.name}
@@ -1094,6 +1128,21 @@ export const AdminBookings: React.FC = () => {
                     ))}
                   </select>
                 </div>
+
+                {editForm.serviceId === 'custom' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Czas trwania (minuty)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editForm.customDuration || ''}
+                      onChange={e => setEditForm({ ...editForm, customDuration: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1314,6 +1363,7 @@ export const AdminBookings: React.FC = () => {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                     <option value="">{ab.chooseService || 'Wybierz zabieg'}</option>
+                    <option value="custom" className="font-semibold text-amber-600">--- Blokada Czasu / Inne ---</option>
                     {services.map(service => (
                       <option key={service.id} value={service.id}>
                         {service.name}
@@ -1321,6 +1371,21 @@ export const AdminBookings: React.FC = () => {
                     ))}
                   </select>
                 </div>
+
+                {createForm.serviceId === 'custom' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Czas trwania (minuty)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={createForm.customDuration || ''}
+                      onChange={e => setCreateForm({ ...createForm, customDuration: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

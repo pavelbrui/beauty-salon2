@@ -131,14 +131,20 @@ export const AdminGallery: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleAutoTranslateDesc = async (polishDesc: string) => {
+  const handleAutoTranslateDesc = async (polishDesc: string, force = false) => {
     if (!polishDesc.trim()) return;
-    if (editDescEn && editDescRu) return;
+    const langsToTranslate = [];
+    if (force || !editDescEn) langsToTranslate.push('en');
+    if (force || !editDescRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishDesc);
-      setEditDescEn(prev => prev || en);
-      setEditDescRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishDesc, langsToTranslate);
+      if (translations.en) setEditDescEn(translations.en);
+      if (translations.ru) setEditDescRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
@@ -292,9 +298,19 @@ export const AdminGallery: React.FC = () => {
             <div className="space-y-4">
               {/* Description - Polish (primary) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Opis (polski)
-                </label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Opis (polski)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => editDesc && handleAutoTranslateDesc(editDesc, true)}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <textarea
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}

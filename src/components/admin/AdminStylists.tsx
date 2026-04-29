@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { translateFromPolish } from '../../utils/translateService';
+import { translateFromPolish, translateArrayFromPolish } from '../../utils/translateService';
 import { uploadPublicImage } from '../../utils/uploadPublicImage';
 import { withTimeout } from '../../utils/withTimeout';
 
@@ -124,37 +124,59 @@ export const AdminStylists: React.FC = () => {
     return editingStylist?.image_url || '';
   };
 
-  const handleAutoTranslateRole = async (polishRole: string) => {
-    if (!polishRole.trim() || (roleEn && roleRu)) return;
+  const handleAutoTranslateRole = async (polishRole: string, force = false) => {
+    if (!polishRole.trim()) return;
+    const langsToTranslate = [];
+    if (force || !roleEn) langsToTranslate.push('en');
+    if (force || !roleRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishRole);
-      setRoleEn(prev => prev || en);
-      setRoleRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishRole, langsToTranslate);
+      if (translations.en) setRoleEn(translations.en);
+      if (translations.ru) setRoleRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
   };
 
-  const handleAutoTranslateSpec = async (polishSpec: string) => {
-    if (!polishSpec.trim() || (specEn && specRu)) return;
+  const handleAutoTranslateSpec = async (polishSpec: string, force = false) => {
+    if (!polishSpec.trim()) return;
+    const langsToTranslate = [];
+    if (force || !specEn) langsToTranslate.push('en');
+    if (force || !specRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishSpec);
-      setSpecEn(prev => prev || en);
-      setSpecRu(prev => prev || ru);
+      const items = polishSpec.split(',');
+      const translations = await translateArrayFromPolish(items, langsToTranslate);
+      if (translations.en) setSpecEn(translations.en.join(', '));
+      if (translations.ru) setSpecRu(translations.ru.join(', '));
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
   };
 
-  const handleAutoTranslateDesc = async (polishDesc: string) => {
-    if (!polishDesc.trim() || (descEn && descRu)) return;
+  const handleAutoTranslateDesc = async (polishDesc: string, force = false) => {
+    if (!polishDesc.trim()) return;
+    const langsToTranslate = [];
+    if (force || !descEn) langsToTranslate.push('en');
+    if (force || !descRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishDesc);
-      setDescEn(prev => prev || en);
-      setDescRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishDesc, langsToTranslate);
+      if (translations.en) setDescEn(translations.en);
+      if (translations.ru) setDescRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
@@ -371,9 +393,24 @@ export const AdminStylists: React.FC = () => {
 
               {/* Role PL */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Stanowisko (polski)
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Stanowisko (polski)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const polishRole = (document.querySelector('input[name="role"]') as HTMLInputElement)?.value;
+                      if (polishRole) handleAutoTranslateRole(polishRole, true);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <input
                   type="text"
                   name="role"
@@ -501,9 +538,24 @@ export const AdminStylists: React.FC = () => {
 
               {/* Specialties PL */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Specjalizacje (polski, oddzielone przecinkami)
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Specjalizacje (polski, oddzielone przecinkami)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const polishSpec = (document.querySelector('input[name="specialties"]') as HTMLInputElement)?.value;
+                      if (polishSpec) handleAutoTranslateSpec(polishSpec, true);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <input
                   type="text"
                   name="specialties"
@@ -542,9 +594,24 @@ export const AdminStylists: React.FC = () => {
 
               {/* Description PL */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Opis (polski)
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Opis (polski)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const polishDesc = (document.querySelector('textarea[name="description"]') as HTMLTextAreaElement)?.value;
+                      if (polishDesc) handleAutoTranslateDesc(polishDesc, true);
+                    }}
+                    className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Przetłumacz
+                  </button>
+                </div>
                 <textarea
                   name="description"
                   defaultValue={editingStylist?.description}

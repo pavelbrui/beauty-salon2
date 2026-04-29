@@ -224,27 +224,39 @@ export const AdminBlog: React.FC = () => {
     setCropperImage(null);
   };
 
-  const handleAutoTranslateTitle = async (polishTitle: string) => {
+  const handleAutoTranslateTitle = async (polishTitle: string, force = false) => {
     if (!polishTitle.trim()) return;
-    if (titleEn && titleRu) return;
+    const langsToTranslate = [];
+    if (force || !titleEn) langsToTranslate.push('en');
+    if (force || !titleRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishTitle);
-      setTitleEn(prev => prev || en);
-      setTitleRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishTitle, langsToTranslate);
+      if (translations.en) setTitleEn(translations.en);
+      if (translations.ru) setTitleRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
   };
 
-  const handleAutoTranslateExcerpt = async (polishExcerpt: string) => {
+  const handleAutoTranslateExcerpt = async (polishExcerpt: string, force = false) => {
     if (!polishExcerpt.trim()) return;
-    if (excerptEn && excerptRu) return;
+    const langsToTranslate = [];
+    if (force || !excerptEn) langsToTranslate.push('en');
+    if (force || !excerptRu) langsToTranslate.push('ru');
+    if (langsToTranslate.length === 0) return;
+
     setTranslatingCount(c => c + 1);
     try {
-      const { en, ru } = await translateFromPolish(polishExcerpt);
-      setExcerptEn(prev => prev || en);
-      setExcerptRu(prev => prev || ru);
+      const translations = await translateFromPolish(polishExcerpt, langsToTranslate);
+      if (translations.en) setExcerptEn(translations.en);
+      if (translations.ru) setExcerptRu(translations.ru);
+    } catch (error) {
+      if (error instanceof Error) alert(error.message);
     } finally {
       setTranslatingCount(c => c - 1);
     }
@@ -424,10 +436,22 @@ export const AdminBlog: React.FC = () => {
 
         {/* Title */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tytuł ({metaLang.toUpperCase()})
-            {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
-          </label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-gray-700">
+              Tytuł ({metaLang.toUpperCase()})
+              {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+            </label>
+            {metaLang === 'pl' && (
+              <button
+                type="button"
+                onClick={() => title && handleAutoTranslateTitle(title, true)}
+                className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Przetłumacz
+              </button>
+            )}
+          </div>
           {metaLang === 'pl' ? (
             <input value={title} onChange={e => { setTitle(e.target.value); if (!editingPost) setSlug(generateSlug(e.target.value)); }} onBlur={e => handleAutoTranslateTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Tytuł artykułu" />
           ) : metaLang === 'en' ? (
@@ -439,10 +463,22 @@ export const AdminBlog: React.FC = () => {
 
         {/* Excerpt */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Opis SEO ({metaLang.toUpperCase()})
-            {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
-          </label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-gray-700">
+              Opis SEO ({metaLang.toUpperCase()})
+              {translatingCount > 0 && metaLang !== 'pl' && <span className="ml-2 text-xs text-amber-500 animate-pulse">tłumaczenie...</span>}
+            </label>
+            {metaLang === 'pl' && (
+              <button
+                type="button"
+                onClick={() => excerpt && handleAutoTranslateExcerpt(excerpt, true)}
+                className="text-xs text-amber-600 hover:text-amber-800 flex items-center gap-1"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Przetłumacz
+              </button>
+            )}
+          </div>
           {metaLang === 'pl' ? (
             <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} onBlur={e => handleAutoTranslateExcerpt(e.target.value)} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="Krótki opis do meta description (150-200 znaków)" />
           ) : metaLang === 'en' ? (
