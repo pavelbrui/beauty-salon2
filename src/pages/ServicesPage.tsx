@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
@@ -195,6 +195,7 @@ export const ServicesPage: React.FC = () => {
   const [, setIsLoading] = useState(true);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const location = useLocation();
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useLocalizedNavigate();
@@ -205,6 +206,20 @@ export const ServicesPage: React.FC = () => {
   useEffect(() => {
     loadServices();
   }, []);
+
+  useEffect(() => {
+    const targetId = location.hash ? location.hash.replace('#', '') : 'services';
+    // Ensure we don't "inherit" scroll position from previous page (common UX issue in SPAs)
+    // and land at the beginning of the services content.
+    requestAnimationFrame(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      }
+    });
+  }, [location.pathname, location.hash, categorySlug]);
 
   useEffect(() => {
     if (category) {
@@ -385,7 +400,7 @@ export const ServicesPage: React.FC = () => {
         }))}
       />
       <BreadcrumbSchema items={breadcrumbItems} />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <div id="services" className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 scroll-mt-24">
         <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{(t as any).services_seo?.h1 || t.services}</h1>
         
         <div className="flex flex-wrap gap-2 justify-center mb-10">

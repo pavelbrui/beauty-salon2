@@ -293,7 +293,7 @@ export const Home: React.FC = () => {
                 videoUrl={cat.videoUrl}
                 servicesCountLabel={t.servicesCount}
                 ctaLabel={`${t.viewCategoryServices}: ${getCategoryName(cat.name, language, (t as any).categories)}`}
-                onClick={() => navigate(`/services/${getCategorySlug(cat.name)}`)}
+                onClick={() => navigate(`/services/${getCategorySlug(cat.name)}#services`)}
                 imgLoading={idx < 3 ? 'eager' : 'lazy'}
                 customAlt={`${getCategoryName(cat.name, language, (t as any).categories)} – zabiegi kosmetyczne w Białymstoku`}
               />
