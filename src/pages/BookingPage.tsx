@@ -15,6 +15,8 @@ import { saveProfile } from '../lib/profile';
 import { useLanguage } from '../hooks/useLanguage';
 import { getServiceName } from '../utils/serviceTranslation';
 
+import { ServiceSkeleton, Skeleton } from '../components/Skeleton';
+
 export const BookingPage: React.FC = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const navigate = useLocalizedNavigate();
@@ -250,9 +252,13 @@ export const BookingPage: React.FC = () => {
 
   if (!service && !error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-      </div>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mt-20 mb-6">
+          <Skeleton className="h-8 w-64 mb-6" />
+          <ServiceSkeleton />
+        </div>
+        <Skeleton className="h-[500px] w-full rounded-2xl" />
+      </main>
     );
   }
 

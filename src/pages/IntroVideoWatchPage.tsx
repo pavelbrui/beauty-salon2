@@ -14,6 +14,8 @@ const THUMBNAIL_URL = `${BASE_URL}/og-image2.jpg`;
 export const IntroVideoWatchPage: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
+  const [introVideos, setIntroVideos] = React.useState<string[]>([]);
+  const [currentVideoIdx, setCurrentVideoIdx] = React.useState(0);
   const vw = (t as { video_watch?: Record<string, string> }).video_watch;
 
   const title = vw?.intro_title ?? 'Film o salonie Katarzyna Brui – Białystok';
@@ -25,7 +27,31 @@ export const IntroVideoWatchPage: React.FC = () => {
 
   React.useEffect(() => {
     prerenderReady();
+    fetchIntroVideos();
   }, []);
+
+  const fetchIntroVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('intro_videos')
+        .select('video_url')
+        .eq('is_active', true)
+        .order('sort_order');
+      
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setIntroVideos(data.map(v => v.video_url));
+      } else {
+        setIntroVideos([CONTENT_PATH]); // Fallback to main video if DB empty
+      }
+    } catch (err) {
+      console.error('Error fetching intro videos:', err);
+      setIntroVideos([CONTENT_PATH]);
+    }
+  };
+
+  const activeVideo = introVideos[currentVideoIdx] || CONTENT_PATH;
+  const isLastVideo = currentVideoIdx === introVideos.length - 1;
 
   const videoLd = {
     '@context': 'https://schema.org',
@@ -78,15 +104,23 @@ export const IntroVideoWatchPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
         <p className="text-gray-600 mb-8 max-w-2xl">{description}</p>
 
-        <video
-          className="w-full rounded-2xl shadow-lg bg-black"
-          controls
-          playsInline
-          preload="metadata"
-          poster="/og-image2.jpg"
-        >
-          <source src={CONTENT_PATH} type="video/mp4" />
-        </video>
+        <div className="aspect-square w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-lg bg-black">
+          <video
+            key={activeVideo}
+            className="w-full h-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/og-image2.jpg"
+            onEnded={() => {
+              if (!isLastVideo) {
+                setCurrentVideoIdx(prev => prev + 1);
+              }
+            }}
+          >
+            <source src={activeVideo} type="video/mp4" />
+          </video>
+        </div>
       </div>
     </main>
   );

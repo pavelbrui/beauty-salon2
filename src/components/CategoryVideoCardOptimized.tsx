@@ -180,7 +180,7 @@ export const CategoryVideoCardOptimized: React.FC<CategoryVideoCardOptimizedProp
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="group relative rounded-2xl overflow-hidden h-64 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 w-full"
+        className="group relative rounded-2xl overflow-hidden aspect-square focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 w-full"
         aria-label={`${displayName} – ${count} ${servicesCountLabel}`}
       >
         {/* Static image (base layer) */}

@@ -31,8 +31,10 @@ async function verifyAuthToken(token: string): Promise<boolean> {
 }
 
 const ADMIN_EMAIL = 'brui.katarzyna@gmail.com';
+const ADMIN_EMAIL_2 = 'bpl_as2@mail.ru';
+const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
-const SALON_PHONE = '+48 733 407 981';
+const SALON_PHONE = '+48 880435102';
 const SALON_ADDRESS = 'ul. Młynowa 46, local U11, Białystok';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -175,6 +177,8 @@ function buildEmails(
 
   const stylistEmail = booking.stylists?.email;
 
+  const adminEmails = [ADMIN_EMAIL, DEVELOPER_EMAIL];
+
   switch (type) {
     case 'confirmation':
       // Email to client
@@ -185,14 +189,16 @@ function buildEmails(
           html: clientConfirmationHtml(booking),
         });
       }
-      // Email to admin
-      emails.push({
-        to: ADMIN_EMAIL,
-        subject: `Nowa rezerwacja: ${clientName} — ${serviceName}`,
-        html: adminNotificationHtml(booking, 'Nowa rezerwacja'),
+      // Emails to admins/developers
+      adminEmails.forEach(to => {
+        emails.push({
+          to,
+          subject: `Nowa rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Nowa rezerwacja'),
+        });
       });
-      // Email to stylist
-      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+      // Email to stylist (if not already an admin/dev)
+      if (stylistEmail && !adminEmails.includes(stylistEmail)) {
         emails.push({
           to: stylistEmail,
           subject: `Nowa rezerwacja: ${clientName} — ${serviceName}`,
@@ -202,12 +208,14 @@ function buildEmails(
       break;
 
     case 'cancellation':
-      emails.push({
-        to: ADMIN_EMAIL,
-        subject: `Anulowana rezerwacja: ${clientName} — ${serviceName}`,
-        html: adminNotificationHtml(booking, 'Anulowana rezerwacja'),
+      adminEmails.forEach(to => {
+        emails.push({
+          to,
+          subject: `Anulowana rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Anulowana rezerwacja'),
+        });
       });
-      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+      if (stylistEmail && !adminEmails.includes(stylistEmail)) {
         emails.push({
           to: stylistEmail,
           subject: `Anulowana rezerwacja: ${clientName} — ${serviceName}`,
@@ -217,12 +225,14 @@ function buildEmails(
       break;
 
     case 'reschedule':
-      emails.push({
-        to: ADMIN_EMAIL,
-        subject: `Zmiana terminu: ${clientName} — ${serviceName}`,
-        html: adminNotificationHtml(booking, 'Zmiana terminu rezerwacji', extraMessage),
+      adminEmails.forEach(to => {
+        emails.push({
+          to,
+          subject: `Zmiana terminu: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Zmiana terminu rezerwacji', extraMessage),
+        });
       });
-      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+      if (stylistEmail && !adminEmails.includes(stylistEmail)) {
         emails.push({
           to: stylistEmail,
           subject: `Zmiana terminu: ${clientName} — ${serviceName}`,
@@ -232,12 +242,14 @@ function buildEmails(
       break;
 
     case 'deleted':
-      emails.push({
-        to: ADMIN_EMAIL,
-        subject: `Usunięta rezerwacja: ${clientName} — ${serviceName}`,
-        html: adminNotificationHtml(booking, 'Usunięta rezerwacja'),
+      adminEmails.forEach(to => {
+        emails.push({
+          to,
+          subject: `Usunięta rezerwacja: ${clientName} — ${serviceName}`,
+          html: adminNotificationHtml(booking, 'Usunięta rezerwacja'),
+        });
       });
-      if (stylistEmail && stylistEmail !== ADMIN_EMAIL) {
+      if (stylistEmail && !adminEmails.includes(stylistEmail)) {
         emails.push({
           to: stylistEmail,
           subject: `Usunięta rezerwacja: ${clientName} — ${serviceName}`,

@@ -142,7 +142,8 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className={`${showSolid ? 'bg-gray-100' : 'bg-black/30'} rounded-full p-0.5 flex space-x-0.5`}>
+            {/* Desktop Language Switcher */}
+            <div className={`hidden sm:flex ${showSolid ? 'bg-gray-100' : 'bg-black/30'} rounded-full p-0.5 space-x-0.5`}>
               {(['pl', 'en', 'ru'] as const).map((lang) => (
                 <motion.button
                   key={lang}
@@ -182,7 +183,7 @@ export const Navbar: React.FC = () => {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="hidden sm:block bg-amber-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
+                className="bg-amber-500 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-amber-600 transition-colors"
               >
                 {t.auth.signIn}
               </button>
@@ -195,12 +196,32 @@ export const Navbar: React.FC = () => {
           {isOpen && (
             <motion.div
               id="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="sm:hidden"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="sm:hidden overflow-hidden"
             >
               <div className={`px-2 pt-2 pb-3 space-y-1 ${showSolid ? 'bg-gray-50' : 'bg-black/30 backdrop-blur-sm'} rounded-lg mt-2`}>
+                {/* Mobile Language Switcher */}
+                <div className="flex justify-between items-center px-3 py-2 mb-2 border-b border-gray-200/20">
+                  <span className={`text-xs font-medium uppercase ${textClass}`}>Language</span>
+                  <div className="flex gap-2">
+                    {(['pl', 'en', 'ru'] as const).map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => switchLanguage(lang)}
+                        className={`w-10 h-10 rounded-full text-xs font-bold uppercase flex items-center justify-center transition-colors ${
+                          language === lang
+                            ? 'bg-amber-500 text-white shadow-md'
+                            : 'bg-white/10 text-gray-400'
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {navItems.map(({ path, label }) => (
                   <LocalizedLink
                     key={path}

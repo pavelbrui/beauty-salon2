@@ -10,12 +10,13 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { LocalBusinessSchema, BreadcrumbSchema } from '../components/schema';
-import { FaFacebook, FaInstagram } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaChevronUp } from 'react-icons/fa';
 import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getCategorySlug } from '../utils/categorySlugMap';
 import { CategoryVideoCardOptimized } from '../components/CategoryVideoCardOptimized';
 import { prerenderReady } from '../utils/prerenderReady';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CategoryInfo {
   name: string;
@@ -28,6 +29,7 @@ export const Home: React.FC = () => {
   const [categories, setCategories] = React.useState<CategoryInfo[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = React.useState(false);
   // Lazy-mount intro <video> client-side only so it is NOT in the prerendered HTML.
   // This keeps Google Video Indexer from flagging Home as a non-watch page hosting the intro video.
   // The dedicated watch page lives at /video/salon-intro (IntroVideoWatchPage).
@@ -35,14 +37,44 @@ export const Home: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useLocalizedNavigate();
+  const [introVideos, setIntroVideos] = React.useState<string[]>([]);
+  const [currentVideoIdx, setCurrentVideoIdx] = React.useState(0);
 
   React.useEffect(() => {
     loadCategories();
+    const handleScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   React.useEffect(() => {
     setVideoMounted(true);
+    fetchIntroVideos();
   }, []);
+
+  const fetchIntroVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('intro_videos')
+        .select('video_url')
+        .eq('is_active', true)
+        .order('sort_order');
+      
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setIntroVideos(data.map(v => v.video_url));
+      } else {
+        // Fallback to static files if DB is empty
+        setIntroVideos(['/intro-video2.mp4', '/intro-video.mp4']);
+      }
+    } catch (err) {
+      console.error('Error fetching intro videos:', err);
+      setIntroVideos(['/intro-video2.mp4', '/intro-video.mp4']);
+    }
+  };
+
+  const activeVideo = introVideos[currentVideoIdx] || '/intro-video2.mp4';
+  const isLastVideo = currentVideoIdx === introVideos.length - 1;
 
   const loadCategories = async () => {
     try {
@@ -202,14 +234,24 @@ export const Home: React.FC = () => {
         </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
         <div className="absolute inset-0 flex flex-col justify-center items-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 text-center">
-            {t.welcomeTitle}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 text-center leading-tight">
+            <span className="block sm:inline">{t.welcomeTitle.split('|')[0].trim()}</span>
+            {t.welcomeTitle.includes('|') && (
+              <span className="block text-2xl sm:text-3xl md:text-4xl font-light mt-2 sm:mt-0 opacity-90 sm:ml-4">
+                | {t.welcomeTitle.split('|')[1].trim()}
+              </span>
+            )}
           </h1>
-          <p className="mt-6 text-lg sm:text-xl md:text-2xl text-white/90 max-w-xl text-center">
+          <p className="mt-6 text-lg sm:text-xl md:text-2xl text-white/90 max-w-2xl text-center font-light">
             {t.welcomeSubtitle}
           </p>
           <div className="mt-12 flex flex-col items-center gap-4">
-            <div className="flex items-center space-x-4 justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center space-x-4 justify-center"
+            >
               <button
                 onClick={() => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })}
                 className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg hover:bg-white/100 transition-all cursor-pointer text-left"
@@ -223,11 +265,11 @@ export const Home: React.FC = () => {
               </button>
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform"
+                className="bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-[length:200%_auto] animate-shimmer text-white px-6 sm:px-8 py-3 rounded-lg font-medium hover:scale-105 transition-transform whitespace-nowrap"
               >
                 {t.bookNow}
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </header>
@@ -236,7 +278,13 @@ export const Home: React.FC = () => {
       {error && <ErrorMessage message={error} />}
 
       {/* About Section */}
-      <section className="py-20 bg-white">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+        className="py-20 bg-white"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 text-center lg:text-left">
@@ -245,19 +293,25 @@ export const Home: React.FC = () => {
                 {t.aboutText}
               </p>
             </div>
-            <div className="flex-1 w-full max-w-md">
-              <div className="rounded-2xl overflow-hidden shadow-lg aspect-video bg-gray-100">
+            <div className="flex-1 w-full max-w-md mx-auto">
+              <div className="rounded-2xl overflow-hidden shadow-lg aspect-square bg-gray-100">
                 {videoMounted ? (
                   <video
+                    key={activeVideo}
                     className="w-full h-full object-cover"
                     autoPlay
                     muted
-                    loop
+                    loop={isLastVideo}
                     playsInline
                     poster="/og-image2.jpg"
                     preload="metadata"
+                    onEnded={() => {
+                      if (!isLastVideo) {
+                        setCurrentVideoIdx(prev => prev + 1);
+                      }
+                    }}
                   >
-                    <source src="/intro-video.mp4" type="video/mp4" />
+                    <source src={activeVideo} type="video/mp4" />
                   </video>
                 ) : (
                   <img
@@ -272,7 +326,7 @@ export const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {!loading && !error && <main className="max-w-7xl mx-auto py-16 sm:px-6 lg:px-8">
         <div id="services" className="px-4 sm:px-0 scroll-mt-20">
@@ -302,7 +356,12 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Training callout */}
-        <section className="py-20 bg-amber-50">
+        <motion.section
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="py-20 bg-amber-50 rounded-3xl"
+        >
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               {t.training_page?.header || t.training}
@@ -317,7 +376,7 @@ export const Home: React.FC = () => {
               {t.training}
             </button>
           </div>
-        </section>
+        </motion.section>
 
         {/* Blog teaser */}
         <BlogTeaser />
@@ -383,9 +442,22 @@ export const Home: React.FC = () => {
             </div>
           </div>
           <MapLocation />
-        </div>
       </main>}
 
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-8 right-8 z-50 p-4 bg-amber-500 text-white rounded-full shadow-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            aria-label="Scroll to top"
+          >
+            <FaChevronUp className="w-6 h-6" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
