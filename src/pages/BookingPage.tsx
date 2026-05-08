@@ -26,6 +26,7 @@ export const BookingPage: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successBookingId, setSuccessBookingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isSubmittingRef = useRef(false);
 
@@ -229,6 +230,7 @@ export const BookingPage: React.FC = () => {
       }
 
       setShowBookingForm(false);
+      setSuccessBookingId(createdBookingId);
       setShowSuccessPopup(true);
     } catch (error) {
       if (createdTimeSlotId && !createdBookingId) {
@@ -319,8 +321,10 @@ export const BookingPage: React.FC = () => {
         <SuccessPopup
           service={service}
           timeSlot={selectedSlot}
+          bookingId={successBookingId}
           onClose={() => {
             setShowSuccessPopup(false);
+            setSuccessBookingId(null);
             navigate('/profile');
           }}
         />

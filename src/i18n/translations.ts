@@ -110,7 +110,15 @@ export const translations = {
       cancel: 'Anuluj',
       confirm: 'Potwierdź rezerwację',
       success: {
-        title: 'Rezerwacja potwierdzona!',
+        // Legacy key kept for backward compatibility.
+        title: 'Rezerwacja przyjęta',
+        confirmedTitle: 'Rezerwacja potwierdzona!',
+        confirmedBody: 'Twoja rezerwacja została potwierdzona i dodana do kalendarza.',
+        pendingTitle: 'Rezerwacja przyjęta',
+        pendingBodyChecking: 'Sprawdzamy potwierdzenie w kalendarzu. To może potrwać kilka sekund.',
+        pendingBody: 'Twoja rezerwacja oczekuje na potwierdzenie. Jeśli wystąpił konflikt terminu w Booksy, może wymagać ręcznej interwencji — status zobaczysz w „Moje rezerwacje”.',
+        cancelledTitle: 'Rezerwacja anulowana',
+        cancelledBody: 'Ta rezerwacja została anulowana. Jeśli to pomyłka, wybierz inny termin i spróbuj ponownie.',
         close: 'Zamknij'
       }
     },
@@ -500,7 +508,15 @@ export const translations = {
       cancel: 'Cancel',
       confirm: 'Confirm Booking',
       success: {
-        title: 'Booking Confirmed!',
+        // Legacy key kept for backward compatibility.
+        title: 'Booking received',
+        confirmedTitle: 'Booking confirmed!',
+        confirmedBody: 'Your booking has been confirmed and added to the calendar.',
+        pendingTitle: 'Booking received',
+        pendingBodyChecking: 'We are checking the confirmation in the calendar. This may take a few seconds.',
+        pendingBody: 'Your booking is waiting for confirmation. If there is a conflict in Booksy, it may require manual action — you can always check the status in “My bookings”.',
+        cancelledTitle: 'Booking cancelled',
+        cancelledBody: 'This booking has been cancelled. If this is a mistake, please choose another slot and try again.',
         close: 'Close'
       }
     },
@@ -890,7 +906,15 @@ export const translations = {
       cancel: 'Отмена',
       confirm: 'Подтвердить бронирование',
       success: {
-        title: 'Бронирование подтверждено!',
+        // Legacy key kept for backward compatibility.
+        title: 'Запись принята',
+        confirmedTitle: 'Запись подтверждена!',
+        confirmedBody: 'Ваша запись подтверждена и добавлена в календарь.',
+        pendingTitle: 'Запись принята',
+        pendingBodyChecking: 'Проверяем подтверждение в календаре. Это может занять несколько секунд.',
+        pendingBody: 'Ваша запись ожидает подтверждения. Если возник конфликт времени в Booksy, может потребоваться ручное вмешательство — статус всегда можно проверить в “Мои записи”.',
+        cancelledTitle: 'Запись отменена',
+        cancelledBody: 'Эта запись была отменена. Если это ошибка, выберите другое время и попробуйте снова.',
         close: 'Закрыть'
       }
     },

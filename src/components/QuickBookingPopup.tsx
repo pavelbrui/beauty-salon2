@@ -50,6 +50,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const isSubmittingRef = useRef(false);
+  const [successBookingId, setSuccessBookingId] = useState<string | null>(null);
 
   // Load all services
   useEffect(() => {
@@ -267,6 +268,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         console.error('Quick booking created, but profile save failed:', profileError);
       }
 
+      setSuccessBookingId(createdBookingId);
       setStep('success');
     } catch (err) {
       if (createdTimeSlotId && !createdBookingId) {
@@ -306,6 +308,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
       <SuccessPopup
         service={selectedService}
         timeSlot={selectedSlot}
+        bookingId={successBookingId}
         onClose={() => {
           onBooked();
           onClose();
