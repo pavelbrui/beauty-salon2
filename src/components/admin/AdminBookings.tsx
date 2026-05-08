@@ -55,7 +55,7 @@ interface BookingFormData {
 const dateLocales = { pl, en: enUS, ru };
 const emptyBookingForm: BookingFormData = {
   serviceId: '',
-  customDuration: '60',
+  customDuration: '',
   stylistId: '',
   status: 'pending',
   startAt: '',
