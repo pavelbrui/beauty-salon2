@@ -59,7 +59,7 @@ export const Home: React.FC = () => {
         .select('video_url')
         .eq('is_active', true)
         .order('sort_order');
-      
+
       if (error) throw error;
       if (data && data.length > 0) {
         setIntroVideos(data.map(v => v.video_url));
@@ -273,7 +273,7 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </header>
-      
+
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
 
@@ -336,7 +336,7 @@ export const Home: React.FC = () => {
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
             {t.categoriesDescription}
           </p>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((cat, idx) => (
               <CategoryVideoCardOptimized
@@ -442,6 +442,7 @@ export const Home: React.FC = () => {
             </div>
           </div>
           <MapLocation />
+        </div>
       </main>}
 
       <AnimatePresence>
