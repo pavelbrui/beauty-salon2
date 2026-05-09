@@ -1,22 +1,25 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../hooks/useLanguage';
 import { translations } from '../i18n/translations';
 import { serviceImages } from '../assets/images';
-import { Reviews } from '../components/Reviews';
-import { MapLocation } from '../components/MapLocation';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { SEO } from '../components/SEO';
 import { LocalBusinessSchema, BreadcrumbSchema } from '../components/schema';
 import { FaFacebook, FaInstagram, FaChevronUp } from 'react-icons/fa';
-import { BlogTeaser } from '../components/BlogTeaser';
 import { getCategoryName } from '../utils/serviceTranslation';
 import { getCategorySlug } from '../utils/categorySlugMap';
 import { CategoryVideoCardOptimized } from '../components/CategoryVideoCardOptimized';
 import { prerenderReady } from '../utils/prerenderReady';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Skeleton } from '../components/Skeleton';
+
+// Lazy load heavy/non-critical components
+const BlogTeaser = lazy(() => import('../components/BlogTeaser').then(m => ({ default: m.BlogTeaser })));
+const Reviews = lazy(() => import('../components/Reviews').then(m => ({ default: m.Reviews })));
+const MapLocation = lazy(() => import('../components/MapLocation').then(m => ({ default: m.MapLocation })));
 
 interface CategoryInfo {
   name: string;
@@ -30,10 +33,11 @@ export const Home: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = React.useState(false);
-  // Lazy-mount intro <video> client-side only so it is NOT in the prerendered HTML.
-  // This keeps Google Video Indexer from flagging Home as a non-watch page hosting the intro video.
-  // The dedicated watch page lives at /video/salon-intro (IntroVideoWatchPage).
+  
+  // videoMounted is true only when the video section is near the viewport
   const [videoMounted, setVideoMounted] = React.useState(false);
+  const videoSectionRef = React.useRef<HTMLDivElement>(null);
+  
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useLocalizedNavigate();
@@ -43,13 +47,27 @@ export const Home: React.FC = () => {
   React.useEffect(() => {
     loadCategories();
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Use Intersection Observer to load video only when needed
   React.useEffect(() => {
-    setVideoMounted(true);
-    fetchIntroVideos();
+    if (!videoSectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVideoMounted(true);
+          fetchIntroVideos();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' } // Load a bit before it comes into view
+    );
+
+    observer.observe(videoSectionRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const fetchIntroVideos = async () => {
@@ -64,7 +82,6 @@ export const Home: React.FC = () => {
       if (data && data.length > 0) {
         setIntroVideos(data.map(v => v.video_url));
       } else {
-        // Fallback to static files if DB is empty
         setIntroVideos(['/intro-video2.mp4', '/intro-video.mp4']);
       }
     } catch (err) {
@@ -86,9 +103,7 @@ export const Home: React.FC = () => {
         supabase.from('service_categories').select('name, sort_order, image_url, video_url').order('sort_order'),
       ]);
 
-      if (servicesRes.error) {
-        throw servicesRes.error;
-      }
+      if (servicesRes.error) throw servicesRes.error;
 
       const categoryMap = new Map<string, number>();
       servicesRes.data.forEach((s: { category: string }) => {
@@ -122,28 +137,22 @@ export const Home: React.FC = () => {
       console.error('Error loading services:', err);
     } finally {
       setLoading(false);
-      // Delay to let sub-components (BlogTeaser, Reviews) mount and fetch their data
-      setTimeout(prerenderReady, 1000);
+      // Faster prerender signal for better Performance score.
+      // Heavy components are lazy-loaded, so we don't wait for them in the initial paint.
+      setTimeout(prerenderReady, 100);
     }
   };
 
   const getStaticImageForCategory = (category: string) => {
     switch (category.toLowerCase()) {
-      case 'pielęgnacja brwi':
-        return serviceImages.browCare;
-      case 'makijaż permanentny':
-        return serviceImages.permanentMakeup;
+      case 'pielęgnacja brwi': return serviceImages.browCare;
+      case 'makijaż permanentny': return serviceImages.permanentMakeup;
       case 'rzęsy':
-      case 'stylizacja rzęs':
-        return serviceImages.lashes;
-      case 'laserowe usuwanie':
-        return serviceImages.tattooRemoval;
-      case 'manicure':
-        return serviceImages.manicure;
-      case 'peeling węglowy':
-        return serviceImages.carbonPeeling;
-      default:
-        return serviceImages.browCare;
+      case 'stylizacja rzęs': return serviceImages.lashes;
+      case 'laserowe usuwanie': return serviceImages.tattooRemoval;
+      case 'manicure': return serviceImages.manicure;
+      case 'peeling węglowy': return serviceImages.carbonPeeling;
+      default: return serviceImages.browCare;
     }
   };
 
@@ -153,79 +162,16 @@ export const Home: React.FC = () => {
         title={(t as any).home_seo?.title || 'Salon Kosmetyczny Białystok'}
         description={(t as any).home_seo?.description || 'Salon kosmetyczny Katarzyna Brui w Białymstoku. Makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, peeling węglowy, manicure. Rezerwacja online.'}
         canonical="/"
-        keywords={language === 'en' ? [
-          'beauty salon Białystok',
-          'permanent makeup Białystok',
-          'beautician Białystok',
-          'lash extensions Białystok',
-          'gel manicure Białystok',
-          'brow lamination Białystok',
-          'lash lift Białystok',
-          'carbon peeling Białystok',
-          'microblading Białystok',
-          'tattoo removal Białystok',
-          'beauty treatments Białystok',
-          'best beauty salon Białystok',
-          'Katarzyna Brui',
-        ] : language === 'ru' ? [
-          'салон красоты Белосток',
-          'перманентный макияж Белосток',
-          'косметолог Белосток',
-          'наращивание ресниц Белосток',
-          'гель-маникюр Белосток',
-          'ламинирование бровей Белосток',
-          'лифтинг ресниц Белосток',
-          'карбоновый пилинг Белосток',
-          'микроблейдинг Белосток',
-          'удаление тату Белосток',
-          'косметические процедуры Белосток',
-          'лучший салон красоты Белосток',
-          'Катажина Бруи',
-        ] : [
-          'salon kosmetyczny Białystok',
-          'makijaż permanentny Białystok',
-          'permanentny brwi Białystok',
-          'permanentny ust Białystok',
-          'brwi pudrowe Białystok',
-          'usuwanie tatuażu Białystok',
-          'laserowe usuwanie tatuażu Białystok',
-          'usuwanie makijażu permanentnego Białystok',
-          'laminacja brwi Białystok',
-          'laminacja rzęs Białystok',
-          'lifting rzęs Białystok',
-          'henna pudrowa Białystok',
-          'stylizacja brwi Białystok',
-          'przedłużanie rzęs Białystok',
-          'manicure Białystok',
-          'pedicure Białystok',
-          'paznokcie hybrydowe Białystok',
-          'manicure żelowy Białystok',
-          'peeling węglowy Białystok',
-          'carbon peeling Białystok',
-          'Katarzyna Brui',
-          'najlepszy salon kosmetyczny Białystok opinie',
-          'makijaż permanentny brwi cena Białystok',
-          'korekta makijażu permanentnego Białystok',
-          'paznokcie Białystok centrum',
-          'manicure męski Białystok',
-          'peeling węglowy efekty opinie',
-          'henna brwi Białystok',
-        ]}
       />
       <LocalBusinessSchema />
       <BreadcrumbSchema items={[{ name: language === 'en' ? 'Home' : language === 'ru' ? 'Главная' : 'Strona główna', url: '/' }]} />
-      <header className="relative h-screen">
-        {/* Hero image — <picture> for responsive loading + Google Image indexing */}
+      
+      <header className="relative h-screen overflow-hidden">
         <picture>
-          <source
-            media="(max-width: 768px)"
-            srcSet="/og-image-mobile.jpg"
-            width={640}
-            height={1168}
-          />
+          <source media="(max-width: 768px)" srcSet="/og-image-mobile.jpg" width={640} height={1168} />
           <img
             src="/og-image2.jpg"
-            alt="Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure hybrydowy, pedicure, peeling węglowy, usuwanie tatuażu laserowo"
+            alt="Salon kosmetyczny Katarzyna Brui Białystok"
             className="absolute inset-0 w-full h-full object-cover"
             fetchPriority="high"
             width={1200}
@@ -249,7 +195,7 @@ export const Home: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
               className="flex items-center space-x-4 justify-center"
             >
               <button
@@ -281,9 +227,10 @@ export const Home: React.FC = () => {
       <motion.section
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
         className="py-20 bg-white"
+        ref={videoSectionRef}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -357,10 +304,10 @@ export const Home: React.FC = () => {
 
         {/* Training callout */}
         <motion.section
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="py-20 bg-amber-50 rounded-3xl"
+          className="py-20 mt-16 bg-amber-50 rounded-3xl"
         >
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -378,12 +325,16 @@ export const Home: React.FC = () => {
           </div>
         </motion.section>
 
-        {/* Blog teaser */}
-        <BlogTeaser />
+        {/* Blog teaser - Lazy loaded */}
+        <Suspense fallback={<div className="py-20 h-96 flex items-center justify-center"><Skeleton className="w-full h-full max-w-6xl" /></div>}>
+          <BlogTeaser />
+        </Suspense>
 
-        {/* Reviews Section */}
+        {/* Reviews Section - Lazy loaded */}
         <div id="reviews" className="scroll-mt-20">
-          <Reviews />
+          <Suspense fallback={<div className="py-20 h-96"><Skeleton className="w-full h-full" /></div>}>
+            <Reviews />
+          </Suspense>
         </div>
 
         <div className="mt-24 bg-gradient-to-br from-amber-50 to-white shadow-lg rounded-xl p-12">
@@ -421,27 +372,28 @@ export const Home: React.FC = () => {
                   href="https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Facebook – Katarzyna Brui Permanent"
+                  aria-label="Facebook"
                   className="text-amber-600 hover:text-amber-700 transition-colors"
                 >
                   <FaFacebook size={28} />
-                  <span className="sr-only">Facebook</span>
                 </a>
                 <a
                   href="https://www.instagram.com/katarzyna.brui_"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Instagram – @katarzyna.brui_"
+                  aria-label="Instagram"
                   className="text-amber-600 hover:text-amber-700 transition-colors"
                 >
                   <FaInstagram size={28} />
-                  <span className="sr-only">Instagram</span>
                 </a>
               </div>
               <p className="text-gray-600">{t.contact.socialMedia.followUs}</p>
             </div>
           </div>
-          <MapLocation />
+          
+          <Suspense fallback={<div className="h-[350px] bg-gray-100 animate-pulse rounded-lg" />}>
+            <MapLocation />
+          </Suspense>
         </div>
       </main>}
 
