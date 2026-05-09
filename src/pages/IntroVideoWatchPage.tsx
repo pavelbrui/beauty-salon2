@@ -6,6 +6,7 @@ import { localizedPath } from '../hooks/useLocalizedPath';
 import { translations } from '../i18n/translations';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { prerenderReady } from '../utils/prerenderReady';
+import { supabase } from '../lib/supabase';
 
 const CONTENT_PATH = '/intro-video.mp4';
 const CONTENT_URL = `${BASE_URL}${CONTENT_PATH}`;
@@ -40,7 +41,7 @@ export const IntroVideoWatchPage: React.FC = () => {
       
       if (error) throw error;
       if (data && data.length > 0) {
-        setIntroVideos(data.map(v => v.video_url));
+        setIntroVideos(data.map((v: { video_url: string }) => v.video_url));
       } else {
         setIntroVideos([CONTENT_PATH]); // Fallback to main video if DB empty
       }

@@ -8,7 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { generateAvailableTimeSlots } from '../../utils/timeSlots';
 import { BookingRestrictions, DEFAULT_RESTRICTIONS, isSlotBookable } from '../../utils/bookingRestrictions';
 import { useLanguage } from '../../hooks/useLanguage';
-import { translations } from '../../i18n/translations';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const dateLocales = { pl, en: enUS, ru };
 
@@ -24,7 +24,6 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   onSlotSelect
 }) => {
   const { language } = useLanguage();
-  const t = translations[language];
   const locale = dateLocales[language as keyof typeof dateLocales] || pl;
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
@@ -291,19 +290,30 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         maxDate={addMonths(new Date(), 3)}
       />
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          {selectedDate ? format(selectedDate, 'EEEE, d MMMM', { locale }) : t.booking.selectDate}
-        </h3>
+      <AnimatePresence mode="wait">
+        {selectedDate && (
+          <motion.div
+            key={selectedDate.toISOString()}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-lg shadow p-6"
+          >
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              {format(selectedDate, 'EEEE, d MMMM', { locale })}
+            </h3>
 
-        <TimeGrid
-          timeSlots={timeSlots}
-          selectedSlot={selectedSlot}
-          onSlotSelect={handleSlotSelect}
-          serviceDuration={service.duration}
-          isLoading={isLoading}
-        />
-      </div>
+            <TimeGrid
+              timeSlots={timeSlots}
+              selectedSlot={selectedSlot}
+              onSlotSelect={handleSlotSelect}
+              serviceDuration={service.duration}
+              isLoading={isLoading}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

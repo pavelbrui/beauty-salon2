@@ -17,6 +17,7 @@ import { getBlogCategoriesForServiceCategory } from '../data/contentRelationship
 import { BlogPost } from '../types';
 import { getLocalizedField } from '../utils/blockRenderer';
 import { LocalizedLink } from '../components/LocalizedLink';
+import { motion } from 'framer-motion';
 
 interface CategorySEO {
   title: string;
@@ -403,30 +404,42 @@ export const ServicesPage: React.FC = () => {
       <div id="services" className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 scroll-mt-24">
         <h1 className="text-4xl font-bold text-gray-900 mb-6 text-center">{(t as any).services_seo?.h1 || t.services}</h1>
         
-        <div className="flex flex-wrap gap-2 justify-center mb-10">
-          <button
-            onClick={() => navigate('/services')}
-            className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-              !category
-                ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
-            }`}
+        <div className="relative mb-12 group">
+          <div 
+            className="flex overflow-x-auto pb-4 gap-3 no-scrollbar scroll-smooth snap-x"
+            style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
           >
-            {t.all}
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200 ${
-                category === cat
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/services')}
+              className={`flex-none px-6 py-2.5 text-sm font-semibold rounded-full border transition-all duration-300 snap-start ${
+                !category
+                  ? 'bg-amber-500 text-white border-amber-500 shadow-md ring-2 ring-amber-500/20'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600 shadow-sm'
               }`}
             >
-              {getCategoryName(cat, language, (t as any).categories)}
-            </button>
-          ))}
+              {t.all}
+            </motion.button>
+            {categories.map(cat => (
+              <motion.button
+                key={cat}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleCategoryClick(cat)}
+                className={`flex-none px-6 py-2.5 text-sm font-semibold rounded-full border transition-all duration-300 snap-start ${
+                  category === cat
+                    ? 'bg-amber-500 text-white border-amber-500 shadow-md ring-2 ring-amber-500/20'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-amber-300 hover:text-amber-600 shadow-sm'
+                }`}
+              >
+                {getCategoryName(cat, language, (t as any).categories)}
+              </motion.button>
+            ))}
+          </div>
+          {/* Subtle gradient indicators for scroll */}
+          <div className="absolute left-0 top-0 bottom-4 w-12 bg-gradient-to-r from-neutral-50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-neutral-50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
         {/* Category intro text for SEO */}
