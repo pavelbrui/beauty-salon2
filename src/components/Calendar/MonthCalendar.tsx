@@ -37,7 +37,7 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
   // Calculate offset to align first day of month with correct weekday column (Monday = 0)
   const startWeekDay = getDay(monthStart); // 0 (Sun) - 6 (Sat)
   const startOffset = (startWeekDay + 6) % 7; // Convert to Monday-start index
-  const leadingEmptyDays = Array(startOffset).fill(null);
+
 
   const goToPreviousMonth = () => {
     const prevMonth = subMonths(currentMonth, 1);

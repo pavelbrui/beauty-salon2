@@ -49,8 +49,8 @@ export function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slideUp">
-      <div className="max-w-xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-amber-100 p-5">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-slideUp pointer-events-none">
+      <div className="max-w-xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-amber-100 p-5 pointer-events-auto">
         <div className="flex items-start gap-3">
           <span className="text-2xl mt-0.5 shrink-0">🍪</span>
           <div className="flex-1 min-w-0">
