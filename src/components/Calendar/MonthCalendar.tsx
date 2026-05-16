@@ -1,5 +1,5 @@
 import React from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isValid } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isValid, getDay } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
@@ -34,6 +34,10 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
     : [];
 
   const weekDays = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Ndz'];
+  // Calculate offset to align first day of month with correct weekday column (Monday = 0)
+  const startWeekDay = getDay(monthStart); // 0 (Sun) - 6 (Sat)
+  const startOffset = (startWeekDay + 6) % 7; // Convert to Monday-start index
+  const leadingEmptyDays = Array(startOffset).fill(null);
 
   const goToPreviousMonth = () => {
     const prevMonth = subMonths(currentMonth, 1);
@@ -97,7 +101,13 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
       </div>
 
       <div className="grid grid-cols-7 gap-1">
-        {monthDays.map(day => {
+        {[
+          ...Array(startOffset).fill(null),
+          ...monthDays,
+        ].map((day, idx) => {
+          if (!day) {
+            return <div key={`empty-${idx}`} className="p-2"></div>;
+          }
           const isSelected = isSameDay(day, selectedDate);
           const isHighlighted = highlightedDates.some(d => isSameDay(d, day));
           const isSelectable = isDateSelectable(day);
