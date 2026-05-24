@@ -212,7 +212,20 @@ const supabaseFetch = async (path) => {
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) return null;
 
-  const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+  // Ensure the URL is valid – prepend protocol if missing and catch malformed URLs
+  let endpoint;
+  try {
+    // If supabaseUrl lacks protocol, URL constructor will throw; prepend https://
+    const normalizedUrl = supabaseUrl.startsWith('http') ? supabaseUrl : `https://${supabaseUrl}`;
+    endpoint = `${normalizedUrl.replace(/\/*$/, '')}/rest/v1/${path}`;
+    // Validate URL format
+    new URL(endpoint);
+  } catch (e) {
+    console.warn(`[sitemap] Invalid Supabase URL: ${supabaseUrl}`);
+    return null;
+  }
+
+  const response = await fetch(endpoint, {
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,

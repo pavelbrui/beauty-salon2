@@ -34,6 +34,18 @@ export const supabase = createClient(
 
 export const isSupabaseConfigured = hasSupabaseConfig;
 
+// Clean up email logs older than specified days (default 10)
+export const cleanOldEmailLogs = async (days: number = 10) => {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const iso = cutoff.toISOString();
+  const { error } = await supabase
+    .from('booksy_email_log')
+    .delete()
+    .lt('received_at', iso);
+  return { error };
+};
+
 // Helper function to handle Supabase errors (sanitized — never leak DB details to client)
 export const handleSupabaseError = (error: any) => {
   if (import.meta.env.DEV) {

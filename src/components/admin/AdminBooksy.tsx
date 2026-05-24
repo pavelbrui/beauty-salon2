@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, cleanOldEmailLogs } from '../../lib/supabase';
 import { BooksyBooking, BooksyStylistMapping, BooksySyncLog, BooksySession, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
 import { translations } from '../../i18n/translations';
@@ -30,6 +30,10 @@ export const AdminBooksy: React.FC = () => {
   const [stylists, setStylists] = useState<Stylist[]>([]);
   const [bookings, setBookings] = useState<BooksyBooking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [emailPage, setEmailPage] = useState(1);
+  const [emailPageSize] = useState(20);
+  const [bookingPage, setBookingPage] = useState(1);
+  const [bookingPageSize] = useState(20);
 
   // Email log state
   interface EmailLogEntry {
@@ -76,6 +80,13 @@ export const AdminBooksy: React.FC = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const clearOldLogs = async () => {
+    setLoading(true);
+    const { error } = await cleanOldEmailLogs(10);
+    if (error) console.error('Cleanup error:', error);
+    await loadData();
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -289,6 +300,9 @@ export const AdminBooksy: React.FC = () => {
     return true;
   });
 
+  const pagedBookings = filteredBookings.slice((bookingPage - 1) * bookingPageSize, bookingPage * bookingPageSize);
+  const pagedEmailLogs = emailLogs.slice((emailPage - 1) * emailPageSize, emailPage * emailPageSize);
+
   const unmappedCount = mappings.filter((m) => !m.stylist_id).length;
 
   const getStatusBadge = (status: string) => {
@@ -458,7 +472,9 @@ export const AdminBooksy: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {emailLogs.map((log) => (
+                  {/* pagedEmailLogs defined earlier */}
+                
+                {pagedEmailLogs.map((log) => (
                     <React.Fragment key={log.id}>
                       <tr
                         className={
@@ -543,6 +559,37 @@ export const AdminBooksy: React.FC = () => {
             </div>
           )
         )}
+        {/* Pagination controls for Email Log */}
+        <div className="flex justify-between items-center mt-4">
+          <span className="text-sm text-gray-600">
+            {emailPage} / {Math.ceil(emailLogs.length / emailPageSize)}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setEmailPage(p => Math.max(p - 1, 1))}
+              disabled={emailPage === 1}
+              className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              {ab.prev || 'Prev'}
+            </button>
+            <button
+              onClick={() => setEmailPage(p => p + 1)}
+              disabled={emailPage >= Math.ceil(emailLogs.length / emailPageSize)}
+              className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              {ab.next || 'Next'}
+            </button>
+          </div>
+        </div>
+        {/* Clear old logs button */}
+        <div className="mt-4">
+          <button
+            onClick={clearOldLogs}
+            className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded hover:bg-amber-600"
+          >
+            {ab.clearOldLogs || 'Clear logs >10 days'}
+          </button>
+        </div>
       </div>
 
       {/* Stylist Mapping Section */}
@@ -760,7 +807,7 @@ export const AdminBooksy: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredBookings.map((booking) => (
+                {pagedBookings.map((booking) => (
                   <tr
                     key={booking.id}
                     className={
@@ -820,7 +867,29 @@ export const AdminBooksy: React.FC = () => {
               </tbody>
             </table>
           </div>
-        )}
+        )
+        {/* Pagination controls for Bookings */}
+        <div className="flex justify-between items-center mt-4">
+          <span className="text-sm text-gray-600">
+            {bookingPage} / {Math.ceil(filteredBookings.length / bookingPageSize)}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setBookingPage(p => Math.max(p - 1, 1))}
+              disabled={bookingPage === 1}
+              className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              {ab.prev || 'Prev'}
+            </button>
+            <button
+              onClick={() => setBookingPage(p => p + 1)}
+              disabled={bookingPage >= Math.ceil(filteredBookings.length / bookingPageSize)}
+              className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
+            >
+              {ab.next || 'Next'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* ====== Booksy API Session ====== */}
