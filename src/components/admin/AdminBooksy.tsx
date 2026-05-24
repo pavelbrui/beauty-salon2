@@ -867,7 +867,8 @@ export const AdminBooksy: React.FC = () => {
               </tbody>
             </table>
           </div>
-        )
+        )}
+
         {/* Pagination controls for Bookings */}
         <div className="flex justify-between items-center mt-4">
           <span className="text-sm text-gray-600">
