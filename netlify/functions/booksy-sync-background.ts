@@ -422,81 +422,156 @@ async function performSync(payload: SyncPayload): Promise<void> {
       } else {
         await updateSyncLog(bookingId, 'failed', {
           errorMessage: 'Booksy API nie zwróciło ID rezerwacji przy update.',
-  await updateSyncLog(bookingId, 'processing');
-
-  // Load session
-  const session = await loadSession();
-  if (!session) {
-    await updateSyncLog(bookingId, 'failed', {
-      errorMessage: 'Brak aktywnej sesji Booksy. Wklej access token w panelu admina.',
-    });
-    return;
-  }
-
-  // Look up Booksy resource ID for the stylist
-  const resourceId = await getBooksynResourceId(stylistName);
-  if (!resourceId) {
-    await updateSyncLog(bookingId, 'failed', {
-      errorMessage: `Brak mapowania Booksy resource ID dla stylistki "${stylistName || 'N/A'}". Ustaw ID w panelu admina → Booksy → Mapowanie.`,
-    });
-    return;
-  }
-
-  console.log(`[SYNC] Booksy resource ID: ${resourceId}`);
-
-  try {
-    if (action === 'create_block') {
-      const result = await createReservation(session, startTime, endTime, resourceId);
-      if (result) {
-        // Save the Booksy reservation ID on the booking + set status confirmed
-        await supabase
-          .from('bookings')
-          .update({ booksy_reservation_id: result.id, status: 'confirmed' })
-          .eq('id', bookingId);
-
-        await updateSyncLog(bookingId, 'success', { booksyReservationId: result.id });
-      } else {
-        await updateSyncLog(bookingId, 'failed', {
-          errorMessage: 'Booksy API nie zwróciło ID rezerwacji.',
         });
       }
-    } else if (action === 'remove_block') {
-      // Get the stored Booksy reservation ID from the booking
-      const { data: booking } = await supabase
-        .from('bookings')
-        .select('booksy_reservation_id')
-        .eq('id', bookingId)
-        .single();
+    }
 
-      if (!booking?.booksy_reservation_id) {
-        console.log('[SYNC] No booksy_reservation_id found — nothing to delete');
-        await updateSyncLog(bookingId, 'success');
-        return;
-      }
+    // Touch session last_used_at
+    await touchSession();
 
-      await deleteReservation(session, booking.booksy_reservation_id);
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[SYNC] Error during ${action}:`, errorMsg);
 
-      // Clear the reservation ID
+    if (err instanceof BooksyConflictError) {
+      // 409 conflict — time slot taken on Booksy. CRITICAL: keep booking pending, notify admin, developer and client
+      console.log(`[SYNC] 409 Conflict — resetting booking ${bookingId} to pending, notifying stakeholders`);
+
       await supabase
         .from('bookings')
-        .update({ booksy_reservation_id: null })
+        .update({ status: 'pending' })
         .eq('id', bookingId);
 
-      await updateSyncLog(bookingId, 'success');
-    } else if (action === 'update_block') {
-      // Delete old reservation + create new one
-      const { data: booking } = await supabase
+      await updateSyncLog(bookingId, 'pending', { errorMessage: errorMsg });
+
+      // Load booking details for the alert email
+      const { data: bk } = await supabase
         .from('bookings')
-        .select('booksy_reservation_id')
+        .select('contact_name, contact_phone, contact_email, start_time, end_time, notes, stylists ( name ), services ( name )')
         .eq('id', bookingId)
         .single();
 
-      // Delete old if exists
-      if (booking?.booksy_reservation_id) {
-        await deleteReservation(session, booking.booksy_reservation_id);
-      }
+      const clientName = bk?.contact_name || '—';
+      const clientPhone = bk?.contact_phone || '—';
+      const clientEmail = bk?.contact_email;
+      const serviceName = bk?.services?.name || '—';
+      const stylistNameDisplay = bk?.stylists?.name || stylistName || '—';
+      const dateStr = startTime ? new Date(startTime).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' }) : '—';
 
-      // Create new
+      const alertHtml = `
+        <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:16px;">
+          <h2 style="color:#dc2626;">KRYTYCZNE: Konflikt terminu w Booksy (409)</h2>
+          <p style="color:#374151;">Rezerwacja ze strony <strong>NIe została dodana</strong> do kalendarza Booksy, bo ten termin jest już zajęty.</p>
+          <p style="color:#dc2626;font-weight:600;">Rezerwacja została ustawiona na status PENDING — wymaga ręcznej interwencji!</p>
+          <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+            <tr><td style="padding:6px 0;color:#666;width:110px;">Klient:</td><td>${clientName}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Telefon:</td><td>${clientPhone}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Usługa:</td><td>${serviceName}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Termin:</td><td>${dateStr}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Stylistka:</td><td>${stylistNameDisplay}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Booking ID:</td><td style="font-family:monospace;font-size:12px;">${bookingId}</td></tr>
+            <tr><td style="padding:6px 0;color:#666;">Błąd:</td><td style="color:#dc2626;">${errorMsg}</td></tr>
+          </table>
+          <p><a href="https://katarzynabrui.pl/admin" style="color:#f59e0b;font-weight:600;">Otwórz panel admina</a></p>
+        </div>`;
+
+      // Notify admin
+      await sendAlertEmail(
+        ADMIN_EMAIL,
+        `KRYTYCZNE: Konflikt Booksy — ${clientName}, ${dateStr}`,
+        alertHtml,
+      );
+      // Notify developer
+      await sendAlertEmail(
+        DEVELOPER_EMAIL,
+        `KRYTYCZNE: Konflikt Booksy — ${clientName}, ${dateStr}`,
+        alertHtml,
+      );
+      // --- Client failure email helper ---
+function clientFailureHtml(b: any, message: string): string {
+  const dateStr = b.start_time ? new Date(b.start_time).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' }) : '—';
+  const serviceName = b.services?.name || 'Usługa';
+  const stylistName = b.stylists?.name || '—';
+  return `
+    <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:16px;">
+      <h2 style="color:#dc2626;">${message}</h2>
+      <p>Twoja rezerwacja nie została potwierdzona. Prosimy o kontakt telefoniczny w celu weryfikacji.</p>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+        <tr><td style="padding:6px 0;color:#666;width:110px;">Usługa:</td><td>${serviceName}</td></tr>
+        <tr><td style="padding:6px 0;color:#666;">Termin:</td><td>${dateStr}</td></tr>
+        <tr><td style="padding:6px 0;color:#666;">Stylistka:</td><td>${stylistName}</td></tr>
+      </table>
+    </div>`;
+}
+
+// Notify client
+      if (clientEmail) {
+        const clientHtml = clientFailureHtml(bk as any, 'Konflikt terminu w Booksy – rezerwacja nie została potwierdzona.');
+        await sendAlertEmail(
+          clientEmail,
+          'Rezerwacja nie została potwierdzona',
+          clientHtml,
+        );
+      }
+    } else if (errorMsg.includes('Sesja Booksy wygasła')) {
+      // Token expired / invalid – treat as critical error
+      await supabase
+        .from('bookings')
+        .update({ status: 'pending' })
+        .eq('id', bookingId);
+
+      await updateSyncLog(bookingId, 'failed', { errorMessage: errorMsg });
+
+      // Load booking details
+      const { data: bk } = await supabase
+        .from('bookings')
+        .select('contact_name, contact_phone, contact_email, start_time, end_time, notes, stylists ( name ), services ( name )')
+        .eq('id', bookingId)
+        .single();
+
+      const clientName = bk?.contact_name || '—';
+      const clientEmail = bk?.contact_email;
+
+      const adminHtml = `
+        <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:16px;">
+          <h2 style="color:#dc2626;">KRYTYCZNE: Sesja Booksy wygasła</h2>
+          <p style="color:#374151;">Token autoryzacji do Booksy jest nieaktywny lub wygasł. Konieczna jest aktualizacja tokenu w panelu administratora.</p>
+        </div>`;
+
+      // Notify admin
+      await sendAlertEmail(ADMIN_EMAIL, 'KRYTYCZNE: Sesja Booksy wygasła', adminHtml);
+      // Notify developer
+      await sendAlertEmail(DEVELOPER_EMAIL, 'KRYTYCZNE: Sesja Booksy wygasła', adminHtml);
+      // Notify client
+      if (clientEmail) {
+        const clientHtml = clientFailureHtml(bk as any, 'Sesja autoryzacji Booksy wygasła – rezerwacja nie została potwierdzona.');
+        await sendAlertEmail(clientEmail, 'Rezerwacja nie została potwierdzona', clientHtml);
+      }
+    } else {
+      // Any other error (not 409) — notify developer
+      await updateSyncLog(bookingId, 'failed', { errorMessage: errorMsg });
+
+      const devHtml = `
+        <div style="font-family:monospace;max-width:600px;margin:0 auto;padding:16px;">
+          <h2 style="color:#dc2626;">Booksy Sync Error</h2>
+          <p><strong>Action:</strong> ${action}</p>
+          <p><strong>Booking ID:</strong> ${bookingId}</p>
+          <p><strong>Time:</strong> ${startTime} — ${endTime}</p>
+          <p><strong>Stylist:</strong> ${stylistName || 'N/A'}</p>
+          <p><strong>Error:</strong></p>
+          <pre style="background:#f3f4f6;padding:12px;border-radius:6px;overflow-x:auto;">${errorMsg}</pre>
+          <p><a href="https://katarzynabrui.pl/admin" style="color:#f59e0b;">Admin panel</a></p>
+        </div>`;
+
+      await sendAlertEmail(
+        DEVELOPER_EMAIL,
+        `Booksy Sync Error: ${action} — booking ${bookingId.substring(0, 8)}`,
+        devHtml,
+      );
+    }
+  }
+}
+
 // --- Handler ---
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== 'POST') {
@@ -544,3 +619,5 @@ const handler: Handler = async (event: HandlerEvent) => {
 
   return { statusCode: 200, body: JSON.stringify({ ok: true }) };
 };
+
+
