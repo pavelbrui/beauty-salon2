@@ -673,7 +673,7 @@ function clientFailureHtml(b: any, message: string): string {
 }
 
 // --- Handler ---
-const handler: Handler = async (event: HandlerEvent) => {
+export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
@@ -720,4 +720,4 @@ const handler: Handler = async (event: HandlerEvent) => {
   return { statusCode: 200, body: JSON.stringify({ ok: true }) };
 };
 
-export { handler };
+
