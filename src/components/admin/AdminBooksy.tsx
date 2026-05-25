@@ -880,14 +880,14 @@ export const AdminBooksy: React.FC = () => {
               disabled={bookingPage === 1}
               className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
             >
-              {ab.prev || 'Prev'}
+              Prev
             </button>
             <button
               onClick={() => setBookingPage(p => p + 1)}
               disabled={bookingPage >= Math.ceil(filteredBookings.length / bookingPageSize)}
               className="px-3 py-1 text-sm bg-gray-200 rounded disabled:opacity-50"
             >
-              {ab.next || 'Next'}
+              Next
             </button>
           </div>
         </div>
