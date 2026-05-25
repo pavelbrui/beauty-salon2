@@ -1,0 +1,321 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Salon Kosmetyczny Katarzyna Brui – makijaż permanentny Białystok" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "Salon Kosmetyczny Katarzyna Brui – makijaż permanentny Białystok" [ref=e8]
+        - generic [ref=e9]:
+          - link "Zabiegi" [ref=e10] [cursor=pointer]:
+            - /url: /services
+          - link "Rezerwacje" [ref=e11] [cursor=pointer]:
+            - /url: /appointments
+          - link "Styliści" [ref=e12] [cursor=pointer]:
+            - /url: /stylists
+          - link "Szkolenia" [ref=e13] [cursor=pointer]:
+            - /url: /training
+          - link "Blog" [ref=e14] [cursor=pointer]:
+            - /url: /blog
+          - link "Galeria" [ref=e15] [cursor=pointer]:
+            - /url: /gallery
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - button "Polski" [ref=e18] [cursor=pointer]: pl
+          - button "English" [ref=e19] [cursor=pointer]: en
+          - button "Русский" [ref=e20] [cursor=pointer]: ru
+        - button "Zaloguj się" [ref=e21] [cursor=pointer]
+  - generic [ref=e22]:
+    - banner [ref=e23]:
+      - img "Salon kosmetyczny Katarzyna Brui Białystok – makijaż permanentny brwi i ust, stylizacja rzęs, laminacja brwi, manicure hybrydowy, pedicure, peeling węglowy, usuwanie tatuażu laserowo" [ref=e24]
+      - generic [ref=e26]:
+        - heading "KATARZYNA BRUI Salon urody | Białystok" [level=1] [ref=e27]
+        - paragraph [ref=e28]: Makijaż permanentny, stylizacja rzęs, stylizacja brwi, manicure, pedicure, peeling węglowy, laserowe usuwanie
+        - generic [ref=e30]:
+          - button "5.0/ 5.0 384 opinii" [ref=e31] [cursor=pointer]:
+            - text: 5.0/ 5.0
+            - generic [ref=e32]: 384 opinii
+          - button "Zarezerwuj wizytę" [ref=e33] [cursor=pointer]
+    - generic [ref=e37]:
+      - heading "Salon urody w Białymstoku" [level=2] [ref=e38]
+      - paragraph [ref=e39]: Salon urody Katarzyna Brui w Białymstoku oferuje makijaż permanentny brwi i ust, stylizację rzęs, stylizację brwi, manicure, pedicure, peeling węglowy oraz laserowe usuwanie tatuażu. Wykorzystujemy najnowocześniejsze technologie i produkty najwyższej jakości. Bezpłatna konsultacja — umów wizytę online lub zadzwoń.
+    - main [ref=e43]:
+      - generic [ref=e44]:
+        - heading "Nasze Zabiegi" [level=2] [ref=e45]
+        - paragraph [ref=e46]: Wybierz kategorię i poznaj naszą pełną ofertę zabiegów
+        - generic [ref=e47]:
+          - article [ref=e48]:
+            - button "Stylizacja rzęs – 4 zabiegów" [ref=e49] [cursor=pointer]:
+              - img "Stylizacja rzęs – zabiegi kosmetyczne w Białymstoku" [ref=e50]
+              - 'generic "Wideo: Stylizacja rzęs" [ref=e51]'
+              - generic [ref=e53]:
+                - heading "Stylizacja rzęs" [level=3] [ref=e54]
+                - paragraph [ref=e55]: 4 zabiegów
+                - generic [ref=e56]:
+                  - text: "Zobacz zabiegi: Stylizacja rzęs"
+                  - img [ref=e57]
+          - article [ref=e59]:
+            - button "Manicure i pedicure – 4 zabiegów" [ref=e60] [cursor=pointer]:
+              - img "Manicure i pedicure – zabiegi kosmetyczne w Białymstoku" [ref=e61]
+              - 'generic "Wideo: Manicure i pedicure" [ref=e62]'
+              - generic [ref=e64]:
+                - heading "Manicure i pedicure" [level=3] [ref=e65]
+                - paragraph [ref=e66]: 4 zabiegów
+                - generic [ref=e67]:
+                  - text: "Zobacz zabiegi: Manicure i pedicure"
+                  - img [ref=e68]
+          - article [ref=e70]:
+            - button "Makijaż permanentny – 7 zabiegów" [ref=e71] [cursor=pointer]:
+              - img "Makijaż permanentny – zabiegi kosmetyczne w Białymstoku" [ref=e72]
+              - 'generic "Wideo: Makijaż permanentny" [ref=e73]'
+              - generic [ref=e75]:
+                - heading "Makijaż permanentny" [level=3] [ref=e76]
+                - paragraph [ref=e77]: 7 zabiegów
+                - generic [ref=e78]:
+                  - text: "Zobacz zabiegi: Makijaż permanentny"
+                  - img [ref=e79]
+          - article [ref=e81]:
+            - button "Stylizacja brwi – 3 zabiegów" [ref=e82] [cursor=pointer]:
+              - img "Stylizacja brwi – zabiegi kosmetyczne w Białymstoku" [ref=e83]
+              - generic [ref=e85]:
+                - heading "Stylizacja brwi" [level=3] [ref=e86]
+                - paragraph [ref=e87]: 3 zabiegów
+                - generic [ref=e88]:
+                  - text: "Zobacz zabiegi: Stylizacja brwi"
+                  - img [ref=e89]
+          - article [ref=e91]:
+            - button "Peeling węglowy – 1 zabiegów" [ref=e92] [cursor=pointer]:
+              - img "Peeling węglowy – zabiegi kosmetyczne w Białymstoku" [ref=e93]
+              - 'generic "Wideo: Peeling węglowy" [ref=e94]'
+              - generic [ref=e96]:
+                - heading "Peeling węglowy" [level=3] [ref=e97]
+                - paragraph [ref=e98]: 1 zabiegów
+                - generic [ref=e99]:
+                  - text: "Zobacz zabiegi: Peeling węglowy"
+                  - img [ref=e100]
+          - article [ref=e102]:
+            - button "Laserowe usuwanie – 3 zabiegów" [ref=e103] [cursor=pointer]:
+              - img "Laserowe usuwanie – zabiegi kosmetyczne w Białymstoku" [ref=e104]
+              - 'generic "Wideo: Laserowe usuwanie" [ref=e105]'
+              - generic [ref=e107]:
+                - heading "Laserowe usuwanie" [level=3] [ref=e108]
+                - paragraph [ref=e109]: 3 zabiegów
+                - generic [ref=e110]:
+                  - text: "Zobacz zabiegi: Laserowe usuwanie"
+                  - img [ref=e111]
+          - article [ref=e113]:
+            - button "Pakiety – 1 zabiegów" [ref=e114] [cursor=pointer]:
+              - img "Pakiety – zabiegi kosmetyczne w Białymstoku" [ref=e115]
+              - 'generic "Wideo: Pakiety" [ref=e116]'
+              - generic [ref=e118]:
+                - heading "Pakiety" [level=3] [ref=e119]
+                - paragraph [ref=e120]: 1 zabiegów
+                - generic [ref=e121]:
+                  - text: "Zobacz zabiegi: Pakiety"
+                  - img [ref=e122]
+      - generic [ref=e125]:
+        - heading "Szkolenia makijażu permanentnego" [level=2] [ref=e126]
+        - paragraph [ref=e127]: Oferujemy kompleksowe kursy dla początkujących i zaawansowanych, prowadzone przez doświadczoną stylistkę.
+        - button "Szkolenia" [ref=e128] [cursor=pointer]
+      - generic [ref=e130]:
+        - heading "Najnowsze z naszego bloga" [level=2] [ref=e131]
+        - generic [ref=e132]:
+          - 'link "Permanentna kreska w Białymstoku: Kompleksowy poradnik od wyboru metody po proces gojenia (2026) blog Permanentna kreska w Białymstoku: Kompleksowy poradnik od wyboru metody po proces gojenia (2026) Planujesz permanentną kreskę w Białymstoku? Odkryj, jak wybrać metodę, przygotować się do zabiegu i przejść przez gojenie. Kompleksowy poradnik 2026. 12 kwi 2026 Czytaj więcej →" [ref=e133] [cursor=pointer]':
+            - /url: /blog/permanentna-kreska-w-bialymstoku-kompleksowy-poradnik-od-wyboru-metody-po-proces-gojenia-2026
+            - generic [ref=e134]:
+              - 'img "Permanentna kreska w Białymstoku: Kompleksowy poradnik od wyboru metody po proces gojenia (2026)" [ref=e135]'
+              - generic [ref=e136]: blog
+            - generic [ref=e137]:
+              - 'heading "Permanentna kreska w Białymstoku: Kompleksowy poradnik od wyboru metody po proces gojenia (2026)" [level=3] [ref=e138]'
+              - paragraph [ref=e139]: Planujesz permanentną kreskę w Białymstoku? Odkryj, jak wybrać metodę, przygotować się do zabiegu i przejść przez gojenie. Kompleksowy poradnik 2026.
+              - generic [ref=e140]:
+                - generic [ref=e141]: 12 kwi 2026
+                - generic [ref=e142]: Czytaj więcej →
+          - 'link "Manicure w Białymstoku: Profesjonalny przewodnik po pielęgnacji dłoni (2026) blog Manicure w Białymstoku: Profesjonalny przewodnik po pielęgnacji dłoni (2026) Szukasz idealnego manicure w Białymstoku? Odkryj profesjonalny przewodnik na 2026 rok. Poznaj bezpieczne techniki i zadbaj o swoje dłonie. Sprawdź! 11 kwi 2026 Czytaj więcej →" [ref=e143] [cursor=pointer]':
+            - /url: /blog/manicure-w-bialymstoku-profesjonalny-przewodnik-po-pielegnacji-dloni-2026
+            - generic [ref=e144]:
+              - 'img "Manicure w Białymstoku: Profesjonalny przewodnik po pielęgnacji dłoni (2026)" [ref=e145]'
+              - generic [ref=e146]: blog
+            - generic [ref=e147]:
+              - 'heading "Manicure w Białymstoku: Profesjonalny przewodnik po pielęgnacji dłoni (2026)" [level=3] [ref=e148]'
+              - paragraph [ref=e149]: Szukasz idealnego manicure w Białymstoku? Odkryj profesjonalny przewodnik na 2026 rok. Poznaj bezpieczne techniki i zadbaj o swoje dłonie. Sprawdź!
+              - generic [ref=e150]:
+                - generic [ref=e151]: 11 kwi 2026
+                - generic [ref=e152]: Czytaj więcej →
+          - 'link "Usuwanie tatuażu w Białymstoku: Kompleksowy przewodnik po bezpiecznym zabiegu (2026) blog Usuwanie tatuażu w Białymstoku: Kompleksowy przewodnik po bezpiecznym zabiegu (2026) Planujesz usuwanie tatuażu w Białymstoku? Odkryj nasz przewodnik 2026! Poznaj bezpieczne metody laserowe, etapy zabiegu i pielęgnację. Odzyskaj gładką skórę. 10 kwi 2026 Czytaj więcej →" [ref=e153] [cursor=pointer]':
+            - /url: /blog/usuwanie-tatuazu-w-bialymstoku-kompleksowy-przewodnik-po-bezpiecznym-zabiegu-2026
+            - generic [ref=e154]:
+              - 'img "Usuwanie tatuażu w Białymstoku: Kompleksowy przewodnik po bezpiecznym zabiegu (2026)" [ref=e155]'
+              - generic [ref=e156]: blog
+            - generic [ref=e157]:
+              - 'heading "Usuwanie tatuażu w Białymstoku: Kompleksowy przewodnik po bezpiecznym zabiegu (2026)" [level=3] [ref=e158]'
+              - paragraph [ref=e159]: Planujesz usuwanie tatuażu w Białymstoku? Odkryj nasz przewodnik 2026! Poznaj bezpieczne metody laserowe, etapy zabiegu i pielęgnację. Odzyskaj gładką skórę.
+              - generic [ref=e160]:
+                - generic [ref=e161]: 10 kwi 2026
+                - generic [ref=e162]: Czytaj więcej →
+        - link "Zobacz wszystkie artykuły" [ref=e164] [cursor=pointer]:
+          - /url: /blog
+          - text: Zobacz wszystkie artykuły
+          - img [ref=e165]
+      - generic [ref=e169]:
+        - heading "Opinie naszych klientek" [level=2] [ref=e170]
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - generic [ref=e174]:
+              - heading "Magdalena W." [level=3] [ref=e175]
+              - generic [ref=e176]:
+                - generic [ref=e177]:
+                  - img [ref=e178]
+                  - img [ref=e180]
+                  - img [ref=e182]
+                  - img [ref=e184]
+                  - img [ref=e186]
+                - generic "Booksy" [ref=e188]: B
+            - paragraph [ref=e189]: Pani Kasia jest prawdziwą mistrzynią w swoim fachu. Jestem zachwycona efektem makijażu permanentnego brwi. Bardzo profesjonalne podejście, dokładne omówienie zabiegu i dbałość o każdy szczegół.
+          - generic [ref=e190]:
+            - generic [ref=e192]:
+              - heading "Anna K." [level=3] [ref=e193]
+              - generic [ref=e194]:
+                - generic [ref=e195]:
+                  - img [ref=e196]
+                  - img [ref=e198]
+                  - img [ref=e200]
+                  - img [ref=e202]
+                  - img [ref=e204]
+                - generic "Booksy" [ref=e206]: B
+            - paragraph [ref=e207]: Najlepszy salon w Białymstoku! Perfekcyjne wykonanie, sterylne warunki i przemiła atmosfera. Polecam szczególnie makijaż permanentny ust - efekt naturalny i długotrwały.
+          - generic [ref=e208]:
+            - generic [ref=e210]:
+              - heading "Monika S." [level=3] [ref=e211]
+              - generic [ref=e212]:
+                - generic [ref=e213]:
+                  - img [ref=e214]
+                  - img [ref=e216]
+                  - img [ref=e218]
+                  - img [ref=e220]
+                  - img [ref=e222]
+                - generic "Booksy" [ref=e224]: B
+            - paragraph [ref=e225]: Profesjonalizm na najwyższym poziomie. Pani Kasia ma świetne podejście do klienta, wszystko dokładnie tłumaczy i doradza. Efekt laminacji brwi przekroczył moje oczekiwania!
+          - generic [ref=e226]:
+            - generic [ref=e228]:
+              - heading "Natalia R." [level=3] [ref=e229]
+              - generic [ref=e230]:
+                - generic [ref=e231]:
+                  - img [ref=e232]
+                  - img [ref=e234]
+                  - img [ref=e236]
+                  - img [ref=e238]
+                  - img [ref=e240]
+                - img "Google" [ref=e242]
+            - paragraph [ref=e244]: Rewelacyjny salon! Brwi pudrowe wyglądają naturalnie i pięknie. Pani Kasia jest bardzo cierpliwa i precyzyjna. Gorąco polecam każdemu, kto szuka profesjonalnego makijażu permanentnego w Białymstoku.
+          - generic [ref=e245]:
+            - generic [ref=e247]:
+              - heading "Ewelina M." [level=3] [ref=e248]
+              - generic [ref=e249]:
+                - generic [ref=e250]:
+                  - img [ref=e251]
+                  - img [ref=e253]
+                  - img [ref=e255]
+                  - img [ref=e257]
+                  - img [ref=e259]
+                - img "Google" [ref=e261]
+            - paragraph [ref=e263]: Byłam na laminacji rzęs i jestem zachwycona efektem! Sterylne warunki, miła atmosfera i świetny rezultat. Na pewno wrócę na kolejne zabiegi.
+          - generic [ref=e264]:
+            - generic [ref=e266]:
+              - heading "Oksana T." [level=3] [ref=e267]
+              - generic [ref=e268]:
+                - generic [ref=e269]:
+                  - img [ref=e270]
+                  - img [ref=e272]
+                  - img [ref=e274]
+                  - img [ref=e276]
+                  - img [ref=e278]
+                - img "Google" [ref=e280]
+            - paragraph [ref=e282]: Najlepszy salon kosmetyczny w Białymstoku! Robiłam makijaż permanentny ust i efekt jest fantastyczny – naturalny kolor, piękny kształt. Pani Kasia to prawdziwa artystka!
+        - generic [ref=e283]:
+          - link "Zobacz więcej opinii na Booksy →" [ref=e284] [cursor=pointer]:
+            - /url: https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok
+          - link "Zobacz opinie na Google →" [ref=e285] [cursor=pointer]:
+            - /url: https://www.google.com/maps/search/?api=1&query=Katarzyna+Brui+Permanent+Białystok&query_place_id=ChIJzQK31Dv9H0cR0aqPnVAPkDo
+      - generic [ref=e286]:
+        - heading "Kontakt i Lokalizacja" [level=2] [ref=e287]
+        - generic [ref=e288]:
+          - generic [ref=e289]:
+            - heading "Adres" [level=3] [ref=e290]
+            - paragraph [ref=e291]:
+              - text: ul. Młynowa 46, Lok U11
+              - text: 15-404, Białystok
+              - text: "Tel:"
+              - link "880 435 102" [ref=e292] [cursor=pointer]:
+                - /url: tel:880435102
+              - text: Katarzyna
+          - generic [ref=e293]:
+            - heading "Godziny otwarcia" [level=3] [ref=e294]
+            - paragraph [ref=e295]:
+              - text: "Poniedziałek - Piątek: 9:00 - 20:00"
+              - text: "Sobota: 9:00 - 16:00"
+              - text: "Niedziela: Zamknięte"
+          - generic [ref=e296]:
+            - heading "Social Media" [level=3] [ref=e297]
+            - generic [ref=e298]:
+              - link "Facebook – Katarzyna Brui Permanent" [ref=e299] [cursor=pointer]:
+                - /url: https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/
+                - img [ref=e300]
+                - generic [ref=e302]: Facebook
+              - link "Instagram – @katarzyna.brui_" [ref=e303] [cursor=pointer]:
+                - /url: https://www.instagram.com/katarzyna.brui_
+                - img [ref=e304]
+                - generic [ref=e306]: Instagram
+            - paragraph [ref=e307]: Śledź nas w mediach społecznościowych
+  - contentinfo [ref=e311]:
+    - generic [ref=e312]:
+      - generic [ref=e313]:
+        - generic [ref=e314]:
+          - generic [ref=e315]: Zabiegi
+          - navigation [ref=e316]:
+            - link "Rezerwacje" [ref=e317] [cursor=pointer]:
+              - /url: /appointments
+            - link "Blog" [ref=e318] [cursor=pointer]:
+              - /url: /blog
+            - link "Galeria" [ref=e319] [cursor=pointer]:
+              - /url: /gallery
+            - link "Styliści" [ref=e320] [cursor=pointer]:
+              - /url: /stylists
+        - generic [ref=e321]:
+          - generic [ref=e322]: Kontakt
+          - generic [ref=e323]:
+            - paragraph [ref=e324]: Salon Kosmetyczny Katarzyna Brui
+            - paragraph [ref=e325]: ul. Młynowa 46, U11
+            - paragraph [ref=e326]: 15-404 Białystok, Polska
+            - paragraph [ref=e327]:
+              - link "+48 880 435 102" [ref=e328] [cursor=pointer]:
+                - /url: tel:+48880435102
+            - paragraph [ref=e329]:
+              - link "info@katarzynabrui.pl" [ref=e330] [cursor=pointer]:
+                - /url: mailto:info@katarzynabrui.pl
+          - generic [ref=e331]:
+            - link "Facebook – Katarzyna Brui Permanent" [ref=e332] [cursor=pointer]:
+              - /url: https://www.facebook.com/p/Katarzyna-Brui-Permanent-100081111466742/
+              - img [ref=e333]
+              - generic [ref=e335]: Facebook
+            - link "Instagram – @katarzyna.brui_" [ref=e336] [cursor=pointer]:
+              - /url: https://www.instagram.com/katarzyna.brui_
+              - img [ref=e337]
+              - generic [ref=e339]: Instagram
+        - generic [ref=e340]:
+          - generic [ref=e341]: Informacje
+          - navigation [ref=e342]:
+            - link "Polityka prywatności" [ref=e343] [cursor=pointer]:
+              - /url: /privacy-policy
+            - link "Warunki użytkowania" [ref=e344] [cursor=pointer]:
+              - /url: /terms
+      - paragraph [ref=e346]: © 2026 Salon Kosmetyczny Katarzyna Brui. Wszelkie prawa zastrzeżone.
+  - generic [ref=e349]:
+    - generic [ref=e350]: 🍪
+    - generic [ref=e351]:
+      - paragraph [ref=e352]:
+        - text: Używamy plików cookies do analizy ruchu na stronie. Możesz zaakceptować lub odrzucić cookies analityczne.
+        - link "Polityka prywatności" [ref=e353] [cursor=pointer]:
+          - /url: /privacy-policy
+      - generic [ref=e354]:
+        - button "Akceptuję" [ref=e355] [cursor=pointer]
+        - button "Odrzucam" [ref=e356] [cursor=pointer]
