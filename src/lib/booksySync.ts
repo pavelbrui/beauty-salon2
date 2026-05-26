@@ -1,3 +1,19 @@
+/*
+ * Booksy Sync Utility
+ * -------------------
+ * This module handles synchronising booking data from our application to the Booksy Pro
+ * calendar via a fire‑and‑forget Netlify background function. The flow is:
+ *   1️⃣ Look up optional stylist details from the `stylists` table.
+ *   2️⃣ Insert a pending record into `booksy_sync_log` for audit / retry purposes.
+ *   3️⃣ Retrieve the current Supabase session JWT (required for authenticating the
+ *      background function).
+ *   4️⃣ POST the sync payload to the Netlify function `/.netlify/functions/booksy-sync-background`.
+ *      The function validates the JWT, contacts Booksy, and updates the log entry with the
+ *      result.
+ *
+ * The function is deliberately fire‑and‑forget – any failure is logged to the console but
+ * does not block the user experience. Errors are captured by the surrounding `try/catch`.
+ */
 import { supabase } from './supabase';
 
 /**
