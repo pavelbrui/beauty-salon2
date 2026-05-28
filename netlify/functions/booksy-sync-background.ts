@@ -339,16 +339,42 @@ async function performSync(payload: SyncPayload): Promise<void> {
 
   try {
     if (action === 'create_block') {
-      const result = await createReservation(session, startTime, endTime, resourceId);
-      if (result) {
-        await supabase
-          .from('bookings')
-          .update({ booksy_reservation_id: result.id, status: 'confirmed' })
-          .eq('id', bookingId);
-        await updateSyncLog(bookingId, 'success', { booksyReservationId: result.id });
-        await triggerConfirmationEmail(bookingId);
-      } else {
-        await updateSyncLog(bookingId, 'failed', { errorMessage: 'Brak ID rezerwacji z Booksy.' });
+      // Mark booking as processing before attempting reservation
+      await supabase
+        .from('bookings')
+        .update({ status: 'processing' })
+        .eq('id', bookingId);
+      // Handle conflict by retrying once after a short delay
+      try {
+        const result = await createReservation(session, startTime, endTime, resourceId);
+        if (result) {
+          await supabase
+            .from('bookings')
+            .update({ booksy_reservation_id: result.id, status: 'confirmed' })
+            .eq('id', bookingId);
+          await updateSyncLog(bookingId, 'success', { booksyReservationId: result.id });
+          await triggerConfirmationEmail(bookingId);
+        } else {
+          await updateSyncLog(bookingId, 'failed', { errorMessage: 'Brak ID rezerwacji z Booksy.' });
+        }
+      } catch (err) {
+        if (err instanceof BooksyConflictError) {
+          // simple retry after 2 seconds
+          await new Promise(r => setTimeout(r, 2000));
+          const retryResult = await createReservation(session, startTime, endTime, resourceId);
+          if (retryResult) {
+            await supabase
+              .from('bookings')
+              .update({ booksy_reservation_id: retryResult.id, status: 'confirmed' })
+              .eq('id', bookingId);
+            await updateSyncLog(bookingId, 'success', { booksyReservationId: retryResult.id });
+            await triggerConfirmationEmail(bookingId);
+          } else {
+            await updateSyncLog(bookingId, 'failed', { errorMessage: 'Retry failed, no reservation ID.' });
+          }
+        } else {
+          throw err;
+        }
       }
     } else if (action === 'remove_block') {
       const { data: booking } = await supabase
@@ -437,8 +463,13 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return { statusCode: 400, body: 'Missing fields' };
   }
 
-  // Fire sync in background (up to 15 mins)
-  performSync(payload).catch(console.error);
+  // Await the execution so the serverless container stays alive until finished.
+  // Netlify already returns a 202 immediately to the client because it is a background function.
+  try {
+    await performSync(payload);
+  } catch (err) {
+    console.error('Error during performSync:', err);
+  }
 
-  return { statusCode: 202, body: JSON.stringify({ status: 'queued' }) };
+  return { statusCode: 200, body: JSON.stringify({ status: 'success' }) };
 };

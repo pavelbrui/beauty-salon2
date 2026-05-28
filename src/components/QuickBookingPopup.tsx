@@ -50,6 +50,8 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const isSubmittingRef = useRef(false);
+  const [booksyConfirmation, setBooksyConfirmation] = React.useState<'pending' | 'confirmed' | 'failed'>('pending');
+  const [isPolling, setIsPolling] = React.useState(false);
   const [successBookingId, setSuccessBookingId] = useState<string | null>(null);
 
   // Load all services
@@ -176,6 +178,23 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
     }
   };
 
+  // Helper to poll booking status until confirmed or timeout
+  const waitForBooksyConfirmation = async (bookingId: string, timeoutMs = 15000, intervalMs = 2000) => {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('status')
+        .eq('id', bookingId)
+        .single();
+      if (!error && data?.status === 'confirmed') {
+        return true;
+      }
+      await new Promise((r) => setTimeout(r, intervalMs));
+    }
+    return false;
+  };
+
   const handleBookingSubmit = async (contactData: {
     name: string;
     phone: string;
@@ -238,19 +257,30 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         }
       }
 
-      // 4. Notifications
+      // 4. Notifications and Booksy sync
       if (data[0]?.id) {
+        const bookingId = data[0].id;
         try {
           const dateStr = new Date(selectedSlot.startTime).toLocaleString('pl-PL');
-          await notifyClient(data[0].id, 'confirmation');
-          await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+          await notifyClient(bookingId, 'confirmation');
+          await notifyAdmin(bookingId, 'rebooked', `Nowa rezerwacja: ${selectedService.name} na ${dateStr}`);
+          // Fire Booksy sync and wait for confirmation before showing UI success
           syncBookingToBooksy({
             action: 'create_block',
-            bookingId: data[0].id,
+            bookingId,
             startTime: selectedSlot.startTime,
             endTime: selectedSlot.endTime,
             stylistId: selectedSlot.stylistId,
           });
+          setIsPolling(true);
+          const confirmed = await waitForBooksyConfirmation(bookingId);
+          setIsPolling(false);
+          if (confirmed) {
+            setBooksyConfirmation('confirmed');
+          } else {
+            setBooksyConfirmation('failed');
+            console.warn('Booksy confirmation timed out for booking', bookingId);
+          }
         } catch (notifyError) {
           console.error('Quick booking created, but notifications failed:', notifyError);
         }
@@ -266,9 +296,9 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
       } catch (profileError) {
         console.error('Quick booking created, but profile save failed:', profileError);
       }
-
-      setSuccessBookingId(createdBookingId);
-      setStep('success');
+          // After sync (or timeout) set success UI
+          setSuccessBookingId(createdBookingId);
+          setStep('success');
     } catch (err) {
       if (createdTimeSlotId && !createdBookingId) {
         // Roll back temporary blocked slot when booking insert fails.
@@ -301,8 +331,8 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
 
   const dateLabel = format(date, 'EEEE, d MMMM', { locale });
 
-  // Success popup
-  if (step === 'success' && selectedService && selectedSlot) {
+  // Success popup – show after Booksy confirmation or pending timeout
+  if (step === 'success' && selectedService && selectedSlot && successBookingId) {
     return (
       <SuccessPopup
         service={selectedService}
@@ -313,6 +343,16 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
           onClose();
         }}
       />
+    );
+  }
+
+  // If Booksy sync failed, show an alert below the UI (could be a toast)
+  if (booksyConfirmation === 'failed' && successBookingId) {
+    return (
+      <div className="p-4 bg-amber-100 border border-amber-200 rounded-md text-sm text-amber-800">
+        {`Rezerwacja została utworzona, ale nie udało się potwierdzić w Booksy. Spróbuj ponownie później.`}
+        <button className="ml-2 text-amber-900 underline" onClick={() => setBooksyConfirmation('pending')}>Spróbuj ponownie</button>
+      </div>
     );
   }
 
