@@ -41,14 +41,14 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
 
   const goToPreviousMonth = () => {
     const prevMonth = subMonths(currentMonth, 1);
-    if (isValid(prevMonth) && (!minDate || prevMonth >= startOfMonth(minDate))) {
+    if (isValid(prevMonth) && (!minDate || startOfMonth(prevMonth) >= startOfMonth(minDate))) {
       onMonthChange?.(prevMonth);
     }
   };
 
   const goToNextMonth = () => {
     const nextMonth = addMonths(currentMonth, 1);
-    if (isValid(nextMonth) && (!maxDate || nextMonth <= endOfMonth(maxDate))) {
+    if (isValid(nextMonth) && (!maxDate || endOfMonth(nextMonth) <= endOfMonth(maxDate))) {
       onMonthChange?.(nextMonth);
     }
   };
@@ -67,22 +67,22 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
           <button
             onClick={goToPreviousMonth}
             className={`p-2 rounded-full transition-colors ${
-              minDate && subMonths(currentMonth, 1) < minDate
+              minDate && startOfMonth(subMonths(currentMonth, 1)) < startOfMonth(minDate)
                 ? 'text-gray-300 cursor-not-allowed'
                 : 'hover:bg-gray-100 text-gray-600'
             }`}
-            disabled={minDate && subMonths(currentMonth, 1) < minDate}
+            disabled={minDate && startOfMonth(subMonths(currentMonth, 1)) < startOfMonth(minDate)}
           >
             <ChevronLeftIcon className="w-5 h-5" />
           </button>
           <button
             onClick={goToNextMonth}
             className={`p-2 rounded-full transition-colors ${
-              maxDate && addMonths(currentMonth, 1) > maxDate
+              maxDate && endOfMonth(addMonths(currentMonth, 1)) > endOfMonth(maxDate)
                 ? 'text-gray-300 cursor-not-allowed'
                 : 'hover:bg-gray-100 text-gray-600'
             }`}
-            disabled={maxDate && addMonths(currentMonth, 1) > maxDate}
+            disabled={maxDate && endOfMonth(addMonths(currentMonth, 1)) > endOfMonth(maxDate)}
           >
             <ChevronRightIcon className="w-5 h-5" />
           </button>
