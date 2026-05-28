@@ -166,9 +166,13 @@ async function loadSession(): Promise<BooksySessionData | null> {
     console.log('No access_token in session');
     return null;
   }
+  if (!data.api_key) {
+    console.log('No api_key in session - Booksy API requires valid api_key');
+    return null;
+  }
   return {
     access_token: data.access_token,
-    api_key: data.api_key || process.env.BOOKSY_API_KEY || '',
+    api_key: data.api_key,
     fingerprint: data.fingerprint || undefined,
     user_agent: data.user_agent || undefined,
   };

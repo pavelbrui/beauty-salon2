@@ -209,11 +209,16 @@ export const AdminBooksy: React.FC = () => {
         return;
       }
 
+      const parts = token.split('|').map(s => s.trim());
+      const accessToken = parts[0];
+      const apiKey = parts[1] || '';
+
       const { error } = await supabase
         .from('booksy_session')
         .upsert({
           id: 'default',
-          access_token: token,
+          access_token: accessToken,
+          api_key: apiKey || null,
           cookies: [],
           last_used_at: new Date().toISOString(),
           is_valid: true,
@@ -957,7 +962,7 @@ export const AdminBooksy: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              {language === 'pl' ? 'Wklej x-access-token z Booksy Pro' : 'Paste x-access-token from Booksy Pro'}
+              {language === 'pl' ? 'Wklej x-access-token i x-api-key z Booksy Pro' : 'Paste x-access-token and x-api-key from Booksy Pro'}
             </h4>
             <p className="text-sm text-gray-500 mb-3">
               {language === 'pl'
