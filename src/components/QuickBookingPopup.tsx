@@ -51,7 +51,6 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const isSubmittingRef = useRef(false);
   const [booksyConfirmation, setBooksyConfirmation] = React.useState<'pending' | 'confirmed' | 'failed'>('pending');
-  const [isPolling, setIsPolling] = React.useState(false);
   const [successBookingId, setSuccessBookingId] = useState<string | null>(null);
 
   // Load all services
@@ -272,9 +271,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
             endTime: selectedSlot.endTime,
             stylistId: selectedSlot.stylistId,
           });
-          setIsPolling(true);
-          const confirmed = await waitForBooksyConfirmation(bookingId);
-          setIsPolling(false);
+           const confirmed = await waitForBooksyConfirmation(bookingId);
           if (confirmed) {
             setBooksyConfirmation('confirmed');
           } else {
