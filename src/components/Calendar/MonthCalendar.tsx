@@ -67,11 +67,11 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
           <button
             onClick={goToPreviousMonth}
             className={`p-2 rounded-full transition-colors ${
-              minDate && startOfMonth(subMonths(currentMonth, 1)) < startOfMonth(minDate)
+              minDate && startOfMonth(currentMonth).getTime() <= startOfMonth(minDate).getTime()
                 ? 'text-gray-300 cursor-not-allowed'
                 : 'hover:bg-gray-100 text-gray-600'
             }`}
-            disabled={minDate && startOfMonth(subMonths(currentMonth, 1)) < startOfMonth(minDate)}
+            disabled={minDate && startOfMonth(currentMonth).getTime() <= startOfMonth(minDate).getTime()}
           >
             <ChevronLeftIcon className="w-5 h-5" />
           </button>
