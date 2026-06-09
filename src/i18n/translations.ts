@@ -186,7 +186,8 @@ export const translations = {
       selectService: 'Wybierz zabieg',
       selectTime: 'Wybierz godzinę',
       searchPlaceholder: 'Szukaj zabiegu...',
-      noResults: 'Nie znaleziono zabiegów'
+      noResults: 'Nie znaleziono zabiegów',
+      selectStylist: 'Wybierz stylistkę'
     },
     home: {
       loginPrompt: 'Zaloguj się lub utwórz konto',
@@ -584,7 +585,8 @@ export const translations = {
       selectService: 'Select a service',
       selectTime: 'Select time',
       searchPlaceholder: 'Search services...',
-      noResults: 'No services found'
+      noResults: 'No services found',
+      selectStylist: 'Select stylist'
     },
     home: {
       loginPrompt: 'Sign in or create an account',
@@ -982,7 +984,8 @@ export const translations = {
       selectService: 'Выберите услугу',
       selectTime: 'Выберите время',
       searchPlaceholder: 'Поиск услуг...',
-      noResults: 'Услуги не найдены'
+      noResults: 'Услуги не найдены',
+      selectStylist: 'Выберите стилиста'
     },
     home: {
       loginPrompt: 'Войдите или создайте аккаунт',

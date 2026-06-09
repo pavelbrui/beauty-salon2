@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { format, addDays } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
