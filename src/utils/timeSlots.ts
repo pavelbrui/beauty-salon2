@@ -21,8 +21,11 @@ interface BusySlot {
  * equals the service duration. Slots that extend past the working
  * period end are excluded.
  *
- * When multiple stylists have overlapping availability, the first
- * available stylist is auto-assigned (deduplication by time).
+ * When "Any Stylist" (Dowolna) is selected, and multiple stylists have 
+ * overlapping availability at the exact same time, the first available 
+ * stylist is auto-assigned to that slot (deduplication by time).
+ * This prevents the UI from showing duplicate "12:00" buttons when the
+ * user doesn't care which stylist performs the service.
  */
 export const generateAvailableTimeSlots = (
   date: Date,

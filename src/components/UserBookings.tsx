@@ -93,10 +93,11 @@ export const UserBookings: React.FC = () => {
     }
 
     if (slotId) {
-      await supabase
+      const { error: tsError } = await supabase
         .from('time_slots')
-        .update({ is_available: true })
+        .update({ is_available: true, booking_id: null })
         .eq('id', slotId);
+      if (tsError) console.error('Failed to update time_slot on cancel:', tsError);
     }
 
     const startTime = booking?.time_slots?.start_time || booking?.start_time;
@@ -112,7 +113,8 @@ export const UserBookings: React.FC = () => {
     const bookingStartTime = booking?.time_slots?.start_time || booking?.start_time;
     const bookingEndTime = booking?.time_slots?.end_time || booking?.end_time;
     if (bookingStartTime && bookingEndTime) {
-      syncBookingToBooksy({
+      // Await sync so we can be more sure it fires
+      await syncBookingToBooksy({
         action: 'remove_block',
         bookingId,
         startTime: bookingStartTime,
@@ -129,14 +131,31 @@ export const UserBookings: React.FC = () => {
     if (!session) return;
 
     const booking = bookings.find(b => b.id === bookingId);
+    const slotId = booking?.time_slot_id || booking?.timeSlotId;
 
-    await notifyAdmin(
-      bookingId,
-      'deleted',
-      `Klient usunął rezerwację: ${booking?.services?.name || '—'}`
-    );
-    await notifyClient(bookingId, 'status_update');
-    sendBookingEmail(bookingId, 'deleted');
+    if (slotId) {
+      // Free the slot before deleting the booking to satisfy RLS
+      const { error: tsError } = await supabase
+        .from('time_slots')
+        .update({ is_available: true, booking_id: null })
+        .eq('id', slotId);
+      if (tsError) console.error('Failed to update time_slot on delete:', tsError);
+    }
+
+    // Email notifications omitted on delete
+
+
+    const bookingStartTime = booking?.time_slots?.start_time || booking?.start_time;
+    const bookingEndTime = booking?.time_slots?.end_time || booking?.end_time;
+    if (bookingStartTime && bookingEndTime) {
+      await syncBookingToBooksy({
+        action: 'remove_block',
+        bookingId,
+        startTime: bookingStartTime,
+        endTime: bookingEndTime,
+        stylistId: booking?.stylist_id,
+      });
+    }
 
     const { error } = await supabase
       .from('bookings')

@@ -6,7 +6,7 @@ test.describe('Stylists Page', () => {
   });
 
   test('displays stylists page heading', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText(/Styliści|Stylists|Стилисты/);
+    await expect(page.locator('h1')).toContainText(/Nasi styliści i specjaliści beauty|Styliści|Stylists|Стилисты/);
   });
 
   test('loads stylist cards from database', async ({ page }) => {

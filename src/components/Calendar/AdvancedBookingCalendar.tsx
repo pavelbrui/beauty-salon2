@@ -3,7 +3,8 @@ import { format, addDays, addMonths, startOfMonth, endOfMonth, isValid, isBefore
 import { pl, enUS, ru } from 'date-fns/locale';
 import { MonthCalendar } from './MonthCalendar';
 import { TimeGrid } from './TimeGrid';
-import { TimeSlot, Service } from '../../types';
+import { TimeSlot, Service, Stylist } from '../../types';
+import { StylistFilter } from '../StylistFilter';
 import { supabase } from '../../lib/supabase';
 import { generateAvailableTimeSlots } from '../../utils/timeSlots';
 import { BookingRestrictions, DEFAULT_RESTRICTIONS, isSlotBookable } from '../../utils/bookingRestrictions';
@@ -30,7 +31,9 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [qualifiedStylists, setQualifiedStylists] = useState<Stylist[]>([]);
   const [qualifiedStylistIds, setQualifiedStylistIds] = useState<string[]>([]);
+  const [localStylistId, setLocalStylistId] = useState<string>(stylistId || '');
   const [stylistRestrictions, setStylistRestrictions] = useState<Record<string, BookingRestrictions>>({});
   const [currentMonth, setCurrentMonth] = useState<Date>(() => startOfMonth(new Date()));
 
@@ -39,14 +42,14 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
     loadQualifiedStylists();
   }, [service.id, stylistId]);
 
-  // Step 2: Load available dates when stylists or month changes
+  // Step 2: Load available dates when stylists, month, or selected filter changes
   useEffect(() => {
     if (qualifiedStylistIds.length > 0) {
       loadAvailableDates();
     } else {
       setAvailableDates([]);
     }
-  }, [qualifiedStylistIds, currentMonth]);
+  }, [qualifiedStylistIds, currentMonth, localStylistId]);
 
   // Step 2b: Auto-select first available date that actually has free slots
   const autoSelectDates = useRef<Date[]>([]);
@@ -110,14 +113,14 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
     }
   }, [timeSlots, isLoading]);
 
-  // Step 3: Load time slots when date is selected
+  // Step 3: Load time slots when date or filter is selected
   useEffect(() => {
     if (selectedDate && qualifiedStylistIds.length > 0) {
       loadTimeSlots();
     } else {
       setTimeSlots([]);
     }
-  }, [selectedDate, qualifiedStylistIds]);
+  }, [selectedDate, qualifiedStylistIds, localStylistId]);
 
   const loadQualifiedStylists = useCallback(async () => {
     try {
@@ -139,19 +142,18 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         ids = allStylists?.map(s => s.id) || [];
       }
 
-      // Apply stylist filter if provided
-      if (stylistId) {
-        ids = ids.filter(id => id === stylistId);
-      }
+      // Apply stylist filter if provided ONLY for initial localStylistId setup (don't restrict the actual loaded qualified list)
+      // because we want the dropdown to show ALL qualified stylists, but pre-select the one from the URL.
 
-      // Load booking restrictions for qualified stylists
+      // Load full stylist details for qualified stylists
       if (ids.length > 0) {
         const { data: stylistData } = await supabase
           .from('stylists')
-          .select('id, min_advance_hours, night_start_hour, night_end_hour, night_min_slot_hour')
+          .select('*')
           .in('id', ids);
 
         if (stylistData) {
+          setQualifiedStylists(stylistData);
           const restrictions: Record<string, BookingRestrictions> = {};
           for (const s of stylistData) {
             restrictions[s.id] = {
@@ -163,16 +165,27 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
           }
           setStylistRestrictions(restrictions);
         }
+      } else {
+        setQualifiedStylists([]);
       }
 
       setQualifiedStylistIds(ids);
+      
+      // Auto-select stylist if passed via URL prop, and it's valid
+      if (stylistId && ids.includes(stylistId)) {
+        setLocalStylistId(stylistId);
+      }
     } catch (error) {
       console.error('Error loading qualified stylists:', error);
     }
   }, [service.id, stylistId]);
 
   const loadAvailableDates = useCallback(async () => {
-    if (qualifiedStylistIds.length === 0) return;
+    const idsToFetch = localStylistId ? [localStylistId] : qualifiedStylistIds;
+    if (idsToFetch.length === 0) {
+      setAvailableDates([]);
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -180,7 +193,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         .from('stylist_working_hours')
         .select('date')
         .eq('is_available', true)
-        .in('stylist_id', qualifiedStylistIds)
+        .in('stylist_id', idsToFetch)
         .gte('date', format(startOfMonth(currentMonth), 'yyyy-MM-dd'))
         .lte('date', format(endOfMonth(currentMonth), 'yyyy-MM-dd'));
 
@@ -198,7 +211,8 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   }, [qualifiedStylistIds, currentMonth]);
 
   const loadTimeSlots = useCallback(async () => {
-    if (!selectedDate || !isValid(selectedDate) || qualifiedStylistIds.length === 0) {
+    const idsToFetch = localStylistId ? [localStylistId] : qualifiedStylistIds;
+    if (!selectedDate || !isValid(selectedDate) || idsToFetch.length === 0) {
       setTimeSlots([]);
       return;
     }
@@ -211,7 +225,7 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
         .select('stylist_id, start_time, end_time')
         .eq('date', format(selectedDate, 'yyyy-MM-dd'))
         .eq('is_available', true)
-        .in('stylist_id', qualifiedStylistIds);
+        .in('stylist_id', idsToFetch);
 
       if (whError) throw whError;
 
@@ -280,6 +294,20 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
 
   return (
     <div className="space-y-6">
+      {qualifiedStylists.length > 1 && (
+        <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">
+            {language === 'en' ? 'Select Stylist' : language === 'ru' ? 'Выберите мастера' : 'Wybierz stylistkę'}
+          </h3>
+          <StylistFilter
+            stylists={qualifiedStylists}
+            selectedId={localStylistId}
+            onSelect={setLocalStylistId}
+            allLabel={language === 'en' ? 'Any Stylist' : language === 'ru' ? 'Любой мастер' : 'Dowolna'}
+          />
+        </div>
+      )}
+
       <MonthCalendar
         currentMonth={currentMonth}
         onMonthChange={setCurrentMonth}

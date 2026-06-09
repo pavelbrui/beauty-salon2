@@ -8,8 +8,9 @@ import { saveProfile } from '../lib/profile';
 import { generateAvailableTimeSlots } from '../utils/timeSlots';
 import { BookingRestrictions, DEFAULT_RESTRICTIONS, isSlotBookable } from '../utils/bookingRestrictions';
 import { getServiceName } from '../utils/serviceTranslation';
-import { Service, TimeSlot } from '../types';
+import { Service, TimeSlot, Stylist } from '../types';
 import { TimeGrid } from './Calendar/TimeGrid';
+import { StylistFilter } from './StylistFilter';
 import { BookingForm } from './BookingForm';
 import { AuthModal } from './AuthModal';
 import { SuccessPopup } from './SuccessPopup';
@@ -48,6 +49,9 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [qualifiedStylists, setQualifiedStylists] = useState<Stylist[]>([]);
+  const [qualifiedStylistIds, setQualifiedStylistIds] = useState<string[]>([]);
+  const [selectedStylistId, setSelectedStylistId] = useState<string>('');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const isSubmittingRef = useRef(false);
   const [booksyConfirmation, setBooksyConfirmation] = React.useState<'pending' | 'confirmed' | 'failed'>('pending');
@@ -67,37 +71,24 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
     loadServices();
   }, []);
 
-  // Load time slots when service is selected
-  const loadTimeSlots = useCallback(async (service: Service) => {
-    setIsLoading(true);
-    setTimeSlots([]);
-    try {
-      // 1. Get qualified stylists for this service
-      const { data: assignments } = await supabase
-        .from('stylist_service_assignments')
-        .select('stylist_id')
-        .eq('service_id', service.id);
-
-      let stylistIds: string[];
-      if (assignments && assignments.length > 0) {
-        stylistIds = assignments.map(a => a.stylist_id);
-      } else {
-        const { data: allStylists } = await supabase.from('stylists').select('id');
-        stylistIds = allStylists?.map(s => s.id) || [];
-      }
-
-      if (stylistIds.length === 0) {
-        setTimeSlots([]);
-        return;
-      }
-
-      // 2. Get working hours for this date
+  // Load time slots when service or selected stylist changes
+  useEffect(() => {
+    const loadTimeSlots = async () => {
+      if (!selectedService || qualifiedStylistIds.length === 0) return;
+      
+      setIsLoading(true);
+      setTimeSlots([]);
+      
+      const idsToFetch = selectedStylistId ? [selectedStylistId] : qualifiedStylistIds;
+      
+      try {
+        // 2. Get working hours for this date
       const { data: workingHours } = await supabase
         .from('stylist_working_hours')
         .select('stylist_id, start_time, end_time')
         .eq('date', format(date, 'yyyy-MM-dd'))
         .eq('is_available', true)
-        .in('stylist_id', stylistIds);
+        .in('stylist_id', idsToFetch);
 
       if (!workingHours || workingHours.length === 0) {
         setTimeSlots([]);
@@ -116,7 +107,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
       const { data: stylistData } = await supabase
         .from('stylists')
         .select('id, min_advance_hours, night_start_hour, night_end_hour, night_min_slot_hour')
-        .in('id', stylistIds);
+        .in('id', idsToFetch);
 
       const restrictions: Record<string, BookingRestrictions> = {};
       if (stylistData) {
@@ -135,7 +126,7 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
         date,
         workingHours,
         busySlots || [],
-        service.duration
+        selectedService.duration
       );
 
       // 6. Apply booking restrictions per stylist
@@ -158,13 +149,41 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [date]);
+  };
 
-  const handleServiceSelect = (service: Service) => {
+  loadTimeSlots();
+  }, [date, selectedService, qualifiedStylistIds, selectedStylistId]);
+
+  const handleServiceSelect = async (service: Service) => {
     setSelectedService(service);
     setSelectedSlot(null);
     setStep('slots');
-    loadTimeSlots(service);
+    
+    setIsLoading(true);
+    // 1. Get qualified stylists for this service
+    const { data: assignments } = await supabase
+      .from('stylist_service_assignments')
+      .select('stylist_id')
+      .eq('service_id', service.id);
+
+    let stylistIds: string[];
+    if (assignments && assignments.length > 0) {
+      stylistIds = assignments.map(a => a.stylist_id);
+    } else {
+      const { data: allStylists } = await supabase.from('stylists').select('id');
+      stylistIds = allStylists?.map(s => s.id) || [];
+    }
+
+    if (stylistIds.length > 0) {
+      const { data: stylistData } = await supabase.from('stylists').select('*').in('id', stylistIds);
+      if (stylistData) setQualifiedStylists(stylistData);
+    } else {
+      setQualifiedStylists([]);
+    }
+    
+    setQualifiedStylistIds(stylistIds);
+    setSelectedStylistId('');
+    setIsLoading(false);
   };
 
   const handleSlotSelect = async (slot: TimeSlot) => {
@@ -470,6 +489,21 @@ export const QuickBookingPopup: React.FC<QuickBookingPopupProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Stylist Filter */}
+                {qualifiedStylists.length > 1 && (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      {t.quick_booking?.selectStylist || (language === 'en' ? 'Select Stylist' : language === 'ru' ? 'Выберите мастера' : 'Wybierz stylistkę')}
+                    </h3>
+                    <StylistFilter
+                      stylists={qualifiedStylists}
+                      selectedId={selectedStylistId}
+                      onSelect={setSelectedStylistId}
+                      allLabel={language === 'en' ? 'Any Stylist' : language === 'ru' ? 'Любой мастер' : 'Dowolna'}
+                    />
+                  </div>
+                )}
 
                 {/* Time grid */}
                 <TimeGrid

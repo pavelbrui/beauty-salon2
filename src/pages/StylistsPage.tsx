@@ -133,7 +133,7 @@ export const StylistsPage: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h2 className="text-xl font-semibold">{stylist.name}</h2>
+                  <h3 className="text-xl font-semibold">{stylist.name}</h3>
                   <p className="text-amber-300">{getStylistRole(stylist, language)}</p>
                 </div>
               </div>
