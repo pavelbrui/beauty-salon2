@@ -541,6 +541,7 @@ export const AdminBookings: React.FC = () => {
     try {
       const parsed = parseFormData(editForm);
       const currentSlotId = editingBooking.time_slot_id || editingBooking.timeSlotId || null;
+    const oldSlotId = currentSlotId;
 
       if (editForm.status !== 'cancelled' && editForm.stylistId) {
         const conflict = await hasTimeSlotConflict(editForm.stylistId, parsed.startIso, parsed.endIso, currentSlotId);
@@ -605,8 +606,18 @@ export const AdminBookings: React.FC = () => {
           .eq('id', slotId);
 
         if (linkSlotError) {
-          console.error('Error linking time slot to booking:', linkSlotError);
+
         }
+        // Free previous slot if a new slot was created
+        if (oldSlotId && oldSlotId !== slotId) {
+          const { error: freeOldError } = await supabase
+            .from('time_slots')
+            .update({ is_available: true, booking_id: null })
+            .eq('id', oldSlotId);
+          if (freeOldError) console.error('Error freeing old time slot:', freeOldError);
+        }
+
+
       }
 
       if (editForm.status !== editingBooking.status) {

@@ -264,7 +264,7 @@ async function createReservation(
   startTime: string,
   endTime: string,
   resourceId: number,
-  reason: string = 'Rezerwacja ze strony katarzynabrui.pl'
+  reason: string = 'Rezerwacja czasu z roznych powodow'
 ): Promise<{ id: number } | null> {
   const url = `${BOOKSY_API_BASE}/businesses/${businessId}/reservations/`;
   const body = {

@@ -56,7 +56,15 @@ export const AdvancedBookingCalendar: React.FC<AdvancedBookingCalendarProps> = (
   const autoSelectIndex = useRef(0);
   const isAutoSelecting = useRef(false);
   const hasAutoSelected = useRef(false);
-
+  // Reset selected date, slot, and auto-select flags when stylist filter changes to ensure slots refresh
+  useEffect(() => {
+    // When the user selects a different stylist, clear the date and selected slot.
+    setSelectedDate(null);
+    setSelectedSlot(null);
+    // Reset auto-select tracking refs
+    hasAutoSelected.current = false;
+    isAutoSelecting.current = false;
+  }, [localStylistId]);
   useEffect(() => {
     if (availableDates.length === 0 || hasAutoSelected.current) return;
 

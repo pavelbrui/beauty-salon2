@@ -93,20 +93,23 @@ export default defineConfig(async ({ command }) => {
     try {
       const { default: prerender } = await import('@prerenderer/rollup-plugin')
       const routes = loadPrerenderRoutes()
-
-      plugins.push(
-        prerender({
-          routes,
-          renderer: '@prerenderer/renderer-puppeteer',
-          rendererOptions: {
-            maxConcurrentRoutes: 2,
-            renderAfterDocumentEvent: 'prerender-ready',
-            timeout: 45000,
-          },
-          postProcess: fixHelmetMeta,
-        })
-      )
-      console.log(`[prerender] Configured ${routes.length} routes for prerendering`)
+      if (routes.length > 0) {
+        plugins.push(
+          prerender({
+            routes,
+            renderer: '@prerenderer/renderer-puppeteer',
+            rendererOptions: {
+              maxConcurrentRoutes: 2,
+              renderAfterDocumentEvent: 'prerender-ready',
+              timeout: 120000,
+            },
+            postProcess: fixHelmetMeta,
+          })
+        )
+        console.log(`[prerender] Configured ${routes.length} routes for prerendering`)
+      } else {
+        console.warn('[prerender] No routes to prerender, skipping plugin')
+      }
     } catch {
       console.warn('[prerender] Plugin not available, skipping prerendering')
     }

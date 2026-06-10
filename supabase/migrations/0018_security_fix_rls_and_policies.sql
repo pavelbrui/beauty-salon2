@@ -59,7 +59,7 @@ DROP POLICY IF EXISTS "Only admins can delete files" ON public.storage_files;
 DROP POLICY IF EXISTS "Users can view their own notifications" ON public.booking_notifications;
 DROP POLICY IF EXISTS "Stylist schedules are viewable by everyone" ON public.stylist_schedules;
 DROP POLICY IF EXISTS "Stylists can manage their own schedules" ON public.stylist_schedules;
-DROP POLICY IF EXISTS "Time slots are viewable by everyone" ON public.time_slots;
+
 DROP POLICY IF EXISTS "Time slots can be created by authenticated users" ON public.time_slots;
 DROP POLICY IF EXISTS "Users can create time slots when booking" ON public.time_slots;
 DROP POLICY IF EXISTS "Time slots can be updated by owner or admin" ON public.time_slots;
@@ -71,36 +71,62 @@ DROP POLICY IF EXISTS "Stylist services are editable by admins only" ON public.s
 -- =====================================================
 
 -- SERVICES (public read, admin write)
-CREATE POLICY "services_select_public" ON public.services FOR SELECT TO public USING (true);
+-- CREATE POLICY "services_select_public" ON public.services FOR SELECT TO public USING (true);
+DROP POLICY IF EXISTS "services_insert_admin" ON public.services;
+DROP POLICY IF EXISTS "services_update_admin" ON public.services;
+DROP POLICY IF EXISTS "services_delete_admin" ON public.services;
 CREATE POLICY "services_insert_admin" ON public.services FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "services_update_admin" ON public.services FOR UPDATE TO authenticated USING (public.is_admin());
 CREATE POLICY "services_delete_admin" ON public.services FOR DELETE TO authenticated USING (public.is_admin());
 
 -- STYLISTS (public read, admin write)
+-- STYLISTS (public read, admin write)
+DROP POLICY IF EXISTS "stylists_select_public" ON public.stylists;
+DROP POLICY IF EXISTS "stylists_insert_admin" ON public.stylists;
+DROP POLICY IF EXISTS "stylists_update_admin" ON public.stylists;
+DROP POLICY IF EXISTS "stylists_delete_admin" ON public.stylists;
 CREATE POLICY "stylists_select_public" ON public.stylists FOR SELECT TO public USING (true);
 CREATE POLICY "stylists_insert_admin" ON public.stylists FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "stylists_update_admin" ON public.stylists FOR UPDATE TO authenticated USING (public.is_admin());
 CREATE POLICY "stylists_delete_admin" ON public.stylists FOR DELETE TO authenticated USING (public.is_admin());
 
--- SERVICE_IMAGES (public read, admin write)
-CREATE POLICY "service_images_select_public" ON public.service_images FOR SELECT TO public USING (true);
-CREATE POLICY "service_images_insert_admin" ON public.service_images FOR INSERT TO authenticated WITH CHECK (public.is_admin());
-CREATE POLICY "service_images_update_admin" ON public.service_images FOR UPDATE TO authenticated USING (public.is_admin());
-CREATE POLICY "service_images_delete_admin" ON public.service_images FOR DELETE TO authenticated USING (public.is_admin());
+
+  -- SERVICE_IMAGES (public read, admin write)
+  DROP POLICY IF EXISTS "service_images_select_public" ON public.service_images;
+  DROP POLICY IF EXISTS "service_images_insert_admin" ON public.service_images;
+  DROP POLICY IF EXISTS "service_images_update_admin" ON public.service_images;
+  DROP POLICY IF EXISTS "service_images_delete_admin" ON public.service_images;
+  CREATE POLICY "service_images_select_public" ON public.service_images FOR SELECT TO public USING (true);
+  CREATE POLICY "service_images_insert_admin" ON public.service_images FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+  CREATE POLICY "service_images_update_admin" ON public.service_images FOR UPDATE TO authenticated USING (public.is_admin());
+  CREATE POLICY "service_images_delete_admin" ON public.service_images FOR DELETE TO authenticated USING (public.is_admin());
 
 -- STYLIST_SERVICE_ASSIGNMENTS (public read, admin write)
+DROP POLICY IF EXISTS "assignments_select_public" ON public.stylist_service_assignments;
+DROP POLICY IF EXISTS "assignments_insert_admin" ON public.stylist_service_assignments;
+DROP POLICY IF EXISTS "assignments_update_admin" ON public.stylist_service_assignments;
+DROP POLICY IF EXISTS "assignments_delete_admin" ON public.stylist_service_assignments;
 CREATE POLICY "assignments_select_public" ON public.stylist_service_assignments FOR SELECT TO public USING (true);
 CREATE POLICY "assignments_insert_admin" ON public.stylist_service_assignments FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "assignments_update_admin" ON public.stylist_service_assignments FOR UPDATE TO authenticated USING (public.is_admin());
 CREATE POLICY "assignments_delete_admin" ON public.stylist_service_assignments FOR DELETE TO authenticated USING (public.is_admin());
 
 -- STYLIST_WORKING_HOURS (public read, admin write)
+DROP POLICY IF EXISTS "working_hours_select_public" ON public.stylist_working_hours;
+DROP POLICY IF EXISTS "working_hours_insert_admin" ON public.stylist_working_hours;
+DROP POLICY IF EXISTS "working_hours_update_admin" ON public.stylist_working_hours;
+DROP POLICY IF EXISTS "working_hours_delete_admin" ON public.stylist_working_hours;
 CREATE POLICY "working_hours_select_public" ON public.stylist_working_hours FOR SELECT TO public USING (true);
 CREATE POLICY "working_hours_insert_admin" ON public.stylist_working_hours FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "working_hours_update_admin" ON public.stylist_working_hours FOR UPDATE TO authenticated USING (public.is_admin());
 CREATE POLICY "working_hours_delete_admin" ON public.stylist_working_hours FOR DELETE TO authenticated USING (public.is_admin());
 
 -- BOOKINGS (user sees own + admin sees all)
+DROP POLICY IF EXISTS "bookings_select_own_or_admin" ON public.bookings;
+DROP POLICY IF EXISTS "bookings_insert_own" ON public.bookings;
+DROP POLICY IF EXISTS "bookings_update_own_or_admin" ON public.bookings;
+DROP POLICY IF EXISTS "bookings_delete_own_or_admin" ON public.bookings;
+
 CREATE POLICY "bookings_select_own_or_admin" ON public.bookings FOR SELECT TO authenticated
   USING (auth.uid() = user_id OR public.is_admin());
 CREATE POLICY "bookings_insert_own" ON public.bookings FOR INSERT TO authenticated
@@ -111,6 +137,12 @@ CREATE POLICY "bookings_delete_own_or_admin" ON public.bookings FOR DELETE TO au
   USING (auth.uid() = user_id OR public.is_admin());
 
 -- TIME_SLOTS (public read, authenticated insert, related user or admin update/delete)
+-- TIME_SLOTS (public read, authenticated insert, related user or admin update/delete)
+DROP POLICY IF EXISTS "time_slots_select_public" ON public.time_slots;
+DROP POLICY IF EXISTS "time_slots_insert_auth" ON public.time_slots;
+DROP POLICY IF EXISTS "time_slots_update_related" ON public.time_slots;
+DROP POLICY IF EXISTS "time_slots_delete_admin" ON public.time_slots;
+DROP POLICY IF EXISTS "Time slots are viewable by everyone" ON public.time_slots;
 CREATE POLICY "time_slots_select_public" ON public.time_slots FOR SELECT TO public USING (true);
 CREATE POLICY "time_slots_insert_auth" ON public.time_slots FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "time_slots_update_related" ON public.time_slots FOR UPDATE TO authenticated
@@ -123,32 +155,50 @@ CREATE POLICY "time_slots_update_related" ON public.time_slots FOR UPDATE TO aut
 CREATE POLICY "time_slots_delete_admin" ON public.time_slots FOR DELETE TO authenticated USING (public.is_admin());
 
 -- EMAIL_TEMPLATES (admin only)
+DROP POLICY IF EXISTS "email_templates_select_admin" ON public.email_templates;
+DROP POLICY IF EXISTS "email_templates_insert_admin" ON public.email_templates;
+DROP POLICY IF EXISTS "email_templates_update_admin" ON public.email_templates;
+DROP POLICY IF EXISTS "email_templates_delete_admin" ON public.email_templates;
 CREATE POLICY "email_templates_select_admin" ON public.email_templates FOR SELECT TO authenticated USING (public.is_admin());
 CREATE POLICY "email_templates_insert_admin" ON public.email_templates FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "email_templates_update_admin" ON public.email_templates FOR UPDATE TO authenticated USING (public.is_admin());
 CREATE POLICY "email_templates_delete_admin" ON public.email_templates FOR DELETE TO authenticated USING (public.is_admin());
 
+DROP POLICY IF EXISTS "notifications_select_own_or_admin" ON public.notifications;
 -- NOTIFICATIONS (user sees own, admin sees all, authenticated can insert)
+DROP POLICY IF EXISTS "notifications_insert_auth" ON public.notifications;
+DROP POLICY IF EXISTS "notifications_update_admin" ON public.notifications;
 CREATE POLICY "notifications_select_own_or_admin" ON public.notifications FOR SELECT TO authenticated
   USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "notifications_insert_auth" ON public.notifications FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "notifications_update_admin" ON public.notifications FOR UPDATE TO authenticated USING (public.is_admin());
+DROP POLICY IF EXISTS "notifications_insert_auth" ON public.notifications;
+DROP POLICY IF EXISTS "notifications_update_admin" ON public.notifications;
 
 -- BOOKING_NOTIFICATIONS (user sees own via booking join, authenticated can insert)
+DROP POLICY IF EXISTS "booking_notif_select_own" ON public.booking_notifications;
 CREATE POLICY "booking_notif_select_own" ON public.booking_notifications FOR SELECT TO authenticated
   USING (EXISTS (
     SELECT 1 FROM public.bookings
     WHERE bookings.id = booking_notifications.booking_id
     AND (bookings.user_id = auth.uid() OR public.is_admin())
   ));
+DROP POLICY IF EXISTS "booking_notif_insert_auth" ON public.booking_notifications;
 CREATE POLICY "booking_notif_insert_auth" ON public.booking_notifications FOR INSERT TO authenticated WITH CHECK (true);
 
 -- ADMIN_NOTIFICATIONS (authenticated can insert, only admin can read/update)
+DROP POLICY IF EXISTS "admin_notif_insert_auth" ON public.admin_notifications;
 CREATE POLICY "admin_notif_insert_auth" ON public.admin_notifications FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "admin_notif_select_admin" ON public.admin_notifications;
 CREATE POLICY "admin_notif_select_admin" ON public.admin_notifications FOR SELECT TO authenticated USING (public.is_admin());
+
+DROP POLICY IF EXISTS "admin_notif_update_admin" ON public.admin_notifications;
 CREATE POLICY "admin_notif_update_admin" ON public.admin_notifications FOR UPDATE TO authenticated USING (public.is_admin());
 
 -- STORAGE_FILES (public read, admin write)
+DROP POLICY IF EXISTS "storage_files_select_public" ON public.storage_files;
+DROP POLICY IF EXISTS "storage_files_insert_admin" ON public.storage_files;
+DROP POLICY IF EXISTS "storage_files_update_admin" ON public.storage_files;
+DROP POLICY IF EXISTS "storage_files_delete_admin" ON public.storage_files;
 CREATE POLICY "storage_files_select_public" ON public.storage_files FOR SELECT TO public USING (true);
 CREATE POLICY "storage_files_insert_admin" ON public.storage_files FOR INSERT TO authenticated WITH CHECK (public.is_admin());
 CREATE POLICY "storage_files_update_admin" ON public.storage_files FOR UPDATE TO authenticated USING (public.is_admin());
