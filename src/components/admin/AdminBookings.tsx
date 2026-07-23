@@ -115,6 +115,29 @@ const getErrorMessage = (err: unknown, fallback: string) => {
   return fallback;
 };
 
+const isMissingPriceOverrideColumn = (err: unknown) => {
+  const message = getErrorMessage(err, '').toLowerCase();
+  return message.includes("could not find the 'price_override' column") || message.includes('price_override');
+};
+
+const insertBookingRow = async (payload: Record<string, unknown>) => {
+  const { data, error } = await supabase.from('bookings').insert(payload).select('id').single();
+  if (error && isMissingPriceOverrideColumn(error)) {
+    const { price_override, ...payloadWithoutPriceOverride } = payload;
+    return supabase.from('bookings').insert(payloadWithoutPriceOverride).select('id').single();
+  }
+  return { data, error };
+};
+
+const updateBookingRow = async (id: string, payload: Record<string, unknown>) => {
+  const { data, error } = await supabase.from('bookings').update(payload).eq('id', id);
+  if (error && isMissingPriceOverrideColumn(error)) {
+    const { price_override, ...payloadWithoutPriceOverride } = payload;
+    return supabase.from('bookings').update(payloadWithoutPriceOverride).eq('id', id);
+  }
+  return { data, error };
+};
+
 export const AdminBookings: React.FC = () => {
   const { language } = useLanguage();
   const t = translations[language];
@@ -580,22 +603,19 @@ export const AdminBookings: React.FC = () => {
         createdSlotId = newSlot.id;
       }
 
-      const { error: bookingError } = await supabase
-        .from('bookings')
-        .update({
-          service_id: parsed.isCustom ? null : parsed.service?.id,
-          stylist_id: editForm.stylistId || null,
-          status: editForm.status,
-          start_time: parsed.startIso,
-          end_time: parsed.endIso,
-          time_slot_id: slotId,
-          price_override: parsed.priceOverride,
-          contact_name: parsed.contactName,
-          contact_phone: parsed.contactPhone,
-          contact_email: parsed.contactEmail,
-          notes: parsed.notes
-        })
-        .eq('id', editingBooking.id);
+      const { error: bookingError } = await updateBookingRow(editingBooking.id, {
+        service_id: parsed.isCustom ? null : parsed.service?.id,
+        stylist_id: editForm.stylistId || null,
+        status: editForm.status,
+        start_time: parsed.startIso,
+        end_time: parsed.endIso,
+        time_slot_id: slotId,
+        price_override: parsed.priceOverride,
+        contact_name: parsed.contactName,
+        contact_phone: parsed.contactPhone,
+        contact_email: parsed.contactEmail,
+        notes: parsed.notes
+      });
 
       if (bookingError) throw bookingError;
 
@@ -699,24 +719,20 @@ export const AdminBookings: React.FC = () => {
       if (createSlotError || !newSlot?.id) throw createSlotError || new Error('Failed to create time slot');
       createdSlotId = newSlot.id;
 
-      const { data: newBooking, error: createBookingError } = await supabase
-        .from('bookings')
-        .insert({
-          service_id: parsed.isCustom ? null : parsed.service?.id,
-          user_id: null,
-          time_slot_id: newSlot.id,
-          stylist_id: createForm.stylistId || null,
-          status: createForm.status,
-          contact_name: parsed.contactName,
-          contact_phone: parsed.contactPhone,
-          contact_email: parsed.contactEmail,
-          notes: parsed.notes,
-          start_time: parsed.startIso,
-          end_time: parsed.endIso,
-          price_override: parsed.priceOverride
-        })
-        .select('id')
-        .single();
+      const { data: newBooking, error: createBookingError } = await insertBookingRow({
+        service_id: parsed.isCustom ? null : parsed.service?.id,
+        user_id: null,
+        time_slot_id: newSlot.id,
+        stylist_id: createForm.stylistId || null,
+        status: createForm.status,
+        contact_name: parsed.contactName,
+        contact_phone: parsed.contactPhone,
+        contact_email: parsed.contactEmail,
+        notes: parsed.notes,
+        start_time: parsed.startIso,
+        end_time: parsed.endIso,
+        price_override: parsed.priceOverride
+      });
 
       if (createBookingError || !newBooking?.id) throw createBookingError || new Error('Failed to create booking');
 
