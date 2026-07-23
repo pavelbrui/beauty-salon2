@@ -42,13 +42,22 @@ const OG_LOCALES: Record<string, string> = {
   ru: 'ru_RU',
 };
 
-/** Ensure path ends with trailing slash (Netlify serves prerendered pages at /path/). */
-const ensureTrailingSlash = (path: string): string =>
-  path.endsWith('/') ? path : `${path}/`;
+/** Normalize the path to a stable form without forcing redirects. */
+const normalizePath = (path: string): string => {
+  if (!path || path === '/') return '/';
 
-/** Build full URL with language prefix and trailing slash. Polish gets no prefix. */
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (normalized === '/en' || normalized === '/en/') return '/en/';
+  if (normalized === '/ru' || normalized === '/ru/') return '/ru/';
+
+  return normalized.length > 1 && normalized.endsWith('/')
+    ? normalized.slice(0, -1)
+    : normalized;
+};
+
+/** Build full URL with language prefix. Polish gets no prefix. */
 const getLocalizedUrl = (barePath: string, lang: string): string => {
-  const path = ensureTrailingSlash(barePath);
+  const path = normalizePath(barePath);
   if (lang === 'pl') return `${BASE_URL}${path}`;
   return `${BASE_URL}/${lang}${path}`;
 };
