@@ -1224,29 +1224,37 @@ export const AdminBookings: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {ab.price || 'Cena'}
+                  {editForm.serviceId === 'custom' ? ' (opcjonalnie dla blokady czasu)' : ''}
                 </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={editForm.pricePln}
-                    onChange={e => setEditForm({ ...editForm, pricePln: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                    placeholder="0"
-                  />
-                  <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const service = serviceMap.get(editForm.serviceId);
-                      if (!service) return;
-                      setEditForm({ ...editForm, pricePln: formatPricePlnFromCents(service.price) });
-                    }}
-                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
-                  >
-                    {ab.useServicePrice || 'Cena z usługi'}
-                  </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={editForm.pricePln}
+                      onChange={e => setEditForm({ ...editForm, pricePln: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      placeholder={editForm.serviceId === 'custom' ? 'Opcjonalnie' : '0'}
+                    />
+                    <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
+                    {editForm.serviceId !== 'custom' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const service = serviceMap.get(editForm.serviceId);
+                          if (!service) return;
+                          setEditForm({ ...editForm, pricePln: formatPricePlnFromCents(service.price) });
+                        }}
+                        className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                      >
+                        {ab.useServicePrice || 'Cena z usługi'}
+                      </button>
+                    )}
+                  </div>
+                  {editForm.serviceId === 'custom' && (
+                    <div className="text-xs text-gray-500">{ab.customPriceHint || 'Podaj cenę tylko gdy chcesz zarezerwować czas z ceną.'}</div>
+                  )}
                 </div>
               </div>
 
@@ -1467,29 +1475,37 @@ export const AdminBookings: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {ab.price || 'Cena'}
+                  {createForm.serviceId === 'custom' ? ' (opcjonalnie dla blokady czasu)' : ''}
                 </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={createForm.pricePln}
-                    onChange={e => setCreateForm({ ...createForm, pricePln: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                    placeholder="0"
-                  />
-                  <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const service = serviceMap.get(createForm.serviceId);
-                      if (!service) return;
-                      setCreateForm({ ...createForm, pricePln: formatPricePlnFromCents(service.price) });
-                    }}
-                    className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
-                  >
-                    {ab.useServicePrice || 'Cena z usługi'}
-                  </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={createForm.pricePln}
+                      onChange={e => setCreateForm({ ...createForm, pricePln: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      placeholder={createForm.serviceId === 'custom' ? 'Opcjonalnie' : '0'}
+                    />
+                    <span className="text-sm text-gray-500 whitespace-nowrap">PLN</span>
+                    {createForm.serviceId !== 'custom' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const service = serviceMap.get(createForm.serviceId);
+                          if (!service) return;
+                          setCreateForm({ ...createForm, pricePln: formatPricePlnFromCents(service.price) });
+                        }}
+                        className="text-xs text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md whitespace-nowrap"
+                      >
+                        {ab.useServicePrice || 'Cena z usługi'}
+                      </button>
+                    )}
+                  </div>
+                  {createForm.serviceId === 'custom' && (
+                    <div className="text-xs text-gray-500">{ab.customPriceHint || 'Podaj cenę tylko gdy chcesz zarezerwować czas z ceną.'}</div>
+                  )}
                 </div>
               </div>
 
