@@ -696,6 +696,12 @@ export const AdminBookings: React.FC = () => {
     let createdSlotId: string | null = null;
 
     try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session?.user?.id) {
+        throw new Error('Aby dodać rezerwację, zaloguj się ponownie.');
+      }
+
       const parsed = parseFormData(createForm);
 
       if (createForm.status !== 'cancelled' && createForm.stylistId) {
@@ -721,7 +727,7 @@ export const AdminBookings: React.FC = () => {
 
       const { data: newBooking, error: createBookingError } = await insertBookingRow({
         service_id: parsed.isCustom ? null : parsed.service?.id,
-        user_id: null,
+        user_id: session.user.id,
         time_slot_id: newSlot.id,
         stylist_id: createForm.stylistId || null,
         status: createForm.status,
