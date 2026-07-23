@@ -55,6 +55,8 @@ export interface Booking {
   time_slot_id?: string;
   start_time?: string;
   end_time?: string;
+  booksy_booking_url?: string | null;
+  conflict_error_message?: string | null;
 }
 
 export interface Stylist {

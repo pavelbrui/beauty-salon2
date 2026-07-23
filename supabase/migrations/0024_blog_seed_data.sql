@@ -1,5 +1,5 @@
 -- Seed data: 18 blog posts for beauty salon blog
--- Salon: Katarzyna Brui, ul. Mlynowa 46, Lok U11, Bialystok
+-- Salon: Katarzyna Brui, ul. Mlynowa 46, Lok U12, Bialystok
 
 -- ============================================================
 -- POST 1: Makijaz permanentny brwi - pudrowa vs microblading

@@ -182,7 +182,7 @@ export const generateServiceSchema = (
       url: baseUrl,
       address: {
         '@type': 'PostalAddress',
-        streetAddress: 'ul. Młynowa 46, Lok U11',
+        streetAddress: 'ul. Młynowa 46, Lok U12',
         addressLocality: 'Białystok',
         postalCode: '15-404',
         addressCountry: 'PL',

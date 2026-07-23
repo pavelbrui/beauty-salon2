@@ -347,7 +347,7 @@ export const Home: React.FC = () => {
                 {t.contact.address}
               </h3>
               <p className="text-gray-600">
-                ul. Młynowa 46, Lok U11<br />
+                ul. Młynowa 46, Lok U12<br />
                 15-404, Białystok<br />
                 Tel: <a href="tel:880435102" className="text-amber-600 hover:text-amber-700">880 435 102</a><br />
                 Katarzyna

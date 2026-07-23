@@ -6,7 +6,7 @@ export const BUSINESS_NAME = 'Salon Kosmetyczny Katarzyna Brui';
 
 export const BUSINESS_ADDRESS = {
   '@type': 'PostalAddress' as const,
-  streetAddress: 'ul. Młynowa 46, Lok U11',
+  streetAddress: 'ul. Młynowa 46, Lok U12',
   addressLocality: 'Białystok',
   postalCode: '15-404',
   addressCountry: 'PL',

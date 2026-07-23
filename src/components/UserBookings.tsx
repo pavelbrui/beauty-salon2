@@ -365,15 +365,30 @@ export const UserBookings: React.FC = () => {
     const statusConfig = getStatusConfig(booking.status);
     const price = booking.services?.price;
     const duration = booking.services?.duration;
+    const hasConflict = !!booking.booksy_booking_url;
 
     return (
       <div
         key={booking.id}
         className={`bg-white rounded-xl shadow-sm overflow-hidden transition-opacity ${
           booking.status === 'cancelled' ? 'opacity-60' : ''
-        }`}
+        } ${hasConflict ? 'border-2 border-orange-400' : ''}`}
       >
         <div className="p-5">
+          {hasConflict && (
+            <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm text-orange-700 font-medium mb-2">Konflikt terminu w harmonogramie</p>
+              <p className="text-sm text-orange-600 mb-3">Wybrany termin jest niedostępny. Prosimy wybrać inny termin lub skontaktować się z nami.</p>
+              <a
+                href={booking.booksy_booking_url ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors"
+              >
+                Zarezerwuj w Booksy
+              </a>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-3">

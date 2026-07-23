@@ -117,11 +117,102 @@ async function triggerConfirmationEmail(bookingId: string) {
   }
 }
 
+// --- Conflict notification email (when Booksy time slot is taken) ---
+async function sendConflictEmail(bookingId: string, booksyBookingUrl: string) {
+  if (!resendApiKey) {
+    console.error('[SYNC] RESEND_API_KEY not configured — cannot send conflict email');
+    return;
+  }
+  
+  try {
+    // Fetch booking details
+    const { data: booking } = await supabase
+      .from('bookings')
+      .select('contact_email, contact_name, start_time, services(name)')
+      .eq('id', bookingId)
+      .single();
+
+    if (!booking?.contact_email) {
+      console.error(`[SYNC] No contact email for booking ${bookingId}`);
+      return;
+    }
+
+    const serviceName = (booking.services as any)?.name || 'Usługa';
+    const dateStr = booking.start_time ? new Date(booking.start_time).toLocaleString('pl-PL') : '—';
+    const clientName = booking.contact_name || 'Panie/Pani';
+
+    const html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333; border-bottom: 3px solid #f59e0b; padding-bottom: 10px;">Zmiana terminu rezerwacji</h2>
+      
+      <p style="color: #666; line-height: 1.6;">Cześć ${clientName},</p>
+      
+      <p style="color: #666; line-height: 1.6;">
+        Niestety wybrany przez Ciebie termin na usługę <strong>${serviceName}</strong> (${dateStr}) 
+        jest już zajęty w naszym harmonogramie Booksy.
+      </p>
+      
+      <p style="color: #666; line-height: 1.6;">
+        <strong>Możesz wybrać inny dostępny termin bezpośrednio w Booksy:</strong>
+      </p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${booksyBookingUrl}" style="
+          display: inline-block;
+          background-color: #f59e0b;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+          font-size: 16px;
+        ">Zarezerwuj w Booksy</a>
+      </div>
+      
+      <p style="color: #666; line-height: 1.6;">
+        Jeśli chciałbyś(aś) rezerwować ten konkretny termin, <strong>skontaktuj się z nami telefonicznie</strong> 
+        - możemy spróbować znaleźć dla Ciebie alternatywne rozwiązanie.
+      </p>
+      
+      <p style="color: #666; line-height: 1.6;">
+        Z poważaniem,<br />
+        <strong>Studio Katarzyna Brui</strong>
+      </p>
+      
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+      <p style="color: #999; font-size: 12px; text-align: center;">
+        Tel: +48 XXXX XXX XXX | Email: brui.katarzyna@gmail.com
+      </p>
+    </div>`;
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [booking.contact_email],
+        subject: `Zmiana terminu: ${serviceName}`,
+        html,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error(`[SYNC] Resend error for conflict email:`, await res.text());
+    } else {
+      console.log(`[SYNC] Conflict notification email sent to ${booking.contact_email}`);
+    }
+  } catch (err) {
+    console.error(`[SYNC] Failed to send conflict email for booking ${bookingId}:`, err);
+  }
+}
+
 // --- Helpers ---
 async function updateSyncLog(
   bookingId: string,
   status: 'pending' | 'processing' | 'success' | 'failed',
-  extra?: { errorMessage?: string; booksyReservationId?: number }
+  extra?: { errorMessage?: string; booksyReservationId?: number; booksyBookingUrl?: string }
 ) {
   const update: Record<string, unknown> = { status };
   if (status === 'processing') {
@@ -135,6 +226,9 @@ async function updateSyncLog(
   }
   if (extra?.booksyReservationId) {
     update.booksy_reservation_id = extra.booksyReservationId;
+  }
+  if (extra?.booksyBookingUrl) {
+    update.booksy_booking_url = extra.booksyBookingUrl;
   }
   const { error } = await supabase
     .from('booksy_sync_log')
@@ -361,16 +455,42 @@ async function performSync(payload: SyncPayload): Promise<void> {
         if (err instanceof BooksyConflictError) {
           // simple retry after 2 seconds
           await new Promise(r => setTimeout(r, 2000));
-          const retryResult = await createReservation(session, startTime, endTime, resourceId);
-          if (retryResult) {
-            await supabase
-              .from('bookings')
-              .update({ booksy_reservation_id: retryResult.id, status: 'confirmed' })
-              .eq('id', bookingId);
-            await updateSyncLog(bookingId, 'success', { booksyReservationId: retryResult.id });
-            await triggerConfirmationEmail(bookingId);
-          } else {
-            await updateSyncLog(bookingId, 'failed', { errorMessage: 'Retry failed, no reservation ID.' });
+          try {
+            const retryResult = await createReservation(session, startTime, endTime, resourceId);
+            if (retryResult) {
+              await supabase
+                .from('bookings')
+                .update({ booksy_reservation_id: retryResult.id, status: 'confirmed' })
+                .eq('id', bookingId);
+              await updateSyncLog(bookingId, 'success', { booksyReservationId: retryResult.id });
+              await triggerConfirmationEmail(bookingId);
+            } else {
+              await updateSyncLog(bookingId, 'failed', { errorMessage: 'Retry failed, no reservation ID.' });
+            }
+          } catch (retryErr) {
+            // Conflict persists after retry — provide Booksy booking link to client
+            if (retryErr instanceof BooksyConflictError) {
+              const booksyBookingUrl = 'https://booksy.com/pl-pl/162206_katarzyna-brui_salon-kosmetyczny_5869_bialystok';
+              
+              // Store URL and conflict message in bookings and sync_log
+              await supabase
+                .from('bookings')
+                .update({
+                  booksy_booking_url: booksyBookingUrl,
+                  conflict_error_message: 'Konflikt terminu w Booksy — wyślij klientowi link do rezerwacji',
+                  status: 'pending',
+                })
+                .eq('id', bookingId);
+              await updateSyncLog(bookingId, 'failed', {
+                errorMessage: 'Konflikt terminu w Booksy — wysłano link do rezerwacji dla klienta',
+                booksyBookingUrl,
+              });
+              
+              // Send conflict notification email to client with Booksy link
+              await sendConflictEmail(bookingId, booksyBookingUrl);
+            } else {
+              throw retryErr;
+            }
           }
         } else {
           throw err;
@@ -419,9 +539,10 @@ async function performSync(payload: SyncPayload): Promise<void> {
 
     const clientName = bk?.contact_name || '—';
     const dateStr = startTime ? new Date(startTime).toLocaleString('pl-PL') : '—';
+    const serviceName = (bk?.services as any)?.[0]?.name || (bk?.services as any)?.name || '—';
     const alertHtml = `<div style="font-family:sans-serif;">
       <h2 style="color:#dc2626;">Błąd synchronizacji Booksy</h2>
-      <p>Rezerwacja: <b>${bk?.services?.name}</b></p>
+      <p>Rezerwacja: <b>${serviceName}</b></p>
       <p>Klient: <b>${clientName}</b> (${bk?.contact_phone})</p>
       <p>Termin: <b>${dateStr}</b></p>
       <p>Błąd: <span style="color:#dc2626;">${errorMsg}</span></p>

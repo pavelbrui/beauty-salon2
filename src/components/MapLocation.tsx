@@ -72,7 +72,7 @@ export const MapLocation: React.FC = () => {
           content: `
             <div style="padding:4px">
               <strong>Katarzyna Brui</strong><br/>
-              ul. Mlynowa 46, Lok U11<br/>
+              ul. Mlynowa 46, Lok U12<br/>
               15-404 Bialystok<br/>
               <a href="https://www.google.com/maps/place/?q=place_id:${PLACE_ID}" target="_blank" rel="noopener" style="color:#d97706">Directions</a>
             </div>

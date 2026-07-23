@@ -15,7 +15,7 @@ const content = {
         content: `Niniejszy regulamin określa zasady korzystania ze strony internetowej katarzynabrui.pl oraz warunki świadczenia usług kosmetycznych przez Salon Kosmetyczny Katarzyna Brui.
 
 Usługodawca: Katarzyna Brui, prowadząca działalność gospodarczą pod nazwą Salon Kosmetyczny Katarzyna Brui
-Adres: ul. Młynowa 46, lok. U11, 15-404 Białystok
+Adres: ul. Młynowa 46, lok. U12, 15-404 Białystok
 NIP: 5423506689
 Kontakt: info@katarzynabrui.pl, tel. +48 880 435 102
 
@@ -23,7 +23,7 @@ Regulamin jest udostępniony nieodpłatnie na stronie internetowej w formie umo�
       },
       {
         heading: '2. Definicje',
-        content: `• Salon — Salon Kosmetyczny Katarzyna Brui przy ul. Młynowej 46, lok. U11, 15-404 Białystok
+        content: `• Salon — Salon Kosmetyczny Katarzyna Brui przy ul. Młynowej 46, lok. U12, 15-404 Białystok
 • Klient — osoba fizyczna korzystająca z usług Salonu lub strony internetowej
 • Usługa — zabieg kosmetyczny świadczony przez Salon
 • Serwis — strona internetowa katarzynabrui.pl
@@ -160,14 +160,14 @@ Regulamin jest udostępniony nieodpłatnie na stronie internetowej w formie umo�
         content: `These terms and conditions govern the use of the katarzynabrui.pl website and the conditions for providing beauty services by Salon Kosmetyczny Katarzyna Brui.
 
 Service provider: Katarzyna Brui, operating as Salon Kosmetyczny Katarzyna Brui
-Address: ul. Młynowa 46, lok. U11, 15-404 Białystok, Poland
+Address: ul. Młynowa 46, lok. U12, 15-404 Białystok, Poland
 Contact: info@katarzynabrui.pl, phone: +48 880 435 102
 
 These terms are made available free of charge on the website in a format that allows downloading, saving, and printing.`,
       },
       {
         heading: '2. Definitions',
-        content: `• Salon — Salon Kosmetyczny Katarzyna Brui at ul. Młynowa 46, lok. U11, 15-404 Białystok
+        content: `• Salon — Salon Kosmetyczny Katarzyna Brui at ul. Młynowa 46, lok. U12, 15-404 Białystok
 • Client — a natural person using the Salon's services or website
 • Service — a beauty treatment provided by the Salon
 • Website — the katarzynabrui.pl website
@@ -304,14 +304,14 @@ These terms are made available free of charge on the website in a format that al
         content: `Настоящие правила определяют условия использования веб-сайта katarzynabrui.pl и условия оказания косметических услуг салоном Salon Kosmetyczny Katarzyna Brui.
 
 Поставщик услуг: Katarzyna Brui, осуществляющая предпринимательскую деятельность под названием Salon Kosmetyczny Katarzyna Brui
-Адрес: ul. Młynowa 46, лок. U11, 15-404 Białystok, Polska
+Адрес: ul. Młynowa 46, лок. U12, 15-404 Białystok, Polska
 Контакт: info@katarzynabrui.pl, тел. +48 880 435 102
 
 Настоящие правила предоставляются бесплатно на веб-сайте в формате, позволяющем их скачивание, сохранение и печать.`,
       },
       {
         heading: '2. Определения',
-        content: `• Салон — Salon Kosmetyczny Katarzyna Brui, ул. Młynowa 46, лок. U11, 15-404 Белосток
+        content: `• Салон — Salon Kosmetyczny Katarzyna Brui, ул. Młynowa 46, лок. U12, 15-404 Белосток
 • Клиент — физическое лицо, пользующееся услугами Салона или веб-сайтом
 • Услуга — косметическая процедура, оказываемая Салоном
 • Сайт — веб-сайт katarzynabrui.pl

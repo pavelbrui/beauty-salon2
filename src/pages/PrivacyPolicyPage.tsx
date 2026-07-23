@@ -12,12 +12,12 @@ const content = {
     sections: [
       {
         heading: '1. Administrator danych osobowych',
-        content: `Administratorem Twoich danych osobowych jest Katarzyna Brui, prowadząca działalność gospodarczą pod nazwą Salon Kosmetyczny Katarzyna Brui, ul. Młynowa 46, lok. U11, 15-404 Białystok, NIP: [NIP do uzupełnienia].
+        content: `Administratorem Twoich danych osobowych jest Katarzyna Brui, prowadząca działalność gospodarczą pod nazwą Salon Kosmetyczny Katarzyna Brui, ul. Młynowa 46, lok. U12, 15-404 Białystok, NIP: [NIP do uzupełnienia].
 
 Kontakt z administratorem:
 • E-mail: info@katarzynabrui.pl
 • Telefon: +48 880 435 102
-• Adres: ul. Młynowa 46, lok. U11, 15-404 Białystok`,
+• Adres: ul. Młynowa 46, lok. U12, 15-404 Białystok`,
       },
       {
         heading: '2. Podstawy prawne przetwarzania danych',
@@ -127,12 +127,12 @@ Dane te wykorzystujemy wyłącznie w celu utworzenia i obsługi konta użytkowni
     sections: [
       {
         heading: '1. Data Controller',
-        content: `The controller of your personal data is Katarzyna Brui, operating as Salon Kosmetyczny Katarzyna Brui, ul. Młynowa 46, lok. U11, 15-404 Białystok, Poland.
+        content: `The controller of your personal data is Katarzyna Brui, operating as Salon Kosmetyczny Katarzyna Brui, ul. Młynowa 46, lok. U12, 15-404 Białystok, Poland.
 
 Contact:
 • Email: info@katarzynabrui.pl
 • Phone: +48 880 435 102
-• Address: ul. Młynowa 46, lok. U11, 15-404 Białystok, Poland`,
+• Address: ul. Młynowa 46, lok. U12, 15-404 Białystok, Poland`,
       },
       {
         heading: '2. Legal Basis for Processing',
@@ -242,12 +242,12 @@ We use this data solely for creating and managing your user account on our websi
     sections: [
       {
         heading: '1. Администратор персональных данных',
-        content: `Администратором ваших персональных данных является Katarzyna Brui, ведущая предпринимательскую деятельность под названием Salon Kosmetyczny Katarzyna Brui, ул. Młynowa 46, лок. U11, 15-404 Белосток, Польша.
+        content: `Администратором ваших персональных данных является Katarzyna Brui, ведущая предпринимательскую деятельность под названием Salon Kosmetyczny Katarzyna Brui, ул. Młynowa 46, лок. U12, 15-404 Белосток, Польша.
 
 Контакт с администратором:
 • Электронная почта: info@katarzynabrui.pl
 • Телефон: +48 880 435 102
-• Адрес: ul. Młynowa 46, лок. U11, 15-404 Białystok, Polska`,
+• Адрес: ul. Młynowa 46, лок. U12, 15-404 Białystok, Polska`,
       },
       {
         heading: '2. Правовые основания обработки данных',

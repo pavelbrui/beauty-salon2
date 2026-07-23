@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
             <span className="block font-bold text-lg mb-4">{language === 'pl' ? 'Kontakt' : language === 'en' ? 'Contact' : 'Контакт'}</span>
             <address className="text-gray-400 text-sm not-italic space-y-2">
               <p>Salon Kosmetyczny Katarzyna Brui</p>
-              <p>ul. Młynowa 46, U11</p>
+              <p>ul. Młynowa 46, U12</p>
               <p>15-404 Białystok, Polska</p>
               <p className="pt-2">
                 <a href="tel:+48880435102" className="hover:text-amber-400 transition-colors">

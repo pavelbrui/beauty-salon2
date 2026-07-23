@@ -35,7 +35,7 @@ const ADMIN_EMAIL_2 = 'bpl_as2@mail.ru';
 const DEVELOPER_EMAIL = 'bpl_as@mail.ru';
 const FROM_EMAIL = 'Katarzyna Brui <studio@katarzynabrui.pl>';
 const SALON_PHONE = '+48 880435102';
-const SALON_ADDRESS = 'ul. Młynowa 46, local U11, Białystok';
+const SALON_ADDRESS = 'ul. Młynowa 46, local U12, Białystok';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
