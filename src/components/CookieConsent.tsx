@@ -19,6 +19,12 @@ function loadGA() {
   };
   window.gtag('js', new Date());
   window.gtag('config', GA_ID, { send_page_view: false });
+  window.dispatchEvent(new Event('analytics-ready'));
+}
+
+function scheduleGA() {
+  if (document.getElementById('ga-script')) return;
+  window.setTimeout(loadGA, 4_000);
 }
 
 export function CookieConsent() {
@@ -29,7 +35,7 @@ export function CookieConsent() {
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
     if (consent === 'accepted') {
-      loadGA();
+      scheduleGA();
     } else if (!consent) {
       setVisible(true);
     }

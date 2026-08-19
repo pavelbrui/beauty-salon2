@@ -15,6 +15,7 @@ import { CategoryVideoCardOptimized } from '../components/CategoryVideoCardOptim
 import { prerenderReady } from '../utils/prerenderReady';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Skeleton } from '../components/Skeleton';
+import { DeferredSection } from '../components/DeferredSection';
 
 // Lazy load heavy/non-critical components
 const BlogTeaser = lazy(() => import('../components/BlogTeaser').then(m => ({ default: m.BlogTeaser })));
@@ -288,7 +289,7 @@ export const Home: React.FC = () => {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((cat, idx) => (
+            {categories.map((cat) => (
               <CategoryVideoCardOptimized
                 key={cat.name}
                 displayName={getCategoryName(cat.name, language, (t as any).categories)}
@@ -298,7 +299,7 @@ export const Home: React.FC = () => {
                 servicesCountLabel={t.servicesCount}
                 ctaLabel={`${t.viewCategoryServices}: ${getCategoryName(cat.name, language, (t as any).categories)}`}
                 onClick={() => navigate(`/services/${getCategorySlug(cat.name)}#services`)}
-                imgLoading={idx < 3 ? 'eager' : 'lazy'}
+                imgLoading="lazy"
                 customAlt={`${getCategoryName(cat.name, language, (t as any).categories)} – zabiegi kosmetyczne w Białymstoku`}
               />
             ))}
@@ -328,17 +329,24 @@ export const Home: React.FC = () => {
           </div>
         </motion.section>
 
-        {/* Blog teaser - Lazy loaded */}
-        <Suspense fallback={<div className="py-20 h-96 flex items-center justify-center"><Skeleton className="w-full h-full max-w-6xl" /></div>}>
-          <BlogTeaser />
-        </Suspense>
+        {/* Mount expensive, below-the-fold sections only near the viewport. */}
+        <DeferredSection
+          fallback={<div className="py-20 h-96 flex items-center justify-center"><Skeleton className="w-full h-full max-w-6xl" /></div>}
+        >
+          <Suspense fallback={<div className="py-20 h-96 flex items-center justify-center"><Skeleton className="w-full h-full max-w-6xl" /></div>}>
+            <BlogTeaser />
+          </Suspense>
+        </DeferredSection>
 
-        {/* Reviews Section - Lazy loaded */}
-        <div id="reviews" className="scroll-mt-20">
+        <DeferredSection
+          id="reviews"
+          className="scroll-mt-20"
+          fallback={<div className="py-20 h-96"><Skeleton className="w-full h-full" /></div>}
+        >
           <Suspense fallback={<div className="py-20 h-96"><Skeleton className="w-full h-full" /></div>}>
             <Reviews />
           </Suspense>
-        </div>
+        </DeferredSection>
 
         <div className="mt-24 bg-gradient-to-br from-amber-50 to-white shadow-lg rounded-xl p-12">
           <h2 className="text-3xl font-semibold text-gray-900 mb-8 text-center">
@@ -394,9 +402,14 @@ export const Home: React.FC = () => {
             </div>
           </div>
           
-          <Suspense fallback={<div className="h-[350px] bg-gray-100 animate-pulse rounded-lg" />}>
-            <MapLocation />
-          </Suspense>
+          <DeferredSection
+            fallback={<div className="h-[350px] bg-gray-100 rounded-lg" />}
+            rootMargin="500px 0px"
+          >
+            <Suspense fallback={<div className="h-[350px] bg-gray-100 animate-pulse rounded-lg" />}>
+              <MapLocation />
+            </Suspense>
+          </DeferredSection>
         </div>
       </main>}
 

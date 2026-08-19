@@ -62,6 +62,31 @@ export const sendRegistrationEmail = async (
   }
 };
 
+/**
+ * Fire-and-forget: sends a Telegram alert through a protected server function.
+ * The browser supplies only the signed-in user's session token; the bot token
+ * stays exclusively in the deployment environment.
+ */
+export const sendTelegramBookingAlert = async (bookingId: string) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      console.warn('No auth session — Telegram alert skipped');
+      return;
+    }
+
+    fetch('/.netlify/functions/send-telegram-booking-alert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId, authToken: session.access_token }),
+    }).catch(() => {
+      // fire-and-forget: never block booking completion
+    });
+  } catch (err) {
+    console.error('Telegram booking alert error:', err);
+  }
+};
+
 export const sendBookingEmail = async (
   bookingId: string,
   type: 'confirmation' | 'cancellation' | 'reschedule' | 'deleted',

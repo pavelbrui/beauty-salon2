@@ -7,7 +7,7 @@ import { AuthModal } from '../components/AuthModal';
 import { BookingForm } from '../components/BookingForm';
 import { SuccessPopup } from '../components/SuccessPopup';
 import { supabase } from '../lib/supabase';
-import { notifyAdmin, notifyClient } from '../lib/notifications';
+import { notifyAdmin, notifyClient, sendTelegramBookingAlert } from '../lib/notifications';
 import { syncBookingToBooksy } from '../lib/booksySync';
 import { Service, TimeSlot } from '../types';
 import { SEO } from '../components/SEO';
@@ -207,6 +207,7 @@ export const BookingPage: React.FC = () => {
           const dateStr = selectedSlot.startTime ? new Date(selectedSlot.startTime).toLocaleString('pl-PL') : '—';
           await notifyClient(data[0].id, 'confirmation');
           await notifyAdmin(data[0].id, 'rebooked', `Nowa rezerwacja: ${service.name} na ${dateStr}`);
+          await sendTelegramBookingAlert(data[0].id);
           syncBookingToBooksy({
             action: 'create_block',
             bookingId: data[0].id,

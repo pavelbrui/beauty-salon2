@@ -1,6 +1,7 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 import { isRateLimited, getClientIp } from './utils/rateLimit';
+import { sendTelegramBookingAlert } from './utils/telegramBookingAlerts';
 
 // --- Supabase client with service_role (bypasses RLS) ---
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -774,7 +775,8 @@ async function handleNewBooking(
       await supabase.from('booksy_bookings').update({ time_slot_id: slotId }).eq('id', booking.id);
     }
 
-    // Check if this is a complex service that needs a 2nd stylist
+    // Check if this is a complex service that needs a 2nd stylist.
+    // The same configuration determines whether an external booking gets a Telegram alert.
     const complexMatch = await lookupComplexService(parsed.serviceName);
     if (complexMatch) {
       console.log(`[COMPLEX] Service "${parsed.serviceName}" is complex — blocking additional stylist "${complexMatch.additionalStylistName}"`);
@@ -785,6 +787,19 @@ async function handleNewBooking(
         parsed.endTime,
         booking.id
       );
+
+      await sendTelegramBookingAlert({
+        source: 'booksy-complex',
+        bookingId: booking.id,
+        clientName: parsed.clientName,
+        clientPhone: parsed.clientPhone,
+        clientEmail: parsed.clientEmail,
+        serviceName: parsed.serviceName,
+        startTime: parsed.startTime,
+        endTime: parsed.endTime,
+        stylistName: parsed.workerName,
+        priceText: parsed.priceText,
+      });
     }
   }
 

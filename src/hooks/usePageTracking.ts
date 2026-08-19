@@ -10,23 +10,20 @@ declare global {
 
 export function usePageTracking() {
   const location = useLocation();
+  const pagePath = location.pathname + location.search;
 
   useEffect(() => {
-    // Push page view for direct gtag integration
-    if (window.gtag) {
-      window.gtag('event', 'page_view', {
-        page_path: location.pathname + location.search,
-        page_title: document.title,
-      });
-    }
+    const trackPageView = () => {
+      if (window.gtag) {
+        window.gtag('event', 'page_view', {
+          page_path: pagePath,
+          page_title: document.title,
+        });
+      }
+    };
 
-    // Push custom event for GTM (useful for Yandex Metrica SPA tracking)
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'virtual_page_view',
-        page_path: location.pathname + location.search,
-        page_title: document.title,
-      });
-    }
-  }, [location.pathname, location.search]);
+    trackPageView();
+    window.addEventListener('analytics-ready', trackPageView);
+    return () => window.removeEventListener('analytics-ready', trackPageView);
+  }, [pagePath]);
 }
