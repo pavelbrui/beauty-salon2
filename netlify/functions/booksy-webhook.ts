@@ -19,6 +19,17 @@ function timingSafeCompare(a: string, b: string): boolean {
   return result === 0;
 }
 
+// --- Normalization helper (used by date parsing) ---
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ł/g, 'l')
+    .replace(/[^a-z0-9ąćęłńóśźż]+/g, ' ')
+    .trim();
+}
+
 // --- Polish month name → JS month index (0-based) ---
 const POLISH_MONTHS: Record<string, number> = {
   stycznia: 0,
@@ -29,11 +40,19 @@ const POLISH_MONTHS: Record<string, number> = {
   czerwca: 5,
   lipca: 6,
   sierpnia: 7,
+  wrzesnia: 8,
   września: 8,
+  pazdziernika: 9,
   października: 9,
   listopada: 10,
   grudnia: 11,
 };
+
+// Build a normalized lookup for month names (ASCII/no-diacritics variants)
+const POLISH_MONTHS_NORMALIZED: Record<string, number> = {};
+for (const [k, v] of Object.entries(POLISH_MONTHS)) {
+  POLISH_MONTHS_NORMALIZED[normalizeSearchText(k)] = v;
+}
 
 // --- Poland timezone offset helper ---
 // CET = +01:00, CEST = +02:00 (last Sunday of March to last Sunday of October)
@@ -70,13 +89,7 @@ interface ParsedBooking {
   oldEndTime?: string;
 }
 
-function normalizeSearchText(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ł/g, 'l');
-}
+// (keep earlier normalizeSearchText defined above)
 
 function containsAnyPhrase(value: string, phrases: string[]): boolean {
   return phrases.some((phrase) => value.includes(phrase));
@@ -118,13 +131,16 @@ function detectEmailType(subject: string, html: string): 'new' | 'changed' | 'ca
 // Also: "23 lutego 2026 15:45"
 function parsePolishDateTime(text: string): { start: string; end: string } | null {
   // Pattern with time range: day month year, HH:MM - HH:MM
-  const rangePattern =
-    /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4}),?\s+(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/i;
+  const rangePattern = /(\d{1,2})\s+([^,\s]+)\s+(\d{4}),?\s+(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/i;
   const rangeMatch = text.match(rangePattern);
 
   if (rangeMatch) {
     const day = parseInt(rangeMatch[1]);
-    const month = POLISH_MONTHS[rangeMatch[2].toLowerCase()];
+    const monthRaw = rangeMatch[2];
+    const monthLower = monthRaw.toLowerCase();
+    let month = POLISH_MONTHS[monthLower];
+    if (month === undefined) month = POLISH_MONTHS_NORMALIZED[normalizeSearchText(monthRaw)];
+    if (month === undefined) return null;
     const year = parseInt(rangeMatch[3]);
     const startH = parseInt(rangeMatch[4]);
     const startM = parseInt(rangeMatch[5]);
@@ -139,13 +155,16 @@ function parsePolishDateTime(text: string): { start: string; end: string } | nul
   }
 
   // Pattern with single time: day month year [o godzinie] HH:MM
-  const singlePattern =
-    /(\d{1,2})\s+(stycznia|lutego|marca|kwietnia|maja|czerwca|lipca|sierpnia|września|października|listopada|grudnia)\s+(\d{4}),?\s+(?:o godzinie\s+|godz\.?\s*)?(\d{1,2}):(\d{2})/i;
+  const singlePattern = /(\d{1,2})\s+([^,\s]+)\s+(\d{4}),?\s+(?:o godzinie\s+|godz\.?\s*)?(\d{1,2}):(\d{2})/i;
   const singleMatch = text.match(singlePattern);
 
   if (singleMatch) {
     const day = parseInt(singleMatch[1]);
-    const month = POLISH_MONTHS[singleMatch[2].toLowerCase()];
+    const monthRaw = singleMatch[2];
+    const monthLower = monthRaw.toLowerCase();
+    let month = POLISH_MONTHS[monthLower];
+    if (month === undefined) month = POLISH_MONTHS_NORMALIZED[normalizeSearchText(monthRaw)];
+    if (month === undefined) return null;
     const year = parseInt(singleMatch[3]);
     const h = parseInt(singleMatch[4]);
     const m = parseInt(singleMatch[5]);
