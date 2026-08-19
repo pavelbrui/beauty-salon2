@@ -91,6 +91,9 @@ export const Home: React.FC = () => {
   };
 
   const activeVideo = introVideos[currentVideoIdx] || '/intro-video2.mp4';
+  const activeVideoPoster = currentVideoIdx === 0
+    ? '/intro-video2-poster.jpg'
+    : '/intro-video-poster.jpg';
   const isLastVideo = currentVideoIdx === introVideos.length - 1;
 
   const loadCategories = async () => {
@@ -240,17 +243,17 @@ export const Home: React.FC = () => {
                 {t.aboutText}
               </p>
             </div>
-            <div className="flex-1 w-full max-w-md mx-auto">
-              <div className="rounded-2xl overflow-hidden shadow-lg aspect-square bg-gray-100">
+            <div className="flex-1 w-full max-w-[280px] lg:max-w-[320px] mx-auto">
+              <div className="rounded-2xl overflow-hidden shadow-lg aspect-[9/16] bg-neutral-950">
                 {videoMounted ? (
                   <video
                     key={activeVideo}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                     autoPlay
                     muted
                     loop={isLastVideo}
                     playsInline
-                    poster="/og-image2.jpg"
+                    poster={activeVideoPoster}
                     preload="metadata"
                     onEnded={() => {
                       if (!isLastVideo) {
@@ -262,9 +265,9 @@ export const Home: React.FC = () => {
                   </video>
                 ) : (
                   <img
-                    src="/og-image2.jpg"
+                    src={activeVideoPoster}
                     alt={t.aboutTitle}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                     loading="lazy"
                     decoding="async"
                   />
