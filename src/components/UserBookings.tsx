@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedPath';
 import { supabase } from '../lib/supabase';
 import { notifyAdmin, notifyClient, sendBookingEmail } from '../lib/notifications';
@@ -9,7 +9,8 @@ import { useViewMode } from '../hooks/useViewMode';
 import { translations } from '../i18n/translations';
 import { getServiceName } from '../utils/serviceTranslation';
 import { AdvancedBookingCalendar } from './Calendar/AdvancedBookingCalendar';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth, startOfDay, isBefore } from 'date-fns';
+import { UserCalendarView } from './Calendar/UserCalendarView';
+import { format } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import { QuickBookingPopup } from './QuickBookingPopup';
 import {
@@ -21,10 +22,7 @@ import {
   ArrowPathIcon,
   TrashIcon,
   SparklesIcon,
-  ListBulletIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PlusIcon
+  ListBulletIcon
 } from '@heroicons/react/24/outline';
 
 const dateLocales = { pl, en: enUS, ru };
@@ -41,8 +39,6 @@ export const UserBookings: React.FC = () => {
   const [rescheduleService, setRescheduleService] = useState<Service | null>(null);
   const [filter, setFilter] = useState<BookingFilter>('all');
   const [viewMode, setViewMode] = useViewMode();
-  const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
-  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [quickBookDate, setQuickBookDate] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -315,48 +311,6 @@ export const UserBookings: React.FC = () => {
 
   const activeCount = bookings.filter(b => isActiveBooking(b.status)).length;
 
-  const locale = dateLocales[language as keyof typeof dateLocales] || pl;
-
-  const calendarDays = useMemo(() => {
-    const monthStart = startOfMonth(calendarMonth);
-    const monthEnd = endOfMonth(calendarMonth);
-    const start = startOfWeek(monthStart, { weekStartsOn: 1 });
-    const end = endOfWeek(monthEnd, { weekStartsOn: 1 });
-    const days: Date[] = [];
-    let day = start;
-    while (day <= end) {
-      days.push(day);
-      day = addDays(day, 1);
-    }
-    return days;
-  }, [calendarMonth]);
-
-  const bookingsByDate = useMemo(() => {
-    const map: Record<string, Booking[]> = {};
-    filteredBookings.forEach(b => {
-      const startTime = b.time_slots?.start_time || b.start_time;
-      if (!startTime) return;
-      const dateKey = format(new Date(startTime), 'yyyy-MM-dd');
-      if (!map[dateKey]) map[dateKey] = [];
-      map[dateKey].push(b);
-    });
-    Object.values(map).forEach(arr =>
-      arr.sort((a, b) => {
-        const ta = a.time_slots?.start_time || a.start_time || '';
-        const tb = b.time_slots?.start_time || b.start_time || '';
-        return ta.localeCompare(tb);
-      })
-    );
-    return map;
-  }, [filteredBookings]);
-
-  const weekDays = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) => {
-      const day = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i);
-      return format(day, 'EEEEEE', { locale });
-    });
-  }, [locale]);
-
   const renderBookingCard = (booking: Booking) => {
     const startTime = booking.time_slots?.start_time || booking.start_time;
     const endTime = booking.time_slots?.end_time || booking.end_time;
@@ -580,125 +534,11 @@ export const UserBookings: React.FC = () => {
 
             {/* Calendar View */}
             {viewMode === 'calendar' && (
-              <div className="bg-white rounded-xl shadow-sm">
-                {/* Calendar header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                  <button
-                    onClick={() => setCalendarMonth(subMonths(calendarMonth, 1))}
-                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-                  >
-                    <ChevronLeftIcon className="h-5 w-5" />
-                  </button>
-                  <h3 className="text-lg font-semibold text-gray-900 capitalize">
-                    {format(calendarMonth, 'LLLL yyyy', { locale })}
-                  </h3>
-                  <button
-                    onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))}
-                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-                  >
-                    <ChevronRightIcon className="h-5 w-5" />
-                  </button>
-                </div>
-
-                {/* Week day headers */}
-                <div className="grid grid-cols-7 border-b border-gray-100">
-                  {weekDays.map((day, i) => (
-                    <div key={i} className="py-2 text-center text-xs font-medium text-gray-500 uppercase">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar grid */}
-                <div className="grid grid-cols-7">
-                  {calendarDays.map((day, i) => {
-                    const dateKey = format(day, 'yyyy-MM-dd');
-                    const dayBookings = bookingsByDate[dateKey] || [];
-                    const isCurrentMonth = isSameMonth(day, calendarMonth);
-                    const isToday = isSameDay(day, new Date());
-                    const isSelected = selectedDay && isSameDay(day, selectedDay);
-                    const isPast = isBefore(startOfDay(day), startOfDay(new Date()));
-                    const canQuickBook = isCurrentMonth && !isPast;
-
-                    return (
-                      <div
-                        key={i}
-                        onClick={() => {
-                          if (dayBookings.length > 0) {
-                            setSelectedDay(isSelected ? null : day);
-                          }
-                        }}
-                        className={`relative group min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 p-1 transition-colors ${
-                          !isCurrentMonth ? 'bg-gray-50' : ''
-                        } ${isSelected ? 'bg-amber-50 ring-2 ring-amber-300 ring-inset' : ''} ${
-                          dayBookings.length > 0 ? 'cursor-pointer hover:bg-amber-50/50' : ''
-                        }`}
-                      >
-                        <div className={`text-xs font-medium mb-1 px-1 ${
-                          isToday
-                            ? 'bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
-                            : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'
-                        }`}>
-                          {format(day, 'd')}
-                        </div>
-
-                        {/* Quick book "+" button — centered in cell */}
-                        {canQuickBook && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setQuickBookDate(day);
-                            }}
-                            className="absolute inset-0 m-auto w-fit h-fit flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 hover:scale-105 transition-all shadow-md opacity-0 sm:group-hover:opacity-100 active:opacity-100 text-[11px] font-semibold whitespace-nowrap z-10"
-                            title={t.quick_booking?.addBooking || 'Zarezerwuj wizytę'}
-                          >
-                            <PlusIcon className="h-4 w-4 flex-shrink-0" />
-                            <span>{t.quick_booking?.newReservation || 'Nowa'}</span>
-                          </button>
-                        )}
-
-                        <div className="space-y-0.5">
-                          {dayBookings.slice(0, 2).map(b => {
-                            const sc = getStatusConfig(b.status);
-                            const time = b.time_slots?.start_time || b.start_time;
-                            const timeStr = time ? format(new Date(time), 'HH:mm') : '';
-
-                            return (
-                              <div
-                                key={b.id}
-                                className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate ${sc.bg} ${sc.text}`}
-                                title={`${timeStr} ${b.services ? getServiceName(b.services, language) : ''}`}
-                              >
-                                <span className="font-medium">{timeStr}</span>{' '}
-                                <span className="hidden sm:inline">{b.services ? getServiceName(b.services, language) : ''}</span>
-                              </div>
-                            );
-                          })}
-                          {dayBookings.length > 2 && (
-                            <div className="text-[10px] text-gray-400 px-1">
-                              +{dayBookings.length - 2} {t.profile_page?.more || 'więcej'}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Selected day detail panel */}
-                {selectedDay && (
-                  <div className="border-t border-gray-200 p-4">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-3 capitalize">
-                      {format(selectedDay, 'EEEE, d MMMM yyyy', { locale })}
-                    </h4>
-                    <div className="space-y-3">
-                      {(bookingsByDate[format(selectedDay, 'yyyy-MM-dd')] || []).map(booking =>
-                        renderBookingCard(booking)
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <UserCalendarView
+                bookings={filteredBookings}
+                onQuickBook={(date) => setQuickBookDate(date)}
+                renderBookingCard={(booking) => renderBookingCard(booking)}
+              />
             )}
           </>
         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, cleanOldEmailLogs } from '../../lib/supabase';
-import { BooksyBooking, BooksyStylistMapping, BooksySyncLog, BooksySession, Stylist } from '../../types';
+import { BooksyBooking, BooksyStylistMapping, BooksySyncLog, BooksySession, BooksyComplexService, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
 import { translations } from '../../i18n/translations';
 import { format } from 'date-fns';
@@ -16,6 +16,10 @@ import {
   InboxIcon,
   EyeIcon,
   EyeSlashIcon,
+  UsersIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 
 const dateLocales = { pl, en: enUS, ru };
@@ -34,6 +38,17 @@ export const AdminBooksy: React.FC = () => {
   const [emailPageSize] = useState(20);
   const [bookingPage, setBookingPage] = useState(1);
   const [bookingPageSize] = useState(20);
+
+  // Complex services state
+  const [complexServices, setComplexServices] = useState<BooksyComplexService[]>([]);
+  const [showComplexModal, setShowComplexModal] = useState(false);
+  const [editingComplex, setEditingComplex] = useState<BooksyComplexService | null>(null);
+  const [complexServiceNameInput, setComplexServiceNameInput] = useState('');
+  const [complexStylistIdInput, setComplexStylistIdInput] = useState('');
+  const [complexIsActiveInput, setComplexIsActiveInput] = useState(true);
+  const [complexNotesInput, setComplexNotesInput] = useState('');
+  const [savingComplex, setSavingComplex] = useState(false);
+  const [suggestedServiceNames, setSuggestedServiceNames] = useState<string[]>([]);
 
   // Email log state
   interface EmailLogEntry {
@@ -91,7 +106,7 @@ export const AdminBooksy: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [mappingsRes, stylistsRes, bookingsRes, logsRes, syncLogsRes, sessionRes] = await Promise.all([
+      const [mappingsRes, stylistsRes, bookingsRes, logsRes, syncLogsRes, sessionRes, complexRes, servicesRes] = await Promise.all([
         supabase
           .from('booksy_stylist_mapping')
           .select('*, stylists(name, image_url)')
@@ -117,6 +132,14 @@ export const AdminBooksy: React.FC = () => {
           .select('*')
           .eq('id', 'default')
           .maybeSingle(),
+        supabase
+          .from('booksy_complex_services')
+          .select('*, stylists:additional_stylist_id(name, image_url)')
+          .order('booksy_service_name'),
+        supabase
+          .from('services')
+          .select('name')
+          .order('name'),
       ]);
 
       if (mappingsRes.error) console.error('Error loading mappings:', mappingsRes.error);
@@ -124,16 +147,102 @@ export const AdminBooksy: React.FC = () => {
       if (bookingsRes.error) console.error('Error loading booksy bookings:', bookingsRes.error);
       if (logsRes.error) console.error('Error loading email logs:', logsRes.error);
       if (syncLogsRes.error) console.error('Error loading sync logs:', syncLogsRes.error);
+      if (complexRes.error) console.error('Error loading complex services:', complexRes.error);
 
       if (mappingsRes.data) setMappings(mappingsRes.data);
       if (stylistsRes.data) setStylists(stylistsRes.data);
       if (bookingsRes.data) setBookings(bookingsRes.data);
       if (logsRes.data) setEmailLogs(logsRes.data);
       if (syncLogsRes.data) setSyncLogs(syncLogsRes.data);
+      if (complexRes.data) setComplexServices(complexRes.data as unknown as BooksyComplexService[]);
       setBooksySession(sessionRes.data as BooksySession | null);
+
+      // Build suggested service names from services table + past booksy bookings
+      const siteNames = (servicesRes.data || []).map((s) => s.name);
+      const booksyNames = (bookingsRes.data || []).map((b) => b.booksy_service_name);
+      const uniqueNames = Array.from(new Set([...siteNames, ...booksyNames])).filter(Boolean);
+      setSuggestedServiceNames(uniqueNames);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Complex service management handlers
+  const openAddComplexModal = () => {
+    setEditingComplex(null);
+    setComplexServiceNameInput('');
+    setComplexStylistIdInput(stylists[0]?.id || '');
+    setComplexIsActiveInput(true);
+    setComplexNotesInput('');
+    setShowComplexModal(true);
+  };
+
+  const openEditComplexModal = (item: BooksyComplexService) => {
+    setEditingComplex(item);
+    setComplexServiceNameInput(item.booksy_service_name);
+    setComplexStylistIdInput(item.additional_stylist_id);
+    setComplexIsActiveInput(item.is_active);
+    setComplexNotesInput(item.notes || '');
+    setShowComplexModal(true);
+  };
+
+  const saveComplexService = async () => {
+    const serviceName = complexServiceNameInput.trim();
+    if (!serviceName || !complexStylistIdInput) {
+      alert(language === 'pl' ? 'Podaj nazwę usługi i wybierz 2. stylistkę.' : 'Provide service name and select 2nd stylist.');
+      return;
+    }
+    setSavingComplex(true);
+    try {
+      if (editingComplex) {
+        const { error } = await supabase
+          .from('booksy_complex_services')
+          .update({
+            booksy_service_name: serviceName,
+            additional_stylist_id: complexStylistIdInput,
+            is_active: complexIsActiveInput,
+            notes: complexNotesInput.trim() || null,
+          })
+          .eq('id', editingComplex.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('booksy_complex_services')
+          .insert({
+            booksy_service_name: serviceName,
+            additional_stylist_id: complexStylistIdInput,
+            is_active: complexIsActiveInput,
+            notes: complexNotesInput.trim() || null,
+          });
+        if (error) throw error;
+      }
+      setShowComplexModal(false);
+      loadData();
+    } catch (err: any) {
+      console.error('Error saving complex service:', err);
+      alert(err.message || 'Error saving complex service');
+    } finally {
+      setSavingComplex(false);
+    }
+  };
+
+  const toggleComplexActive = async (item: BooksyComplexService) => {
+    const { error } = await supabase
+      .from('booksy_complex_services')
+      .update({ is_active: !item.is_active })
+      .eq('id', item.id);
+    if (error) console.error('Error toggling active state:', error);
+    else loadData();
+  };
+
+  const deleteComplexService = async (id: string) => {
+    if (!confirm(language === 'pl' ? 'Czy na pewno chcesz usunąć tę usługę kompleksową?' : 'Are you sure you want to delete this complex service?')) return;
+    const { error } = await supabase
+      .from('booksy_complex_services')
+      .delete()
+      .eq('id', id);
+    if (error) console.error('Error deleting complex service:', error);
+    else loadData();
   };
 
   const startEditMapping = (mapping: BooksyStylistMapping) => {
@@ -746,6 +855,121 @@ export const AdminBooksy: React.FC = () => {
         )}
       </div>
 
+      {/* Complex Services Mapping Section (Usługi Kompleksowe) */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <UsersIcon className="h-5 w-5 text-amber-500" />
+              {ab.complexServicesTitle || 'Usługi Kompleksowe (Podwójna Obsada)'}
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                {complexServices.length}
+              </span>
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {ab.complexServicesDesc || 'Skonfiguruj dodatkowego pracownika dla usług wymagających rezerwacji 2 stylistek jednocześnie.'}
+            </p>
+          </div>
+
+          <button
+            onClick={openAddComplexModal}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors shadow-sm"
+          >
+            <PlusIcon className="h-4 w-4" />
+            {ab.addComplexService || 'Dodaj usługę kompleksową'}
+          </button>
+        </div>
+
+        {complexServices.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            <UsersIcon className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+            <p className="text-gray-500 text-sm font-medium">
+              {ab.noComplexServices || 'Brak skonfigurowanych usług kompleksowych'}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Kliknij przycisk wyżej, aby zmapować usługę Booksy do drugiej stylistki.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {ab.serviceNameInBooksy || 'Nazwa usługi w Booksy'}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {ab.additionalStylist || 'Dodatkowy pracownik (2. stylistka)'}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {ab.notes || 'Uwagi'}
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Akcje
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {complexServices.map((item) => (
+                  <tr key={item.id} className={!item.is_active ? 'bg-gray-50 opacity-75' : ''}>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="font-semibold text-gray-900">{item.booksy_service_name}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        {item.stylists?.image_url && (
+                          <img src={item.stylists.image_url} alt="" className="w-6 h-6 rounded-full object-cover" />
+                        )}
+                        <span className="text-sm font-medium text-amber-900 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
+                          {item.stylists?.name || '—'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleComplexActive(item)}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+                          item.is_active
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_active ? 'bg-green-600' : 'bg-gray-500'}`} />
+                        {item.is_active ? (ab.statusActiveLabel || 'Aktywna') : (ab.statusInactiveLabel || 'Nieaktywna')}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 max-w-xs truncate">
+                      {item.notes || '—'}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEditComplexModal(item)}
+                          className="p-1 text-gray-500 hover:text-amber-600 rounded hover:bg-amber-50"
+                          title="Edytuj"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteComplexService(item.id)}
+                          className="p-1 text-gray-500 hover:text-red-600 rounded hover:bg-red-50"
+                          title="Usuń"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* Booksy Bookings Section */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
@@ -1129,6 +1353,116 @@ export const AdminBooksy: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Complex Service Add/Edit Modal */}
+      {showComplexModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <UsersIcon className="h-5 w-5 text-amber-500" />
+              {editingComplex
+                ? (language === 'pl' ? 'Edytuj usługę kompleksową' : language === 'ru' ? 'Редактировать комплексную услугу' : 'Edit complex service')
+                : (ab.addComplexService || 'Dodaj usługę kompleksową')}
+            </h4>
+
+            <div className="space-y-4">
+              {/* Service name with datalist suggestions */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {ab.serviceNameInBooksy || 'Nazwa usługi w Booksy'}
+                </label>
+                <input
+                  type="text"
+                  list="complex-service-suggestions"
+                  value={complexServiceNameInput}
+                  onChange={(e) => setComplexServiceNameInput(e.target.value)}
+                  placeholder={language === 'pl' ? 'np. Uzupełnienie 1-1:2' : 'e.g. Touch-up 1-1:2'}
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                />
+                <datalist id="complex-service-suggestions">
+                  {suggestedServiceNames.map((name) => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
+                <p className="text-xs text-gray-400 mt-1">
+                  {language === 'pl'
+                    ? 'Wpisz nazwę usługi dokładnie tak jak pojawia się w emailach z Booksy'
+                    : 'Type the service name exactly as it appears in Booksy emails'}
+                </p>
+              </div>
+
+              {/* Additional stylist select */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {ab.additionalStylist || 'Dodatkowy pracownik (2. stylistka)'}
+                </label>
+                <select
+                  value={complexStylistIdInput}
+                  onChange={(e) => setComplexStylistIdInput(e.target.value)}
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                >
+                  <option value="">{ab.selectStylist || 'Wybierz stylistkę'}</option>
+                  {stylists.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Active toggle */}
+              <div className="flex items-center gap-3">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={complexIsActiveInput}
+                    onChange={(e) => setComplexIsActiveInput(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-gray-300 rounded-full peer peer-checked:bg-amber-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                </label>
+                <span className="text-sm text-gray-700">
+                  {complexIsActiveInput
+                    ? (ab.statusActiveLabel || 'Aktywna')
+                    : (ab.statusInactiveLabel || 'Nieaktywna')}
+                </span>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {ab.notes || 'Uwagi / Opis'}
+                </label>
+                <textarea
+                  value={complexNotesInput}
+                  onChange={(e) => setComplexNotesInput(e.target.value)}
+                  rows={2}
+                  placeholder={language === 'pl' ? 'np. Potrzebna asystentka podczas zabiegu' : 'e.g. Assistant needed during treatment'}
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowComplexModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+              >
+                {language === 'pl' ? 'Anuluj' : 'Cancel'}
+              </button>
+              <button
+                onClick={saveComplexService}
+                disabled={savingComplex || !complexServiceNameInput.trim() || !complexStylistIdInput}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 disabled:opacity-50"
+              >
+                {savingComplex
+                  ? (language === 'pl' ? 'Zapisywanie...' : 'Saving...')
+                  : (ab.save || 'Zapisz')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -24,7 +24,7 @@ test.describe('Blog Page', () => {
   });
 
   test('blog link is visible in navigation', async ({ page }) => {
-    const blogLink = page.locator('nav a[href="/blog"]');
+    const blogLink = page.locator('nav a[href="/blog"]').first();
     await expect(blogLink).toBeVisible();
   });
 });
@@ -42,7 +42,7 @@ test.describe('Blog Detail Page', () => {
       await page.waitForTimeout(1000);
 
       // Should show article content
-      await expect(page.locator('article, h1')).toBeVisible();
+      await expect(page.locator('article, h1').first()).toBeVisible();
 
       // Back link should exist
       const backLink = page.locator('a[href="/blog"]');

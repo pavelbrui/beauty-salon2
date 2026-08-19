@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (process.env as Record<string, string | undefined>);
+const supabaseUrl = env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!hasSupabaseConfig) {
@@ -48,7 +49,7 @@ export const cleanOldEmailLogs = async (days: number = 10) => {
 
 // Helper function to handle Supabase errors (sanitized — never leak DB details to client)
 export const handleSupabaseError = (error: any) => {
-  if (import.meta.env.DEV) {
+  if (env?.DEV) {
     console.error('Supabase error:', error);
   }
   return {

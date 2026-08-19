@@ -34,3 +34,4 @@ prerender-routes.json
 
 # Local Netlify folder
 .netlify
+.temp

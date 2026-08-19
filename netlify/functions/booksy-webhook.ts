@@ -572,6 +572,145 @@ async function unblockTimeSlot(booksyBookingId: string): Promise<void> {
   }
 }
 
+// --- Complex service lookup ---
+// Checks if a Booksy service name matches an active complex service mapping
+// and returns the additional stylist info if found.
+async function lookupComplexService(
+  serviceName: string
+): Promise<{ additionalStylistId: string; additionalStylistName: string | null } | null> {
+  if (!serviceName) return null;
+
+  const { data } = await supabase
+    .from('booksy_complex_services')
+    .select('additional_stylist_id, stylists:additional_stylist_id(name)')
+    .eq('is_active', true)
+    .ilike('booksy_service_name', serviceName)
+    .limit(1)
+    .maybeSingle();
+
+  if (!data?.additional_stylist_id) return null;
+
+  return {
+    additionalStylistId: data.additional_stylist_id,
+    additionalStylistName: (data.stylists as any)?.name || null,
+  };
+}
+
+// --- Block additional stylist for complex service ---
+// Creates a blocking time_slot and a booksy_sync_log entry for the 2nd stylist
+async function blockAdditionalStylistForComplexService(
+  additionalStylistId: string,
+  additionalStylistName: string | null,
+  startTime: string,
+  endTime: string,
+  booksyBookingId: string
+): Promise<void> {
+  // 1. Block the time slot internally
+  const slotInsert: Record<string, unknown> = {
+    start_time: startTime,
+    end_time: endTime,
+    is_available: false,
+    stylist_id: additionalStylistId,
+    booksy_booking_id: booksyBookingId,
+  };
+  const { error: slotError } = await supabase.from('time_slots').insert(slotInsert);
+  if (slotError) {
+    console.error('Error blocking additional stylist time slot:', slotError);
+  }
+
+  // 2. Look up the additional stylist's booksy_resource_id for outbound Booksy sync
+  const { data: mapping } = await supabase
+    .from('booksy_stylist_mapping')
+    .select('booksy_resource_id')
+    .eq('stylist_id', additionalStylistId)
+    .limit(1)
+    .maybeSingle();
+
+  if (mapping?.booksy_resource_id) {
+    // Insert a sync log entry so booksy-sync-background can create a Booksy reservation
+    await supabase.from('booksy_sync_log').insert({
+      booking_id: null, // Not a site booking; linked to booksy_booking
+      action: 'create_block',
+      start_time: startTime,
+      end_time: endTime,
+      stylist_name: additionalStylistName,
+    });
+
+    // Fire background function
+    const siteUrl = process.env.URL || 'https://katarzynabrui.pl';
+    const syncSecret = process.env.BOOKSY_SYNC_SECRET || '';
+    fetch(`${siteUrl}/.netlify/functions/booksy-sync-background`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_block',
+        bookingId: booksyBookingId, // used for log lookup
+        startTime,
+        endTime,
+        stylistName: additionalStylistName,
+        secret: syncSecret,
+      }),
+    }).catch(() => {});
+
+    console.log(`[COMPLEX] Triggered Booksy sync for additional stylist "${additionalStylistName}" (resource ${mapping.booksy_resource_id})`);
+  } else {
+    console.warn(`[COMPLEX] No booksy_resource_id found for additional stylist ${additionalStylistId} — internal time blocked but Booksy reservation not created`);
+  }
+}
+
+// --- Unblock additional stylist for complex service ---
+async function unblockAdditionalStylistForComplexService(
+  booksyBookingId: string
+): Promise<void> {
+  // The additional stylist's time_slots are also linked via booksy_booking_id
+  // unblockTimeSlot already deletes ALL time_slots with this booksy_booking_id,
+  // so it covers both main and additional stylist slots.
+  // No extra action needed here for internal slots.
+
+  // For Booksy outbound: we'd need to fire remove_block for the additional stylist's reservation
+  // But since booksy-sync-background handles it via the sync_log, we insert a remove entry
+  // Look up the original complex service to find the additional stylist
+  const { data: slots } = await supabase
+    .from('time_slots')
+    .select('stylist_id, start_time, end_time')
+    .eq('booksy_booking_id', booksyBookingId);
+
+  if (slots && slots.length > 1) {
+    // There are multiple slots — find ones that belong to additional stylists
+    for (const slot of slots) {
+      if (!slot.stylist_id) continue;
+      const { data: stylist } = await supabase
+        .from('stylists')
+        .select('name')
+        .eq('id', slot.stylist_id)
+        .single();
+
+      await supabase.from('booksy_sync_log').insert({
+        booking_id: null,
+        action: 'remove_block',
+        start_time: slot.start_time,
+        end_time: slot.end_time,
+        stylist_name: stylist?.name || null,
+      });
+
+      const siteUrl = process.env.URL || 'https://katarzynabrui.pl';
+      const syncSecret = process.env.BOOKSY_SYNC_SECRET || '';
+      fetch(`${siteUrl}/.netlify/functions/booksy-sync-background`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'remove_block',
+          bookingId: booksyBookingId,
+          startTime: slot.start_time,
+          endTime: slot.end_time,
+          stylistName: stylist?.name || null,
+          secret: syncSecret,
+        }),
+      }).catch(() => {});
+    }
+  }
+}
+
 // --- Handle new booking ---
 async function handleNewBooking(
   parsed: ParsedBooking,
@@ -615,6 +754,19 @@ async function handleNewBooking(
     if (slotId) {
       await supabase.from('booksy_bookings').update({ time_slot_id: slotId }).eq('id', booking.id);
     }
+
+    // Check if this is a complex service that needs a 2nd stylist
+    const complexMatch = await lookupComplexService(parsed.serviceName);
+    if (complexMatch) {
+      console.log(`[COMPLEX] Service "${parsed.serviceName}" is complex — blocking additional stylist "${complexMatch.additionalStylistName}"`);
+      await blockAdditionalStylistForComplexService(
+        complexMatch.additionalStylistId,
+        complexMatch.additionalStylistName,
+        parsed.startTime,
+        parsed.endTime,
+        booking.id
+      );
+    }
   }
 
   return { status: 200, body: `New Booksy booking created: ${booking?.id}` };
@@ -648,6 +800,12 @@ async function handleChangedBooking(
       previousBookingId = oldBooking.id;
       await supabase.from('booksy_bookings').update({ status: 'changed' }).eq('id', oldBooking.id);
       await unblockTimeSlot(oldBooking.id);
+      // Also ensure any additional stylist blocks for the previous booking are removed
+      try {
+        await unblockAdditionalStylistForComplexService(oldBooking.id);
+      } catch (err) {
+        console.warn('Failed to unblock additional stylist for previous booking:', err);
+      }
     }
   }
 
@@ -686,6 +844,19 @@ async function handleChangedBooking(
     if (slotId) {
       await supabase.from('booksy_bookings').update({ time_slot_id: slotId }).eq('id', booking.id);
     }
+
+    // Check complex service mapping and block additional stylist for changed booking
+    const complexMatch = await lookupComplexService(parsed.serviceName);
+    if (complexMatch) {
+      console.log(`[COMPLEX] Changed service "${parsed.serviceName}" is complex — blocking additional stylist "${complexMatch.additionalStylistName}"`);
+      await blockAdditionalStylistForComplexService(
+        complexMatch.additionalStylistId,
+        complexMatch.additionalStylistName,
+        parsed.startTime,
+        parsed.endTime,
+        booking.id
+      );
+    }
   }
 
   return { status: 200, body: `Changed Booksy booking: ${booking?.id}` };
@@ -714,6 +885,12 @@ async function handleCancelledBooking(
   if (existing) {
     await supabase.from('booksy_bookings').update({ status: 'cancelled' }).eq('id', existing.id);
     await unblockTimeSlot(existing.id);
+    // Ensure additional stylist blocks are also removed
+    try {
+      await unblockAdditionalStylistForComplexService(existing.id);
+    } catch (err) {
+      console.warn('Failed to unblock additional stylist for cancelled booking:', err);
+    }
   }
 
   // Store the cancellation email as a record

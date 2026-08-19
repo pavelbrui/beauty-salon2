@@ -345,7 +345,15 @@ export const translations = {
       createError: 'Nie udało się utworzyć rezerwacji.',
       cancelEdit: 'Anuluj',
       save: 'Zapisz',
-      more: 'więcej'
+      more: 'więcej',
+      viewMonth: 'Miesiąc',
+      viewWeek: 'Tydzień',
+      viewDay: 'Dzień (Styliści)',
+      today: 'Dzisiaj',
+      dayBookings: 'Rezerwacje w tym dniu',
+      noBookingsOnDay: 'Brak rezerwacji w wybranym dniu',
+      clickToCreateSlot: 'Kliknij wolny termin, aby dodać rezerwację',
+      closeDrawer: 'Zamknij'
     },
     admin_booksy: {
       title: 'Booksy — rezerwacje zewnętrzne',
@@ -381,7 +389,16 @@ export const translations = {
       emailType: 'Typ',
       emailNew: 'Nowa',
       emailChanged: 'Zmiana',
-      emailCancelled: 'Odwołanie'
+      emailCancelled: 'Odwołanie',
+      complexServicesTitle: 'Usługi Kompleksowe (Podwójna Obsada)',
+      complexServicesDesc: 'Skonfiguruj dodatkowego pracownika dla usług wymagających rezerwacji 2 stylistek jednocześnie.',
+      addComplexService: 'Dodaj usługę kompleksową',
+      additionalStylist: 'Dodatkowy pracownik (2. stylistka)',
+      serviceNameInBooksy: 'Nazwa usługi w Booksy',
+      noComplexServices: 'Brak skonfigurowanych usług kompleksowych',
+      statusActiveLabel: 'Aktywna',
+      statusInactiveLabel: 'Nieaktywna',
+      notes: 'Uwagi / Opis'
     },
     prices_page: {
       title: 'Cennik KATARZYNA BRUI Salon urody Białystok – Ile Kosztują Zabiegi',
@@ -744,7 +761,15 @@ export const translations = {
       createError: 'Could not create booking.',
       cancelEdit: 'Cancel',
       save: 'Save',
-      more: 'more'
+      more: 'more',
+      viewMonth: 'Month',
+      viewWeek: 'Week',
+      viewDay: 'Day (Stylists)',
+      today: 'Today',
+      dayBookings: 'Bookings for this day',
+      noBookingsOnDay: 'No bookings on selected day',
+      clickToCreateSlot: 'Click a free slot to add a booking',
+      closeDrawer: 'Close'
     },
     admin_booksy: {
       title: 'Booksy — External Bookings',
@@ -780,7 +805,16 @@ export const translations = {
       emailType: 'Type',
       emailNew: 'New',
       emailChanged: 'Change',
-      emailCancelled: 'Cancellation'
+      emailCancelled: 'Cancellation',
+      complexServicesTitle: 'Complex Services (Dual Staff)',
+      complexServicesDesc: 'Set an additional staff member for services requiring 2 stylists simultaneously.',
+      addComplexService: 'Add complex service',
+      additionalStylist: 'Additional staff (2nd stylist)',
+      serviceNameInBooksy: 'Booksy service name',
+      noComplexServices: 'No complex services configured',
+      statusActiveLabel: 'Active',
+      statusInactiveLabel: 'Inactive',
+      notes: 'Notes / Description'
     },
     prices_page: {
       title: 'KATARZYNA BRUI Beauty Salon Prices Bialystok – How Much Do Treatments Cost',
@@ -1143,7 +1177,15 @@ export const translations = {
       createError: 'Не удалось создать запись.',
       cancelEdit: 'Отмена',
       save: 'Сохранить',
-      more: 'ещё'
+      more: 'ещё',
+      viewMonth: 'Месяц',
+      viewWeek: 'Неделя',
+      viewDay: 'День (Стилисты)',
+      today: 'Сегодня',
+      dayBookings: 'Записи на этот день',
+      noBookingsOnDay: 'Нет записей на выбранный день',
+      clickToCreateSlot: 'Нажмите на свободное время для записи',
+      closeDrawer: 'Закрыть'
     },
     admin_booksy: {
       title: 'Booksy — внешние записи',
@@ -1179,7 +1221,16 @@ export const translations = {
       emailType: 'Тип',
       emailNew: 'Новая',
       emailChanged: 'Изменение',
-      emailCancelled: 'Отмена'
+      emailCancelled: 'Отмена',
+      complexServicesTitle: 'Комплексные услуги (Двойной состав)',
+      complexServicesDesc: 'Настройте дополнительного сотрудника для услуг, требующих бронирования 2 стилистов одновременно.',
+      addComplexService: 'Добавить комплексную услугу',
+      additionalStylist: 'Дополнительный сотрудник (2-й стилист)',
+      serviceNameInBooksy: 'Название услуги в Booksy',
+      noComplexServices: 'Нет настроенных комплексных услуг',
+      statusActiveLabel: 'Активна',
+      statusInactiveLabel: 'Неактивна',
+      notes: 'Заметки / Описание'
     },
     prices_page: {
       title: 'KATARZYNA BRUI Салон красоты – Цены на услуги Белосток',

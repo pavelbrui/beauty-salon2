@@ -242,7 +242,7 @@
           - generic [ref=e289]:
             - heading "Adres" [level=3] [ref=e290]
             - paragraph [ref=e291]:
-              - text: ul. Młynowa 46, Lok U11
+              - text: ul. Młynowa 46, Lok U12
               - text: 15-404, Białystok
               - text: "Tel:"
               - link "880 435 102" [ref=e292] [cursor=pointer]:
@@ -284,7 +284,7 @@
           - generic [ref=e322]: Kontakt
           - generic [ref=e323]:
             - paragraph [ref=e324]: Salon Kosmetyczny Katarzyna Brui
-            - paragraph [ref=e325]: ul. Młynowa 46, U11
+            - paragraph [ref=e325]: ul. Młynowa 46, U12
             - paragraph [ref=e326]: 15-404 Białystok, Polska
             - paragraph [ref=e327]:
               - link "+48 880 435 102" [ref=e328] [cursor=pointer]:

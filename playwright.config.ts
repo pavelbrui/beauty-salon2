@@ -1,8 +1,9 @@
+import 'dotenv/config';
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   timeout: 60000,
-  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalSetup: './e2e/global-setup.ts',
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,

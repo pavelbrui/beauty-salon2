@@ -73,7 +73,7 @@ test.describe('Admin Panel', () => {
       const navbar = page.locator('nav');
       await expect(navbar).toHaveCount(0);
     } else {
-      await expect(page.locator('nav')).toBeVisible();
+      await expect(page.locator('nav').first()).toBeVisible();
     }
   });
 });

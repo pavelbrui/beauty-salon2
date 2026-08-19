@@ -79,6 +79,45 @@ export async function syncBookingToBooksy(params: {
     }).catch(() => {
       // fire-and-forget: don't block the user flow
     });
+
+    // Additionally: if this booking's service is configured as a complex service,
+    // create a parallel sync_log entry for the additional stylist.
+    try {
+      const { data: complex } = await supabase
+        .from('booksy_complex_services')
+        .select('additional_stylist_id')
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (complex?.additional_stylist_id) {
+        // Insert a separate sync log for the additional stylist (create_block/update_block/remove_block)
+        await supabase.from('booksy_sync_log').insert({
+          booking_id: params.bookingId,
+          action: params.action,
+          start_time: params.startTime,
+          end_time: params.endTime,
+          stylist_name: undefined,
+        });
+        // Fire background function to handle additional stylist (fire-and-forget)
+        fetch('/.netlify/functions/booksy-sync-background', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: params.action,
+            bookingId: params.bookingId,
+            startTime: params.startTime,
+            endTime: params.endTime,
+            stylistName: undefined,
+            oldStartTime: params.oldStartTime,
+            oldEndTime: params.oldEndTime,
+            authToken: session.access_token,
+          }),
+        }).catch(() => {});
+      }
+    } catch (err) {
+      // Non-fatal
+      console.warn('Error checking complex service for dual sync:', err);
+    }
   } catch (err) {
     console.error('Booksy sync error:', err);
   }

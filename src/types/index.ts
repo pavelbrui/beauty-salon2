@@ -57,6 +57,7 @@ export interface Booking {
   end_time?: string;
   booksy_booking_url?: string | null;
   conflict_error_message?: string | null;
+  _isBooksy?: boolean;
 }
 
 export interface Stylist {
@@ -70,6 +71,7 @@ export interface Stylist {
   specialties_en?: string[];
   specialties_ru?: string[];
   image_url?: string;
+  photo_url?: string;
   description?: string;
   description_en?: string;
   description_ru?: string;
@@ -281,3 +283,15 @@ export interface BooksySession {
   expires_at?: string;
   is_valid: boolean;
 }
+
+export interface BooksyComplexService {
+  id: string;
+  booksy_service_name: string;
+  additional_stylist_id: string;
+  is_active: boolean;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  stylists?: { name: string; image_url?: string };
+}

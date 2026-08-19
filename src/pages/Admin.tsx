@@ -10,13 +10,14 @@ import { AdminBookings } from '../components/admin/AdminBookings';
 import { AdminTrainings } from '../components/admin/AdminTrainings';
 import { AdminBlog } from '../components/admin/AdminBlog';
 import { AdminBooksy } from '../components/admin/AdminBooksy';
+import AdminBooksyComplexServices from '../components/admin/AdminBooksyComplexServices';
 import { AdminCategories } from '../components/admin/AdminCategories';
 import { AdminUsers } from '../components/admin/AdminUsers';
 import { AdminRetention } from '../components/admin/AdminRetention';
 import { AdminIntroVideos } from '../components/admin/AdminIntroVideos';
 
 export const Admin: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments' | 'trainings' | 'blog' | 'booksy' | 'categories' | 'users' | 'retention' | 'intro_video'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'bookings' | 'stylists' | 'timeslots' | 'gallery' | 'assignments' | 'trainings' | 'blog' | 'booksy' | 'booksy_complex' | 'categories' | 'users' | 'retention' | 'intro_video'>('services');
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -107,6 +108,14 @@ export const Admin: React.FC = () => {
               Booksy
             </button>
             <button
+              onClick={() => setActiveTab('booksy_complex')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'booksy_complex' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Usługi Kompleksowe
+            </button>
+            <button
               onClick={() => setActiveTab('categories')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'categories' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -152,6 +161,7 @@ export const Admin: React.FC = () => {
       {activeTab === 'trainings' && <AdminTrainings />}
       {activeTab === 'blog' && <AdminBlog />}
       {activeTab === 'booksy' && <AdminBooksy />}
+      {activeTab === 'booksy_complex' && <AdminBooksyComplexServices />}
       {activeTab === 'categories' && <AdminCategories />}
       {activeTab === 'users' && <AdminUsers />}
       {activeTab === 'retention' && <AdminRetention />}

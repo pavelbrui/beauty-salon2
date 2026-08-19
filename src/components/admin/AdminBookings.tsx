@@ -5,7 +5,7 @@ import { Booking, Service, Stylist } from '../../types';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useViewMode } from '../../hooks/useViewMode';
 import { translations } from '../../i18n/translations';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isSameMonth, addMonths, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { pl, enUS, ru } from 'date-fns/locale';
 import {
   CalendarDaysIcon,
@@ -14,14 +14,13 @@ import {
   CurrencyDollarIcon,
   FunnelIcon,
   ListBulletIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   XMarkIcon,
   CheckIcon,
   PencilIcon,
   PlusIcon
 } from '@heroicons/react/24/outline';
 import { StylistFilter } from '../StylistFilter';
+import { AdminCalendarView } from './AdminCalendarView';
 
 interface AdminBooking extends Booking {
   contact_name?: string;
@@ -123,7 +122,8 @@ const isMissingPriceOverrideColumn = (err: unknown) => {
 const insertBookingRow = async (payload: Record<string, unknown>) => {
   const { data, error } = await supabase.from('bookings').insert(payload).select('id').single();
   if (error && isMissingPriceOverrideColumn(error)) {
-    const { price_override, ...payloadWithoutPriceOverride } = payload;
+    const payloadWithoutPriceOverride = { ...payload };
+    delete payloadWithoutPriceOverride.price_override;
     return supabase.from('bookings').insert(payloadWithoutPriceOverride).select('id').single();
   }
   return { data, error };
@@ -132,7 +132,8 @@ const insertBookingRow = async (payload: Record<string, unknown>) => {
 const updateBookingRow = async (id: string, payload: Record<string, unknown>) => {
   const { data, error } = await supabase.from('bookings').update(payload).eq('id', id);
   if (error && isMissingPriceOverrideColumn(error)) {
-    const { price_override, ...payloadWithoutPriceOverride } = payload;
+    const payloadWithoutPriceOverride = { ...payload };
+    delete payloadWithoutPriceOverride.price_override;
     return supabase.from('bookings').update(payloadWithoutPriceOverride).eq('id', id);
   }
   return { data, error };
@@ -157,9 +158,6 @@ export const AdminBookings: React.FC = () => {
 
   // View mode (persisted to localStorage + cookie)
   const [viewMode, setViewMode] = useViewMode();
-
-  // Calendar state
-  const [calendarMonth, setCalendarMonth] = useState<Date>(startOfMonth(new Date()));
 
   // Edit modal
   const [editingBooking, setEditingBooking] = useState<AdminBooking | null>(null);
@@ -289,40 +287,7 @@ export const AdminBookings: React.FC = () => {
   }, [bookings, filterStylist, filterService, filterStatus]);
 
   // Calendar helpers
-  const calendarDays = useMemo(() => {
-    const monthStart = startOfMonth(calendarMonth);
-    const monthEnd = endOfMonth(calendarMonth);
-    const start = startOfWeek(monthStart, { weekStartsOn: 1 });
-    const end = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
-    const days: Date[] = [];
-    let day = start;
-    while (day <= end) {
-      days.push(day);
-      day = addDays(day, 1);
-    }
-    return days;
-  }, [calendarMonth]);
-
-  const bookingsByDate = useMemo(() => {
-    const map: Record<string, AdminBooking[]> = {};
-    filteredBookings.forEach(b => {
-      const startTime = b.time_slots?.start_time || b.start_time;
-      if (!startTime) return;
-      const dateKey = format(new Date(startTime), 'yyyy-MM-dd');
-      if (!map[dateKey]) map[dateKey] = [];
-      map[dateKey].push(b);
-    });
-    // Sort bookings within each day by time
-    Object.values(map).forEach(arr =>
-      arr.sort((a, b) => {
-        const ta = a.time_slots?.start_time || a.start_time || '';
-        const tb = b.time_slots?.start_time || b.start_time || '';
-        return ta.localeCompare(tb);
-      })
-    );
-    return map;
-  }, [filteredBookings]);
 
   const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return null;
@@ -626,7 +591,7 @@ export const AdminBookings: React.FC = () => {
           .eq('id', slotId);
 
         if (linkSlotError) {
-
+          console.error('Error linking slot:', linkSlotError);
         }
         // Free previous slot if a new slot was created
         if (oldSlotId && oldSlotId !== slotId) {
@@ -783,13 +748,6 @@ export const AdminBookings: React.FC = () => {
     setFilterService('all');
     setFilterStatus('all');
   };
-
-  const weekDays = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) => {
-      const day = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i);
-      return format(day, 'EEEEEE', { locale });
-    });
-  }, [locale]);
 
   const editAvailableStylists = editForm?.serviceId === 'custom' ? stylists : (editForm?.serviceId ? getStylistsForService(editForm.serviceId) : stylists);
   const createAvailableStylists = createForm.serviceId === 'custom' ? stylists : (createForm.serviceId ? getStylistsForService(createForm.serviceId) : stylists);
@@ -1024,87 +982,33 @@ export const AdminBookings: React.FC = () => {
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="bg-white rounded-lg shadow">
-          {/* Calendar header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <button
-              onClick={() => setCalendarMonth(subMonths(calendarMonth, 1))}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-            >
-              <ChevronLeftIcon className="h-5 w-5" />
-            </button>
-            <h3 className="text-lg font-semibold text-gray-900 capitalize">
-              {format(calendarMonth, 'LLLL yyyy', { locale })}
-            </h3>
-            <button
-              onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
-            >
-              <ChevronRightIcon className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* Week day headers */}
-          <div className="grid grid-cols-7 border-b border-gray-200">
-            {weekDays.map((day, i) => (
-              <div key={i} className="py-2 text-center text-xs font-medium text-gray-500 uppercase">
-                {day}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7">
-            {calendarDays.map((day, i) => {
-              const dateKey = format(day, 'yyyy-MM-dd');
-              const dayBookings = bookingsByDate[dateKey] || [];
-              const isCurrentMonth = isSameMonth(day, calendarMonth);
-              const isToday = isSameDay(day, new Date());
-
-              return (
-                <div
-                  key={i}
-                  className={`min-h-[100px] border-b border-r border-gray-100 p-1 ${
-                    !isCurrentMonth ? 'bg-gray-50' : ''
-                  }`}
-                >
-                  <div className={`text-xs font-medium mb-1 px-1 ${
-                    isToday
-                      ? 'bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
-                      : isCurrentMonth ? 'text-gray-700' : 'text-gray-300'
-                  }`}>
-                    {format(day, 'd')}
-                  </div>
-
-                  <div className="space-y-0.5">
-                    {dayBookings.slice(0, 3).map(b => {
-                      const sc = getStatusConfig(b.status);
-                      const time = b.time_slots?.start_time || b.start_time;
-                      const timeStr = time ? format(new Date(time), 'HH:mm') : '';
-
-                      return (
-                        <button
-                          key={b.id}
-                          onClick={() => !b._isBooksy && openEdit(b)}
-                          className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate ${sc.bg} ${sc.text} ${b._isBooksy ? 'cursor-default' : 'hover:opacity-80'} transition-opacity`}
-                          title={`${timeStr} ${getServiceLabel(b)} - ${b.stylists?.name || ''}${b._isBooksy ? ' (Booksy)' : ''}`}
-                        >
-                          <span className="font-medium">{timeStr}</span>{' '}
-                          {getServiceLabel(b)}
-                        </button>
-                      );
-                    })}
-                    {dayBookings.length > 3 && (
-                      <div className="text-[10px] text-gray-400 px-1">
-                        +{dayBookings.length - 3} {ab.more || 'więcej'}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <AdminCalendarView
+          bookings={filteredBookings}
+          stylists={stylists}
+          onSelectBooking={(b) => openEdit(b as AdminBooking)}
+          onCreateBookingForSlot={(stylistId, date, timeStr) => {
+            let startAt = getNextHourStart();
+            if (date) {
+              const time = timeStr || '09:00';
+              startAt = `${format(date, 'yyyy-MM-dd')}T${time}`;
+            }
+            setCreateForm({
+              serviceId: 'custom',
+              customDuration: '60',
+              stylistId: stylistId || stylists[0]?.id || '',
+              status: 'pending',
+              startAt,
+              pricePln: '',
+              contactName: '',
+              contactPhone: '',
+              contactEmail: '',
+              notes: ''
+            });
+            setCreateError(null);
+            setShowCreateModal(true);
+          }}
+          language={language}
+        />
       )}
 
       {/* Edit Modal */}
