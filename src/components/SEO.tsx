@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
-import { stripLangPrefix } from '../hooks/useLocalizedPath';
+import { stripLangPrefix, detectLangFromPath } from '../hooks/useLocalizedPath';
 import { getRouteAlternates } from '../utils/routeAlternates';
 
 export interface BreadcrumbItem {
@@ -76,17 +76,19 @@ export const SEO: React.FC<SEOProps> = ({
 }) => {
   const { language } = useLanguage();
   const location = useLocation();
+  const routeLanguage = detectLangFromPath(location.pathname);
+  const resolvedLanguage = routeLanguage || language;
 
   const fullTitle = title ? `${title} | ${SITE_NAME_SHORT}` : `${SITE_NAME} | Makijaż Permanentny Białystok`;
   const barePath = canonical || stripLangPrefix(location.pathname) || '/';
-  const url = getLocalizedUrl(barePath, language);
+  const url = getLocalizedUrl(barePath, resolvedLanguage);
 
   // Per-language paths for hreflang: custom alternates → route map → same barePath fallback
   const altPaths = alternates || getRouteAlternates(barePath);
 
   return (
     <Helmet>
-      <html lang={language} />
+      <html lang={resolvedLanguage} />
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
@@ -109,8 +111,8 @@ export const SEO: React.FC<SEOProps> = ({
       <meta property="og:image" content={image} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:locale" content={OG_LOCALES[language]} />
-      {!noindex && LANGUAGES.filter(l => l !== language).map(lang => (
+      <meta property="og:locale" content={OG_LOCALES[resolvedLanguage]} />
+      {!noindex && LANGUAGES.filter(l => l !== resolvedLanguage).map(lang => (
         <meta key={`og-alt-${lang}`} property="og:locale:alternate" content={OG_LOCALES[lang]} />
       ))}
 
@@ -133,7 +135,7 @@ export const SEO: React.FC<SEOProps> = ({
               '@type': 'ListItem',
               'position': i + 1,
               'name': item.name,
-              'item': getLocalizedUrl(item.url, language),
+              'item': getLocalizedUrl(item.url, resolvedLanguage),
             })),
           })}
         </script>
